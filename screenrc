@@ -7,7 +7,7 @@
 #
 # Logging
 #
-logfile /home/archjun/Documents/term_sessions/screen-log-%Y%m%d-%n
+logfile /home/archjun/Documents/term_sessions/%Y-%m-%d_%n.log
 deflog on
 
 # This is how one can set a reattach password:
