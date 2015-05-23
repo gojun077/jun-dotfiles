@@ -10,6 +10,16 @@
 logfile /home/archjun/Documents/term_sessions/%Y-%m-%d_%n.log
 deflog on
 
+################
+
+################
+#
+# term setting
+#
+term xterm
+
+################
+
 # This is how one can set a reattach password:
 # password ODSJQf.4IJN7E    # "1234"
 
@@ -26,6 +36,7 @@ startup_message off
 pow_detach_msg "Screen session of \$LOGNAME \$:cr:\$:nl:ended."
 
 # advertise hardstatus support to $TERMCAP
+# Note: Archlinux doesn't use termcap but terminfo instead
 # termcapinfo  * '' 'hs:ts=\E_:fs=\E\\:ds=\E_\E\\'
 
 # make the shell in every window a login shell
@@ -44,7 +55,7 @@ defscrollback 10000
 # zombie "^["
 
 # enable support for the "alternate screen" capability in all windows
-# altscreen on
+altscreen on
 
 ################
 #
