@@ -4,8 +4,8 @@
 # to ~/.bashrc, ~/.emacs, /root/.bashrc, ~/.screenrc
 # respectively
 
-DOTFILES="bashrc emacs screenrc"
-TARGETS=".bashrc .emacs .screenrc"
+DOTFILES="bashrc emacs screenrc vimrc"
+TARGETS=".bashrc .emacs .screenrc .vimrc"
 
 for i in $TARGETS; do
   if [ -f ~/$i ]; then
