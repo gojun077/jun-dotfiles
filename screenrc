@@ -1,5 +1,5 @@
 #
-# GNU Screen config file
+# Jun's GNU Screen config file
 # ~/.screenrc
 #
 
@@ -7,7 +7,10 @@
 #
 # Logging
 #
-logfile /home/archjun/Documents/term_sessions/%Y-%m-%d_%n.log
+logfile ~/Documents/term_sessions/%Y-%m-%d_%c-%n.log
+logtstamp on
+# add timestamp to logfile after 5 min of inactivity
+logtstamp after 300
 deflog on
 
 ################
@@ -171,6 +174,10 @@ bind ^] paste [.]
 # caption always "%3n %t%? @%u%?%? [%h]%?%=%c"
 # hardstatus alwaysignore
 # hardstatus alwayslastline "%Lw"
+hardstatus alwayslastline
+# Available windows centered at the current window and truncated
+# to the available width. Current window is displayed white on blue
+hardstatus string "%-Lw%{= BW}%50>%n%f* %t%{-}%+Lw%"
 
 # bind = resize =
 # bind + resize +1

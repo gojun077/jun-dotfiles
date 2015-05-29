@@ -26,6 +26,9 @@ if has("vms")
 else
   set backup		" keep a backup file (restore to previous version)
   set undofile		" keep an undo file (undo changes after closing)
+  set undodir=~/tmp	" path for undo files
+  set backupdir=~/tmp   " path for backup files
+  set directory=~/tmp   " path for swap files
 endif
 set history=50		" keep 50 lines of command line history
 set ruler		" show the cursor position all the time
