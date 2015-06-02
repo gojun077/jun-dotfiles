@@ -27,3 +27,9 @@ if [ -f /root/.bashrc ]; then
 fi
 
 ln -s ~/dotfiles/root_bashrc /root/.bashrc
+
+if [ -f ~/.quodlibet/stations ]; then
+  mv ~/.quodlibet/stations ~/.quodlibet/stations_old
+fi
+
+ln -s ~/dotfiles/stations ~/.quodlibet/stations
