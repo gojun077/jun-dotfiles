@@ -27,3 +27,12 @@ if [ -f /root/.bashrc ]; then
 fi
 
 ln -s ~/dotfiles/root_bashrc /root/.bashrc
+
+if [ -L /root/.vimrc ]; then
+  echo -e "symlink for .vimrc already exists\n"
+elif [ -f /root/.vimrc ]; then
+  mv /root/.vimrc /root/.vimrc_old
+  mkdir /root/tmp #path for vim swap and temp files (root)
+fi
+
+ln -s ~/dotfiles/vimrc /root/.vimrc

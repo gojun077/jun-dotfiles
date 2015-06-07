@@ -1,3 +1,2 @@
-Configuration files for emacs, bash, and GNU Screen...
-in the future I plan to add more files (vimrc, ssh configs,
-etc)
+Configuration files for emacs, bash, and GNU Screen and misc
+conf files
