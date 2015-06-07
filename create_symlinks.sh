@@ -36,3 +36,9 @@ elif [ -f /root/.vimrc ]; then
 fi
 
 ln -s ~/dotfiles/vimrc /root/.vimrc
+
+if [ -f ~/.quodlibet/stations ]; then
+  mv ~/.quodlibet/stations ~/.quodlibet/stations_old
+fi
+
+ln -s ~/dotfiles/stations ~/.quodlibet/stations
