@@ -23,7 +23,7 @@ $HOME/.config/lxterminal/lxterminal.conf $HOME/.config/xfce4/terminal/terminalrc
 
 for i in $AP_TARGETS; do
   if [[ -f $i && ! -L $i ]]; then
-    mv $i $i_old
+    mv $i $i.old
   fi
 done
 
@@ -47,7 +47,7 @@ fi
 
 ln -s $HOME/dotfiles/root_bashrc /root/.bashrc
 
-if [ -f /root/.vimrc && ! -L /root/.vimrc ]; then
+if [[ -f /root/.vimrc && ! -L /root/.vimrc ]]; then
   mv /root/.vimrc /root/.vimrc_old
   mkdir /root/tmp #path for vim swap and temp files (root)
 fi
