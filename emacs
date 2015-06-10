@@ -1,16 +1,16 @@
 (require 'package)
 (package-initialize)
-(require 'rw-hunspell)
-(require 'rw-language-and-country-codes)
-(require 'rw-ispell)
-
 ;;emacs package repos
 (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages") t)
-(add-to-list 'package-archives '("GNU" . "http://elpa.gnu.org/packages/") t)
 (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
+(add-to-list 'package-archives '("GNU" . "http://elpa.gnu.org/packages/") t)
+
 (add-to-list 'load-path "~/.emacs.d/elpa") ;;personal elisp libs
 
 
+(require 'rw-hunspell)
+(require 'rw-language-and-country-codes)
+(require 'rw-ispell)
 (load "auctex.el" nil t t)
 (load "preview-latex.el" nil t t)
 
@@ -39,14 +39,15 @@
  '(org-todo-keywords
    (quote
     ((sequence "Backlog" "Queue" "WIP" "DONE" "Cancelled"))))
+ '(package-selected-packages
+   (quote
+    (tracking rw-language-and-country-codes rw-ispell rw-hunspell quack paredit org-trello geiser fill-column-indicator color-theme-solarized color-theme-sanityinc-solarized auto-complete)))
  '(python-shell-interpreter "ipython3")
  '(python-shell-interpreter-args "-i")
-;;spellcheck settings
  '(rw-hunspell-default-dictionary "en_US_hunspell")
  '(rw-hunspell-dicpath-list (quote ("/usr/share/hunspell")))
  '(rw-hunspell-make-dictionary-menu t)
  '(rw-hunspell-use-rw-ispell t)
-
  '(scroll-bar-mode nil)
  '(show-paren-mode t)
  '(tool-bar-mode nil))
