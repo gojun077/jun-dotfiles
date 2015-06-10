@@ -1,0 +1,18 @@
+[global_config]
+[keybindings]
+[profiles]
+  [[default]]
+    scrollbar_position = left
+    background_image = None
+    font = Monospace 11
+    scrollback_infinite = True
+    show_titlebar = False
+[layouts]
+  [[default]]
+    [[[child1]]]
+      type = Terminal
+      parent = window0
+    [[[window0]]]
+      type = Window
+      parent = ""
+[plugins]
