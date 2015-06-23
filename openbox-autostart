@@ -1,0 +1,16 @@
+tint2 &
+conky -q &
+nitrogen --restore &
+openbox-menu -p -o abapps.xml -t 'lxterminal -e' &
+cbatticon &
+ibus-daemon -rxd &
+terminator --geometry=800x400 -e htop &
+terminator -e dmesg -wH &
+terminator -e journalctl -f &
+redshift-gtk -l 37.5:126.9 &
+
+(sleep 10 && volumeicon) &
+(sleep 20 && SpiderOak) &
+(sleep 35 && rescuetime) &
+
+xbacklight -set 100 &
