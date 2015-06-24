@@ -179,7 +179,7 @@ bind ^] paste [.]
 # with the date and computer name, followed by the window list in
 # white on blue. The current window is centered in the window list
 # and is displayed in blue on yellow
-caption always "%?%F%{-b bc}%:%{-b bb}%?%C|%D|%M %d|%H%?%F%{+u wb}%? %L=%-Lw%45>%{+b by}%n%f*%t%{-}%+Lw%-0<"
+caption always "%?%F%{-b bc}%:%{-b bb}%?%c|%D|%M %d|%H%?%F%{+u wb}%? %L=%-Lw%45>%{+b by}%n%f*%t%{-}%+Lw%-0<"
 # hardstatus alwaysignore
 # hardstatus alwayslastline "%Lw"
 #hardstatus alwayslastline
@@ -192,7 +192,7 @@ caption always "%?%F%{-b bc}%:%{-b bb}%?%C|%D|%M %d|%H%?%F%{+u wb}%? %L=%-Lw%45>
 # window scrolls to the right or left; unfortunately if the
 # window list is too long, new window titles are not highlighted
 # in the hardstatus line
-#hardstatus string "%= %-w%L{= BW}%n*%t%{-}%52<%+w %L=" 
+#hardstatus string "%= %-w%L{= BW}%n*%t%{-}%52<%+w %L="
 
 # bind = resize =
 # bind + resize +1
