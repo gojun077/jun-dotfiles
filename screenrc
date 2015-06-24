@@ -172,12 +172,27 @@ bind ^] paste [.]
 # screen -t 40 2 rlogin server
 
 # caption always "%3n %t%? @%u%?%? [%h]%?%=%c"
+# If the caption is on a non-focused window, the entire bar is blue
+# text on a blue background (so it just looks blue), with the exception
+# of the window's information, which is blue on yellow. The focused
+# (or only) window's caption has a blue-on-cyan information section
+# with the date and computer name, followed by the window list in
+# white on blue. The current window is centered in the window list
+# and is displayed in blue on yellow
+caption always "%?%F%{-b bc}%:%{-b bb}%?%C|%D|%M %d|%H%?%F%{+u wb}%? %L=%-Lw%45>%{+b by}%n%f*%t%{-}%+Lw%-0<"
 # hardstatus alwaysignore
 # hardstatus alwayslastline "%Lw"
-hardstatus alwayslastline
+#hardstatus alwayslastline
+
 # Available windows centered at the current window and truncated
 # to the available width. Current window is displayed white on blue
-hardstatus string "%-Lw%{= BW}%50>%n%f* %t%{-}%+Lw%"
+#hardstatus string "%-Lw%{= BW}%50>%n%f* %t%{-}%+Lw%"
+
+# Available windows centered at the current window; highlighted
+# window scrolls to the right or left; unfortunately if the
+# window list is too long, new window titles are not highlighted
+# in the hardstatus line
+#hardstatus string "%= %-w%L{= BW}%n*%t%{-}%52<%+w %L=" 
 
 # bind = resize =
 # bind + resize +1
