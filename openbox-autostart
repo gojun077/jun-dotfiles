@@ -5,8 +5,10 @@ openbox-menu -p -o abapps.xml -t 'lxterminal -e' &
 cbatticon &
 ibus-daemon -rxd &
 terminator --geometry=800x400 -e htop &
-terminator -e dmesg -wH &
-terminator -e journalctl -f &
+# for some reason the following 2 lines fail to properly launch
+# terminals; 'journalctl -f' simply lists 'journalctl'
+#terminator --geometry=800x400 -e dmesg -wH &
+#terminator --geometry=800x400 -e journalctl -f &
 redshift-gtk -l 37.5:126.9 &
 
 (sleep 10 && volumeicon) &
