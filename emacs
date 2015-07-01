@@ -49,6 +49,8 @@
  '(rw-hunspell-make-dictionary-menu t)
  '(rw-hunspell-use-rw-ispell t)
  '(scroll-bar-mode nil)
+ '(sh-basic-offset 2) ; offset for shellscript mode
+ '(sh-indentation 2)  ; indentation for shellscript mode
  '(show-paren-mode t)
  '(tool-bar-mode nil))
 
