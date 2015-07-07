@@ -8,7 +8,7 @@
 # Create Symlinks to files directly below ~/
 ####################################################
 
-DOTFILES="bashrc emacs screenrc vimrc"
+DOTFILES="bashrc emacs screenrc vimrc conkyrc"
 
 for i in $DOTFILES; do
   # if file exists and is not a symlink
@@ -21,9 +21,9 @@ for i in $DOTFILES; do
 done
 
 
-####################################################
-# Create Symlinks to files in subdirectories of ~/
-####################################################
+######################################################
+# Create Symlinks to files in subdirectories of $HOME
+######################################################
 
 # the 4-letter variable is the original path for the conf file
 # the variable with _TGT appended is the original name of the conf
