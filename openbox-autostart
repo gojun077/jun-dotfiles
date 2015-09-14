@@ -12,7 +12,7 @@ terminator --geometry=800x400 -e htop &
 redshift-gtk -l 37.5:126.9 &
 
 (sleep 10 && volumeicon) &
-(sleep 20 && SpiderOak) &
+(sleep 20 && SpiderOakONE) &
 (sleep 25 && dropboxd) &
 (sleep 35 && rescuetime) &
 
