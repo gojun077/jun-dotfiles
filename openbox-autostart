@@ -5,11 +5,11 @@ openbox-menu -p -o abapps.xml -t 'lxterminal -e' &
 cbatticon &
 ibus-daemon -rxd &
 terminator --geometry=800x400 -e htop &
-# for some reason the following 2 lines fail to properly launch
-# terminals; 'journalctl -f' simply lists 'journalctl'
-#terminator --geometry=800x400 -e dmesg -wH &
-#terminator --geometry=800x400 -e journalctl -f &
 redshift-gtk -l 37.5:126.9 &
+# kill running instance of xscreensaver
+xscreensaver-command -exit &
+# start new instance of xscreensaver
+xscreensaver -no-splash &
 
 (sleep 10 && volumeicon) &
 (sleep 20 && SpiderOakONE) &
