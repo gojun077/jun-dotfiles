@@ -3,6 +3,12 @@
 # First created in June 2015
 # Jun Go gojun077@gmail.com
 
+####################################################
+# Constant file names in dotfiles
+####################################################
+DOTFILESP="$HOME/dotfiles"
+QUODCONF="quod_stations"
+
 
 ####################################################
 # Create Symlinks to files directly below ~/
@@ -43,9 +49,9 @@ OPBX_TGT="autostart"
 # only rename original file and create symlink from $HOME/dotfiles
 # if the config file exists in the given path and is not a symlink
 
-if [[ -f $QUOD/stations && ! -L $QUOD/stations ]]; then
+if [[ -f $QUOD/$QUOD_TGT && ! -L $QUOD/$QUOD_TGT ]]; then
   mv $QUOD/$QUOD_TGT $QUOD/$QUOD_TGT.old
-  ln -s $HOME/dotfiles/stations $QUOD/$QUOD_TGT
+  ln -s $DOTFILESP/$QUODCONF $QUOD/$QUOD_TGT
 fi
 
 if [[ -f $TMNTR/$TMNTR_TGT && ! -L $TMNTR/$TMNTR_TGT ]]; then
