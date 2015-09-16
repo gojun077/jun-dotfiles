@@ -5,12 +5,14 @@ openbox-menu -p -o abapps.xml -t 'lxterminal -e' &
 cbatticon &
 ibus-daemon -rxd &
 terminator --geometry=800x400 -e htop &
-terminator -e dmesg -wH &
-terminator -e journalctl -f &
 redshift-gtk -l 37.5:126.9 &
+# kill running instance of xscreensaver
+xscreensaver-command -exit &
+# start new instance of xscreensaver
+xscreensaver -no-splash &
 
 (sleep 10 && volumeicon) &
-(sleep 20 && SpiderOak) &
+(sleep 20 && SpiderOakONE) &
 (sleep 25 && dropboxd) &
 (sleep 35 && rescuetime) &
 
