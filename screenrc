@@ -5,6 +5,15 @@
 
 ################
 #
+# Encoding
+#
+
+# Change default encoding to UTF8; equivalent to
+# screen -U
+defutf8 on
+
+################
+#
 # Logging
 #
 logfile $HOME/Documents/term_sessions/%Y-%m-%d_%0c-%n.log
