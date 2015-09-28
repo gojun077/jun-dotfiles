@@ -2,9 +2,9 @@
 
 (require 'package)
 (package-initialize)
-(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
-                       '("melpa" . "http://melpa.org/packages")
-                       '("marmalade" . "http://marmalade-repo.org/packages/")))
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
+(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/") t)
+(add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/") t)
 
 (require 'cl)
 (defvar gojun-pkglist
@@ -14,25 +14,30 @@
     org-trello
     oz
     paredit
+    markdown-mode
     racket-mode
     rw-hunspell
     rw-ispell
     rw-language-and-country-codes)
-)
+"list of packages to ensure are installed at launch")
 
-(defun check-package-not-installed ()
+(defun gojun-pkglist-installed-p ()
   (loop for p in gojun-pkglist
-        when (not (package-installed-p p)) do (return t)
-        finally (return nil)))
-(when (check-package-not-installed)
-  ;; Check for new packages (package versions)
-  (message "%s" "Get latest versions of all packages...")
+        when (not (package-installed-p p)) do (return nil)
+        finally (return t)))
+
+(unless (gojun-pkglist-installed-p)
+  ;; check for new packages (package versions)
+  (message "%s" "Emacs is now refreshing its package database...")
   (package-refresh-contents)
   (message "%s" " done.")
-  ;; Install the missing packages
+  ;; install the missing packages
   (dolist (p gojun-pkglist)
     (when (not (package-installed-p p))
       (package-install p))))
+
+(provide 'gojun-pkglist)
+
 
 (add-to-list 'load-path "~/.emacs.d/elpa") ;;personal elisp libs
 
