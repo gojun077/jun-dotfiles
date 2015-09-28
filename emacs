@@ -57,7 +57,7 @@
  '(column-number-mode 1)
  '(custom-safe-themes
    (quote
-    ("1e7e097ec8cb1f8c3a912d7e1e0331caeed49fef6cff220be63bd2a6ba4cc365" default)))
+    ("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default)))
  '(default-input-method "korean-hangul")
  '(global-whitespace-mode t)
  '(indent-tabs-mode nil)
@@ -73,9 +73,7 @@
  '(org-todo-keywords
    (quote
     ((sequence "Backlog" "Queue" "WIP" "DONE" "Cancelled"))))
- '(package-selected-packages
-   (quote
-    (tracking rw-language-and-country-codes rw-ispell rw-hunspell quack paredit org-trello geiser fill-column-indicator color-theme-solarized color-theme-sanityinc-solarized auto-complete)))
+ '(org-trello-current-prefix-keybinding "C-c o")
  '(python-shell-interpreter "ipython3")
  '(python-shell-interpreter-args "-i")
  '(rw-hunspell-default-dictionary "en_US_hunspell")
@@ -83,8 +81,8 @@
  '(rw-hunspell-make-dictionary-menu t)
  '(rw-hunspell-use-rw-ispell t)
  '(scroll-bar-mode nil)
- '(sh-basic-offset 2) ; offset for shellscript mode
- '(sh-indentation 2)  ; indentation for shellscript mode
+ '(sh-basic-offset 2)
+ '(sh-indentation 2)
  '(show-paren-mode t)
  '(tool-bar-mode nil))
 
