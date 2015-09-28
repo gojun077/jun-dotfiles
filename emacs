@@ -7,34 +7,33 @@
                        '("marmalade" . "http://marmalade-repo.org/packages/")))
 
 (require 'cl)
-; (defvar gojun-pkglist
-;   '(fill-column-indicator
-;     auctex
-;     color-theme-sanityinc-solarized
-;     markdown-mode
-;     org-trello
-;     oz
-;     paredit
-;     racket-mode
-;     rw-hunspell
-;     rw-ispell
-;     rw-language-and-country-codes)
-; )
+(defvar gojun-pkglist
+  '(fill-column-indicator
+    auctex
+    color-theme-sanityinc-solarized
+    org-trello
+    oz
+    paredit
+    racket-mode
+    rw-hunspell
+    rw-ispell
+    rw-language-and-country-codes)
+)
 
-; (defun check-package-not-installed ()
-;   (loop for p in gojun-pkglist
-;         when (not (package-installed-p p)) do (return t)
-;         finally (return nil)))
-; (when (check-package-not-installed)
-;   ;; Check for new packages (package versions)
-;   (message "%s" "Get latest versions of all packages...")
-;   (package-refresh-contents)
-;   (message "%s" " done.")
-;   ;; Install the missing packages
-;   (dolist (p gojun-pkglist)
-;     (when (not (package-installed-p p))
-;       (package-install p))))
-; 
+(defun check-package-not-installed ()
+  (loop for p in gojun-pkglist
+        when (not (package-installed-p p)) do (return t)
+        finally (return nil)))
+(when (check-package-not-installed)
+  ;; Check for new packages (package versions)
+  (message "%s" "Get latest versions of all packages...")
+  (package-refresh-contents)
+  (message "%s" " done.")
+  ;; Install the missing packages
+  (dolist (p gojun-pkglist)
+    (when (not (package-installed-p p))
+      (package-install p))))
+
 (add-to-list 'load-path "~/.emacs.d/elpa") ;;personal elisp libs
 
 
