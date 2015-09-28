@@ -1,9 +1,11 @@
+-*- mode: emacs-lisp; -*-
 (require 'package)
 (package-initialize)
-;;emacs package repos
-(add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages") t)
-(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
-(add-to-list 'package-archives '("GNU" . "http://elpa.gnu.org/packages/") t)
+(add-to-list 'package-archives
+             '("gnu" . "http://elpa.gnu.org/packages/")
+             '("melpa" . "http://melpa.org/packages")
+             '("marmalade" . "http://marmalade-repo.org/packages/"))
+
 
 (add-to-list 'load-path "~/.emacs.d/elpa") ;;personal elisp libs
 
