@@ -1,12 +1,40 @@
--*- mode: emacs-lisp; -*-
+;; -*- mode: emacs-lisp -*-
+
 (require 'package)
 (package-initialize)
-(add-to-list 'package-archives
-             '("gnu" . "http://elpa.gnu.org/packages/")
-             '("melpa" . "http://melpa.org/packages")
-             '("marmalade" . "http://marmalade-repo.org/packages/"))
+(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+                       '("melpa" . "http://melpa.org/packages")
+                       '("marmalade" . "http://marmalade-repo.org/packages/")))
 
+(require 'cl)
+; (defvar gojun-pkglist
+;   '(fill-column-indicator
+;     auctex
+;     color-theme-sanityinc-solarized
+;     markdown-mode
+;     org-trello
+;     oz
+;     paredit
+;     racket-mode
+;     rw-hunspell
+;     rw-ispell
+;     rw-language-and-country-codes)
+; )
 
+; (defun check-package-not-installed ()
+;   (loop for p in gojun-pkglist
+;         when (not (package-installed-p p)) do (return t)
+;         finally (return nil)))
+; (when (check-package-not-installed)
+;   ;; Check for new packages (package versions)
+;   (message "%s" "Get latest versions of all packages...")
+;   (package-refresh-contents)
+;   (message "%s" " done.")
+;   ;; Install the missing packages
+;   (dolist (p gojun-pkglist)
+;     (when (not (package-installed-p p))
+;       (package-install p))))
+; 
 (add-to-list 'load-path "~/.emacs.d/elpa") ;;personal elisp libs
 
 
@@ -84,7 +112,7 @@
 (setq make-backup-files nil)               ;; disable temp files
 (setq auto-save-default nil)               ;; disable autosaving
 (setq ispell-program-name "hunspell")      ;; specify dictionary binary
-(setq ispell-dictionary "en_US_hunspell") ;; specify dictionary
+(setq ispell-dictionary "en_US_hunspell")  ;; specify dictionary
 (put 'upcase-region 'disabled nil)         ;; enable chg region to upper
 (put 'downcase-region 'disabled nil)       ;; enable chg region to lower
 
