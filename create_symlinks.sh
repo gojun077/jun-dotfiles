@@ -45,6 +45,8 @@ XFTM="$HOME/.config/xfce4/terminal"
 XFTM_TGT="terminalrc"
 OPBX="$HOME/.config/openbox"
 OPBX_TGT="autostart"
+MAME="$HOME/.mame"
+MAME_TGT="mame.ini"
 
 # only rename original file and create symlink from $HOME/dotfiles
 # if the config file exists in the given path and is not a symlink
@@ -72,6 +74,11 @@ fi
 if [[ -f $OPBX/$OPBX_TGT.conf && ! -L $OPBX/$OPBX_TGT ]]; then
   mv $OPBX/$OPBX_TGT $OPBX/$OPBX_TGT.old
   ln -s $HOME/dotfiles/openbox-autostart $OPBX/$OPBX_TGT
+fi
+
+if [[ -f $MAME/$MAME_TGT.ini && ! -L $MAME/$MAME_TGT ]]; then
+  mv $MAME/$MAME_TGT $MAME/$MAME_TGT.old
+  ln -s $HOME/dotfiles/mame.ini $MAME/$MAME_TGT
 fi
 
 # Note that to create a symlink from root_bashrc to ~/root/.bashrc

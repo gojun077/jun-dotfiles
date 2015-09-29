@@ -59,7 +59,9 @@
    (quote
     ("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default)))
  '(default-input-method "korean-hangul")
- '(global-whitespace-mode t)
+ ; only start whitespace mode when in graphical session
+ (when (display-graphic-p)
+   '(global-whitespace-mode t))
  '(indent-tabs-mode nil)
  '(initial-frame-alist (quote ((fullscreen . maximized))))
  '(menu-bar-mode nil)
