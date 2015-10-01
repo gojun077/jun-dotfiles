@@ -56,14 +56,6 @@
  ;; If there is more than one, they won't work right.
  '(column-number-mode 1)
  '(default-input-method "korean-hangul")
- ; check if emacs is started in graphical session
- (when (display-graphic-p)
-   '(global-whitespace-mode t) ;only run in graphical session
-   ; sanityinc-solarized light
-   '(custom-safe-themes
-     (quote
-      ("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default))))
- '(indent-tabs-mode nil)
  '(initial-frame-alist (quote ((fullscreen . maximized))))
  '(menu-bar-mode nil)
  '(org-todo-keyword-faces
@@ -87,7 +79,15 @@
  '(sh-basic-offset 2)
  '(sh-indentation 2)
  '(show-paren-mode t)
- '(tool-bar-mode nil))
+ '(tool-bar-mode nil)
+
+ ; Emacs launched in graphical mode
+ (when (display-graphic-p)
+   '(global-whitespace-mode t) ;only run in graphical session
+   '(load-theme 'sanityinc-solarized-light))
+ ; Emacs launched in terminal mode
+ (unless (display-graphic-p)
+   '(load-theme 'adwaita)))
 
 (defun xftp (&optional frame)
   "Return t if FRAME support XFT font backend."
