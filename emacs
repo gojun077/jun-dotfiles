@@ -51,13 +51,7 @@
 (scroll-bar-mode 0)
 (show-paren-mode t)
 (tool-bar-mode 0)
-;;Emacs launched in graphical mode
-(when (display-graphic-p)
-  (global-whitespace-mode t) ;only run in graphical session
-  (load-theme 'sanityinc-solarized-light))
-;;Emacs launched in terminal mode
-(unless (display-graphic-p)
- (load-theme 'adwaita))
+
 ;;Font settings
 (defun xftp (&optional frame)
   "Return t if FRAME support XFT font backend."
@@ -131,3 +125,11 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+;; Commands to run when Emacs launched in graphical mode
+(when (display-graphic-p)
+  (global-whitespace-mode t) ;only run in graphical session
+  (load-theme 'sanityinc-solarized-light))
+;; Commands to run when Emacs launched in terminal mode
+(unless (display-graphic-p)
+  (load-theme 'adwaita))
