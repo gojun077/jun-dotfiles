@@ -3,8 +3,37 @@
 # First created in June 2015
 # Jun Go gojun077@gmail.com
 
+
+create_sym()
+{
+  # this function takes 2 string arguments:
+  # (1) path and filename of original file
+  # (2) path and filename of the replacement file
+  #
+  # Given (1), the function will check if the file exists and is a symlink.
+  # Depending on what it finds it will do the following
+  # + File exists and is not a symlink
+  #   - file will be renamed to file.old
+  #   - a symlink from (2) will be created in place of (1)
+  # + File exists and is a symlink
+  #   - exit the function
+  # + File does not exist
+  #   - create a symlink from (2) to (1)
+
+  if [[ -f $1 && ! -L $1 ]]; then
+    mv $1 $1.old
+    ln -s $2 $1 
+  elif [[ -f $1 && -L $1 ]]; then
+    echo -e "$1 exists and is already a symlink.\n"
+    exit 0
+  else
+    ln -s $2 $1
+  fi
+}
+
+
 ####################################################
-# Constant file names in dotfiles
+# DECLARATIONS
 ####################################################
 DOTFILESP="$HOME/dotfiles"
 QUODCONF="quod_stations"
@@ -14,17 +43,10 @@ QUODCONF="quod_stations"
 # Create Symlinks to dotfiles directly below ~/
 ####################################################
 
-DOTFILES="bashrc emacs screenrc vimrc conkyrc"
+DOTFILES="bashrc emacs screenrc vimrc conkyrc git-prompt"
 
 for i in $DOTFILES; do
-  # if file exists and is not a symlink rename it and then create symlink
-  if [[ -f $HOME/.$i  && ! -L $HOME/.$i ]]; then
-    mv $HOME/.$i $HOME/.$i_old
-    ln -s $HOME/dotfiles/$i $HOME/.$i
-  # otw create symlink w/o worrying about renaming
-  else
-    ln -s $HOME/dotfiles/$i $HOME/.$i
-  fi
+  create_sym "$HOME/.$i" "$HOME/dotfiles/$i"
 done
 
 
@@ -33,7 +55,7 @@ done
 ######################################################
 
 # the 4-letter variable is the original path for the conf file
-# the variable with _TGT appended is the original name of the conf
+# the variable with '_TGT' appended is the original name of the conf
 # file in its original path
 
 QUOD="$HOME/.quodlibet"
@@ -118,11 +140,3 @@ if [[ -f /root/.vimrc && ! -L /root/.vimrc ]]; then
 else
   ln -s $HOME/dotfiles/vimrc /root/.vimrc
 fi
-
-# TODO
-# if-else stmt blocks are quite similar; create a bash function named
-# something like "renameAndSymlink" that accepts the parameters
-# (1) original path, (2) original target file, (3) dotfile name
-# and that checks if (2) exists and is not a symlink, renames
-# (2) if the condition is satisfied, and creates a symlink from
-# (3) to (1)'/'(2); otw just creates symlink without renaming
