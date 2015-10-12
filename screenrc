@@ -23,6 +23,12 @@ logtstamp after 300
 deflog on
 
 ################
+#
+# Flow Control
+#
+
+# set default flow control setting for new windows
+defflow auto
 
 ################
 #
