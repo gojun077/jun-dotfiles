@@ -75,8 +75,7 @@
 ;;   GLOBAL VARIABLES
 ;;======================
 ;formatting for C code
-(setq c-default-style "linux"
-          c-basic-offset 4)
+(setq c-default-style "linux" c-basic-offset 4)
 ;shell script mode formatting
 (setq sh-basic-offset 2)
 (setq sh-indentation 2)
@@ -128,7 +127,7 @@
 
 ;; Commands to run when Emacs launched in graphical mode
 (when (display-graphic-p)
-  (global-whitespace-mode t) ;only run in graphical session
+  (global-whitespace-mode 1) ;only run in graphical session
   (load-theme 'sanityinc-solarized-light))
 ;; Commands to run when Emacs launched in terminal mode
 (unless (display-graphic-p)
