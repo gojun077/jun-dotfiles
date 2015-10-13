@@ -49,6 +49,7 @@ done
 ######################################################
 
 #CMUS CONFIG
+create_sym "$HOME/.config/cmus/lib.pl" "$HOME/dotfiles/cmus_libpl"
 #LXTERMINAL CONFIG
 create_sym "$HOME/.config/lxterminal/lxterminal.conf" "$HOME/dotfiles/lxterminal"
 #MAME CONFIG
