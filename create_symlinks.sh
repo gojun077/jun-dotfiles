@@ -25,7 +25,6 @@ create_sym()
     ln -s "$2" "$1"
   elif [[ -f "$1" && -L "$1" ]]; then
     echo -e "$1 exists and is already a symlink.\n"
-    exit 0
   else
     ln -s "$2" "$1"
   fi
