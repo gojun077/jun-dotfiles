@@ -20,13 +20,13 @@ create_sym()
   # + File does not exist
   #   - create a symlink from (2) to (1)
 
-  if [[ -f $1 && ! -L $1 ]]; then
-    mv $1 $1.old
-    ln -s $2 $1 
-  elif [[ -f $1 && -L $1 ]]; then
+  if [[ -f "$1" && ! -L "$1" ]]; then
+    mv "$1" "$1".old
+    ln -s "$2" "$1"
+  elif [[ -f "$1" && -L "$1" ]]; then
     echo -e "$1 exists and is already a symlink.\n"
   else
-    ln -s $2 $1
+    ln -s "$2" "$1"
   fi
 }
 
@@ -75,4 +75,3 @@ create_sym "$HOME/.config/xfce4/terminal/terminalrc" "$HOME/dotfiles/xfceTerm"
 
 create_sym "/root/.bashrc" "$HOME/dotfiles/root_bashrc"
 create_sym "/root/.vimrc" "$HOME/dotfiles/vimrc"
-

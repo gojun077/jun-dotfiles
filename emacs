@@ -9,13 +9,14 @@
 
 (require 'cl)
 (defvar gojun-pkglist
-  '(fill-column-indicator
-    auctex
+  '(auctex
     color-theme-sanityinc-solarized
+    fill-column-indicator
+    flycheck
+    markdown-mode
     org-trello
     oz
     paredit
-    markdown-mode
     racket-mode
     rw-hunspell
     rw-ispell
@@ -39,11 +40,14 @@
 
 (provide 'gojun-pkglist)
 
+(require 'flycheck)
 (require 'rw-hunspell)
 (require 'rw-language-and-country-codes)
 (require 'rw-ispell)
 (load "auctex.el" nil t t)
 (load "preview-latex.el" nil t t)
+;; turn on flychecking globally
+(add-hook 'after-init-hook #'global-flycheck-mode)
 
 ;;mode settings
 (column-number-mode 1)
