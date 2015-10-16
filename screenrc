@@ -20,7 +20,7 @@ logfile $HOME/Documents/term_sessions/%Y-%m-%d_%0c-%n.log
 logtstamp on
 # add timestamp to logfile after 5 min of inactivity
 logtstamp after 300
-deflog on
+deflog off
 
 ################
 #
@@ -28,6 +28,9 @@ deflog on
 #
 
 # set default flow control setting for new windows
+# this is helpful for Emacs, which needs C-s to be
+# passed along instead of captured by GNU Screen
+# where C-s is XOFF (C-q XON)
 defflow auto
 
 ################
@@ -73,6 +76,8 @@ defscrollback 10000
 # zombie "^["
 
 # enable support for the "alternate screen" capability in all windows
+# this is necessary for using vi/vim in Screen without the buffer
+# getting messed up (i.e. half-height buffer after exiting vi session)
 altscreen on
 
 ################
