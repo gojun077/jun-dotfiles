@@ -67,7 +67,7 @@ create_sym "$HOME/.config/xfce4/terminal/terminalrc" "$HOME/dotfiles/xfceTerm"
 # Create Symlinks to files in under /root
 ######################################################
 
-# NOTE: to create symlinks from root_bashrc to ~/root/.bashrc
+# NOTE: to create symlinks from root_bashrc to /root/.bashrc
 # your regular user needs to have rwx permissions on /root
 # you can achieve this using Access Control Lists
 #
@@ -75,3 +75,16 @@ create_sym "$HOME/.config/xfce4/terminal/terminalrc" "$HOME/dotfiles/xfceTerm"
 
 create_sym "/root/.bashrc" "$HOME/dotfiles/root_bashrc"
 create_sym "/root/.vimrc" "$HOME/dotfiles/vimrc"
+
+######################################################
+# Create Symlinks to files in under /etc
+######################################################
+
+# NOTE: to create symlinks from ~/dotfiles/anacrontab
+# to /etc/anacrontab, for example, the regular user needs
+# to have rwx permissions on /etc
+# you can achieve this using Access Control Lists
+#
+# setfacl -m "u:USERNAME:rwx" /etc
+
+create_sym "/etc/anacrontab" "$HOME/dotfiles/anacrontab"
