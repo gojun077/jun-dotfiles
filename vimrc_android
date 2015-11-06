@@ -3,6 +3,8 @@
 " Adapted for Android by tpruvot@github
 " Last change: 2014 Jul 22 (UTF-8)
 
+" Android path to systemwide vimrc: /system/etc/vimrc
+
 " When started as "evim", evim.vim will already have done these settings.
 if v:progname =~? "evim"
   finish
@@ -53,6 +55,11 @@ if &t_Co > 2 || has("gui_running")
   set hlsearch
 endif
 
+" Specify colorscheme (aka 'colo')
+"colorscheme shine
+colo elflord
+"colo evening
+"
 " Only do this part when compiled with support for autocommands.
 if has("autocmd")
 
