@@ -86,6 +86,7 @@ create_sym "/root/.vimrc" "$HOME/dotfiles/vimrc"
 # you can achieve this using Access Control Lists
 #
 # setfacl -m "u:USERNAME:rwx" /etc
+# setfacl -m "u:USERNAME:rwx" /etc/bitlbee/
 
 create_sym "/etc/anacrontab" "$HOME/dotfiles/anacrontab"
 create_sym "/etc/bitlbee/bitlbee.conf" "$HOME/dotfiles/bitlbee"
