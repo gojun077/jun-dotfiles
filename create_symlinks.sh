@@ -88,3 +88,11 @@ create_sym "/root/.vimrc" "$HOME/dotfiles/vimrc"
 # setfacl -m "u:USERNAME:rwx" /etc
 
 create_sym "/etc/anacrontab" "$HOME/dotfiles/anacrontab"
+
+
+######################################################
+# Create tmp dir's for vim
+######################################################
+mkdir $HOME/tmp
+mkdir /root/tmp
+
