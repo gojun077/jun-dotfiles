@@ -9,8 +9,7 @@
 
 (require 'cl)
 (defvar gojun-pkglist
-  '(auctex
-    color-theme-sanityinc-solarized
+  '(color-theme-sanityinc-solarized
     fill-column-indicator
     flycheck
     markdown-mode

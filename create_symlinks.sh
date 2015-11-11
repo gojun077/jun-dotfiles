@@ -90,3 +90,11 @@ create_sym "/root/.vimrc" "$HOME/dotfiles/vimrc"
 
 create_sym "/etc/anacrontab" "$HOME/dotfiles/anacrontab"
 create_sym "/etc/bitlbee/bitlbee.conf" "$HOME/dotfiles/bitlbee"
+
+
+######################################################
+# Create tmp dir's for vim
+######################################################
+mkdir $HOME/tmp
+mkdir /root/tmp
+
