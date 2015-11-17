@@ -37,7 +37,8 @@ defflow auto
 #
 # term setting
 #
-term xterm
+#term xterm
+term screen-256color
 
 ################
 
