@@ -36,7 +36,7 @@ create_sym()
 # Create Symlinks to dotfiles directly below ~/
 ####################################################
 
-DOTFILES="bashrc emacs screenrc vimrc conkyrc git-prompt"
+DOTFILES="bashrc emacs screenrc vimrc conkyrc git-prompt xinitrc"
 
 for i in $DOTFILES; do
   create_sym "$HOME/.$i" "$HOME/dotfiles/$i"
@@ -55,12 +55,14 @@ create_sym "$HOME/.config/lxterminal/lxterminal.conf" "$HOME/dotfiles/lxterminal
 create_sym "$HOME/.mame/mame.ini" "$HOME/dotfiles/mame.ini"
 #OPENBOX CONFIG
 create_sym "$HOME/.config/openbox/autostart" "$HOME/dotfiles/openbox-autostart"
-#QUODLIBET CONFIG
-create_sym "$HOME/.quodlibet/stations" "$HOME/dotfiles/quod_stations"
 #TERMINATOR CONFIG
 create_sym "$HOME/.config/terminator/config" "$HOME/dotfiles/terminator"
 #XFCE CONFIG
 create_sym "$HOME/.config/xfce4/terminal/terminalrc" "$HOME/dotfiles/xfceTerm"
+#IRSSI CONFIG
+create_sym "$HOME/.irssi/config" "$HOME/dotfiles/irssi-config"
+#QUODLIBET CONFIG
+create_sym "$HOME/.quodlibet/stations" "$HOME/dotfiles/quod_stations"
 
 
 ######################################################
@@ -95,6 +97,6 @@ create_sym "/etc/bitlbee/bitlbee.conf" "$HOME/dotfiles/bitlbee"
 ######################################################
 # Create tmp dir's for vim
 ######################################################
-mkdir $HOME/tmp
+mkdir "$HOME"/tmp
 mkdir /root/tmp
 
