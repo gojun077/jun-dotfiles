@@ -1,5 +1,8 @@
 #!/bin/bash
-# create symlinks for config files mostly under ~/
+# create symlinks for config files mostly under ~/ and other directories
+# Do not run as root, as this will cause the $HOME variable to default
+# to '/root' instead of ~/username
+#
 # First created in June 2015
 # Jun Go gojun077@gmail.com
 
@@ -104,3 +107,8 @@ create_sym "/etc/ssh/sshd_config" "$HOME/dotfiles/sshd_config"
 mkdir "$HOME"/tmp
 mkdir /root/tmp
 
+######################################################
+# Setup git user name and email
+######################################################
+git config --global user.email "gojun077@gmail.com"
+git config --global user.name "$USER"
