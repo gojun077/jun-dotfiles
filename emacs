@@ -10,6 +10,7 @@
 (require 'cl)
 (defvar gojun-pkglist
   '(color-theme-sanityinc-solarized
+    edit-server
     fill-column-indicator
     flycheck
     markdown-mode
@@ -39,11 +40,13 @@
 
 (provide 'gojun-pkglist)
 
+(require 'edit-server) ; for use with edit with Emacs chrome plugin
 (require 'flycheck)
 (require 'rw-hunspell)
 (require 'rw-language-and-country-codes)
 (require 'rw-ispell)
 (load "auctex.el" nil t t)
+(edit-server-start)
 (load "preview-latex.el" nil t t)
 ;; turn on flychecking globally
 (add-hook 'after-init-hook #'global-flycheck-mode)
