@@ -50,8 +50,9 @@
 (load "preview-latex.el" nil t t)
 ;; turn on flychecking globally
 (add-hook 'after-init-hook #'global-flycheck-mode)
-
-;;mode settings
+;; start edit-server
+(edit-server-start)
+;; mode settings
 (column-number-mode 1)
 (menu-bar-mode 0)
 (scroll-bar-mode 0)

@@ -95,6 +95,7 @@ create_sym "/root/.vimrc" "$HOME/dotfiles/vimrc"
 # setfacl -m "u:USERNAME:rwx" /etc/ssh/
 
 create_sym "/etc/anacrontab" "$HOME/dotfiles/anacrontab"
+create_sym "/etc/pacman.conf" "$HOME/dotfiles/pacman.conf"
 create_sym "/etc/bitlbee/bitlbee.conf" "$HOME/dotfiles/bitlbee"
 #TODO add permissions changes for bitlbee log in /var/
 create_sym "/etc/vsftpd.conf" "$HOME/dotfiles/vsftpd.conf"
