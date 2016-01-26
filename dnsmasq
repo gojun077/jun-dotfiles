@@ -466,13 +466,13 @@ dhcp-option-force=209,name_of_pxe_config_file.cfg
 
 # Test for the architecture of a netboot client. PXE clients are
 # supposed to send their architecture as option 93. (See RFC 4578)
-#dhcp-match=peecees, option:client-arch, 0 #x86-32
+#dhcp-match=peecees, option:client-arch, 0 #x86
 #dhcp-match=itanics, option:client-arch, 2 #IA64
-#dhcp-match=hammers, option:client-arch, 6 #x86-64
-#dhcp-match=mactels, option:client-arch, 7 #EFI x86-64
-dhcp-match=bios, option:client-arch, 0 #x86-32
-dhcp-match=bios, option:client-arch, 6 #x86-64
-dhcp-match=uefi, option:client-arch, 7 #EFI x86-64
+#dhcp-match=hammers, option:client-arch, 6 #IA32 EFI
+#dhcp-match=mactels, option:client-arch, 7 #x86-64 EFI
+dhcp-match=bios, option:client-arch, 0 #BIOS x86
+dhcp-match=efi32, option:client-arch, 6 #IA32-EFI
+dhcp-match=efi64, option:client-arch, 7 #EFI x86-64
 
 # Do real PXE, rather than just booting a single file, this is an
 # alternative to dhcp-boot.
@@ -488,7 +488,8 @@ dhcp-match=uefi, option:client-arch, 7 #EFI x86-64
 
 # Load different PXE boot image depending on 'dhcp-match' tag
 pxe-service=tag:bios, x86PC, "Install Linux on x86 legacy BIOS", pxelinux.0
-pxe-service=tag:uefi, x86-64, "Install Linux on x86-64 UEFI", grubx64.efi
+pxe-service=tag:efi32, IA32-EFI,"Install Linux on IA32-EFI", bootx32.efi
+pxe-service=tag:efi64, X86-64_EFI, "Install Linux on x86-64 UEFI", bootx64.efi
 
 # Loads <tftp-root>/pxelinux.0 from TFTP server at 1.2.3.4.
 # Beware this fails on old PXE ROMS.
