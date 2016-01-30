@@ -486,9 +486,9 @@ dhcp-match=efi64, option:client-arch, 7 #EFI x86-64
 #pxe-service=x86PC, "Install Linux", pxelinux
 
 # Load different PXE boot image depending on 'dhcp-match' tag
-pxe-service=tag:bios, x86PC, "Install Linux on x86 legacy BIOS", pxelinux.0
-pxe-service=tag:efi32, IA32-EFI,"Install Linux on IA32-EFI", bootx32.efi
-pxe-service=tag:efi64, X86-64_EFI, "Install Linux on x86-64 UEFI", uefi/bootx64.efi
+#pxe-service=tag:bios, x86PC, "Install Linux on x86 legacy BIOS", lpxelinux
+#pxe-service=tag:efi32, IA32_EFI,"Install Linux on IA32-EFI", bootx32.efi
+#pxe-service=tag:efi64, X86-64_EFI, "Install Linux on x86-64 UEFI", uefi/bootx64.efi
 
 # Loads <tftp-root>/pxelinux.0 from TFTP server at 1.2.3.4.
 # Beware this fails on old PXE ROMS.
@@ -529,7 +529,7 @@ tftp-root=/usr/local/tftpboot/pxelinux
 
 # Set boot file name only when tag is "bios" or "uefi"
 dhcp-boot=tag:bios,pxelinux.0  # for Legacy BIOS detected by dhcp-match above
-dhcp-boot=tag:uefi,grubx64.efi # for UEFI arch detected by dhcp-match above
+dhcp-boot=tag:uefi,uefi/grubx64.efi # for UEFI arch detected by dhcp-match above
 
 # An example of dhcp-boot with an external TFTP server: the name and IP
 # address of the server are given after the filename.
