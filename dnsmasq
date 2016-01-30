@@ -433,7 +433,6 @@ dhcp-range=192.168.95.118,192.168.95.198,12h
 #dhcp-option-force=208,f1:00:74:7e
 # Configuration file name; the file path is defined below by 'tftp-root'
 #dhcp-option-force=209,configs/common
-dhcp-option-force=209,name_of_pxe_config_file.cfg
 # Path prefix
 #dhcp-option-force=210,/tftpboot/pxelinux/files/
 # Reboot time. (Note 'i' to send 32-bit value)
@@ -512,7 +511,7 @@ enable-tftp
 
 # Set the root directory for files available via FTP.
 #tftp-root=/var/ftpd
-/usr/local/tftpboot/pxe
+tftp-root/usr/local/tftpboot/pxelinux
 # Do not abort if the tftp-root is unavailable
 #tftp-no-fail
 
