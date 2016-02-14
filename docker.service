@@ -6,7 +6,9 @@ Requires=docker.socket
 
 [Service]
 Type=notify
-ExecStart=/usr/bin/docker daemon -H fd:// -g /MULTIMEDIA/var/lib/docker
+ExecStart=/usr/bin/docker daemon --storage-driver=devicemapper \
+  --storage-opt dm.datadev=/dev/vg-docker/data \
+  --storage-opt dm.metadatadev=/dev/vg-docker/metadata
 MountFlags=slave
 LimitNOFILE=1048576
 LimitNPROC=1048576
