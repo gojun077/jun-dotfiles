@@ -66,7 +66,9 @@ create_sym "$HOME/.config/xfce4/terminal/terminalrc" "$HOME/dotfiles/xfceTerm"
 create_sym "$HOME/.irssi/config" "$HOME/dotfiles/irssi-config"
 #QUODLIBET CONFIG
 create_sym "$HOME/.quodlibet/stations" "$HOME/dotfiles/quod_stations"
+#TODO XFCE4 PANEL XFCE TIMER CONFIG
 
+#TODO XFCE4 KEYBOARD SHORTCUTS
 
 ######################################################
 # Create Symlinks to files in under /root
