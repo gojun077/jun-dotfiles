@@ -1,14 +1,20 @@
-# IRSSI config file
-# The original path and filename is $HOME/.irssi/config
+# irssi config file
+# per-user config is located in ~/.irssi/config
 
 servers = (
   { address = "irc.dal.net"; chatnet = "DALnet"; port = "6667"; },
   { address = "irc.efnet.org"; chatnet = "EFNet"; port = "6667"; },
   { address = "irc.esper.net"; chatnet = "EsperNet"; port = "6667"; },
-  { 
+  {
     address = "chat.freenode.net";
     chatnet = "Freenode";
-    port = "6667";
+    port = "6697";
+    use_ssl = "yes";
+    ssl_verify = "yes";
+    ssl_capath = "/etc/ssl/certs";
+    #port = "6667";
+    #use_ssl = "no";
+    autoconnect = "yes";
   },
   {
     address = "irc.gamesurge.net";
@@ -118,7 +124,9 @@ channels = (
   { name = "#ircsource"; chatnet = "IRCSource"; autojoin = "No"; },
   { name = "#netfuze"; chatnet = "NetFuze"; autojoin = "No"; },
   { name = "#oftc"; chatnet = "OFTC"; autojoin = "No"; },
-  { name = "silc"; chatnet = "SILC"; autojoin = "No"; }
+  { name = "silc"; chatnet = "SILC"; autojoin = "No"; },
+  { name = "#archlinux"; chatnet = "freenode"; autojoin = "yes"; },
+  { name = "#kolla"; chatnet = "freenode"; autojoin = "yes"; }
 );
 
 aliases = {
@@ -377,7 +385,7 @@ settings = {
   core = { 
     real_name = "Unknown";
     user_name = "archjun";
-    nick = "junlinux";
+    nick = "archjun";
   };
   "fe-text" = { actlist_sort = "refnum"; };
 };

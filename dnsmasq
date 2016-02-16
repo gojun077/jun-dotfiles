@@ -443,6 +443,7 @@ dhcp-range=192.168.95.118,192.168.95.198,12h
 # a TFTP server; either dnsmasq's built in TFTP server or an
 # external one. (See below for how to enable the TFTP server.)
 #dhcp-boot=pxelinux.0
+#dhcp-boot=/uefi/bootx64.efi
 
 # The same as above, but use custom tftp-server instead machine running dnsmasq
 #dhcp-boot=pxelinux,server.name,192.168.1.100
@@ -469,9 +470,9 @@ dhcp-range=192.168.95.118,192.168.95.198,12h
 #dhcp-match=itanics, option:client-arch, 2 #IA64
 #dhcp-match=hammers, option:client-arch, 6 #IA32 EFI
 #dhcp-match=mactels, option:client-arch, 7 #x86-64 EFI
-dhcp-match=bios, option:client-arch, 0 #BIOS x86
-dhcp-match=efi32, option:client-arch, 6 #IA32-EFI
-dhcp-match=efi64, option:client-arch, 7 #EFI x86-64
+dhcp-match=x86PC, option:client-arch, 0 #BIOS x86
+#dhcp-match=efi32, option:client-arch, 6 #IA32-EFI
+dhcp-match=BC_EFI, option:client-arch, 7 #EFI x86-64
 
 # Do real PXE, rather than just booting a single file, this is an
 # alternative to dhcp-boot.
@@ -485,10 +486,10 @@ dhcp-match=efi64, option:client-arch, 7 #EFI x86-64
 # Loads <tftp-root>/pxelinux.0 from dnsmasq TFTP server.
 #pxe-service=x86PC, "Install Linux", pxelinux
 
-# Load different PXE boot image depending on 'dhcp-match' tag
-#pxe-service=tag:bios, x86PC, "Install Linux on x86 legacy BIOS", lpxelinux
-#pxe-service=tag:efi32, IA32_EFI,"Install Linux on IA32-EFI", bootx32.efi
-#pxe-service=tag:efi64, X86-64_EFI, "Install Linux on x86-64 UEFI", uefi/bootx64.efi
+# Load different PXE boot image depending on client architecture
+pxe-service=tag:x86PC,X86PC, "Install Linux on x86 legacy BIOS", pxelinux
+#pxe-service=IA32_EFI,"Install Linux on IA32-EFI", uefi/bootx32.efi
+pxe-service=tag:BC_EFI,BC_EFI, "Install Linux on x86-64 UEFI", uefi/bootx64.efi
 
 # Loads <tftp-root>/pxelinux.0 from TFTP server at 1.2.3.4.
 # Beware this fails on old PXE ROMS.
@@ -528,8 +529,8 @@ tftp-root=/usr/local/tftpboot/pxelinux
 #dhcp-boot=tag:red,pxelinux.red-net
 
 # Set boot file name only when tag is "bios" or "uefi"
-dhcp-boot=tag:bios,pxelinux.0  # for Legacy BIOS detected by dhcp-match above
-dhcp-boot=tag:uefi,uefi/grubx64.efi # for UEFI arch detected by dhcp-match above
+dhcp-boot=tag:x86PC,pxelinux.0  # for Legacy BIOS detected by dhcp-match above
+dhcp-boot=tag:BC_EFI,uefi/bootx64.efi # for UEFI arch detected by dhcp-match above
 
 # An example of dhcp-boot with an external TFTP server: the name and IP
 # address of the server are given after the filename.
