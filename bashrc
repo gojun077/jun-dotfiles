@@ -11,8 +11,8 @@ export XMODIFIERS=@im=ibus
 export QT_IM_MODULE=ibus
 export TERM=xterm-256color
 
-
-archey3
+# The line below should only be uncommented in Archlinux
+#archey3
 PS1='[\u@\h \W]\$ '
 alias ls='ls --color=auto'
 alias pxe='cd /usr/local/tftpboot/pxelinux'
@@ -21,3 +21,4 @@ alias vi='vim'
 alias ㅊㅇ='cd'
 alias 니='ls'
 alias wanderer='cd /MULTIMEDIA/vagrant_boxen'
+alias startxfce4='ssh-agent startxfce4'
