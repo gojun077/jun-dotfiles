@@ -95,6 +95,7 @@ create_sym "/root/.vimrc" "$HOME/dotfiles/vimrc"
 # setfacl -m "u:USERNAME:rwx" /etc
 # setfacl -m "u:USERNAME:rwx" /etc/bitlbee/
 # setfacl -m "u:USERNAME:rwx" /etc/ssh/
+# setfacl -m "u:$USER:rwx" /etc/motion/
 
 create_sym "/etc/anacrontab" "$HOME/dotfiles/anacrontab"
 create_sym "/etc/dnsmasq.conf" "$HOME/dotfiles/dnsmasq"
@@ -104,6 +105,7 @@ create_sym "/etc/bitlbee/bitlbee.conf" "$HOME/dotfiles/bitlbee"
 # setfacl -m "u:USERNAME:rwx" /var/lib/bitlbee
 create_sym "/etc/vsftpd.conf" "$HOME/dotfiles/vsftpd.conf"
 create_sym "/etc/ssh/sshd_config" "$HOME/dotfiles/sshd_config"
+create_sym "/etc/motion/motion.conf" "$HOME/dotfiles/motion.conf"
 
 
 ######################################################
