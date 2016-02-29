@@ -55,7 +55,8 @@ create_sym "$HOME/.config/cmus/lib.pl" "$HOME/dotfiles/cmus_libpl"
 #LXTERMINAL CONFIG
 create_sym "$HOME/.config/lxterminal/lxterminal.conf" "$HOME/dotfiles/lxterminal"
 #MAME CONFIG
-create_sym "$HOME/.mame/mame.ini" "$HOME/dotfiles/mame.ini"
+mkdir -p "$HOME/.mame/ini"
+create_sym "$HOME/.mame/ini/mame.ini" "$HOME/dotfiles/mame.ini"
 #OPENBOX CONFIG
 create_sym "$HOME/.config/openbox/autostart" "$HOME/dotfiles/openbox-autostart"
 #TERMINATOR CONFIG
