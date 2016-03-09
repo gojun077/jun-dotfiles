@@ -1,5 +1,16 @@
+;;; jun's_emacs_file --- Summary
 ;; -*- mode: emacs-lisp -*-
+;; Author: Jun Go gojun077@gmail.com
+;; Created: Sometime in 2015
 
+;;; Commentary:
+;;  I have defined a custom function 'gojun-pkglist-installed-p' that
+;;  will check if certain Emacs packages are installed and if they are
+;;  not, will automatically download them from melpa/marmalade and
+;;  install them.  This conf file also includes some tweaks for Korean
+;;  language support.
+
+;;; Code:
 (require 'package)
 (package-initialize)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
@@ -139,3 +150,6 @@
 ;; Commands to run when Emacs launched in terminal mode
 (unless (display-graphic-p)
   (load-theme 'adwaita))
+
+(provide 'emacs)
+;;; emacs ends here
