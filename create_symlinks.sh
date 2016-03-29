@@ -98,7 +98,7 @@ if [ -f /usr/bin/startxfce4 ]; then
 fi
 
 ######################################################
-# Create Symlinks to files in under /root
+# Create Symlinks to files under /root
 ######################################################
 
 # NOTE: to create symlinks from root_bashrc to /root/.bashrc
