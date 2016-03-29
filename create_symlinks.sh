@@ -98,7 +98,12 @@ create_sym "/root/.vimrc" "$HOME/dotfiles/vimrc"
 # setfacl -m "u:USERNAME:rwx" /etc/ssh/
 # setfacl -m "u:$USER:rwx" /etc/motion/
 
-create_sym "/etc/anacrontab" "$HOME/dotfiles/anacrontab"
+if [ -f /etc/redhat-release ]; then
+  create_sym "/etc/anacrontab" "$HOME/dotfiles/anacrontab_fedora"
+else
+  create_sym "/etc/anacrontab" "$HOME/dotfiles/anacrontab"
+fi
+
 create_sym "/etc/dnsmasq.conf" "$HOME/dotfiles/dnsmasq"
 create_sym "/etc/pacman.conf" "$HOME/dotfiles/pacman.conf"
 create_sym "/etc/bitlbee/bitlbee.conf" "$HOME/dotfiles/bitlbee"
