@@ -1,7 +1,9 @@
 #!/bin/bash
 # The original path for this file is: ~/.xinitrc
-# To launch different DE's, 'startx foo' where 'foo' is
-# the name of the DE
+# To launch different DE's
+# (1) startx ~/.xinitrc foo
+# (2) xinit foo
+# where 'foo' is the name of the DE
 
 export BROWSER=chromium
 
