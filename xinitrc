@@ -12,7 +12,7 @@ case $1 in
     exec xmonad
     ;;
   openbox)
-    exec dbus-launch openbox-session
+    exec openbox-session
     ;;
   xfce4)
     exec startxfce4
