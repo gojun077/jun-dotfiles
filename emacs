@@ -24,9 +24,9 @@
     edit-server
     fill-column-indicator
     flycheck
+    hy-mode ; requires Emacs 24+
     markdown-mode
     org-trello
-    oz
     paredit
     racket-mode
     rw-hunspell
@@ -51,26 +51,27 @@
 
 (provide 'gojun-pkglist)
 
-(require 'edit-server) ; for use with edit with Emacs chrome plugin
 (require 'flycheck)
 (require 'rw-hunspell)
 (require 'rw-language-and-country-codes)
 (require 'rw-ispell)
-(load "auctex.el" nil t t)
-(edit-server-start)
-(load "preview-latex.el" nil t t)
+
 ;; turn on flychecking globally
 (add-hook 'after-init-hook #'global-flycheck-mode)
-;; start edit-server
-(edit-server-start)
+
 ;; mode settings
+; show col and line numbers
 (column-number-mode 1)
+; don't show menu bar
 (menu-bar-mode 0)
+; don't show scrollbar
 (scroll-bar-mode 0)
+; highlight parens
 (show-paren-mode t)
+; don't show toolbar
 (tool-bar-mode 0)
 
-;;Font settings
+;; Font settings
 (defun xftp (&optional frame)
   "Return t if FRAME support XFT font backend."
   (let ((xft-supported))
@@ -86,30 +87,38 @@
     (set-face-attribute 'default nil
                         :font fontset
                         :height 110)))
-;; AUCTEX preview-latex font
-(set-default 'preview-scale-function 1.2)
+
 
 ;;======================
 ;;   GLOBAL VARIABLES
 ;;======================
-;formatting for C code
+; formatting for C code
 (setq c-default-style "linux" c-basic-offset 4)
-;shell script mode formatting
+; shell script mode formatting
 (setq sh-basic-offset 2)
 (setq sh-indentation 2)
-;python settings
+; python settings
 (setq python-shell-interpreter "ipython3")
 (setq python-shell-interpreter-args "-i")
-;C-\ language toggle
+; C-\ language toggle
 (setq default-input-method "korean-hangul")
+; Start emacs maximized
 (setq initial-frame-alist (quote ((fullscreen . maximized))))
-(setq make-backup-files nil)               ;; disable temp files
-(setq auto-save-default nil)               ;; disable autosaving
+; Disable temp files and autoszving
+(setq make-backup-files nil)
+(setq auto-save-default nil)
+; dictionary settings
 (setq ispell-program-name "hunspell")      ;; specify dictionary binary
 (setq ispell-dictionary "en_US_hunspell")  ;; specify dictionary
-(put 'upcase-region 'disabled nil)         ;; enable chg region to upper
-(put 'downcase-region 'disabled nil)       ;; enable chg region to lower
-;org-trello-mode formatting
+(setq rw-hunspell-default-dictionary "en_US_hunspell")
+(setq rw-hunspell-dicpath-list (quote ("/usr/share/hunspell")))
+(setq rw-hunspell-make-dictionary-menu t)
+(setq rw-hunspell-use-rw-ispell t)
+; Enable C-l, C-u change region to lower/upper case
+(put 'upcase-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
+
+; org-trello-mode formatting
 (setq org-todo-keyword-faces
  (quote
   (("Backlog" . "black")
@@ -117,17 +126,13 @@
    ("WIP" . "red")
    ("Done" . "green")
    ("Cancelled" . "gray"))))
-;org-trello-mode keywords
+; org-trello-mode keywords
 (setq org-todo-keywords
  (quote
   ((sequence "Backlog" "Queue" "WIP" "DONE" "Cancelled"))))
-;org-trello-mode keybinding
+; org-trello-mode keybinding
 (setq org-trello-current-prefix-keybinding "C-c o")
-;spellcheck dictionary settings
-(setq rw-hunspell-default-dictionary "en_US_hunspell")
-(setq rw-hunspell-dicpath-list (quote ("/usr/share/hunspell")))
-(setq rw-hunspell-make-dictionary-menu t)
-(setq rw-hunspell-use-rw-ispell t)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -145,8 +150,17 @@
 
 ;; Commands to run when Emacs launched in graphical mode
 (when (display-graphic-p)
-  (global-whitespace-mode 1) ;only run in graphical session
-  (load-theme 'sanityinc-solarized-light))
+  ; start edit-server (to enable Emacs editing with Chrome plug-in)
+  (require 'edit-server)
+  (edit-server-start)
+; only run whitespace mode in graphical session
+  (global-whitespace-mode 1)
+  (load-theme 'sanityinc-solarized-light)
+  (load "auctex.el" nil t t)
+  (load "preview-latex.el" nil t t)
+  ;; AUCTEX preview-latex font
+  (set-default 'preview-scale-function 1.2))
+
 ;; Commands to run when Emacs launched in terminal mode
 (unless (display-graphic-p)
   (load-theme 'adwaita))
