@@ -20,7 +20,7 @@ logfile $HOME/Documents/term_sessions/%Y-%m-%d_%0c-%n.log
 logtstamp on
 # add timestamp to logfile after 5 min of inactivity
 logtstamp after 300
-deflog off
+deflog on
 
 ################
 #
