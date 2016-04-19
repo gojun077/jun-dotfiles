@@ -5,6 +5,7 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
+export BROWSER=firefox
 export EDITOR=emacs
 export GTK_IM_MODULE=ibus
 export XMODIFIERS=@im=ibus
