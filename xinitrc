@@ -1,20 +1,26 @@
 #!/bin/bash
-# The original path and name of this file are: ~/.xinitrc
-# The following settings will launch openbox when 'startx' is invoked
+# The original path for this file is: ~/.xinitrc
+# To launch different DE's
+# (1) startx ~/.xinitrc foo
+# (2) xinit foo
+# where 'foo' is the name of the DE
 
 export BROWSER=chromium
 
-DEFAULT_SESSION=xmonad
+DEFAULT_SESSION=xfce4
 
 case $1 in
   xmonad)
     exec xmonad
     ;;
   openbox)
-    exec dbus-launch openbox-session
+    exec openbox-session
     ;;
   xfce4)
     exec startxfce4
+    ;;
+  awesome)
+    exec awesome
     ;;
   *)
     exec $DEFAULT_SESSION

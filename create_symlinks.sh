@@ -51,27 +51,54 @@ done
 ######################################################
 
 #CMUS CONFIG
-create_sym "$HOME/.config/cmus/lib.pl" "$HOME/dotfiles/cmus_libpl"
+if [ -f /usr/bin/cmus ]; then
+  create_sym "$HOME/.config/cmus/lib.pl" "$HOME/dotfiles/cmus_libpl"
+fi
+
 #LXTERMINAL CONFIG
-create_sym "$HOME/.config/lxterminal/lxterminal.conf" "$HOME/dotfiles/lxterminal"
+if [ -f /usr/bin/lxterminal ]; then
+  create_sym "$HOME/.config/lxterminal/lxterminal.conf" \
+	     "$HOME/dotfiles/lxterminal"
+fi
+
 #MAME CONFIG
-create_sym "$HOME/.mame/mame.ini" "$HOME/dotfiles/mame.ini"
+if [ -f /usr/bin/sdlmame ]; then
+  mkdir -p "$HOME/.mame/ini"
+  create_sym "$HOME/.mame/ini/mame.ini" "$HOME/dotfiles/mame.ini"
+fi
+
 #OPENBOX CONFIG
 create_sym "$HOME/.config/openbox/autostart" "$HOME/dotfiles/openbox-autostart"
 #TERMINATOR CONFIG
-create_sym "$HOME/.config/terminator/config" "$HOME/dotfiles/terminator"
-#XFCE CONFIG
-create_sym "$HOME/.config/xfce4/terminal/terminalrc" "$HOME/dotfiles/xfceTerm"
-#IRSSI CONFIG
-create_sym "$HOME/.irssi/config" "$HOME/dotfiles/irssi-config"
-#QUODLIBET CONFIG
-create_sym "$HOME/.quodlibet/stations" "$HOME/dotfiles/quod_stations"
-#TODO XFCE4 PANEL XFCE TIMER CONFIG
+if [ -f /usr/bin/terminator ]; then
+  create_sym "$HOME/.config/terminator/config" "$HOME/dotfiles/terminator"
+fi
 
-#TODO XFCE4 KEYBOARD SHORTCUTS
+#XFCE CONFIG
+if [ -f /usr/bin/xfce-terminal ]; then
+  create_sym "$HOME/.config/xfce4/terminal/terminalrc" "$HOME/dotfiles/xfceTerm"
+fi
+
+#IRSSI CONFIG
+if [ -f /usr/bin/irssi ]; then
+  create_sym "$HOME/.irssi/config" "$HOME/dotfiles/irssi-config"
+fi
+
+#QUODLIBET CONFIG
+if [ -f /usr/bin/quodlibet ]; then
+  create_sym "$HOME/.quodlibet/stations" "$HOME/dotfiles/quod_stations"
+fi
+
+#TODO XFCE4 PANEL
+
+#XFCE4 KEYBOARD SHORTCUTS
+if [ -f /usr/bin/startxfce4 ]; then
+  create_sym "$HOME/.quodlibet/stations" \
+	     "$HOME/dotfiles/xfce4-keyboard-shortcuts.xml"
+fi
 
 ######################################################
-# Create Symlinks to files in under /root
+# Create Symlinks to files under /root
 ######################################################
 
 # NOTE: to create symlinks from root_bashrc to /root/.bashrc
@@ -95,8 +122,14 @@ create_sym "/root/.vimrc" "$HOME/dotfiles/vimrc"
 # setfacl -m "u:USERNAME:rwx" /etc
 # setfacl -m "u:USERNAME:rwx" /etc/bitlbee/
 # setfacl -m "u:USERNAME:rwx" /etc/ssh/
+# setfacl -m "u:$USER:rwx" /etc/motion/
 
-create_sym "/etc/anacrontab" "$HOME/dotfiles/anacrontab"
+if [ -f /etc/redhat-release ]; then
+  create_sym "/etc/anacrontab" "$HOME/dotfiles/anacrontab_fedora"
+else
+  create_sym "/etc/anacrontab" "$HOME/dotfiles/anacrontab"
+fi
+
 create_sym "/etc/dnsmasq.conf" "$HOME/dotfiles/dnsmasq"
 create_sym "/etc/pacman.conf" "$HOME/dotfiles/pacman.conf"
 create_sym "/etc/bitlbee/bitlbee.conf" "$HOME/dotfiles/bitlbee"
@@ -104,6 +137,7 @@ create_sym "/etc/bitlbee/bitlbee.conf" "$HOME/dotfiles/bitlbee"
 # setfacl -m "u:USERNAME:rwx" /var/lib/bitlbee
 create_sym "/etc/vsftpd.conf" "$HOME/dotfiles/vsftpd.conf"
 create_sym "/etc/ssh/sshd_config" "$HOME/dotfiles/sshd_config"
+create_sym "/etc/motion/motion.conf" "$HOME/dotfiles/motion.conf"
 
 
 ######################################################
