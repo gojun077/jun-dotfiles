@@ -1,0 +1,23 @@
+[G0]
+timername=1 pomo
+time=1500
+timercommand=terminator -e "bash $HOME/bin/1pomoTimer.sh"
+timerinfo=25m 0s
+is_countdown=true
+
+[G1]
+timername=meditation
+time=900
+timercommand=terminator -e "bash $HOME/bin/1pomoTimer.sh"
+timerinfo=15m 0s
+is_countdown=true
+
+[others]
+nowin_if_alarm=false
+selecting_starts=false
+use_global_command=false
+global_command=
+repeat_alarm=false
+repetitions=1
+repeat_interval=10
+
