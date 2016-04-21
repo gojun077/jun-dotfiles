@@ -17,7 +17,7 @@ case $1 in
     exec openbox-session
     ;;
   xfce4)
-    exec startxfce4
+    exec ssh-agent startxfce4
     ;;
   awesome)
     exec awesome
