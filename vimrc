@@ -2,6 +2,8 @@
 "
 " Maintainer:	Bram Moolenaar <Bram@vim.org>
 " Last change:	2015 Mar 24
+" Customized by: Jun Go
+" Last change:  2016 May 13
 "
 " To use it, copy it to
 "     for Unix and OS/2:  ~/.vimrc
