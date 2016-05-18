@@ -26,3 +26,4 @@ alias startxfce4='ssh-agent startxfce4'
 # When you run ssh-agent for the first time, you need to add
 # your private key(s) with 'ssh-add /path/to/priv/key'
 alias genpw='date +%s | sha256sum | base64 | head -c 32 ; echo'
+alias wine='WINEARCH=win32 WINEPREFIX=/MULTIMEDIA/wine /usr/bin/wine'
