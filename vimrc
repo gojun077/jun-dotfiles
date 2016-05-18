@@ -2,6 +2,8 @@
 "
 " Maintainer:	Bram Moolenaar <Bram@vim.org>
 " Last change:	2015 Mar 24
+" Customized by: Jun Go
+" Last change:  2016 May 13
 "
 " To use it, copy it to
 "     for Unix and OS/2:  ~/.vimrc
@@ -52,15 +54,15 @@ endif
 
 " Switch syntax highlighting on, when the terminal has colors
 " Also switch on highlighting the last used search pattern.
+" And specify colorscheme (aka 'colo')
 if &t_Co > 2 || has("gui_running")
   syntax on
   set hlsearch
+  colo elflord
+  "colorscheme shine
+  "colo evening
 endif
 
-" Specify colorscheme (aka 'colo')
-"colorscheme shine
-colo elflord
-"colo evening
 
 " Only do this part when compiled with support for autocommands.
 if has("autocmd")
