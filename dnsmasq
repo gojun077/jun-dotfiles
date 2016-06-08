@@ -157,7 +157,7 @@ bind-interfaces
 # repeat this for each network on which you want to supply DHCP
 # service.
 #dhcp-range=192.168.0.50,192.168.0.150,12h
-dhcp-range=192.168.95.118,192.168.95.198,12h
+dhcp-range=192.168.95.199,192.168.95.254,12h
 
 # This is an example of a DHCP range where the netmask is given. This
 # is needed for networks we reach the dnsmasq DHCP server via a relay
