@@ -1,12 +1,13 @@
 ;;; jun's_emacs_file --- Summary
 ;; -*- mode: emacs-lisp -*-
 ;; Author: Jun Go gojun077@gmail.com
-;; Created: Sometime in 2015
+;; Created: 2015
+;; Updated 2016-06-03
 
 ;;; Commentary:
 ;;  I have defined a custom function 'gojun-pkglist-installed-p' that
-;;  will check if certain Emacs packages are installed and if they are
-;;  not, will automatically download them from melpa/marmalade and
+;;  will check if certain Emacs packages are installed. If not found
+;;  emacs will automatically download them from melpa/marmalade and
 ;;  install them.  This conf file also includes some tweaks for Korean
 ;;  language support.
 
@@ -104,7 +105,8 @@
 (setq default-input-method "korean-hangul")
 ; Start emacs maximized
 (setq initial-frame-alist (quote ((fullscreen . maximized))))
-; Disable temp files and autoszving
+; Disable temp files and autosaving
+>>>>>>> c1560784f1c6f4ac62de0b74ca6c167ee68fd1a0
 (setq make-backup-files nil)
 (setq auto-save-default nil)
 ; dictionary settings
@@ -117,6 +119,12 @@
 ; Enable C-l, C-u change region to lower/upper case
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
+; Enable ido-mode
+(ido-mode 1)
+; enable ido flex matching
+(setq ido-enable-flex-matching t)
+; enable ido everywhere
+(setq ido-everywhere t)
 
 ; org-trello-mode formatting
 (setq org-todo-keyword-faces

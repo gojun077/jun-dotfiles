@@ -10,11 +10,10 @@ servers = (
     chatnet = "Freenode";
     port = "6697";
     use_ssl = "yes";
+    ssl_cert = "~/.irssi/irssi.pem";
+    ssl_pass = "<irssi.pem_password>";
     ssl_verify = "yes";
     ssl_capath = "/etc/ssl/certs";
-    #port = "6667";
-    #use_ssl = "no";
-    autoconnect = "yes";
   },
   {
     address = "irc.gamesurge.net";
@@ -125,8 +124,13 @@ channels = (
   { name = "#netfuze"; chatnet = "NetFuze"; autojoin = "No"; },
   { name = "#oftc"; chatnet = "OFTC"; autojoin = "No"; },
   { name = "silc"; chatnet = "SILC"; autojoin = "No"; },
+<<<<<<< HEAD
   { name = "#archlinux"; chatnet = "freenode"; autojoin = "yes"; },
   { name = "#kolla"; chatnet = "freenode"; autojoin = "yes"; }
+=======
+  { name = "#archlinux"; chatnet = "freenode"; autojoin = "No"; },
+  { name = "#kolla"; chatnet = "freenode"; autojoin = "No"; }
+>>>>>>> c1560784f1c6f4ac62de0b74ca6c167ee68fd1a0
 );
 
 aliases = {
@@ -382,10 +386,6 @@ statusbar = {
   };
 };
 settings = {
-  core = { 
-    real_name = "Unknown";
-    user_name = "archjun";
-    nick = "archjun";
-  };
+  core = { real_name = "Jun"; user_name = "archjun"; nick = "archjun"; };
   "fe-text" = { actlist_sort = "refnum"; };
 };

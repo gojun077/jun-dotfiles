@@ -157,7 +157,7 @@ bind-interfaces
 # repeat this for each network on which you want to supply DHCP
 # service.
 #dhcp-range=192.168.0.50,192.168.0.150,12h
-dhcp-range=192.168.95.118,192.168.95.198,12h
+dhcp-range=192.168.95.199,192.168.95.254,12h
 
 # This is an example of a DHCP range where the netmask is given. This
 # is needed for networks we reach the dnsmasq DHCP server via a relay
@@ -185,12 +185,9 @@ dhcp-range=192.168.95.118,192.168.95.198,12h
 # and defaults to 64 if missing/
 #dhcp-range=1234::2, 1234::500, 64, 12h
 
-# Do Router Advertisements, BUT NOT DHCP for this subnet.
-#dhcp-range=1234::, ra-only 
-
 # Do Router Advertisements, BUT NOT DHCP for this subnet, also try and
-# add names to the DNS for the IPv6 address of SLAAC-configured dual-stack 
-# hosts. Use the DHCPv4 lease to derive the name, network segment and 
+# add names to the DNS for the IPv6 address of SLAAC-configured dual-stack
+# hosts. Use the DHCPv4 lease to derive the name, network segment and
 # MAC address and assume that the host will also have an
 # IPv6 address calculated using the SLAAC alogrithm.
 #dhcp-range=1234::, ra-names
@@ -204,7 +201,7 @@ dhcp-range=192.168.95.118,192.168.95.198,12h
 #dhcp-range=1234::2, 1234::500, slaac
 
 # Do Router Advertisements and stateless DHCP for this subnet. Clients will
-# not get addresses from DHCP, but they will get other configuration information.
+# not get addresses from DHCP, but they will get other configuration info.
 # They will use SLAAC for addresses.
 #dhcp-range=1234::, ra-stateless
 
@@ -213,9 +210,9 @@ dhcp-range=192.168.95.118,192.168.95.198,12h
 #dhcp-range=1234::, ra-stateless, ra-names
 
 # Do router advertisements for all subnets where we're doing DHCPv6
-# Unless overriden by ra-stateless, ra-names, et al, the router 
+# Unless overriden by ra-stateless, ra-names, et al, the router
 # advertisements will have the M and O bits set, so that the clients
-# get addresses and configuration from DHCPv6, and the A bit reset, so the 
+# get addresses and configuration from DHCPv6, and the A bit reset, so the
 # clients don't use SLAAC addresses.
 #enable-ra
 
@@ -288,11 +285,11 @@ dhcp-range=192.168.95.118,192.168.95.198,12h
 # any machine with Ethernet address starting 11:22:33:
 #dhcp-host=11:22:33:*:*:*,set:red
 
-# Give a fixed IPv6 address and name to client with 
+# Give a fixed IPv6 address and name to client with
 # DUID 00:01:00:01:16:d2:83:fc:92:d4:19:e2:d8:b2
 # Note the MAC addresses CANNOT be used to identify DHCPv6 clients.
 # Note also the they [] around the IPv6 address are obilgatory.
-#dhcp-host=id:00:01:00:01:16:d2:83:fc:92:d4:19:e2:d8:b2, fred, [1234::5] 
+#dhcp-host=id:00:01:00:01:16:d2:83:fc:92:d4:19:e2:d8:b2, fred, [1234::5]
 
 # Ignore any clients which are not specified in dhcp-host lines
 # or /etc/ethers. Equivalent to ISC "deny unknown-clients".
@@ -348,7 +345,7 @@ dhcp-range=192.168.95.118,192.168.95.198,12h
 # Send DHCPv6 option. Note [] around IPv6 addresses.
 #dhcp-option=option6:dns-server,[1234::77],[1234::88]
 
-# Send DHCPv6 option for namservers as the machine running 
+# Send DHCPv6 option for namservers as the machine running
 # dnsmasq and another.
 #dhcp-option=option6:dns-server,[::],[1234::88]
 
@@ -466,11 +463,8 @@ dhcp-range=192.168.95.118,192.168.95.198,12h
 
 # Test for the architecture of a netboot client. PXE clients are
 # supposed to send their architecture as option 93. (See RFC 4578)
-#dhcp-match=peecees, option:client-arch, 0 #x86
-#dhcp-match=itanics, option:client-arch, 2 #IA64
-#dhcp-match=hammers, option:client-arch, 6 #IA32 EFI
-#dhcp-match=mactels, option:client-arch, 7 #x86-64 EFI
 dhcp-match=x86PC, option:client-arch, 0 #BIOS x86
+#dhcp-match=itanics, option:client-arch, 2 #IA64
 #dhcp-match=efi32, option:client-arch, 6 #IA32-EFI
 dhcp-match=BC_EFI, option:client-arch, 7 #EFI x86-64
 
