@@ -106,7 +106,6 @@
 ; Start emacs maximized
 (setq initial-frame-alist (quote ((fullscreen . maximized))))
 ; Disable temp files and autosaving
->>>>>>> c1560784f1c6f4ac62de0b74ca6c167ee68fd1a0
 (setq make-backup-files nil)
 (setq auto-save-default nil)
 ; dictionary settings
