@@ -1,0 +1,47 @@
+# Jun's ssh config ~/.ssh/config
+# Created 2016-02-12
+# Jun Go gojun077@gmail.com
+# Last Updated 2016-06-17
+
+# Global Defaults
+TCPKeepAlive=yes
+ServerAliveInterval=15
+ServerAliveCountMax=6
+StrictHostKeyChecking=no
+Compression=yes
+ForwardAgent=yes
+
+# Per Host Options
+Host 192.168.95.144
+     User fedgro
+     Hostname 192.168.95.144
+     Port 22
+     IdentitiesOnly yes
+     IdentityFile ~/.ssh/archjun_rsa
+
+Host 192.168.30.20
+     User fedgro
+     Hostname 192.168.30.20
+     IdentitiesOnly yes
+     IdentityFile ~/.ssh/archjun_rsa
+
+Host bitbucket.org
+     User gojun077
+     Hostname bitbucket.org
+     PreferredAuthentications publickey
+     IdentitiesOnly yes
+     IdentityFile ~/.ssh/archjun_rsa
+
+Host github.com
+     User gojun077
+     Hostname github.com
+     PreferredAuthentications publickey
+     IdentitiesOnly yes
+     IdentityFile ~/.ssh/archjun_rsa
+
+Host gitlab.com
+     User gojun077
+     Hostname gitlab.com
+     PreferredAuthentications publickey
+     IdentitiesOnly yes
+     IdentityFile ~/.ssh/archjun_rsa
