@@ -28,8 +28,8 @@ port=0
 
 # Replies which are not DNSSEC signed may be legitimate, because the domain
 # is unsigned, or may be forgeries. Setting this option tells dnsmasq to
-# check that an unsigned reply is OK, by finding a secure proof that a DS
-# record somewhere between the root and the domain does not exist.
+# check that an unsigned reply is OK, by finding a secure proof that a DS 
+# record somewhere between the root and the domain does not exist. 
 # The cost of setting this is that even queries in unsigned domains will need
 # one or more extra DNS queries to verify.
 #dnssec-check-unsigned
@@ -184,9 +184,6 @@ dhcp-range=192.168.95.199,192.168.95.254,12h
 # Enable DHCPv6. Note that the prefix-length does not need to be specified
 # and defaults to 64 if missing/
 #dhcp-range=1234::2, 1234::500, 64, 12h
-
-# Do Router Advertisements, BUT NOT DHCP for this subnet.
-#dhcp-range=1234::, ra-only
 
 # Do Router Advertisements, BUT NOT DHCP for this subnet, also try and
 # add names to the DNS for the IPv6 address of SLAAC-configured dual-stack

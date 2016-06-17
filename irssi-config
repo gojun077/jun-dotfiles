@@ -124,8 +124,13 @@ channels = (
   { name = "#netfuze"; chatnet = "NetFuze"; autojoin = "No"; },
   { name = "#oftc"; chatnet = "OFTC"; autojoin = "No"; },
   { name = "silc"; chatnet = "SILC"; autojoin = "No"; },
+<<<<<<< HEAD
+  { name = "#archlinux"; chatnet = "freenode"; autojoin = "yes"; },
+  { name = "#kolla"; chatnet = "freenode"; autojoin = "yes"; }
+=======
   { name = "#archlinux"; chatnet = "freenode"; autojoin = "No"; },
   { name = "#kolla"; chatnet = "freenode"; autojoin = "No"; }
+>>>>>>> c1560784f1c6f4ac62de0b74ca6c167ee68fd1a0
 );
 
 aliases = {
