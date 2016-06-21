@@ -11,16 +11,16 @@ DEFAULT_SESSION=xfce4
 
 case $1 in
   xmonad)
-    exec xmonad
+    exec ssh-agent monad
     ;;
   openbox)
-    exec openbox-session
+    exec ssh-agent openbox-session
     ;;
   xfce4)
     exec ssh-agent startxfce4
     ;;
   awesome)
-    exec awesome
+    exec ssh-agent awesome
     ;;
   *)
     exec $DEFAULT_SESSION
