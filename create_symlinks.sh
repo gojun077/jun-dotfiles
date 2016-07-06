@@ -3,7 +3,7 @@
 # Do not run as root, as this will cause the $HOME variable to default
 # to '/root' instead of ~/username
 #
-# First created in June 2015
+# Last updated 2016-07-06
 # Jun Go gojun077@gmail.com
 
 
@@ -59,12 +59,16 @@ fi
 if [ -f /usr/bin/lxterminal ]; then
   create_sym "$HOME/.config/lxterminal/lxterminal.conf" \
 	     "$HOME/dotfiles/lxterminal"
+else
+  echo "lxterminal is not installed on this machine"
 fi
 
 #MAME CONFIG
 if [ -f /usr/bin/sdlmame ]; then
   mkdir -p "$HOME/.mame/ini"
   create_sym "$HOME/.mame/ini/mame.ini" "$HOME/dotfiles/mame.ini"
+else
+  echo "sdlmame is not installed on this machine"
 fi
 
 #OPENBOX CONFIG
@@ -72,21 +76,29 @@ create_sym "$HOME/.config/openbox/autostart" "$HOME/dotfiles/openbox-autostart"
 #TERMINATOR CONFIG
 if [ -f /usr/bin/terminator ]; then
   create_sym "$HOME/.config/terminator/config" "$HOME/dotfiles/terminator"
+else
+  echo "terminator is not installed on this machine"
 fi
 
 #XFCE CONFIG
 if [ -f /usr/bin/xfce-terminal ]; then
   create_sym "$HOME/.config/xfce4/terminal/terminalrc" "$HOME/dotfiles/xfceTerm"
+else
+  echo "xfce-terminal is not installed on this machine"
 fi
 
 #IRSSI CONFIG
 if [ -f /usr/bin/irssi ]; then
   create_sym "$HOME/.irssi/config" "$HOME/dotfiles/irssi-config"
+else
+  echo "irssi is not installed on this machine"
 fi
 
 #QUODLIBET CONFIG
 if [ -f /usr/bin/quodlibet ]; then
   create_sym "$HOME/.quodlibet/stations" "$HOME/dotfiles/quod_stations"
+else
+  echo "quodlibet is not installed on this machine"
 fi
 
 #TODO XFCE4 PANEL
@@ -94,7 +106,9 @@ fi
 #XFCE4 KEYBOARD SHORTCUTS
 if [ -f /usr/bin/startxfce4 ]; then
   create_sym "$HOME/.quodlibet/stations" \
-	     "$HOME/dotfiles/xfce4-keyboard-shortcuts.xml"
+    "$HOME/dotfiles/xfce4-keyboard-shortcuts.xml"
+else
+  echo "xfce4 is not installed on this machine"
 fi
 
 ######################################################
@@ -105,7 +119,7 @@ fi
 # your regular user needs to have rwx permissions on /root
 # you can achieve this using Access Control Lists
 #
-# setfacl -m "u:USERNAME:rwx" /root
+# setfacl -m "u:USER:rwx" /root
 
 create_sym "/root/.bashrc" "$HOME/dotfiles/root_bashrc"
 create_sym "/root/.vimrc" "$HOME/dotfiles/vimrc"
@@ -119,9 +133,9 @@ create_sym "/root/.vimrc" "$HOME/dotfiles/vimrc"
 # to have rwx permissions on /etc
 # you can achieve this using Access Control Lists
 #
-# setfacl -m "u:USERNAME:rwx" /etc
-# setfacl -m "u:USERNAME:rwx" /etc/bitlbee/
-# setfacl -m "u:USERNAME:rwx" /etc/ssh/
+# setfacl -m "u:USER:rwx" /etc
+# setfacl -m "u:USER:rwx" /etc/bitlbee/
+# setfacl -m "u:USER:rwx" /etc/ssh/
 # setfacl -m "u:$USER:rwx" /etc/motion/
 
 if [ -f /etc/redhat-release ]; then
@@ -130,14 +144,43 @@ else
   create_sym "/etc/anacrontab" "$HOME/dotfiles/anacrontab"
 fi
 
-create_sym "/etc/dnsmasq.conf" "$HOME/dotfiles/dnsmasq"
-create_sym "/etc/pacman.conf" "$HOME/dotfiles/pacman.conf"
-create_sym "/etc/bitlbee/bitlbee.conf" "$HOME/dotfiles/bitlbee"
+if [ -f /usr/bin/dnsmasq ]; then
+  create_sym "/etc/dnsmasq.conf" "$HOME/dotfiles/dnsmasq"
+else
+  echo "dnsmasq is not installed on this machine"
+fi
+
+if [ -f /etc/pacman.conf ]; then
+  create_sym "/etc/pacman.conf" "$HOME/dotfiles/pacman.conf"
+fi
+
+if [ -f /usr/bin/bitlbee ]; then
+  create_sym "/etc/bitlbee/bitlbee.conf" "$HOME/dotfiles/bitlbee"
+else
+  echo "bitlbee is not installed on this machine"
+fi
 #TODO add permissions changes for bitlbee log in /var/lib/bitlbee
 # setfacl -m "u:USERNAME:rwx" /var/lib/bitlbee
-create_sym "/etc/vsftpd.conf" "$HOME/dotfiles/vsftpd.conf"
+
+if [ -f /usr/bin/vsftpd ]; then
+  create_sym "/etc/vsftpd.conf" "$HOME/dotfiles/vsftpd.conf"
+else
+  echo "vsftpd is not installed on this machine"
+fi
+
+if [ -f /usr/bin/motion ]; then
+  create_sym "/etc/motion/motion.conf" "$HOME/dotfiles/motion.conf"
+else
+  echo "motion is not installed on this machine"
+fi
+
 create_sym "/etc/ssh/sshd_config" "$HOME/dotfiles/sshd_config"
-create_sym "/etc/motion/motion.conf" "$HOME/dotfiles/motion.conf"
+
+if [ -f /usr/bin/ansible ]; then
+  create_sym "/etc/ansible/ansible.cfg" "$HOME/dotfiles/ansible.cfg"
+else
+  echo "ansible is not installed on this machine"
+fi
 
 
 ######################################################
@@ -145,6 +188,8 @@ create_sym "/etc/motion/motion.conf" "$HOME/dotfiles/motion.conf"
 ######################################################
 mkdir "$HOME"/tmp
 mkdir /root/tmp
+# setfacl for /root should already setup for regular
+# user
 
 ######################################################
 # Setup git user name and email
