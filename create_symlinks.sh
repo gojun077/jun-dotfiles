@@ -22,6 +22,9 @@ create_sym()
   #   - exit the function
   # + File does not exist
   #   - create a symlink from (2) to (1)
+  #
+  # USAGE:
+  # create_sym <path to orig file> <path to new file>
 
   if [[ -f "$1" && ! -L "$1" ]]; then
     mv "$1" "$1".old
