@@ -1,0 +1,3 @@
+[ubuntu_vm]
+xenial1 ansible_ssh_host=192.168.95.218
+xenial1 ansible_python_interpreter="/usr/bin/python2.7"
