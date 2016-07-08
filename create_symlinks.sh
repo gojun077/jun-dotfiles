@@ -140,6 +140,7 @@ create_sym "/root/.vimrc" "$HOME/dotfiles/vimrc"
 # setfacl -m "u:USER:rwx" /etc/bitlbee/
 # setfacl -m "u:USER:rwx" /etc/ssh/
 # setfacl -m "u:$USER:rwx" /etc/motion/
+# setfacl -m "u:$USER:rwx" /etc/ansible
 
 if [ -f /etc/redhat-release ]; then
   create_sym "/etc/anacrontab" "$HOME/dotfiles/anacrontab_fedora"
@@ -180,7 +181,8 @@ fi
 create_sym "/etc/ssh/sshd_config" "$HOME/dotfiles/sshd_config"
 
 if [ -f /usr/bin/ansible ]; then
-  create_sym "/etc/ansible/ansible.cfg" "$HOME/dotfiles/ansible.cfg"
+  create_sym "/etc/ansible/ansible.cfg" "$HOME/dotfiles/ansible/ansible.cfg"
+  create_sym "/etc/ansible/ansible.cfg" "$HOME/dotfiles/ansible/ansible.cfg"
 else
   echo "ansible is not installed on this machine"
 fi
