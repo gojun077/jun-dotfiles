@@ -1,0 +1,51 @@
+
+[Documents/WhatYoureReallyMeantToDo]
+checkout = git clone 'https://gojun077@bitbucket.org/gojun077/whatyourereallymeanttodo.git' 'WhatYoureReallyMeantToDo'
+
+[Documents/cchallenges]
+checkout = git clone 'https://gojun077@bitbucket.org/gojun077/coding-challenges.git' 'cchallenges'
+
+[Documents/MyProjects/KTokenizer]
+checkout = git clone 'https://gojun077@bitbucket.org/gojun077/ktokenizer.git' 'KTokenizer'
+
+[Documents/cs50x_2014]
+checkout = git clone 'https://gojun077@bitbucket.org/gojun077/cs50x-2014.git' 'cs50x_2014'
+
+[Documents/jun-project-euler]
+checkout = git clone 'https://github.com/gojun077/jun-project-euler.git' 'jun-project-euler'
+
+[Documents/idb_2014]
+checkout = git clone 'https://gojun077@bitbucket.org/gojun077/dbclass.git' 'idb_2014'
+
+[Documents/coursera_IMT]
+checkout = git clone 'https://gojun077@bitbucket.org/gojun077/coursera-imt-sp2013.git' 'coursera_IMT'
+
+[//home/archjun/Documents/jun-python-challenge]
+checkout = git clone 'https://github.com/gojun077/jun-python-challenge.git' 'jun-python-challenge'
+
+[Dropbox/OmegaT Proj/central_glossaries]
+checkout = git clone 'https://gojun077@bitbucket.org/gojun077/omegat-centralized-glossaries.git' 'central_glossaries'
+
+[Documents/MyProjects/webscraping]
+checkout = git clone 'https://gojun077@bitbucket.org/gojun077/webscraping.git' 'webscraping'
+
+[/usr/local/tftpboot/pxe]
+checkout = git clone 'https://gojun077@bitbucket.org/gojun077/pxeboot.git' 'pxe'
+
+[bin]
+checkout = git clone 'git@bitbucket.org:gojun077/bin-scripts.git' 'bin'
+
+[Documents/MyProjects/cisco_codefest_2014]
+checkout = git clone 'https://gojun077@bitbucket.org/gojun077/cisco_codefest_2014.git' 'cisco_codefest_2014'
+
+[Documents/growin_wo]
+checkout = git clone 'https://gojun077@bitbucket.org/gojun077/growin_wo.git' 'growin_wo'
+
+[Documents/term_sessions]
+checkout = git clone 'https://gojun077@bitbucket.org/gojun077/term_sessions.git' 'term_sessions'
+
+[dotfiles]
+checkout = git clone 'git@github.com:gojun077/jun-dotfiles.git' 'dotfiles'
+
+[Documents/pomo2beeminder]
+checkout = git clone 'https://github.com/gojun077/pomo2beeminder.git' 'pomo2beeminder'
