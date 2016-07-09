@@ -42,7 +42,7 @@ create_sym()
 # Create Symlinks to dotfiles directly below ~/
 ####################################################
 
-DOTFILES="bashrc emacs screenrc vimrc conkyrc git-prompt xinitrc"
+DOTFILES="bashrc conkyrc emacs mrconfig screenrc vimrc xinitrc"
 
 for i in $DOTFILES; do
   create_sym "$HOME/.$i" "$HOME/dotfiles/$i"
