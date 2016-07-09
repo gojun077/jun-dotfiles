@@ -77,7 +77,12 @@ else
 fi
 
 #OPENBOX CONFIG
-create_sym "$HOME/.config/openbox/autostart" "$HOME/dotfiles/openbox-autostart"
+if [ -f /usr/sbin/openbox-session ]; then
+  create_sym "$HOME/.config/openbox/autostart" "$HOME/dotfiles/openbox-autostart"
+else
+  echo "openbox DE is not installed on this machine"
+fi
+
 #TERMINATOR CONFIG
 if [ -f /usr/bin/terminator ]; then
   create_sym "$HOME/.config/terminator/config" "$HOME/dotfiles/terminator"
@@ -85,7 +90,7 @@ else
   echo "terminator is not installed on this machine"
 fi
 
-#XFCE CONFIG
+#XFCE TERMINAL CONFIG
 if [ -f /usr/bin/xfce-terminal ]; then
   create_sym "$HOME/.config/xfce4/terminal/terminalrc" "$HOME/dotfiles/xfceTerm"
 else
@@ -104,6 +109,12 @@ if [ -f /usr/bin/quodlibet ]; then
   create_sym "$HOME/.quodlibet/stations" "$HOME/dotfiles/quod_stations"
 else
   echo "quodlibet is not installed on this machine"
+fi
+
+#SSH CONFIG
+if [ -d $HOME/.ssh ]; then
+  create_sym "$HOME/.ssh/config" "$HOME/dotfiles/ssh-config"
+  chmod 600 "$HOME/.ssh/config"
 fi
 
 #TODO XFCE4 PANEL
