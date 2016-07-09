@@ -160,6 +160,7 @@ create_sym "/root/.vimrc" "$HOME/dotfiles/vimrc"
 # setfacl -m "u:USER:rwx" /etc/bitlbee/
 # setfacl -m "u:USER:rwx" /etc/ssh/
 # setfacl -m "u:$USER:rwx" /etc/motion/
+# setfacl -m "u:$USER:rwx" /etc/pacman.d/
 # setfacl -R -m "u:$USER:rwx" /etc/ansible
 
 if [ -f /etc/redhat-release ]; then
