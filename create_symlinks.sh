@@ -56,6 +56,8 @@ done
 #CMUS CONFIG
 if [ -f /usr/bin/cmus ]; then
   create_sym "$HOME/.config/cmus/lib.pl" "$HOME/dotfiles/cmus_libpl"
+else
+  echo "CMUS is not installed on this machine"
 fi
 
 #LXTERMINAL CONFIG
@@ -154,8 +156,10 @@ else
   echo "dnsmasq is not installed on this machine"
 fi
 
-if [ -f /etc/pacman.conf ]; then
+if [ -f /usr/sbin/pacman ]; then
   create_sym "/etc/pacman.conf" "$HOME/dotfiles/pacman.conf"
+else
+  echo "This system is not running Archlinux"
 fi
 
 if [ -f /usr/bin/bitlbee ]; then
