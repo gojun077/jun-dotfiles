@@ -177,6 +177,7 @@ fi
 
 if [ -f /usr/sbin/pacman ]; then
   create_sym "/etc/pacman.conf" "$HOME/dotfiles/pacman.conf"
+  create_sym "/etc/pacmand.d/mirrorlist" "$HOME/dotfiles/pacman_mirrorlist"
 else
   echo "This system is not running Archlinux"
 fi
