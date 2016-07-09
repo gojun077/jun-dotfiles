@@ -110,22 +110,29 @@ if [ -f /usr/bin/quodlibet ]; then
 else
   echo "quodlibet is not installed on this machine"
 fi
+# Note: If you click "update stations" in quodlibet, the symlink
+# from dotfiles/quot_stations to .quodlibet/stations will be
+# overwritten and you will have to recreate the symlink
 
 #SSH CONFIG
-if [ -d $HOME/.ssh ]; then
-  create_sym "$HOME/.ssh/config" "$HOME/dotfiles/ssh-config"
-  chmod 600 "$HOME/.ssh/config"
+if ! [ -d "$HOME/.ssh" ]; then
+  mkdir -p "$HOME/.ssh"
+  chmod 700 "$HOME/.ssh"
 fi
+
+create_sym "$HOME/.ssh/config" "$HOME/dotfiles/ssh-config"
+chmod 600 "$HOME/.ssh/config"
+
 
 #TODO XFCE4 PANEL
 
 #XFCE4 KEYBOARD SHORTCUTS
-if [ -f /usr/bin/startxfce4 ]; then
-  create_sym "$HOME/.quodlibet/stations" \
-    "$HOME/dotfiles/xfce4-keyboard-shortcuts.xml"
-else
-  echo "xfce4 is not installed on this machine"
-fi
+#if [ -f /usr/bin/startxfce4 ]; then
+#  create_sym "$HOME/.config/xfce4/foo" \
+#    "$HOME/dotfiles/xfce4-keyboard-shortcuts.xml"
+#else
+#  echo "xfce4 is not installed on this machine"
+#fi
 
 ######################################################
 # Create Symlinks to files under /root
