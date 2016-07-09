@@ -12,6 +12,7 @@ DIRS=(/root
       /etc
       /etc/ssh
       /etc/motion
+      /etc/pacman.d
 )
 
 DIRSR=(/etc/bitlbee
