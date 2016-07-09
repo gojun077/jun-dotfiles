@@ -110,9 +110,9 @@ if [ -f /usr/bin/quodlibet ]; then
 else
   echo "quodlibet is not installed on this machine"
 fi
-# Note: If you click "update stations" in quodlibet, the symlink
-# from dotfiles/quot_stations to .quodlibet/stations will be
-# overwritten and you will have to recreate the symlink
+# Note: In recent versions of quodlibet, it is now overwriting the
+# symlinked 'stations' file and replacing it with a regular file
+# with the same content. Workaround?
 
 #SSH CONFIG
 if ! [ -d "$HOME/.ssh" ]; then
