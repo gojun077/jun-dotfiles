@@ -1,11 +1,13 @@
 #!/bin/bash
+# xinitrc
+# Launch an X11 Desktop Environment
 # The original path for this file is: ~/.xinitrc
-# To launch different DE's
-# (1) startx ~/.xinitrc foo
-# (2) xinit foo
-# where 'foo' is the name of the DE
+# Last updated 2016-7-9
+# Jun Go gojun077@gmail.com
 
-export BROWSER=chromium
+# USAGE:
+# xinit <DE_name>
+# To launch DE_name
 
 DEFAULT_SESSION=xfce4
 
@@ -26,4 +28,4 @@ case $1 in
     exec $DEFAULT_SESSION
     ;;
 esac
- 
+
