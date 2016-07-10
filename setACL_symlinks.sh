@@ -10,12 +10,21 @@
 
 DIRS=(/root
       /etc
+      /etc/ansible
+      /etc/bitlbee
+      /etc/motion
+      /etc/pacman.d
+      /etc/ssh
 )
 
+# Make sure to change username to local user
+# Since this script is run as root, $USER will
+# simply return 'root'
+localuser=archjun
 
 for i in ${DIRS[*]}; do
   if ! [ -d "$i" ]; then
     mkdir -p "$i"
   fi
-  setfacl -R -m "u:$USER:rwx" "$i"
+  setfacl -R -m "u:$localuser:rwx" "$i"
 done
