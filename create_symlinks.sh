@@ -63,7 +63,7 @@ fi
 #LXTERMINAL CONFIG
 if [ -f /usr/bin/lxterminal ]; then
   create_sym "$HOME/.config/lxterminal/lxterminal.conf" \
-	     "$HOME/dotfiles/lxterminal"
+             "$HOME/dotfiles/lxterminal"
 else
   echo "lxterminal is not installed on this machine"
 fi
@@ -202,7 +202,7 @@ if [ -f /usr/bin/ansible ]; then
   create_sym "/etc/ansible/hosts" "$HOME/dotfiles/ansible/hosts"
   mkdir -p /etc/ansible/group_vars/
   create_sym "/etc/ansible/hosts/group_vars/ubuntu_base" \
-	     "$HOME/dotfiles/ansible/group_vars/ubuntu_base"
+             "$HOME/dotfiles/ansible/group_vars/ubuntu_base"
 else
   echo "ansible is not installed on this machine"
 fi
