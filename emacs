@@ -93,6 +93,9 @@
 ;;======================
 ;;   GLOBAL VARIABLES
 ;;======================
+
+; Use spaces instead of tabs
+(setq-default indent-tabs-mode nil)
 ; formatting for C code
 (setq c-default-style "linux" c-basic-offset 4)
 ; shell script mode formatting
