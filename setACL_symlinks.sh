@@ -17,5 +17,5 @@ for i in ${DIRS[*]}; do
   if ! [ -d "$i" ]; then
     mkdir -p "$i"
   fi
-  setfacl -R -m "u:USER:rwx" "$i"
+  setfacl -R -m "u:$USER:rwx" "$i"
 done
