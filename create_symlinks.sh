@@ -201,7 +201,7 @@ if [ -f /usr/bin/ansible ]; then
   create_sym "/etc/ansible/ansible.cfg" "$HOME/dotfiles/ansible/ansible.cfg"
   create_sym "/etc/ansible/hosts" "$HOME/dotfiles/ansible/hosts"
   mkdir -p /etc/ansible/group_vars/
-  create_sym "/etc/ansible/hosts/group_vars/ubuntu_base" \
+  create_sym "/etc/ansible/group_vars/ubuntu_base" \
              "$HOME/dotfiles/ansible/group_vars/ubuntu_base"
 else
   echo "ansible is not installed on this machine"
