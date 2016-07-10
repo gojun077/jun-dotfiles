@@ -211,10 +211,13 @@ fi
 ######################################################
 # Create tmp dir's for vim
 ######################################################
-mkdir "$HOME"/tmp
-mkdir /root/tmp
-# setfacl for /root should already setup for regular
-# user
+if ! [ -d "$HOME/tmp" ]; then
+  mkdir "$HOME"/tmp
+fi
+
+if ! [ -d /root/tmp ]; then
+  mkdir /root/tmp
+fi
 
 ######################################################
 # Setup git user name and email
