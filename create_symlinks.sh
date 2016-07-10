@@ -140,28 +140,20 @@ chmod 600 "$HOME/.ssh/config"
 
 # NOTE: to create symlinks from root_bashrc to /root/.bashrc
 # your regular user needs to have rwx permissions on /root
-# you can achieve this using Access Control Lists
-#
-# setfacl -m "u:USER:rwx" /root
+# and subdir's;
 
-create_sym "/root/.bashrc" "$HOME/dotfiles/root_bashrc"
+create_sym "/root/.bashrc" "$HOME/dotfiles/root_bashc"
 create_sym "/root/.vimrc" "$HOME/dotfiles/vimrc"
 
 ######################################################
-# Create Symlinks to files in under /etc
+# Create Symlinks to files under /etc
 ######################################################
 
 # NOTE: to create symlinks from ~/dotfiles/anacrontab
 # to /etc/anacrontab, for example, the regular user needs
-# to have rwx permissions on /etc
-# you can achieve this using Access Control Lists
-#
-# setfacl -m "u:USER:rwx" /etc
-# setfacl -m "u:USER:rwx" /etc/bitlbee/
-# setfacl -m "u:USER:rwx" /etc/ssh/
-# setfacl -m "u:$USER:rwx" /etc/motion/
-# setfacl -m "u:$USER:rwx" /etc/pacman.d/
-# setfacl -R -m "u:$USER:rwx" /etc/ansible
+# to have rwx permissions on /etc and subdir's;
+# make sure to run setACL_symlinks.sh first
+
 
 if [ -f /etc/redhat-release ]; then
   create_sym "/etc/anacrontab" "$HOME/dotfiles/anacrontab_fedora"
@@ -202,6 +194,7 @@ else
   echo "motion is not installed on this machine"
 fi
 
+# Set config for ssh daemon
 create_sym "/etc/ssh/sshd_config" "$HOME/dotfiles/sshd_config"
 
 if [ -f /usr/bin/ansible ]; then
