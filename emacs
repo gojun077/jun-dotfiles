@@ -1,8 +1,8 @@
+; -*- mode: emacs-lisp -*-
+
 ;;; jun's_emacs_file --- Summary
-;; -*- mode: emacs-lisp -*-
-;; Author: Jun Go gojun077@gmail.com
-;; Created: 2015
-;; Updated 2016-06-03
+;; Jun Go gojun077@gmail.com
+;; Last Updated 2016-06-03
 
 ;;; Commentary:
 ;;  I have defined a custom function 'gojun-pkglist-installed-p' that
