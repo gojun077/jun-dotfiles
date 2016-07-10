@@ -10,25 +10,12 @@
 
 DIRS=(/root
       /etc
-      /etc/ssh
-      /etc/motion
-      /etc/pacman.d
 )
 
-DIRSR=(/etc/bitlbee
-       /etc/ansible
-)
 
 for i in ${DIRS[*]}; do
   if ! [ -d "$i" ]; then
     mkdir -p "$i"
   fi
-  setfacl -m "u:USER:rwx" "$i"
-done
-
-for j in ${DIRSR[*]}; do
-  if ! [ -d "$j" ]; then
-    mkdir -p "$j"
-  fi
-  setfacl -R -m "u:USER:rwx" "$j"
+  setfacl -R -m "u:USER:rwx" "$i"
 done
