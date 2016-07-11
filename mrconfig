@@ -47,3 +47,30 @@ checkout = git clone 'git@github.com:gojun077/pxe-config.git' 'pxelinux'
 [Documents/coding-challenges]
 checkout = git clone 'git@bitbucket.org:gojun077/coding-challenges.git' 'coding-challenges'
 
+
+[Documents/MOOC/Coursera/IMT2013]
+checkout = git clone 'git@bitbucket.org:gojun077/coursera-imt-sp2013.git' 'IMT2013'
+
+[Documents/MOOC/edX/6.00x_fall_2012]
+checkout = git clone 'git@bitbucket.org:gojun077/6.00x_fall_2012.git' '6.00x_fall_2012'
+
+[Documents/MOOC/edX/cs50x-2014]
+checkout = git clone 'git@bitbucket.org:gojun077/cs50x-2014.git' 'cs50x-2014'
+
+[Documents/MOOC/edX/louv1.1x-2015]
+checkout = git clone 'git@bitbucket.org:gojun077/louv1.1x-2015.git' 'louv1.1x-2015'
+
+[Documents/MOOC/edX/louv1.1x-2014]
+checkout = git clone 'git@bitbucket.org:gojun077/pocp2014.git' 'louv1.1x-2014'
+
+[Documents/MOOC/edX/spd1-2015]
+checkout = git clone 'git@bitbucket.org:gojun077/spd1-2015.git' 'spd1-2015'
+
+[Documents/MOOC/edX/spd2x-2015]
+checkout = git clone 'git@bitbucket.org:gojun077/spd2x-2015.git' 'spd2x-2015'
+
+[Documents/MOOC/Stanford/idb2014]
+checkout = git clone 'git@bitbucket.org:gojun077/dbclass.git' 'idb2014'
+
+[Documents/MOOC/Udacity/UD262-plangs]
+checkout = git clone 'git@bitbucket.org:gojun077/cs262-udacity.git' 'UD262-plangs'
