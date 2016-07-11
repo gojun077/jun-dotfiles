@@ -1,54 +1,49 @@
 
-[Documents/Books/WhatYoureReallyMeantToDo]
-checkout = git clone 'git@bitbucket.org:gojun077/whatyourereallymeanttodo.git' 'WhatYoureReallyMeantToDo'
-
-[Documents/cchallenges]
-checkout = git clone 'git@bitbucket.org:gojun077/coding-challenges.git' 'cchallenges'
-
-[Documents/MyProjects/KTokenizer]
-checkout = git clone 'git@bitbucket.org:gojun077/ktokenizer.git' 'KTokenizer'
-
-[Documents/MOOC/edX/cs50x_2014]
-checkout = git clone 'git@bitbucket.org:gojun077/cs50x-2014.git' 'cs50x_2014'
-
-[Documents/jun-project-euler]
-checkout = git clone 'git@github.com:gojun077/jun-project-euler.git' 'jun-project-euler'
-
-[Documents/MOOC/Stanford/idb_2014]
-checkout = git clone 'git@bitbucket.org:gojun077/dbclass.git' 'idb_2014'
-
-[Documents/MOOC/Coursera/coursera_IMT]
-checkout = git clone 'git@bitbucket.org:gojun077/coursera-imt-sp2013.git' 'coursera_IMT'
-
-[Documents/jun-python-challenge]
-checkout = git clone 'git@github.com:gojun077/jun-python-challenge.git' 'jun-python-challenge'
-
-[Dropbox/OmegaT Proj/central_glossaries]
-checkout = git clone 'git@bitbucket.org:gojun077/omegat-centralized-glossaries.git' 'central_glossaries'
-
-[Documents/MyProjects/webscraping]
-checkout = git clone 'git@bitbucket.org:gojun077/webscraping.git' 'webscraping'
-
-[/usr/local/tftpboot/pxe]
-checkout = git clone 'git@bitbucket.org:gojun077/pxeboot.git' 'pxe'
-
 [bin]
 checkout = git clone 'git@bitbucket.org:gojun077/bin-scripts.git' 'bin'
-
-[Documents/MyProjects/cisco_codefest_2014]
-checkout = git clone 'git@bitbucket.org:gojun077/cisco_codefest_2014.git' 'cisco_codefest_2014'
-
-[Documents/growin_wo]
-checkout = git clone 'git@bitbucket.org:gojun077/growin_wo.git' 'growin_wo'
-
-[Documents/term_sessions]
-checkout = git clone 'git@bitbucket.org:gojun077/term_sessions.git' 'term_sessions'
 
 [dotfiles]
 checkout = git clone 'git@github.com:gojun077/jun-dotfiles.git' 'dotfiles'
 
+[Documents/googlecodejam]
+checkout = git clone 'git@bitbucket.org:gojun077/googlecodejam.git' 'googlecodejam'
+
+[Documents/growin_wo]
+checkout = git clone 'git@bitbucket.org:gojun077/growin_wo.git' 'growin_wo'
+
 [Documents/pomo2beeminder]
 checkout = git clone 'git@github.com:gojun077/pomo2beeminder.git' 'pomo2beeminder'
 
+[Documents/term_sessions]
+checkout = git clone 'git@bitbucket.org:gojun077/term_sessions.git' 'term_sessions'
+
+[Documents/Books/whatyourereallymeanttodo]
+checkout = git clone 'git@bitbucket.org:gojun077/whatyourereallymeanttodo.git' 'whatyourereallymeanttodo'
+
+[Documents/resume]
+checkout = git clone 'git@gitlab.com:gojun077/resume.git' 'resume'
+
+[Documents/MyProjects/misc]
+checkout = git clone 'git@bitbucket.org:gojun077/myprojects-misc.git' 'misc'
+
+[Documents/MOOC/Udacity/git-github]
+checkout = git clone 'git@gitlab.com:gojun077/git-github.git' 'git-github'
+
 [Documents/openstack-conf]
 checkout = git clone 'git@gitlab.com:gojun077/openstack-conf.git' 'openstack-conf'
+
+[Documents/growin-server-config]
+checkout = git clone 'git@gitlab.com:gojun077/growin-server-config.git' 'growin-server-config'
+
+[/MULTIMEDIA/vagrant_boxen]
+checkout = git clone 'git@gitlab.com:gojun077/vagrant_boxen.git' 'vagrant_boxen'
+
+[Documents/miq_scripts]
+checkout = git clone 'git@gitlab.com:growinkorea/miq_scripts.git' 'miq_scripts'
+
+[/usr/local/tftpboot/pxelinux]
+checkout = git clone 'git@github.com:gojun077/pxe-config.git' 'pxelinux'
+
+[Documents/coding-challenges]
+checkout = git clone 'git@bitbucket.org:gojun077/coding-challenges.git' 'coding-challenges'
+
