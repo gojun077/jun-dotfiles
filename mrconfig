@@ -8,20 +8,20 @@ checkout = git clone 'git@bitbucket.org:gojun077/coding-challenges.git' 'cchalle
 [Documents/MyProjects/KTokenizer]
 checkout = git clone 'git@bitbucket.org:gojun077/ktokenizer.git' 'KTokenizer'
 
-[Documents/cs50x_2014]
+[Documents/MOOC/edX/cs50x_2014]
 checkout = git clone 'git@bitbucket.org:gojun077/cs50x-2014.git' 'cs50x_2014'
 
 [Documents/jun-project-euler]
-checkout = git clone 'https://github.com/gojun077/jun-project-euler.git' 'jun-project-euler'
+checkout = git clone 'git@github.com:gojun077/jun-project-euler.git' 'jun-project-euler'
 
 [Documents/idb_2014]
 checkout = git clone 'git@bitbucket.org:gojun077/dbclass.git' 'idb_2014'
 
-[Documents/coursera_IMT]
+[Documents/MOOC/Coursera/coursera_IMT]
 checkout = git clone 'git@bitbucket.org:gojun077/coursera-imt-sp2013.git' 'coursera_IMT'
 
-[//home/archjun/Documents/jun-python-challenge]
-checkout = git clone 'https://github.com/gojun077/jun-python-challenge.git' 'jun-python-challenge'
+[Documents/jun-python-challenge]
+checkout = git clone 'git@github.com:gojun077/jun-python-challenge.git' 'jun-python-challenge'
 
 [Dropbox/OmegaT Proj/central_glossaries]
 checkout = git clone 'git@bitbucket.org:gojun077/omegat-centralized-glossaries.git' 'central_glossaries'
@@ -49,3 +49,6 @@ checkout = git clone 'git@github.com:gojun077/jun-dotfiles.git' 'dotfiles'
 
 [Documents/pomo2beeminder]
 checkout = git clone 'git@github.com:gojun077/pomo2beeminder.git' 'pomo2beeminder'
+
+[Documents/openstack-conf]
+checkout = git clone 'git@gitlab.com:gojun077/openstack-conf.git' 'openstack-conf'
