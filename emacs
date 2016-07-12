@@ -108,16 +108,12 @@
 (setq default-input-method "korean-hangul")
 ; Start emacs maximized
 (setq initial-frame-alist (quote ((fullscreen . maximized))))
+; create backups in $HOME/tmp
+; bkup files will have '!' in place of directory separator '/'
+(setq backup-directory-alist '(("" . "~/tmp")))
 ; Enable temp files and autosaving
 (setq make-backup-files t)
 (setq auto-save-default t)
-; Set temporary-file-directory to something other than /tmp/
-(setq temporary-file-directory "$HOME/tmp")
-; Store all temp files and autosaves in one directory
-(setq backup-directory-alist
-      `((".*" . ,temporary-file-directory)))
-(setq auto-save-file-name-transforms
-      `((".*" ,temporary-file-directory t)))
 ; dictionary settings
 (setq ispell-program-name "hunspell")      ;; specify dictionary binary
 (setq ispell-dictionary "en_US_hunspell")  ;; specify dictionary
