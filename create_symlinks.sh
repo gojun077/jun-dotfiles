@@ -207,6 +207,8 @@ else
   echo "ansible is not installed on this machine"
 fi
 
+# Note: qemu.conf is Archlinux-specific customized
+# TODO: create an alternate version for Fedora and cond'l check
 if [ -f /usr/bin/libvirtd ]; then
   create_sym "/etc/libvirt/qemu.conf" "$HOME/dotfiles/qemu.conf"
 else
