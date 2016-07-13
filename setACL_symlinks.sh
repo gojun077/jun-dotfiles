@@ -30,4 +30,5 @@ for i in ${DIRS[*]}; do
     mkdir -p "$i"
   fi
   setfacl -R -m "u:$localuser:rwx" "$i"
+  getfacl "$i"
 done
