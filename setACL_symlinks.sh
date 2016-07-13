@@ -13,13 +13,16 @@ DIRS=(/root
       /etc/ansible
       /etc/bitlbee
       /etc/motion
+      /etc/libvirt
       /etc/pacman.d
       /etc/ssh
 )
 
-# Make sure to change username to local user
-# Since this script is run as root, $USER will
-# simply return 'root'
+# Make sure to change username $localuser to
+# something appropriate for your machine
+# Simply using $USER won't work because this script
+# is executed as 'root'
+
 localuser=archjun
 
 for i in ${DIRS[*]}; do
