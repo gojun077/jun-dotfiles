@@ -207,6 +207,12 @@ else
   echo "ansible is not installed on this machine"
 fi
 
+if [ -f /usr/bin/libvirtd ]; then
+  create_sym "/etc/libvirt/qemu.conf" "$HOME/dotfiles/qemu.conf"
+else
+  echo "libvirt is not installed on this machine"
+fi
+
 
 ######################################################
 # Create tmp dir's for vim
