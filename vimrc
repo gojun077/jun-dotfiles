@@ -68,6 +68,7 @@ set tabstop=4
 set shiftwidth=4
 set expandtab
 
+
 " Settings for Syntastic syntax checker plugin
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
