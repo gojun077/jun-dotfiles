@@ -68,6 +68,8 @@ set tabstop=4
 set shiftwidth=4
 set expandtab
 
+" Set path for plugins
+"set packpath=/usr/share/vim/vimfiles/plugin/
 
 " Settings for Syntastic syntax checker plugin
 set statusline+=%#warningmsg#
