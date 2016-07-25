@@ -74,3 +74,6 @@ checkout = git clone 'git@bitbucket.org:gojun077/dbclass.git' 'idb2014'
 
 [Documents/MOOC/Udacity/UD262-plangs]
 checkout = git clone 'git@bitbucket.org:gojun077/cs262-udacity.git' 'UD262-plangs'
+
+[/MULTIMEDIA/iso/rhel-errata]
+checkout = git clone 'git@gitlab.com:gojun077/rhel-errata.git' 'rhel-errata'
