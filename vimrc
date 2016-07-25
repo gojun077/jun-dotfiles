@@ -1,15 +1,15 @@
 " An example for a vimrc file.
 "
-" Maintainer:	Bram Moolenaar <Bram@vim.org>
-" Last change:	2015 Mar 24
+" Maintainer:   Bram Moolenaar <Bram@vim.org>
+" Last change:  2015 Mar 24
 " Customized by: Jun Go
-" Last change:  2016 May 13
+" Last change:  2016 July 25
 "
 " To use it, copy it to
 "     for Unix and OS/2:  ~/.vimrc
-"	      for Amiga:  s:.vimrc
+"             for Amiga:  s:.vimrc
 "  for MS-DOS and Win32:  $VIM\_vimrc
-"	    for OpenVMS:  sys$login:.vimrc
+"           for OpenVMS:  sys$login:.vimrc
 
 " When started as "evim", evim.vim will already have done these settings.
 if v:progname =~? "evim"
@@ -24,18 +24,18 @@ set nocompatible
 set backspace=indent,eol,start
 
 if has("vms")
-  set nobackup		" do not keep a backup file, use versions instead
+  set nobackup          " do not keep a backup file, use versions instead
 else
-  set backup		" keep a backup file (restore to previous version)
-  set undofile		" keep an undo file (undo changes after closing)
-  set undodir=~/tmp	" path for undo files
+  set backup            " keep a backup file (restore to previous version)
+  set undofile          " keep an undo file (undo changes after closing)
+  set undodir=~/tmp     " path for undo files
   set backupdir=~/tmp   " path for backup files
   set directory=~/tmp   " path for swap files
 endif
-set history=50		" keep 50 lines of command line history
-set ruler		" show the cursor position all the time
-set showcmd		" display incomplete commands
-set incsearch		" do incremental searching
+set history=50          " keep 50 lines of command line history
+set ruler               " show the cursor position all the time
+set showcmd             " display incomplete commands
+set incsearch           " do incremental searching
 
 " For Win32 GUI: remove 't' flag from 'guioptions': no tearoff menu entries
 " let &guioptions = substitute(&guioptions, "t", "", "g")
@@ -62,6 +62,21 @@ if &t_Co > 2 || has("gui_running")
   "colorscheme shine
   "colo evening
 endif
+
+" Tab settings
+set tabstop=4
+set shiftwidth=4
+set expandtab
+
+" Settings for Syntastic syntax checker plugin
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
 
 
 " Only do this part when compiled with support for autocommands.
@@ -92,7 +107,7 @@ if has("autocmd")
 
 else
 
-  set autoindent		" always set autoindenting on
+  set autoindent                " always set autoindenting on
 
 endif " has("autocmd")
 
@@ -101,7 +116,7 @@ endif " has("autocmd")
 " Only define it when not defined already.
 if !exists(":DiffOrig")
   command DiffOrig vert new | set bt=nofile | r ++edit # | 0d_ | diffthis
-		  \ | wincmd p | diffthis
+                  \ | wincmd p | diffthis
 endif
 
 if has('langmap') && exists('+langnoremap')
