@@ -1,4 +1,4 @@
-" This vim filetype plugin file defines
+" This vim filetype plugin defines
 " the default indentation to use with yaml files
 " It should be placed in ~/.vim/after/ftplugin/yaml.vim
 setlocal shiftwidth=2
