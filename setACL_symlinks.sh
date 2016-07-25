@@ -19,6 +19,7 @@ DIRS=(/root
       /etc/libvirt
       /etc/pacman.d
       /etc/ssh
+      /var/run/motion
 )
 
 FILES=(/var/log/motion.log
