@@ -1,9 +1,10 @@
 #!/bin/bash
 # create symlinks for config files mostly under ~/ and other directories
-# Do not run as root, as this will cause the $HOME variable to default
-# to '/root' instead of ~/username
+# Do NOT run as root, as this will cause the $HOME variable to default
+# to '/root' instead of ~/username and cause $USER to become 'root'
+# instead of local user.
 #
-# Last updated 2016-07-06
+# Last updated 2016-07-25
 # Jun Go gojun077@gmail.com
 
 
@@ -140,7 +141,7 @@ chmod 600 "$HOME/.ssh/config"
 
 # NOTE: to create symlinks from root_bashrc to /root/.bashrc
 # your regular user needs to have rwx permissions on /root
-# and subdir's;
+# and subdir's; make sure to run setACL_symlinks.sh first
 
 create_sym "/root/.bashrc" "$HOME/dotfiles/root_bashc"
 create_sym "/root/.vimrc" "$HOME/dotfiles/vimrc"
@@ -217,8 +218,10 @@ fi
 
 
 ######################################################
-# Create tmp dir's for vim
+# Vim-specific config files etc.
 ######################################################
+
+# Create tmp dir's for vim
 if ! [ -d "$HOME/tmp" ]; then
   mkdir "$HOME"/tmp
 fi
@@ -226,6 +229,14 @@ fi
 if ! [ -d /root/tmp ]; then
   mkdir /root/tmp
 fi
+
+# Create symlinks for vim syntax files
+if ! [ -d "$HOME"/.vim/after/ftplugin ]; then
+  mkdir -p "$HOME"/.vim/after/ftplugin
+fi
+
+create_sym "$HOME/.vim/after/ftplugin/yaml.vim" "$HOME/dotfiles/yaml.vim"
+create_sym "$HOME/.vim/after/ftplugin/sh.vim" "$HOME/dotfiles/sh.vim"
 
 ######################################################
 # Setup git user name and email
