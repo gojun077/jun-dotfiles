@@ -106,6 +106,7 @@ server=/192.168.95.0/0.0.0.0
 # Repeat the line for more than one interface.
 # Ethernet interface name for Lenovo S310 on Archlinux:
 interface=enp1s0
+interface=br0
 # Or you can specify which interface _not_ to listen on
 #except-interface=
 # Or which to listen on by address (remember to include 127.0.0.1 if
