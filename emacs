@@ -60,6 +60,9 @@
 ;; turn on flychecking globally
 (add-hook 'after-init-hook #'global-flycheck-mode)
 
+;; when saving #! files make them executable on save (chmod +x)
+(add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
+
 ;; mode settings
 ; show col and line numbers
 (column-number-mode 1)
