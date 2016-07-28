@@ -199,7 +199,14 @@ else
 fi
 
 if [ -f /usr/bin/motion ]; then
-  create_sym "/etc/motion/motion.conf" "$HOME/dotfiles/motion.conf"
+  SYSINFO=$(sudo dmidecode | grep -i "System Information" -A 8)
+  # If machine is U36JC, use motion-u36jc.conf
+  if [[ "$SYSINFO" = *U36JC* ]]; then
+    create_sym "/etc/motion/motion.conf" "$HOME/dotfiles/motion-u36jc.conf"
+  # For all other machines use regular motion.conf
+  else
+    create_sym "/etc/motion/motion.conf" "$HOME/dotfiles/motion.conf"
+  fi
 else
   echo "motion is not installed on this machine"
 fi
