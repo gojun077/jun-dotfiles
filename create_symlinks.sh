@@ -4,7 +4,7 @@
 # to '/root' instead of ~/username and cause $USER to become 'root'
 # instead of local user.
 #
-# Last updated 2016-07-25
+# Last updated 2016-07-28
 # Jun Go gojun077@gmail.com
 
 
