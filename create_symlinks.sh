@@ -38,6 +38,15 @@ create_sym()
 }
 
 
+####################################################
+# Check that the script is not being run as root
+####################################################
+
+if [ "$USER" = "root" ]; then
+  echo "This script must not be executed as root."
+  exit 1
+fi
+
 
 ####################################################
 # Create Symlinks to dotfiles directly below ~/
