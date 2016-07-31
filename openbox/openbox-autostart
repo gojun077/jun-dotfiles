@@ -1,3 +1,6 @@
+# Original path is $HOME/.config/openbox/
+# Original filename is 'autostart'
+
 tint2 &
 conky -q &
 nitrogen --restore &
@@ -13,7 +16,8 @@ xscreensaver -no-splash &
 
 (sleep 10 && volumeicon) &
 (sleep 20 && SpiderOakONE) &
-(sleep 25 && dropboxd) &
+(sleep 25 && dropbox) &
 (sleep 35 && rescuetime) &
 
+# Backlight setting for old Dell notebooks (D630, XPS m1330)
 xbacklight -set 100 &
