@@ -105,7 +105,7 @@
 (setq sh-basic-offset 2)
 (setq sh-indentation 2)
 ; python settings
-(setq python-shell-interpreter "ipython3")
+(setq python-shell-interpreter "ipython3 --simple-prompt")
 (setq python-shell-interpreter-args "-i")
 ; C-\ language toggle
 (setq default-input-method "korean-hangul")
