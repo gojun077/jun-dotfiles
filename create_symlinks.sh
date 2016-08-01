@@ -4,7 +4,7 @@
 # to '/root' instead of ~/username and cause $USER to become 'root'
 # instead of local user.
 #
-# Last updated 2016-07-28
+# Last updated 2016-08-01
 # Jun Go gojun077@gmail.com
 
 
@@ -86,25 +86,11 @@ else
   echo "sdlmame is not installed on this machine"
 fi
 
-#OPENBOX CONFIG
-if [ -f /usr/sbin/openbox-session ]; then
-  create_sym "$HOME/.config/openbox/autostart" "$HOME/dotfiles/openbox-autostart"
-else
-  echo "openbox DE is not installed on this machine"
-fi
-
 #TERMINATOR CONFIG
 if [ -f /usr/bin/terminator ]; then
   create_sym "$HOME/.config/terminator/config" "$HOME/dotfiles/terminator"
 else
   echo "terminator is not installed on this machine"
-fi
-
-#XFCE TERMINAL CONFIG
-if [ -f /usr/bin/xfce-terminal ]; then
-  create_sym "$HOME/.config/xfce4/terminal/terminalrc" "$HOME/dotfiles/xfceTerm"
-else
-  echo "xfce-terminal is not installed on this machine"
 fi
 
 #IRSSI CONFIG
@@ -120,9 +106,9 @@ if [ -f /usr/bin/quodlibet ]; then
 else
   echo "quodlibet is not installed on this machine"
 fi
-# Note: In recent versions of quodlibet, it is now overwriting the
-# symlinked 'stations' file and replacing it with a regular file
-# with the same content. Workaround?
+# Note: Recent versions of quodlibet overwrite the symlinked
+# 'stations' file and replace it with a regular file
+
 
 #SSH CONFIG
 if ! [ -d "$HOME/.ssh" ]; then
@@ -132,6 +118,33 @@ fi
 
 create_sym "$HOME/.ssh/config" "$HOME/dotfiles/ssh-config"
 chmod 600 "$HOME/.ssh/config"
+
+
+######################################################
+# Create Openbox Symlinks
+######################################################
+#OPENBOX AUTOSTART
+if [ -f /usr/sbin/openbox-session ]; then
+  create_sym "$HOME/.config/openbox/autostart" \
+             "$HOME/dotfiles/openbox/openbox-autostart"
+else
+  echo "openbox DE is not installed on this machine"
+fi
+
+######################################################
+# Create XFCE4 Symlinks
+######################################################
+#XFCE TERMINAL CONFIG
+if [ -f /usr/bin/xfce-terminal ]; then
+  create_sym "$HOME/.config/xfce4/terminal/terminalrc" \
+             "$HOME/dotfiles/xfce4/xfceTerm"
+else
+  echo "xfce-terminal is not installed on this machine"
+fi
+
+#XFCE MENU
+if [ -f /usr/bin/startxfce4 ]; then
+  create_sym "" "$HOME/dotfiles/xfce4/"
 
 
 #TODO XFCE4 PANEL
