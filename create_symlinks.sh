@@ -189,6 +189,15 @@ if [ -f /usr/bin/dnsmasq ]; then
 else
   echo "dnsmasq is not installed on this machine"
 fi
+# NOTE ABOUT dnsmasq and SELINUX
+# When you create a symlink from $HOME/dotfiles/dnsmasq to
+# /etc/dnsmasq.conf, the SELINUX context will be
+# 'unconfined_u:object_r:etc_t:s0'
+# but the context should be
+# 'system_u:system_r:dnsmasq_t:s0'
+# To set 'dnsmasq_t' to permissive mode, execute the following:
+# sudo semanage permissive -a dnsmasq_t
+
 
 if [ -f /usr/sbin/pacman ]; then
   create_sym "/etc/pacman.conf" "$HOME/dotfiles/pacman.conf"
