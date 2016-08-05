@@ -265,7 +265,7 @@ if ! [ -d "$HOME/tmp" ]; then
 fi
 
 if ! [ -d /root/tmp ]; then
-  mkdir /root/tmp
+  echo "Make sure to create /root/tmp for when vim is run as 'root'"
 fi
 
 # Create symlinks for vim syntax files
