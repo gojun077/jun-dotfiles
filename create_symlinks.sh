@@ -145,7 +145,7 @@ fi
 #XFCE MENU
 if [ -f /usr/bin/startxfce4 ]; then
   create_sym "" "$HOME/dotfiles/xfce4/"
-
+fi
 
 #TODO XFCE4 PANEL
 
