@@ -276,6 +276,34 @@ fi
 create_sym "$HOME/.vim/after/ftplugin/yaml.vim" "$HOME/dotfiles/yaml.vim"
 create_sym "$HOME/.vim/after/ftplugin/sh.vim" "$HOME/dotfiles/sh.vim"
 
+
+######################################################
+# Create symlinks for SSH keys on SpiderOak
+######################################################
+KEYS=(junAUR
+      archjun_rsa
+      cloud
+      maykey
+      fx8350
+     )
+
+for i in ${KEYS[*]}; do
+  find ~/SpiderOak_Hive/keys/ssh -type f -name "{i}*" \
+       -exec basename \;; done
+
+# TODO - the KEYS array only contains part of the key name
+# for the public and private keys; the 'find' stmt will
+# match the full file name with globbing. I want to pass
+# the result into the function 'create_sym' as the
+# first parameter (original filename + path). But
+# how do I also pass in a second parameter to 'create_sym'
+# to specify the filename + path for the symlink?
+
+# If I was using Python, this would be easy' in a for
+# loop I could append 'find' matches to a list, but
+# this doesn't seem to be possible in Bash...
+
+
 ######################################################
 # Setup git user name and email
 ######################################################
