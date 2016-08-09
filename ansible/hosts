@@ -1,5 +1,4 @@
 [ubuntu_vm]
-xenial1 ansible_ssh_host=192.168.95.218
-xenial1 ansible_python_interpreter="/usr/bin/python2.7"
-xenial2 ansible_ssh_host=192.168.95.209
-xenial2 ansible_python_interpreter="/usr/bin/python2.7"
+xenial1 ansible_ssh_host=192.168.95.218 ansible_python_interpreter="/usr/bin/python2.7" ansible_ssh_port=22 ansible_ssh_user=ubuntu ansible_ssh_private_key_file=~/.ssh/cloud.key
+
+xenial2 ansible_ssh_host=192.168.95.209 ansible_python_interpreter="/usr/bin/python2.7" ansible_ssh_port=22 ansible_ssh_user=ubuntu ansible_ssh_private_key_file=~/.ssh/cloud.key
