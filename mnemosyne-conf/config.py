@@ -39,8 +39,8 @@ backup_before_sync = True
 latex_preamble = r"""
 \documentclass[12pt]{article}
 \pagestyle{empty}
-\begin{document}"""
 \usepackage{amsfonts, amssymb}
+\begin{document}"""
 
 # Latex postamble.
 latex_postamble = r"""\end{document}"""
