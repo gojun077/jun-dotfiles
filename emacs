@@ -21,7 +21,8 @@
 
 (require 'cl)
 (defvar gojun-pkglist
-  '(color-theme-sanityinc-solarized
+  '(ansible
+    color-theme-sanityinc-solarized
     edit-server
     fill-column-indicator
     flycheck
