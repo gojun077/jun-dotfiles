@@ -33,8 +33,8 @@
     rw-hunspell
     rw-ispell
     rw-language-and-country-codes
-    yaml-mode
-    "list of packages to ensure are installed at launch")
+    yaml-mode)
+  "list of packages to ensure are installed at launch")
 
 (defun gojun-pkglist-installed-p ()
   (loop for p in gojun-pkglist
