@@ -135,6 +135,8 @@
 (setq ido-enable-flex-matching t)
 ; enable ido everywhere
 (setq ido-everywhere t)
+; use xetex to render pdf from LaTeX
+(setq TeX-engine 'xetex)
 
 ; org-trello-mode formatting
 (setq org-todo-keyword-faces
