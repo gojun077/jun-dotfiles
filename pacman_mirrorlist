@@ -15,7 +15,7 @@ Server = http://ftp.tku.edu.tw/Linux/ArchLinux/$repo/os/$arch
 # zju.edu.cn (score 1.7)
 Server = http://mirrors.zju.edu.cn/archlinux/$repo/os/$arch
 # KAIST (score 3.1)
-http://ftp.kaist.ac.kr/ArchLinux/$repo/os/$arch
+Server = http://ftp.kaist.ac.kr/ArchLinux/$repo/os/$arch
 # premi.st Korea (score 3.9)
 Server = http://mirror.premi.st/archlinux/$repo/os/$arch
 
