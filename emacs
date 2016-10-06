@@ -161,6 +161,7 @@
  '(custom-safe-themes
    (quote
     ("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default)))
+ '(org-trello-current-prefix-keybinding "C-c o")
  '(package-selected-packages
    (quote
     (yaml-mode rw-language-and-country-codes rw-ispell rw-hunspell racket-mode paredit oz org-trello markdown-mode flycheck fill-column-indicator edit-server color-theme-sanityinc-solarized ansible))))
