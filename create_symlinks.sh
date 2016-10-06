@@ -305,8 +305,8 @@ done<"$KEYLIST"
 
 
 
-print "%s\n" "####################################################"
-print "%s\n" "#         Setup git user name and email            #"
-print "%s\n" "####################################################"
+printf "%s\n" "####################################################"
+printf "%s\n" "#         Setup git user name and email            #"
+printf "%s\n" "####################################################"
 git config --global user.email "gojun077@gmail.com"
 git config --global user.name "$USER"
