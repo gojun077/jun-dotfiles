@@ -29,10 +29,10 @@ DIRS=(/root
 FILES=(/var/log/motion.log
       )
 
-DSA="/etc/ssh_host_dsa_key"
-ECDSA="/etc/ssh_host_ecdsa_key"
-ED25519="/etc/ssh_host_ed25519_key"
-RSA="/etc/ssh_host_rsa_key"
+DSA="/etc/ssh/ssh_host_dsa_key"
+ECDSA="/etc/ssh/ssh_host_ecdsa_key"
+ED25519="/etc/ssh/ssh_host_ed25519_key"
+RSA="/etc/ssh/ssh_host_rsa_key"
 
 HOSTPRIV=($DSA
           $ECDSA
