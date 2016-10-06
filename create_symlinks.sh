@@ -11,46 +11,48 @@
 create_sym()
 {
   # this function takes 2 string arguments:
-  # (1) path and filename of original file
-  # (2) path and filename of the replacement file
+  # (1) original file with full path
+  # (2) replacement file with full path
   #
   # Given (1), the function will check if the file exists and is a symlink.
   # Depending on what it finds it will do the following
-  # + File exists and is not a symlink
-  #   - file will be renamed to file.old
-  #   - a symlink from (2) will be created in place of (1)
-  # + File exists and is a symlink
+  # + File exists and _is not_ a symlink
+  #   - file will be renamed to 'file.old'
+  #   - create a symlink from (2) to (1)
+  # + File exists and _is_ a symlink
   #   - exit the function
   # + File does not exist
   #   - create a symlink from (2) to (1)
   #
   # USAGE:
-  # create_sym <path to orig file> <path to new file>
+  # create_sym <orig file w/path> <replacement file w/path>
 
-  if [[ -f "$1" && ! -L "$1" ]]; then
-    mv "$1" "$1".old
-    ln -s "$2" "$1"
-  elif [[ -f "$1" && -L "$1" ]]; then
-    echo -e "$1 exists and is already a symlink.\n"
+  ORIG=$1
+  REPLACE=$2
+  if [[ -f "$ORIG" && ! -L "$ORIG" ]]; then
+    mv "$ORIG" "$ORIG".old
+    ln -s "$REPLACE" "$ORIG"
+  elif [[ -f "$ORIG" && -L "$ORIG" ]]; then
+    echo -e "$ORIG exists and is already a symlink.\n"
   else
-    ln -s "$2" "$1"
+    ln -s "$REPLACE" "$ORIG"
   fi
 }
 
 
-####################################################
-# Check that the script is not being run as root
-####################################################
+printf "%s\n" "##################################################"
+printf "%s\n" "# Check that the script is not being run as root #"
+printf "%s\n" "##################################################"
 
 if [ "$USER" = "root" ]; then
-  echo "This script must not be executed as root."
+  printf "%s\n" "This script must not be executed as root."
   exit 1
 fi
 
 
-####################################################
-# Create Symlinks to dotfiles directly below ~/
-####################################################
+printf "%s\n" "##################################################"
+printf "%s\n" "# Create Symlinks to dotfiles directly below ~/  #"
+printf "%s\n" "##################################################"
 
 DOTFILES="bashrc conkyrc emacs mrconfig screenrc vimrc xinitrc"
 
@@ -163,7 +165,7 @@ fi
 
 # NOTE: to create symlinks from root_bashrc to /root/.bashrc
 # your regular user needs to have rwx permissions on /root
-# and subdir's; make sure to run setACL_symlinks.sh first
+# and subdir's; make sure to run 'setACL_symlinks.sh' first
 
 create_sym "/root/.bashrc" "$HOME/dotfiles/root_bashc"
 create_sym "/root/.vimrc" "$HOME/dotfiles/vimrc"
@@ -175,7 +177,7 @@ create_sym "/root/.vimrc" "$HOME/dotfiles/vimrc"
 # NOTE: to create symlinks from ~/dotfiles/anacrontab
 # to /etc/anacrontab, for example, the regular user needs
 # to have rwx permissions on /etc and subdir's;
-# make sure to run setACL_symlinks.sh first
+# make sure to run 'setACL_symlinks.sh' first
 
 
 if [ -f /etc/redhat-release ]; then
@@ -283,29 +285,28 @@ create_sym "$HOME/.vim/after/ftplugin/sh.vim" "$HOME/dotfiles/sh.vim"
 KEYS=(junAUR
       archjun_rsa
       cloud
-      maykey
       fx8350
      )
 
+KEYLIST=$HOME/keylist.txt
+
 for i in ${KEYS[*]}; do
-  find ~/SpiderOak_Hive/keys/ssh -type f -name "{i}*" \
-       -exec basename \;; done
-
-# TODO - the KEYS array only contains part of the key name
-# for the public and private keys; the 'find' stmt will
-# match the full file name with globbing. I want to pass
-# the result into the function 'create_sym' as the
-# first parameter (original filename + path). But
-# how do I also pass in a second parameter to 'create_sym'
-# to specify the filename + path for the symlink?
-
-# If I was using Python, this would be easy' in a for
-# loop I could append 'find' matches to a list, but
-# this doesn't seem to be possible in Bash...
+  find ~/SpiderOak_Hive/keys/ssh -type f -name "{i}*" >> "$KEYLIST"
+done
 
 
-######################################################
-# Setup git user name and email
-######################################################
+while read -r key; do
+  keyname=$(basename "$key")
+  if ! [ -f "$HOME/.ssh/$keyname" ]; then
+    printf "%s\n" "### Create symlink to ~/.ssh for $keyname ###"
+    ln -s "$key" "$HOME/.ssh/"
+  fi
+done<"$KEYLIST"
+
+
+
+print "%s\n" "####################################################"
+print "%s\n" "#         Setup git user name and email            #"
+print "%s\n" "####################################################"
 git config --global user.email "gojun077@gmail.com"
 git config --global user.name "$USER"
