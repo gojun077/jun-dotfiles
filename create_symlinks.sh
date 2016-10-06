@@ -291,7 +291,7 @@ KEYS=(junAUR
 KEYLIST=$HOME/keylist.txt
 
 for i in ${KEYS[*]}; do
-  find ~/SpiderOak_Hive/keys/ssh -type f -name "${i}*" >> "$KEYLIST"
+  find "$HOME/SpiderOak Hive/keys/ssh" -type f -name "${i}*" >> "$KEYLIST"
 done
 
 
