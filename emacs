@@ -86,7 +86,7 @@
 (when (xftp)
   (let ((fontset "fontset-default"))
     (set-fontset-font fontset 'latin
-                      '("monofur" . "unicode-bmp"))
+                      '("monospace" . "unicode-bmp"))
     (set-fontset-font fontset 'hangul
                       '("NanumGothic" . "unicode-bmp"))
     (set-face-attribute 'default nil
@@ -108,7 +108,7 @@
 ; python settings
 (setq python-shell-interpreter "ipython3")
 (setq python-shell-interpreter-args "-i")
-(setq python-shell-interpreter-args "--simple-prompt")
+
 ; C-\ language toggle
 (setq default-input-method "korean-hangul")
 ; Start emacs maximized
