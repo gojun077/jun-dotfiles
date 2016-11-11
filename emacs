@@ -85,8 +85,10 @@
     xft-supported))
 (when (xftp)
   (let ((fontset "fontset-default"))
+;    (set-fontset-font fontset 'latin
+;                      '("monospace" . "unicode-bmp"))
     (set-fontset-font fontset 'latin
-                      '("monospace" . "unicode-bmp"))
+                      '("monofur" . "unicode-bmp"))
     (set-fontset-font fontset 'hangul
                       '("NanumGothic" . "unicode-bmp"))
     (set-face-attribute 'default nil
