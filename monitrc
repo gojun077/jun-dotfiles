@@ -1,9 +1,3 @@
-# `monitrc` file for RHEL 7.2
-# PATH is /etc/monitrc
-# Last edited 2016-11-18
-# Conf file has been edited to allow connecting to monit web GUI
-# on 192.168.4.41:2818
-
 ###############################################################################
 ## Monit control file
 ###############################################################################
@@ -36,6 +30,8 @@ set logfile syslog
 #
 ## Set the location of the Monit lock file which stores the process id of the
 ## running Monit instance. By default this file is stored in $HOME/.monit.pid
+## Jun's Note: on RHEL 7.2, the default pidfile is actually the same as the
+## path listed below: '/var/run/monit.pid'
 #
 # set pidfile /var/run/monit.pid
 #
@@ -61,6 +57,7 @@ set logfile syslog
 # set mailserver mail.bar.baz,               # primary mailserver
 #                backup.bar.baz port 10025,  # backup mailserver on port 10025
 #                localhost                   # fallback relay
+set mailserver localhost
 #
 #
 ## By default Monit will drop alert events if no mail servers are available.
