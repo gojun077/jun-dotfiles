@@ -1,0 +1,4 @@
+#/etc/monit.d/checklog
+check file test.log with path /home/redjun/playground/test.log
+  if size > 500 MB then alert
+  alert redjun@rhlocalrepo # local service alert
