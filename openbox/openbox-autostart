@@ -18,6 +18,7 @@ xscreensaver -no-splash &
 (sleep 20 && SpiderOakONE) &
 (sleep 25 && dropbox) &
 (sleep 35 && rescuetime) &
+(sleep 40 && run_keybase) &
 
 # Backlight setting for old Dell notebooks (D630, XPS m1330)
 xbacklight -set 100 &
