@@ -11,3 +11,7 @@ The original path for these files is _~/.config/mnemosyne/_
 - `config.db` stores config values of some kind, but I haven't
   accessed this DB yet. It is probably in sqlite3 format like
   `default.db`
+
+Symlinks will be created from ~/dotfiles/mnemosyne-conf/[FILE]
+to ~/.config/mnemosyne/[FILE] with the exception of `machine.id`
+which is unique per machine.
