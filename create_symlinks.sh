@@ -199,6 +199,11 @@ fi
 # 'system_u:system_r:dnsmasq_t:s0'
 # To set 'dnsmasq_t' to permissive mode, execute the following:
 # sudo semanage permissive -a dnsmasq_t
+# OR
+# You can change the context on ~/dotfiles/dnsmasq which is
+# symlinked to /etc/dnsmasq.conf as follows:
+# `sudo semanage fcontext -a -t dnsmasq_etc_t /home/fedjun/dotfiles/dnsmasq`
+# `sudo restorecon -v /home/fedjun/dotfiles/dnsmasq`
 
 
 if [ -f /usr/sbin/pacman ]; then
