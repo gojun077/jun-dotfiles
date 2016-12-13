@@ -13,11 +13,14 @@ redshift-gtk -l 37.5:126.9 &
 xscreensaver-command -exit &
 # start new instance of xscreensaver
 xscreensaver -no-splash &
+# add private key to ssh-agent
+ssh-add $HOME/.ssh/archjun_rsa
 
 (sleep 10 && volumeicon) &
 (sleep 20 && SpiderOakONE) &
 (sleep 25 && dropbox) &
 (sleep 35 && rescuetime) &
+(sleep 40 && run_keybase) &
 
 # Backlight setting for old Dell notebooks (D630, XPS m1330)
 xbacklight -set 100 &

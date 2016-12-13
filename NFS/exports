@@ -1,0 +1,20 @@
+# /etc/exports - exports(5) - directories exported to NFS clients
+#
+# Example for NFSv2 and NFSv3:
+#  /srv/home        hostname1(rw,sync) hostname2(ro,sync)
+# Example for NFSv4:
+#  /srv/nfs4	    hostname1(rw,sync,fsid=0)
+#  /srv/nfs4/home   hostname1(rw,sync,nohide)
+# Using Kerberos and integrity checking:
+#  /srv/nfs4        *(rw,sync,sec=krb5i,fsid=0)
+#  /srv/nfs4/home   *(rw,sync,sec=krb5i,nohide)
+#
+# Use `exportfs -arv` to reload.
+#/home/archjun/playground  192.168.21.0/24(rw,sync)
+# VAGRANT-BEGIN: 1000 e92815c8-f539-42c0-b1d9-ca25795da6f6
+#"/home/archjun/kolla" 172.28.128.3(rw,no_subtree_check,all_squash,anonuid=1000,anongid=1000,fsid=262637850)
+#"/home/archjun/kolla/dev/vagrant/storage/operator" 172.28.128.3(rw,no_subtree_check,all_squash,anonuid=1000,anongid=1000,fsid=2473638774)
+#"/home/archjun/kolla/dev/vagrant/storage/shared" 172.28.128.3(rw,no_subtree_check,all_squash,anonuid=1000,anongid=1000,fsid=797795741)
+# VAGRANT-END: 1000 e92815c8-f539-42c0-b1d9-ca25795da6f6
+
+/MULTIMEDIA 192.168.4.0/24(rw,no_root_squash)
