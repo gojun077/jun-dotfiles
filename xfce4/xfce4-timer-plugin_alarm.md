@@ -1,8 +1,8 @@
 Alarm commands
 ==============
-- 1 pomo
+- 1 pomo (25 min)
   `terminator -e "bash $HOME/bin/pomoTimer.sh 1"`
-- meditation
+- meditation (15 min)
   `terminator -e "bash $HOME/bin/pomoTimer.sh 1"`
-- 2 pomo
+- 2 pomo (50 min)
   `terminator -e "bash $HOME/bin/pomoTimer.sh 2"`
