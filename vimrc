@@ -1,7 +1,7 @@
 " An example for a vimrc file.
 "
 " Maintainer:   Bram Moolenaar <Bram@vim.org>
-" Last change:  2015 Mar 24
+" Last Updated:  2016-12-28
 " Customized by: Jun Go
 " Last change:  2016 July 25
 "
@@ -69,6 +69,7 @@ set shiftwidth=4
 set expandtab
 
 " Set path for plugins
+" The following is the default plugins path for vim on Arch
 "set packpath=/usr/share/vim/vimfiles/plugin/
 
 " Settings for Syntastic syntax checker plugin
