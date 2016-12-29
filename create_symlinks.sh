@@ -136,24 +136,24 @@ fi
 ######################################################
 # Create XFCE4 Symlinks
 ######################################################
-#XFCE TERMINAL CONFIG
-if [ -f /usr/bin/xfce-terminal ]; then
+# XFCE4 TERMINAL CONFIG
+if [ -f /usr/bin/xfce4-terminal ]; then
   create_sym "$HOME/.config/xfce4/terminal/terminalrc" \
              "$HOME/dotfiles/xfce4/xfceTerm"
 else
   echo "xfce-terminal is not installed on this machine"
 fi
 
-#XFCE MENU
-if [ -f /usr/bin/startxfce4 ]; then
-  create_sym "" "$HOME/dotfiles/xfce4/"
-fi
-
-#TODO XFCE4 PANEL
-
-#XFCE4 KEYBOARD SHORTCUTS
+# XFCE4 MENU
 #if [ -f /usr/bin/startxfce4 ]; then
-#  create_sym "$HOME/.config/xfce4/foo" \
+  create_sym "" "$HOME/dotfiles/xfce4/"
+#fi
+
+# XFCE4 PANEL
+
+# XFCE4 KEYBOARD SHORTCUTS
+if [ -f /usr/bin/startxfce4 ]; then
+  create_sym "$HOME/.config/xfce4/foo" \
 #    "$HOME/dotfiles/xfce4-keyboard-shortcuts.xml"
 #else
 #  echo "xfce4 is not installed on this machine"
