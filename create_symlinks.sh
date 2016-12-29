@@ -150,18 +150,18 @@ fi
 
 # XFCE4 MENU
 #if [ -f /usr/bin/startxfce4 ]; then
-  create_sym "" "$HOME/dotfiles/xfce4/"
+#  create_sym "" "$HOME/dotfiles/xfce4/"
 #fi
 
 # XFCE4 PANEL
 
 # XFCE4 KEYBOARD SHORTCUTS
 if [ -f /usr/bin/startxfce4 ]; then
-  create_sym "$HOME/.config/xfce4/foo" \
-#    "$HOME/dotfiles/xfce4-keyboard-shortcuts.xml"
-#else
-#  echo "xfce4 is not installed on this machine"
-#fi
+  create_sym "$HOME/.config/xfce4/xfconf/xfce-perchannel-xml" \
+    "$HOME/dotfiles/xfce4/xfce4-keyboard-shortcuts.xml"
+else
+  echo "xfce4 is not installed on this machine"
+fi
 
 ######################################################
 # Create Symlinks to files under /root
