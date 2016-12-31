@@ -77,5 +77,5 @@ done
 
 for h in ${HOSTPUB[*]}; do
   printf "%s\n" "Set $h to rw-r--r--"
-  chmod 644 "$k"
+  chmod 640 "$k"
 done
