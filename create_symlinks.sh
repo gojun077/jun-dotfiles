@@ -218,8 +218,6 @@ if [ -f /usr/bin/bitlbee ]; then
 else
   echo "bitlbee is not installed on this machine"
 fi
-#TODO add permissions changes for bitlbee log in /var/lib/bitlbee
-# setfacl -m "u:USERNAME:rwx" /var/lib/bitlbee
 
 if [ -f /usr/bin/vsftpd ]; then
   create_sym "/etc/vsftpd.conf" "$HOME/dotfiles/vsftpd.conf"
