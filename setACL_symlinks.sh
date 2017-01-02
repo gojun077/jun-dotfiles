@@ -5,7 +5,7 @@
 # /etc, ...
 # This script should be executed as root
 
-# Last updated 2016-08-01
+# Last updated 2017-01-02
 # Jun Go gojun077@gmail.com
 
 # USAGE ./setACL_symlinks.sh <username>
@@ -85,4 +85,8 @@ if which bitlbee; then
   chmod -R bitlbee.bitlbee /var/lib/bitlbee
 else
   printf "%s\n" "# Bitlbee is not installed on this machine #"
+fi
+
+if [ -f /root/.bash_profile ]; then
+  cp /etc/skel/.bash_profile /root/
 fi
