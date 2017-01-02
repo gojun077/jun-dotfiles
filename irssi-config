@@ -13,7 +13,7 @@ servers = (
     ssl_cert = "~/.irssi/irssi.pem";
     ssl_pass = "<irssi.pem_password>";
     ssl_verify = "yes";
-#    ssl_capath = "/etc/ssl/certs";
+    #    ssl_capath = "/etc/ssl/certs";
   },
   {
     address = "irc.gamesurge.net";
@@ -40,6 +40,14 @@ servers = (
     address = "irc.undernet.org";
     chatnet = "Undernet";
     port = "6667";
+  },
+  {
+    address = "localhost";
+    chatnet = "bitlbee";
+    port = "6667";
+    use_ssl = "no";
+    ssl_verify = "no";
+    autoconnect = "yes";
   }
 );
 
@@ -111,6 +119,13 @@ chatnets = {
     max_kicks = "1";
     max_msgs = "1";
     max_whois = "1";
+  };
+  bitlbee = {
+    type = "IRC";
+    nick = "archjun";
+    username = "archjun";
+    realname = "Jun Go";
+    autosendcmd = "say identify password";
   };
 };
 
