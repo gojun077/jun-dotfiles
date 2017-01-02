@@ -213,8 +213,12 @@ else
   echo "This system is not running Archlinux"
 fi
 
-if [ -f /usr/bin/bitlbee ]; then
-  create_sym "/etc/bitlbee/bitlbee.conf" "$HOME/dotfiles/bitlbee"
+if which bitlbee; then
+  if grep "Fedora" /etc/redhat-release; then
+    create_sym "/etc/bitlbee/bitlbee.conf" "$HOME/dotfiles/bitlbee_fedora"
+  else
+    create_sym "/etc/bitlbee/bitlbee.conf" "$HOME/dotfiles/bitlbee"
+  fi
 else
   echo "bitlbee is not installed on this machine"
 fi
