@@ -79,3 +79,10 @@ for h in ${HOSTPUB[*]}; do
   printf "%s\n" "Set $h to rw-r--r--"
   chmod 640 "$k"
 done
+
+printf "%s\n" "### Set Proper Perm's Bitlbee directory  ###"
+if which bitlbee; then
+  chmod -R bitlbee.bitlbee /var/lib/bitlbee
+else
+  printf "%s\n" "# Bitlbee is not installed on this machine #"
+fi
