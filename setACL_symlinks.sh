@@ -5,7 +5,7 @@
 # /etc, ...
 # This script should be executed as root
 
-# Last updated 2016-08-01
+# Last updated 2017-01-02
 # Jun Go gojun077@gmail.com
 
 # USAGE ./setACL_symlinks.sh <username>
@@ -77,5 +77,16 @@ done
 
 for h in ${HOSTPUB[*]}; do
   printf "%s\n" "Set $h to rw-r--r--"
-  chmod 644 "$k"
+  chmod 640 "$k"
 done
+
+printf "%s\n" "### Set Proper Perm's Bitlbee directory  ###"
+if which bitlbee; then
+  chmod -R bitlbee.bitlbee /var/lib/bitlbee
+else
+  printf "%s\n" "# Bitlbee is not installed on this machine #"
+fi
+
+if [ -f /root/.bash_profile ]; then
+  cp /etc/skel/.bash_profile /root/
+fi

@@ -101,7 +101,9 @@ if [ -f /usr/bin/irssi ]; then
     mkdir "$HOME/.irssi"
   fi
   create_sym "$HOME/.irssi/config" "$HOME/dotfiles/irssi-config"
-  ln -s "$HOME/SpiderOak Hive/keys/irssi.pem" "$HOME/.irssi/"
+  if [ -f "$HOME/SpiderOak Hive/keys/irssi.pem" ]; then
+    ln -s "$HOME/SpiderOak Hive/keys/irssi.pem" "$HOME/.irssi/"
+  fi
 else
   echo "irssi is not installed on this machine"
 fi
@@ -140,28 +142,28 @@ fi
 ######################################################
 # Create XFCE4 Symlinks
 ######################################################
-#XFCE TERMINAL CONFIG
-if [ -f /usr/bin/xfce-terminal ]; then
+# XFCE4 TERMINAL CONFIG
+if [ -f /usr/bin/xfce4-terminal ]; then
   create_sym "$HOME/.config/xfce4/terminal/terminalrc" \
              "$HOME/dotfiles/xfce4/xfceTerm"
 else
   echo "xfce-terminal is not installed on this machine"
 fi
 
-#XFCE MENU
-if [ -f /usr/bin/startxfce4 ]; then
-  create_sym "" "$HOME/dotfiles/xfce4/"
-fi
-
-#TODO XFCE4 PANEL
-
-#XFCE4 KEYBOARD SHORTCUTS
+# XFCE4 MENU
 #if [ -f /usr/bin/startxfce4 ]; then
-#  create_sym "$HOME/.config/xfce4/foo" \
-#    "$HOME/dotfiles/xfce4-keyboard-shortcuts.xml"
-#else
-#  echo "xfce4 is not installed on this machine"
+#  create_sym "" "$HOME/dotfiles/xfce4/"
 #fi
+
+# XFCE4 PANEL
+
+# XFCE4 KEYBOARD SHORTCUTS
+if [ -f /usr/bin/startxfce4 ]; then
+  create_sym "$HOME/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml" \
+    "$HOME/dotfiles/xfce4-keyboard-shortcuts.xml"
+else
+  echo "xfce4 is not installed on this machine"
+fi
 
 ######################################################
 # Create Symlinks to files under /root
@@ -217,13 +219,15 @@ else
   echo "This system is not running Archlinux"
 fi
 
-if [ -f /usr/bin/bitlbee ]; then
-  create_sym "/etc/bitlbee/bitlbee.conf" "$HOME/dotfiles/bitlbee"
+if which bitlbee; then
+  if grep "Fedora" /etc/redhat-release; then
+    create_sym "/etc/bitlbee/bitlbee.conf" "$HOME/dotfiles/bitlbee_fedora"
+  else
+    create_sym "/etc/bitlbee/bitlbee.conf" "$HOME/dotfiles/bitlbee"
+  fi
 else
   echo "bitlbee is not installed on this machine"
 fi
-#TODO add permissions changes for bitlbee log in /var/lib/bitlbee
-# setfacl -m "u:USERNAME:rwx" /var/lib/bitlbee
 
 if [ -f /usr/bin/vsftpd ]; then
   create_sym "/etc/vsftpd.conf" "$HOME/dotfiles/vsftpd.conf"
@@ -272,7 +276,7 @@ fi
 
 # Create tmp dir's for vim
 if ! [ -d "$HOME/tmp" ]; then
-  mkdir "$HOME"/tmp
+   mkdir "$HOME"/tmp
 fi
 
 if ! [ -d /root/tmp ]; then
@@ -313,9 +317,13 @@ while read -r key; do
 done<"$KEYLIST"
 
 
-
 printf "%s\n" "####################################################"
 printf "%s\n" "#         Setup git user name and email            #"
 printf "%s\n" "####################################################"
 git config --global user.email "gojun077@gmail.com"
 git config --global user.name "$USER"
+
+printf "%s\n" "####################################################"
+printf "%s\n" "#                Setup Mnemosyne                   #"
+printf "%s\n" "####################################################"
+ln -s "$HOME/Dropbox/mnemosyne" "$HOME/.local/share/"

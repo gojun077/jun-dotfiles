@@ -109,7 +109,9 @@
 (setq sh-indentation 2)
 ; python settings
 (setq python-shell-interpreter "ipython3")
-(setq python-shell-interpreter-args "-i")
+(setq python-shell-interpreter-args "--simple-prompt -i")
+(setq ansi-color-for-comint-mode t)
+(setq python-shell-completion-native nil)
 
 ; C-\ language toggle
 (setq default-input-method "korean-hangul")
