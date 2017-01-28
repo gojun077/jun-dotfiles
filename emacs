@@ -102,6 +102,8 @@
 
 ; Use spaces instead of tabs
 (setq-default indent-tabs-mode nil)
+; But when I must use TAB, set width to 4 chars
+(setq-default tab-width 4)
 ; formatting for C code
 (setq c-default-style "linux" c-basic-offset 4)
 ; shell script mode formatting
