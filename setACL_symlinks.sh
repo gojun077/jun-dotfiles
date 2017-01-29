@@ -5,7 +5,7 @@
 # /etc, ...
 # This script should be executed as root
 
-# Last updated 2017-01-02
+# Last updated 2017-01-29
 # Jun Go gojun077@gmail.com
 
 # USAGE ./setACL_symlinks.sh <username>
@@ -27,6 +27,8 @@ DIRS=(/root
 )
 
 FILES=(/var/log/motion.log
+       /boot/loader/loader.conf
+       /boot/loader/entries/arch.conf
       )
 
 DSA="/etc/ssh/ssh_host_dsa_key"
@@ -66,6 +68,8 @@ for j in ${FILES[*]}; do
     printf "%s\n" "### Give $USER access perm's for file $j ###"
     setfacl -m "u:$USER:rwx" "$j"
     getfacl "$j"
+  else
+    printf "%s\n" "file $j does not exist"
   fi
 done
 
