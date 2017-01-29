@@ -149,6 +149,7 @@ OperPassword = md5:d1ZvN7q1n/ha3b3KsWaOJrufvriP
 # CA certs list for Archlinux
 #CAfile = /etc/ssl/cert.pem
 
+# CA certs for Fedora
 CAfile = /etc/ssl/certs/ca-bundle.crt
 
 [defaults]

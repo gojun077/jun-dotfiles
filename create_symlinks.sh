@@ -97,7 +97,13 @@ fi
 
 #IRSSI CONFIG
 if [ -f /usr/bin/irssi ]; then
+  if [ ! -d "$HOME/.irssi" ]; then
+    mkdir "$HOME/.irssi"
+  fi
   create_sym "$HOME/.irssi/config" "$HOME/dotfiles/irssi-config"
+  if [ -f "$HOME/SpiderOak Hive/keys/irssi.pem" ]; then
+    ln -s "$HOME/SpiderOak Hive/keys/irssi.pem" "$HOME/.irssi/"
+  fi
 else
   echo "irssi is not installed on this machine"
 fi

@@ -71,8 +71,8 @@ set expandtab
 " Set path for plugins
 " The following is the default plugins path for vim on Arch
 "set packpath=/usr/share/vim/vimfiles/plugin/
-" On Ubuntu, the following needs to be uncommented (Real Time Path)
-"set rtp+=/usr/share/vim/vimfiles/plugin/
+" On Ubuntu, the following needs to be uncommented (Run Time Path)
+set rtp+=/usr/share/vim/vimfiles/plugin/
 
 " Settings for Syntastic syntax checker plugin
 set statusline+=%#warningmsg#
