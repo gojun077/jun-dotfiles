@@ -27,8 +27,6 @@ DIRS=(/root
 )
 
 FILES=(/var/log/motion.log
-       /boot/loader/loader.conf
-       /boot/loader/entries/arch.conf
       )
 
 DSA="/etc/ssh/ssh_host_dsa_key"
