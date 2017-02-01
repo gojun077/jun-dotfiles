@@ -1,6 +1,6 @@
 ##
 ## Arch Linux repository mirrorlist
-## Generated on 2017-01-06
+## Generated on 2017-01-06 (original path /etc/pacman.d/mirrorlist)
 
 # Refer to https://www.archlinux.org/mirrors/status/
 # for a daily updated list of ranked mirrors (lower
@@ -9,7 +9,7 @@
 
 ## Jun's Custom List (for Korea)
 # mirror.aur.rocks is fastest in Greater Asia (score 0.6 as of 2017.01.29)
-Server = http://mirror.aur.rocks/
+Server = https://mirror.aur.rocks/$repo/os/$arch
 # tku.edu.tw is fastest in Asia (score 1.1 as of 2017.01.29)
 Server = http://ftp.tku.edu.tw/Linux/ArchLinux/$repo/os/$arch
 # zju.edu.cn (score 1.3 as of 2017.01.29)
