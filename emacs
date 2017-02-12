@@ -93,7 +93,7 @@
                       '("NanumGothic" . "unicode-bmp"))
     (set-face-attribute 'default nil
                         :font fontset
-                        :height 110)))
+                        :height 120)))
 
 
 ;;======================
