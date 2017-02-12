@@ -80,3 +80,9 @@ checkout = git clone 'git@gitlab.com:gojun077/rhel-errata.git' 'rhel-errata'
 
 [Documents/junsTechNotes]
 checkout = git clone 'git@gitlab.com:gojun077/junsTechNotes.git' 'junsTechNotes'
+
+[Documents/MOOC/edX/6.00.1x_SP2017]
+checkout = git clone 'git@gitlab.com:gojun077/6.00.1x_SP2017.git' '6.00.1x_SP2017'
+
+[Documents/MOOC/Coursera/BD_Integration_and_Processing_SP_2017]
+checkout = git clone 'git@gitlab.com:gojun077/BD_Integration_and_Processing_SP_2017.git' 'BD_Integration_and_Processing_SP_2017'
