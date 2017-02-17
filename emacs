@@ -108,8 +108,7 @@
 (setq sh-basic-offset 2)
 (setq sh-indentation 2)
 ; python settings
-(setq python-shell-interpreter "ipython3")
-(setq python-shell-interpreter-args "--simple-prompt -i")
+(setq python-shell-interpreter "python")
 (setq ansi-color-for-comint-mode t)
 (setq python-shell-completion-native nil)
 
