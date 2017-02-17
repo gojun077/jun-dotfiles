@@ -107,10 +107,19 @@
 ; shell script mode formatting
 (setq sh-basic-offset 2)
 (setq sh-indentation 2)
-; python settings
-(setq python-shell-interpreter "python")
-(setq ansi-color-for-comint-mode t)
+; Python settings
+; Note: recent versions of ipython and python interpreters
+; don't support readline() and doctests do not show up
+; in the emacs inferior process running python/ipython.
+; For the time being, run python from CLI as follows:
+;
+; python -m doctest myprog.py -v
+;
+(add-to-list 'python-shell-completion-native-disabled-interpreters "ipython3")
 (setq python-shell-completion-native nil)
+(setq python-shell-interpreter "ipython3")
+(setq python-shell-interpreter-args "--simple-prompt -i")
+(setq ansi-color-for-comint-mode t)
 
 ; C-\ language toggle
 (setq default-input-method "korean-hangul")
@@ -153,7 +162,7 @@
  '(org-trello-current-prefix-keybinding "C-c o")
  '(package-selected-packages
    (quote
-    (yaml-mode rw-language-and-country-codes rw-ispell rw-hunspell racket-mode paredit oz markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible))))
+    (org-trello edit-server yaml-mode rw-language-and-country-codes rw-ispell rw-hunspell racket-mode paredit oz markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
