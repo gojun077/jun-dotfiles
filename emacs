@@ -115,7 +115,8 @@
 ;
 ; python -m doctest myprog.py -v
 ;
-(add-to-list 'python-shell-completion-native-disabled-interpreters "ipython3")
+(setq python-shell-completion-native-disabled-interpreters
+      ("pypy ipython3 python3"))
 (setq python-shell-completion-native nil)
 (setq python-shell-interpreter "ipython3")
 (setq python-shell-interpreter-args "--simple-prompt -i")
@@ -159,10 +160,10 @@
  '(custom-safe-themes
    (quote
     ("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default)))
- '(org-trello-current-prefix-keybinding "C-c o")
  '(package-selected-packages
    (quote
-    (org-trello edit-server yaml-mode rw-language-and-country-codes rw-ispell rw-hunspell racket-mode paredit oz markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible))))
+    (yaml-mode rw-language-and-country-codes rw-ispell rw-hunspell racket-mode paredit oz markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible)))
+ '(python-shell-completion-native-disabled-interpreters (quote ("pypy ipython3 python3"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
