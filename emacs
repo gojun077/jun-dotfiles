@@ -27,7 +27,6 @@
     fill-column-indicator
     flycheck
     markdown-mode
-    org-trello
     paredit
     racket-mode
     rw-hunspell
@@ -144,20 +143,6 @@
 ; use xetex to render pdf from LaTeX
 (setq TeX-engine 'xetex)
 
-; org-trello-mode formatting
-(setq org-todo-keyword-faces
- (quote
-  (("Backlog" . "black")
-   ("Queue" . "blue")
-   ("WIP" . "red")
-   ("Done" . "green")
-   ("Cancelled" . "gray"))))
-; org-trello-mode keywords
-(setq org-todo-keywords
- (quote
-  ((sequence "Backlog" "Queue" "WIP" "DONE" "Cancelled"))))
-; org-trello-mode keybinding
-(setq org-trello-current-prefix-keybinding "C-c o")
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -170,7 +155,7 @@
  '(org-trello-current-prefix-keybinding "C-c o")
  '(package-selected-packages
    (quote
-    (yaml-mode rw-language-and-country-codes rw-ispell rw-hunspell racket-mode paredit oz org-trello markdown-mode flycheck fill-column-indicator edit-server color-theme-sanityinc-solarized ansible))))
+    (yaml-mode rw-language-and-country-codes rw-ispell rw-hunspell racket-mode paredit oz markdown-mode flycheck fill-column-indicator edit-server color-theme-sanityinc-solarized ansible))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
