@@ -23,7 +23,6 @@
 (defvar gojun-pkglist
   '(ansible
     color-theme-sanityinc-solarized
-    edit-server
     fill-column-indicator
     flycheck
     markdown-mode
@@ -155,7 +154,7 @@
  '(org-trello-current-prefix-keybinding "C-c o")
  '(package-selected-packages
    (quote
-    (yaml-mode rw-language-and-country-codes rw-ispell rw-hunspell racket-mode paredit oz markdown-mode flycheck fill-column-indicator edit-server color-theme-sanityinc-solarized ansible))))
+    (yaml-mode rw-language-and-country-codes rw-ispell rw-hunspell racket-mode paredit oz markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -165,9 +164,6 @@
 
 ;; Commands to run when Emacs launched in graphical mode
 (when (display-graphic-p)
-  ; start edit-server (to enable Emacs editing with Chrome plug-in)
-  (require 'edit-server)
-  (edit-server-start)
 ; only run whitespace mode in graphical session
   (global-whitespace-mode 1)
   (load-theme 'sanityinc-solarized-light)
