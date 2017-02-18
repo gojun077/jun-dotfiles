@@ -1,7 +1,6 @@
 # Jun's ssh config ~/.ssh/config
 # Created 2016-02-12
-# Jun Go gojun077@gmail.com
-# Last Updated 2016-06-17
+# Last Updated 2017-02-18
 
 # Global Defaults
 TCPKeepAlive=yes
@@ -12,19 +11,6 @@ Compression=yes
 ForwardAgent=yes
 
 # Per Host Options
-Host 192.168.95.144
-     User fedgro
-     Hostname 192.168.95.144
-     Port 22
-     IdentitiesOnly yes
-     IdentityFile ~/.ssh/archjun_rsa
-
-Host 192.168.30.20
-     User fedgro
-     Hostname 192.168.30.20
-     IdentitiesOnly yes
-     IdentityFile ~/.ssh/archjun_rsa
-
 Host bitbucket.org
      User gojun077
      Hostname bitbucket.org
@@ -55,6 +41,20 @@ Host vxtest
 Host d257
      User archjun
      Hostname 10.10.10.100
+     Port 22
+     IdentitiesOnly yes
+     IdentityFile ~/.ssh/archjun_rsa
+
+Host u36jc
+     User fedjun
+     Hostname 10.10.10.98
+     Port 22
+     IdentitiesOnly yes
+     IdentityFile ~/.ssh/archjun_rsa
+
+Host xpsm1330
+     User archjun
+     Hostname 10.10.10.99
      Port 22
      IdentitiesOnly yes
      IdentityFile ~/.ssh/archjun_rsa
