@@ -4,8 +4,8 @@
 # to '/root' instead of ~/username and cause $USER to become 'root'
 # instead of local user.
 #
-# Last updated 2016-08-01
-# Jun Go gojun077@gmail.com
+# Last updated 2017-02-18
+# by Jun Go
 
 
 create_sym()
@@ -33,7 +33,7 @@ create_sym()
     mv "$ORIG" "$ORIG".old
     ln -s "$REPLACE" "$ORIG"
   elif [[ -f "$ORIG" && -L "$ORIG" ]]; then
-    echo -e "$ORIG exists and is already a symlink.\n"
+    printf "%s\n" "$ORIG exists and is already a symlink."
   else
     ln -s "$REPLACE" "$ORIG"
   fi
@@ -54,7 +54,8 @@ printf "%s\n" "##################################################"
 printf "%s\n" "# Create Symlinks to dotfiles directly below ~/  #"
 printf "%s\n" "##################################################"
 
-DOTFILES="bashrc conkyrc emacs mrconfig screenrc vimrc xinitrc"
+DOTFILES="bashrc conkyrc emacs mrconfig screenrc vimrc xinitrc \
+  pylintrc"
 
 for i in $DOTFILES; do
   create_sym "$HOME/.$i" "$HOME/dotfiles/$i"
