@@ -3,7 +3,7 @@
 " Maintainer:   Bram Moolenaar <Bram@vim.org>
 " Last Updated:  2016-12-28
 " Customized by: Jun Go
-" Last change:  2016 July 25
+" Last change:  2017-02-18
 "
 " To use it, copy it to
 "     for Unix and OS/2:  ~/.vimrc
@@ -64,6 +64,7 @@ if &t_Co > 2 || has("gui_running")
 endif
 
 " Tab settings
+set smartindent
 set tabstop=4
 set shiftwidth=4
 set expandtab
@@ -120,6 +121,7 @@ endif " has("autocmd")
 " Convenient command to see the difference between the current buffer and the
 " file it was loaded from, thus the changes you made.
 " Only define it when not defined already.
+
 if !exists(":DiffOrig")
   command DiffOrig vert new | set bt=nofile | r ++edit # | 0d_ | diffthis
                   \ | wincmd p | diffthis
@@ -131,3 +133,10 @@ if has('langmap') && exists('+langnoremap')
   " compatible).
   set langnoremap
 endif
+
+" highlight trailing whitespace
+highlight ExtraWhitespace ctermbg=red guibg=red
+match ExtraWhitespace /\s\+\%#\@<!$/
+
+" Remove trailing whitespace on save for *.py files
+autocmd BufWritePre *.py :%s/\s\+$//e
