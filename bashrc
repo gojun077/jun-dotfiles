@@ -15,7 +15,8 @@ export QT_IM_MODULE=ibus
 export CLUTTER_IM_MODULE=ibus
 export ECORE_IMF_MODULE=xim
 # Note: for ibus to work in non-GTK/QT apps, the ibus-daemon
-# must be launched with the --xim option.
+# must be launched with the following options:
+# env IBUS_ENABLE_SYNC_MODE=0 ibus-daemon -rdx
 #############################
 export TERM=xterm-256color
 
