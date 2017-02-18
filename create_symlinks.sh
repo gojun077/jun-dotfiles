@@ -70,7 +70,7 @@ done
 if [ -f /usr/bin/cmus ]; then
   create_sym "$HOME/.config/cmus/lib.pl" "$HOME/dotfiles/cmus_libpl"
 else
-  echo "CMUS is not installed on this machine"
+  printf "%s\n" "CMUS is not installed on this machine"
 fi
 
 #LXTERMINAL CONFIG
@@ -78,7 +78,7 @@ if [ -f /usr/bin/lxterminal ]; then
   create_sym "$HOME/.config/lxterminal/lxterminal.conf" \
              "$HOME/dotfiles/lxterminal"
 else
-  echo "lxterminal is not installed on this machine"
+  printf "%s\n" "lxterminal is not installed on this machine"
 fi
 
 #MAME CONFIG
@@ -86,14 +86,14 @@ if [ -f /usr/bin/sdlmame ]; then
   mkdir -p "$HOME/.mame/ini"
   create_sym "$HOME/.mame/ini/mame.ini" "$HOME/dotfiles/mame.ini"
 else
-  echo "sdlmame is not installed on this machine"
+  printf "%s\n" "sdlmame is not installed on this machine"
 fi
 
 #TERMINATOR CONFIG
 if [ -f /usr/bin/terminator ]; then
   create_sym "$HOME/.config/terminator/config" "$HOME/dotfiles/terminator"
 else
-  echo "terminator is not installed on this machine"
+  printf "%s\n" "terminator is not installed on this machine"
 fi
 
 #IRSSI CONFIG
@@ -106,14 +106,14 @@ if [ -f /usr/bin/irssi ]; then
     ln -s "$HOME/SpiderOak Hive/keys/irssi.pem" "$HOME/.irssi/"
   fi
 else
-  echo "irssi is not installed on this machine"
+  printf "%s\n" "irssi is not installed on this machine"
 fi
 
 #QUODLIBET CONFIG
 if [ -f /usr/bin/quodlibet ]; then
   create_sym "$HOME/.quodlibet/stations" "$HOME/dotfiles/quod_stations"
 else
-  echo "quodlibet is not installed on this machine"
+  printf "%s\n" "quodlibet is not installed on this machine"
 fi
 # Note: Recent versions of quodlibet overwrite the symlinked
 # 'stations' file and replace it with a regular file
@@ -137,7 +137,7 @@ if [ -f /usr/sbin/openbox-session ]; then
   create_sym "$HOME/.config/openbox/autostart" \
              "$HOME/dotfiles/openbox/openbox-autostart"
 else
-  echo "openbox DE is not installed on this machine"
+  printf "%s\n" "openbox DE is not installed on this machine"
 fi
 
 ######################################################
@@ -148,7 +148,7 @@ if [ -f /usr/bin/xfce4-terminal ]; then
   create_sym "$HOME/.config/xfce4/terminal/terminalrc" \
              "$HOME/dotfiles/xfce4/xfceTerm"
 else
-  echo "xfce-terminal is not installed on this machine"
+  printf "%s\n" "xfce-terminal is not installed on this machine"
 fi
 
 # XFCE4 MENU
@@ -163,7 +163,7 @@ if [ -f /usr/bin/startxfce4 ]; then
   create_sym "$HOME/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml" \
     "$HOME/dotfiles/xfce4-keyboard-shortcuts.xml"
 else
-  echo "xfce4 is not installed on this machine"
+  printf "%s\n" "xfce4 is not installed on this machine"
 fi
 
 ######################################################
@@ -196,7 +196,7 @@ fi
 if [ -f /usr/bin/dnsmasq ]; then
   create_sym "/etc/dnsmasq.conf" "$HOME/dotfiles/dnsmasq"
 else
-  echo "dnsmasq is not installed on this machine"
+  printf "%s\n" "dnsmasq is not installed on this machine"
 fi
 # NOTE ABOUT dnsmasq and SELINUX
 # When you create a symlink from $HOME/dotfiles/dnsmasq to
@@ -217,7 +217,7 @@ if [ -f /usr/sbin/pacman ]; then
   create_sym "/etc/pacman.conf" "$HOME/dotfiles/pacman.conf"
   create_sym "/etc/pacman.d/mirrorlist" "$HOME/dotfiles/pacman_mirrorlist"
 else
-  echo "This system is not running Archlinux"
+  printf "%s\n" "This system is not running Archlinux"
 fi
 
 if which bitlbee; then
@@ -227,13 +227,13 @@ if which bitlbee; then
     create_sym "/etc/bitlbee/bitlbee.conf" "$HOME/dotfiles/bitlbee"
   fi
 else
-  echo "bitlbee is not installed on this machine"
+  printf "%s\n" "bitlbee is not installed on this machine"
 fi
 
 if [ -f /usr/bin/vsftpd ]; then
   create_sym "/etc/vsftpd.conf" "$HOME/dotfiles/vsftpd.conf"
 else
-  echo "vsftpd is not installed on this machine"
+  printf "%s\n" "vsftpd is not installed on this machine"
 fi
 
 if [ -f /usr/bin/motion ]; then
@@ -246,7 +246,7 @@ if [ -f /usr/bin/motion ]; then
     create_sym "/etc/motion/motion.conf" "$HOME/dotfiles/motion.conf"
   fi
 else
-  echo "motion is not installed on this machine"
+  printf "%s\n" "motion is not installed on this machine"
 fi
 
 # Set config for ssh daemon
@@ -259,7 +259,7 @@ if [ -f /usr/bin/ansible ]; then
   create_sym "/etc/ansible/group_vars/ubuntu_base" \
              "$HOME/dotfiles/ansible/group_vars/ubuntu_base"
 else
-  echo "ansible is not installed on this machine"
+  printf "%s\n" "ansible is not installed on this machine"
 fi
 
 # Note: qemu.conf is Archlinux-specific customized
@@ -267,7 +267,7 @@ fi
 if [ -f /usr/bin/libvirtd ]; then
   create_sym "/etc/libvirt/qemu.conf" "$HOME/dotfiles/qemu.conf"
 else
-  echo "libvirt is not installed on this machine"
+  printf "%s\n" "libvirt is not installed on this machine"
 fi
 
 
@@ -281,7 +281,7 @@ if ! [ -d "$HOME/tmp" ]; then
 fi
 
 if ! [ -d /root/tmp ]; then
-  echo "Make sure to create /root/tmp for when vim is run as 'root'"
+  printf "%s\n" "Make sure to create /root/tmp for when vim is run as 'root'"
 fi
 
 # Create symlinks for vim syntax files
