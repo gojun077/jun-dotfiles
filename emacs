@@ -22,6 +22,7 @@
 (require 'cl)
 (defvar gojun-pkglist
   '(ansible
+    ;auctex
     color-theme-sanityinc-solarized
     fill-column-indicator
     flycheck
