@@ -108,7 +108,7 @@
     ("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default)))
  '(package-selected-packages
    (quote
-    (yaml-mode rw-language-and-country-codes rw-ispell rw-hunspell racket-mode paredit oz markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible)))
+    (ein yaml-mode rw-language-and-country-codes rw-ispell rw-hunspell racket-mode paredit oz markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible)))
  '(python-shell-completion-native-disabled-interpreters (quote ("pypy ipython3"))))
 
 
@@ -134,8 +134,8 @@
 ; python -m doctest myprog.py -v
 ;
 (setq python-shell-completion-native nil)
-(setq python-shell-interpreter "ipython3")
-(setq python-shell-interpreter-args "--simple-prompt -i")
+(setq python-shell-interpreter "ipython3"
+      python-shell-interpreter-args "--simple-prompt -i --pprint")
 (setq ansi-color-for-comint-mode t)
 
 ; C-\ language toggle
