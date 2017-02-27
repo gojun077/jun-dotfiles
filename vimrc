@@ -3,7 +3,7 @@
 " Maintainer:   Bram Moolenaar <Bram@vim.org>
 " Last Updated:  2016-12-28
 " Customized by: Jun Go
-" Last change:  2017-02-18
+" Last change:  2017-02-27
 "
 " To use it, copy it to
 "     for Unix and OS/2:  ~/.vimrc
@@ -134,9 +134,15 @@ if has('langmap') && exists('+langnoremap')
   set langnoremap
 endif
 
-" highlight trailing whitespace
+" highlight trailing whitespace in red but not in Insert mode
+" highlight whitespace when you open a new buffer
 highlight ExtraWhitespace ctermbg=red guibg=red
-match ExtraWhitespace /\s\+\%#\@<!$/
+match ExtraWhitespace /\s\+$/
+autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
+autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
+autocmd InsertLeave * match ExtraWhitespace /\s\+$/
+autocmd BufWinLeave * call clearmatches()
+
 
 " Remove trailing whitespace on save for *.py files
 autocmd BufWritePre *.py :%s/\s\+$//e
