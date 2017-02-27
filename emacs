@@ -23,11 +23,9 @@
 (defvar gojun-pkglist
   '(ansible
     color-theme-sanityinc-solarized
-    edit-server
     fill-column-indicator
     flycheck
     markdown-mode
-    org-trello
     paredit
     racket-mode
     rw-hunspell
@@ -93,7 +91,24 @@
                       '("NanumGothic" . "unicode-bmp"))
     (set-face-attribute 'default nil
                         :font fontset
-                        :height 110)))
+                        :height 120)))
+
+;;=========================
+;;   CUSTOM MENU OPTIONS
+;;=========================
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   (quote
+    ("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default)))
+ '(package-selected-packages
+   (quote
+    (yaml-mode rw-language-and-country-codes rw-ispell rw-hunspell racket-mode paredit oz markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible)))
+ '(python-shell-completion-native-disabled-interpreters (quote ("pypy ipython3"))))
 
 
 ;;======================
@@ -109,11 +124,18 @@
 ; shell script mode formatting
 (setq sh-basic-offset 2)
 (setq sh-indentation 2)
-; python settings
+; Python settings
+; Note: recent versions of ipython and python interpreters
+; don't support readline() and doctests do not show up
+; in the emacs inferior process running python/ipython.
+; For the time being, run python from CLI as follows:
+;
+; python -m doctest myprog.py -v
+;
+(setq python-shell-completion-native nil)
 (setq python-shell-interpreter "ipython3")
 (setq python-shell-interpreter-args "--simple-prompt -i")
 (setq ansi-color-for-comint-mode t)
-(setq python-shell-completion-native nil)
 
 ; C-\ language toggle
 (setq default-input-method "korean-hangul")
@@ -144,33 +166,7 @@
 ; use xetex to render pdf from LaTeX
 (setq TeX-engine 'xetex)
 
-; org-trello-mode formatting
-(setq org-todo-keyword-faces
- (quote
-  (("Backlog" . "black")
-   ("Queue" . "blue")
-   ("WIP" . "red")
-   ("Done" . "green")
-   ("Cancelled" . "gray"))))
-; org-trello-mode keywords
-(setq org-todo-keywords
- (quote
-  ((sequence "Backlog" "Queue" "WIP" "DONE" "Cancelled"))))
-; org-trello-mode keybinding
-(setq org-trello-current-prefix-keybinding "C-c o")
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   (quote
-    ("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default)))
- '(org-trello-current-prefix-keybinding "C-c o")
- '(package-selected-packages
-   (quote
-    (yaml-mode rw-language-and-country-codes rw-ispell rw-hunspell racket-mode paredit oz org-trello markdown-mode flycheck fill-column-indicator edit-server color-theme-sanityinc-solarized ansible))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -180,9 +176,6 @@
 
 ;; Commands to run when Emacs launched in graphical mode
 (when (display-graphic-p)
-  ; start edit-server (to enable Emacs editing with Chrome plug-in)
-  (require 'edit-server)
-  (edit-server-start)
 ; only run whitespace mode in graphical session
   (global-whitespace-mode 1)
   (load-theme 'sanityinc-solarized-light)

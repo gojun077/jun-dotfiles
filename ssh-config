@@ -45,3 +45,16 @@ Host gitlab.com
      PreferredAuthentications publickey
      IdentitiesOnly yes
      IdentityFile ~/.ssh/archjun_rsa
+Host vxtest
+     User ubuntu
+     Hostname 192.168.4.103
+     Port 22
+     IdentitiesOnly yes
+     IdentityFile ~/.ssh/cloud.key
+
+Host d257
+     User archjun
+     Hostname 10.10.10.100
+     Port 22
+     IdentitiesOnly yes
+     IdentityFile ~/.ssh/archjun_rsa

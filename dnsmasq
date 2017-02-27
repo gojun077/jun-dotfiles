@@ -64,7 +64,7 @@ no-resolv
 
 # Add other name servers here, with domain specs if they are for
 # non-public domains.
-server=/192.168.95.0/0.0.0.0
+#server=/192.168.95.0/0.0.0.0
 
 # Example of routing PTR queries to nameservers: this will send all
 # address->name queries for 192.168.3/24 to nameserver 10.1.2.3
@@ -442,7 +442,8 @@ dhcp-range=10.10.10.30,10.10.10.60,12h
 #dhcp-boot=pxelinux.0
 #dhcp-boot=/uefi/bootx64.efi
 
-# The same as above, but use custom tftp-server instead machine running dnsmasq
+# The same as above, but use custom tftp-server instead of
+# machine running dnsmasq
 #dhcp-boot=pxelinux,server.name,192.168.1.100
 
 # Boot for Etherboot gPXE. The idea is to send two different
