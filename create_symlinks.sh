@@ -241,9 +241,9 @@ if [ -f /usr/bin/motion ]; then
   # If machine is U36JC, use motion-u36jc.conf
   if [[ "$SYSINFO" = *U36JC* ]]; then
     create_sym "/etc/motion/motion.conf" "$HOME/dotfiles/motion-u36jc.conf"
-  # For all other machines use regular motion.conf
+  # For all other machines use regular motion-4.conf
   else
-    create_sym "/etc/motion/motion.conf" "$HOME/dotfiles/motion.conf"
+    create_sym "/etc/motion/motion.conf" "$HOME/dotfiles/motion-4.conf"
   fi
 else
   printf "%s\n" "motion is not installed on this machine"
