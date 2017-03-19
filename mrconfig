@@ -86,3 +86,6 @@ checkout = git clone 'git@gitlab.com:gojun077/6.00.1x_SP2017.git' '6.00.1x_SP201
 
 [Documents/MOOC/Coursera/BD_Integration_and_Processing_SP_2017]
 checkout = git clone 'git@gitlab.com:gojun077/BD_Integration_and_Processing_SP_2017.git' 'BD_Integration_and_Processing_SP_2017'
+
+[Documents/MOOC/edX/PH526x_AU2016_Py_for_Research]
+checkout = git clone 'ssh://git@bitbucket.org/gojun077/ph526x_au2016_py_for_research.git' 'PH526x_AU2016_Py_for_Research'
