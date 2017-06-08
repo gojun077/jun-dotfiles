@@ -32,6 +32,7 @@
     rw-hunspell
     rw-ispell
     rw-language-and-country-codes
+    web-mode
     yaml-mode)
   "List of packages to ensure are installed at launch.")
 
@@ -92,7 +93,7 @@
                       '("NanumGothic" . "unicode-bmp"))
     (set-face-attribute 'default nil
                         :font fontset
-                        :height 120)))
+                        :height 140)))
 
 ;;=========================
 ;;   CUSTOM MENU OPTIONS
@@ -108,7 +109,7 @@
     ("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default)))
  '(package-selected-packages
    (quote
-    (ein yaml-mode rw-language-and-country-codes rw-ispell rw-hunspell racket-mode paredit oz markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible)))
+    (web-mode ein yaml-mode rw-language-and-country-codes rw-ispell rw-hunspell racket-mode paredit oz markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible)))
  '(python-shell-completion-native-disabled-interpreters (quote ("pypy ipython3"))))
 
 
