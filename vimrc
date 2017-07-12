@@ -146,3 +146,6 @@ autocmd BufWinLeave * call clearmatches()
 
 " Remove trailing whitespace on save for *.py files
 autocmd BufWritePre *.py :%s/\s\+$//e
+
+" Toggle between paste and non-paste mode with <F2>
+set pastetoggle=<F2>
