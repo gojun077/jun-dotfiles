@@ -20,6 +20,7 @@ export ECORE_IMF_MODULE=xim
 #############################
 
 export TERM=xterm-256color
+export WINEPREFIX=/MULTIMEDIA/wine
 
 if [ -f  /usr/sbin/pacman ]; then
   archey3 # Archlinux only
