@@ -484,7 +484,7 @@ dhcp-match=BC_EFI, option:client-arch, 7 #EFI x86-64
 # Load different PXE boot image depending on client architecture
 #pxe-service=tag:x86PC,X86PC, "Install Linux on x86 legacy BIOS", pxelinux
 #pxe-service=IA32_EFI,"Install Linux on IA32-EFI", uefi/bootx32.efi
-pxe-service=tag:BC_EFI,BC_EFI, "Install Linux on x86-64 UEFI", uefi/bootx64.efi
+#pxe-service=tag:BC_EFI,BC_EFI, "Install Linux on x86-64 UEFI", uefi/bootx64.efi
 
 # Loads <tftp-root>/pxelinux.0 from TFTP server at 1.2.3.4.
 # Beware this fails on old PXE ROMS.
