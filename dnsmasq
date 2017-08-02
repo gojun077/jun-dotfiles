@@ -482,7 +482,7 @@ dhcp-match=BC_EFI, option:client-arch, 7 #EFI x86-64
 #pxe-service=x86PC, "Install Linux", pxelinux
 
 # Load different PXE boot image depending on client architecture
-pxe-service=tag:x86PC,X86PC, "Install Linux on x86 legacy BIOS", pxelinux
+#pxe-service=tag:x86PC,X86PC, "Install Linux on x86 legacy BIOS", pxelinux
 #pxe-service=IA32_EFI,"Install Linux on IA32-EFI", uefi/bootx32.efi
 pxe-service=tag:BC_EFI,BC_EFI, "Install Linux on x86-64 UEFI", uefi/bootx64.efi
 
