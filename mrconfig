@@ -23,8 +23,8 @@ checkout = git clone 'git@bitbucket.org:gojun077/whatyourereallymeanttodo.git' '
 [Documents/resume]
 checkout = git clone 'git@gitlab.com:gojun077/resume.git' 'resume'
 
-[Documents/MyProjects/misc]
-checkout = git clone 'git@bitbucket.org:gojun077/myprojects-misc.git' 'misc'
+#[Documents/MyProjects/misc]
+#checkout = git clone 'git@bitbucket.org:gojun077/myprojects-misc.git' 'misc'
 
 [Documents/MOOC/Udacity/git-github]
 checkout = git clone 'git@gitlab.com:gojun077/git-github.git' 'git-github'
@@ -32,14 +32,14 @@ checkout = git clone 'git@gitlab.com:gojun077/git-github.git' 'git-github'
 [Documents/openstack-conf]
 checkout = git clone 'git@gitlab.com:gojun077/openstack-conf.git' 'openstack-conf'
 
-[Documents/growin-server-config]
-checkout = git clone 'git@gitlab.com:gojun077/growin-server-config.git' 'growin-server-config'
+#[Documents/growin-server-config]
+#checkout = git clone 'git@gitlab.com:gojun077/growin-server-config.git' 'growin-server-config'
 
 [/MULTIMEDIA/vagrant_boxen]
 checkout = git clone 'git@gitlab.com:gojun077/vagrant_boxen.git' 'vagrant_boxen'
 
-[Documents/miq_scripts]
-checkout = git clone 'git@gitlab.com:growinkorea/miq_scripts.git' 'miq_scripts'
+#[Documents/miq_scripts]
+#checkout = git clone 'git@gitlab.com:growinkorea/miq_scripts.git' 'miq_scripts'
 
 [/usr/local/tftpboot/pxelinux]
 checkout = git clone 'git@github.com:gojun077/pxe-config.git' 'pxelinux'
@@ -89,3 +89,15 @@ checkout = git clone 'git@gitlab.com:gojun077/BD_Integration_and_Processing_SP_2
 
 [Documents/MOOC/edX/PH526x_AU2016_Py_for_Research]
 checkout = git clone 'ssh://git@bitbucket.org/gojun077/ph526x_au2016_py_for_research.git' 'PH526x_AU2016_Py_for_Research'
+
+[Documents/MOOC/edX/BAMM.101x_SU2017_Analytics_in_Python]
+checkout = git clone 'ssh://git@bitbucket.org/gojun077/bamm.101x_su2017_analytics_in_python.git' 'BAMM.101x_SU2017_Analytics_in_Python'
+
+[Documents/MOOC/edX/LFS161x_Intro_to_Devops]
+checkout = git clone 'ssh://git@bitbucket.org/gojun077/lfs161x_intro_to_devops.git' 'LFS161x_Intro_to_Devops'
+
+[Documents/MOOC/Udacity/ud170_data_analysis_intro]
+checkout = git clone 'ssh://git@bitbucket.org/gojun077/ud170_data_analysis_intro.git' 'ud170_data_analysis_intro'
+
+[Documents/osslab]
+checkout = git clone 'git@gitlab.com:osslabteam/osslab.git' 'osslab'
