@@ -11,7 +11,6 @@
 [plugins]
 [profiles]
   [[default]]
-    background_image = None
     font = Monospace 11
     scrollback_infinite = True
     scrollbar_position = left
