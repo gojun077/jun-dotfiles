@@ -89,3 +89,6 @@ checkout = git clone 'git@gitlab.com:gojun077/BD_Integration_and_Processing_SP_2
 
 [Documents/MOOC/edX/PH526x_AU2016_Py_for_Research]
 checkout = git clone 'ssh://git@bitbucket.org/gojun077/ph526x_au2016_py_for_research.git' 'PH526x_AU2016_Py_for_Research'
+
+[Documents/osslab]
+checkout = git clone 'git@gitlab.com:osslabteam/osslab.git' 'osslab'
