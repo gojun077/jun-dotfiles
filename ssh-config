@@ -58,3 +58,10 @@ Host xpsm1330
      Port 22
      IdentitiesOnly yes
      IdentityFile ~/.ssh/archjun_rsa
+
+Host EC2
+     User ec2-user
+     Hostname 52.78.21.252
+     Port 22
+     IdentitiesOnly yes
+     IdentityFile ~/.ssh/juns_aws_keys.pem
