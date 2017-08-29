@@ -5,6 +5,7 @@
 # MacOS-specific settings
 AddKeysToAgent yes
 UseKeychain yes
+
 # Global Defaults
 TCPKeepAlive=yes
 ServerAliveInterval=15
@@ -68,3 +69,10 @@ Host EC2
      Port 22
      IdentitiesOnly yes
      IdentityFile ~/.ssh/juns_aws_keys.pem
+
+Host ATTO
+     User peter.go
+     Hostname 10.51.11.12
+     Port 22
+     IdentitiesOnly yes
+     IdentityFile ~/.ssh/archjun_rsa
