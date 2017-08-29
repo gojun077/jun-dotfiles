@@ -1,19 +1,21 @@
 #
 # ~/.bashrc
-#
+# for MAC OS
+# Last Updated: 2017-08-29
 
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
-export EDITOR=emacs
+export EDITOR=/usr/local/bin/emacs
 
 export TERM=xterm-256color
 
 PS1='[\u@\h \W]\$ '
-alias ls='ls --color=auto'
+alias ls='ls -FHG'
 alias vi='vim'
 alias ㅊㅇ='cd'
 alias 니='ls'
+alias screen='/usr/local/bin/screen'
 # When you run ssh-agent for the first time, you need to add
 # your private key(s) with 'ssh-add /path/to/priv/key'
 alias genpw='date +%s | shasum -a 256 | base64 | head -c 32 ; echo'
