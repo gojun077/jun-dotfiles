@@ -1,6 +1,6 @@
 # Jun's ssh config ~/.ssh/config
 # Created 2016-02-12
-# Last Updated 2017-02-18
+# Last Updated 2017-09-05
 
 # Global Defaults
 TCPKeepAlive=yes
@@ -65,3 +65,10 @@ Host EC2
      Port 22
      IdentitiesOnly yes
      IdentityFile ~/.ssh/juns_aws_keys.pem
+
+Host ATTO
+     User peter.go
+     Hostname 10.51.11.12
+     Port 22
+     IdentitiesOnly yes
+     IdentityFile ~/.ssh/archjun_rsa

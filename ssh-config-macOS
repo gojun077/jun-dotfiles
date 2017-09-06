@@ -70,7 +70,7 @@ Host EC2
      IdentitiesOnly yes
      IdentityFile ~/.ssh/juns_aws_keys.pem
 
-Host ATTO
+Host ATTOgit
      User peter.go
      Hostname 10.51.11.12
      Port 22
