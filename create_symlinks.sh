@@ -195,6 +195,7 @@ fi
 
 if [ -f /usr/bin/dnsmasq ]; then
   create_sym "/etc/dnsmasq.conf" "$HOME/dotfiles/dnsmasq"
+  create_sym "/usr/local/dnsmasq/resolv-file" "$HOME/dotfiles/dnsmasq_resolv_file"
 else
   printf "%s\n" "dnsmasq is not installed on this machine"
 fi
