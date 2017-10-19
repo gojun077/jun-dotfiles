@@ -80,7 +80,7 @@
 
 ;; Font settings
 (set-face-attribute 'default nil :font "Menlo")
-(set-face-attribute 'default nil :height 165)
+(set-face-attribute 'default nil :height 140)
 
 
 ;;=========================

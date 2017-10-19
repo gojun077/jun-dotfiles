@@ -40,6 +40,13 @@ defflow auto
 #term xterm
 term screen-256color
 
+#################
+#
+# mouse settings
+#
+
+mousetrack on  # enable mouse select of active region (C-a <TAB> for mouse)
+
 ################
 
 # This is how one can set a reattach password:
