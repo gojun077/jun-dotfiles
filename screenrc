@@ -45,7 +45,7 @@ term screen-256color
 # mouse settings
 #
 
-mousetrack on  # enable mouse select of active region (C-a <TAB> for mouse)
+#mousetrack on  # enable mouse select of active region (C-a <TAB> for mouse)
 
 ################
 
