@@ -25,6 +25,7 @@
   '(ansible
     auctex
     color-theme-sanityinc-solarized
+    exec-path-from-shell  ; fix $PATH env var on MacOS for flycheck
     fill-column-indicator
     flycheck
     markdown-mode
@@ -53,7 +54,7 @@
       (package-install p))))
 
 (provide 'gojun-pkglist)
-
+(exec-path-from-shell-initialize)  ; fix $PATH env var on MacOS for flycheck
 (require 'flycheck)
 (require 'rw-hunspell)
 (require 'rw-language-and-country-codes)
