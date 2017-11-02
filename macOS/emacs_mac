@@ -25,6 +25,7 @@
   '(ansible
     auctex
     color-theme-sanityinc-solarized
+    exec-path-from-shell  ; fix $PATH env var on MacOS for flycheck
     fill-column-indicator
     flycheck
     markdown-mode
@@ -53,7 +54,7 @@
       (package-install p))))
 
 (provide 'gojun-pkglist)
-
+(exec-path-from-shell-initialize)  ; fix $PATH env var on MacOS for flycheck
 (require 'flycheck)
 (require 'rw-hunspell)
 (require 'rw-language-and-country-codes)
@@ -70,6 +71,7 @@
 (column-number-mode 1)
 ; don't show menu bar
 (menu-bar-mode 0)
+
 ; don't show scrollbar
 (scroll-bar-mode 0)
 ; highlight parens
@@ -78,21 +80,9 @@
 (tool-bar-mode 0)
 
 ;; Font settings
-(defun xftp (&optional frame)
-  "Return t if FRAME support XFT font backend."
-  (let ((xft-supported))
-    (mapc (lambda (x) (if (eq x 'xft) (setq xft-supported t)))
-          (frame-parameter frame 'font-backend))
-    xft-supported))
-(when (xftp)
-  (let ((fontset "fontset-default"))
+(set-face-attribute 'default nil :font "Menlo")
+(set-face-attribute 'default nil :height 140)
 
-    (set-fontset-font fontset 'latin
-                      '("monospace" . "unicode-bmp"))
-
-    (set-face-attribute 'default nil
-                        :font fontset
-                        :height 140)))
 
 ;;=========================
 ;;   CUSTOM MENU OPTIONS
@@ -106,10 +96,13 @@
  '(custom-safe-themes
    (quote
     ("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default)))
- '(epg-gpg-program "/usr/local/MacGPG2/bin/gpg2"))
+ '(epg-gpg-program "/usr/local/MacGPG2/bin/gpg2")
  '(package-selected-packages
    (quote
-    (web-mode ein yaml-mode rw-language-and-country-codes rw-ispell rw-hunspell racket-mode paredit oz markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible)))
+    (exec-path-from-shell yaml-mode web-mode rw-language-and-country-codes rw-ispell rw-hunspell racket-mode paredit markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized auctex ansible))))
+ '(package-selected-packages
+   (quote
+    (web-mode ein yaml-mode rw-language-and-country-codes racket-mode paredit markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible)))
  '(python-shell-completion-native-disabled-interpreters (quote ("pypy ipython3")))
 
 
@@ -136,7 +129,7 @@
 ; python -m doctest myprog.py -v
 ;
 (setq python-shell-completion-native nil)
-(setq python-shell-interpreter "ipython3"
+(setq python-shell-interpreter "/usr/local/bin/ipython"
       python-shell-interpreter-args "--simple-prompt -i --pprint")
 (setq ansi-color-for-comint-mode t)
 
