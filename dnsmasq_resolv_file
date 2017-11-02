@@ -1,2 +1,3 @@
 # dnsmasq resolv.conf override
 nameserver 168.126.63.1
+nameserver 8.8.8.8

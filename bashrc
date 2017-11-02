@@ -43,3 +43,4 @@ alias wine='WINEARCH=win32 WINEPREFIX=/MULTIMEDIA/wine /usr/bin/wine'
 alias winecfg='WINEARCH=win32 WINEPREFIX=/MULTIMEDIA/wine winecfg'
 
 # vim: ts=2 sw=2 et :
+export PATH="$HOME/.cargo/bin:$PATH"
