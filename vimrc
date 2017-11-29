@@ -73,6 +73,9 @@ set expandtab
 " The following is the default plugins path for vim on Arch
 "set packpath=/usr/share/vim/vimfiles/plugin/
 " On Ubuntu, the following needs to be uncommented (Run Time Path)
+" On Fedora, you must install language-specific plugins for syntastic
+" i.e., 'vim-syntastic-python', 'vim-syntastic-sh', etc. to get
+" linter output for .py, .sh, and others files, respectively
 set rtp+=/usr/share/vim/vimfiles/plugin/
 
 " Settings for Syntastic syntax checker plugin

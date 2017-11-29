@@ -44,7 +44,7 @@
 
 # Change this line if you want dns to get its upstream servers from
 # somewhere other that /etc/resolv.conf
-#resolv-file=
+#resolv-file=/usr/local/dnsmasq/resolv-file
 
 # By  default,  dnsmasq  will  send queries to any of the upstream
 # servers it knows about and tries to favour servers known to be up.
@@ -64,7 +64,8 @@ no-resolv
 
 # Add other name servers here, with domain specs if they are for
 # non-public domains.
-#server=/192.168.95.0/0.0.0.0
+server=168.126.63.1
+server=8.8.8.8
 
 # Example of routing PTR queries to nameservers: this will send all
 # address->name queries for 192.168.3/24 to nameserver 10.1.2.3
