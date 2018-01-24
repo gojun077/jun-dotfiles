@@ -54,7 +54,10 @@
       (package-install p))))
 
 (provide 'gojun-pkglist)
-(exec-path-from-shell-initialize)  ; fix $PATH env var on MacOS for flycheck
+;; setting below to fix $PATH env var on MacOS X
+(when (memq window-system '(mac ns))
+  (exec-path-from-shell-initialize))
+
 (require 'flycheck)
 (require 'rw-hunspell)
 (require 'rw-language-and-country-codes)
