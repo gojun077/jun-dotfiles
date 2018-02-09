@@ -1,0 +1,24 @@
+# interfaces(5) file used by ifup(8) and ifdown(8)
+auto lo
+iface lo inet loopback
+
+auto enp4s0
+iface enp4s0 inet manual
+    up ip link set enp4s0 up
+
+auto br0
+iface br0 inet static
+    bridge_ports br0 enp4s0
+    bridge_fd 0
+    address 192.168.95.97
+    netmask 255.255.255.0
+    network 192.168.95.0
+
+auto wlp5s0
+iface wlp5s0 inet dhcp
+    wpa-conf /etc/wpa_supplicant/local.conf
+    wpa-ssid atto-research-5F
+    #PSK for SSID "atto-research-5F" w/ PW "atto1234"
+    #generate with 'wpa_passphrase <SSID> <plaintextPW>' cmd
+    wpa-psk 1f26053cc147270b42245ccb800ef82a92b80b6895aa21f41fe80ca97c04019a
+

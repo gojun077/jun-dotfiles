@@ -40,6 +40,13 @@ defflow auto
 #term xterm
 term screen-256color
 
+
+###################
+#
+# Back Color Erase
+#
+#defbce on
+
 #################
 #
 # mouse settings
