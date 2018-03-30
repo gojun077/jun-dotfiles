@@ -1,0 +1,8 @@
+auto bond1
+iface bond1 inet manual
+    bond-mode active-backup
+    bond-miimon 100
+    bond-slaves none
+
+auto bond1.240
+iface bond1.240 inet manual

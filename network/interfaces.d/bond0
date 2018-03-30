@@ -1,0 +1,13 @@
+auto bond0
+iface bond0 inet manual
+    bond-mode active-backup
+    bond-miimon 0
+    bond-slaves none
+
+# container vlan
+auto bond0.236
+iface bond0.236 inet manual
+
+# storage vlan
+auto bond0.244
+iface bond0.244 inet manual
