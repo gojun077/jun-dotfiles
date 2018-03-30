@@ -11,10 +11,10 @@
 [plugins]
 [profiles]
   [[default]]
-    background_color = "#fdf6e3"
+    background_color = "#002b36"
     cursor_color = "#aaaaaa"
     font = Monospace 11
-    foreground_color = "#657b83"
+    foreground_color = "#839496"
     scrollback_infinite = True
     scrollbar_position = left
     show_titlebar = False
