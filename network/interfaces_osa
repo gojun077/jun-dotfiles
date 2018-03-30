@@ -1,0 +1,34 @@
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+#
+# Jun's Note 2018.03.30: This is the 'interfaces' file for a
+# HP 380 Gen 8 test server. The iface setup is the same across 6
+# nodes used for a Bare Metal deployment test of OSA Pike
+
+source /etc/network/interfaces.d/*
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# primary iface for bond0
+auto eno1
+iface eno1 inet manual
+    bond-master bond0
+    bond-primary eno1
+
+# slave iface for bond0
+auto eno2
+iface eno2 inet manual
+    bond-master bond0
+
+# primary iface for bond1
+auto eno3
+iface eno3 inet manual
+    bond-master bond1
+    bond-primary eno3
+
+# slave iface for bond1
+auto eno4
+iface eno4 inet manual
+    bond-master bond1
