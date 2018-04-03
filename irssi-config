@@ -13,7 +13,7 @@ servers = (
     ssl_cert = "~/.irssi/irssi.pem";
     ssl_pass = "<irssi.pem_password>";
     ssl_verify = "yes";
-    ssl_capath = "/etc/ssl/certs";
+    #ssl_capath = "/etc/ssl/certs";
   },
   {
     address = "irc.gamesurge.net";
