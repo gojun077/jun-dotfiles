@@ -1,0 +1,10 @@
+auto br-flat
+iface br-flat inet static
+    bridge_ports bond0
+    bridge_stp off
+    bridge_waitport 0
+    bridge_fd 0
+    address 10.10.10.11
+    netmask 255.255.255.0
+    gateway 10.10.10.97
+    dns-nameservers 10.10.10.97

@@ -1,0 +1,8 @@
+auto br-storage
+iface br-storage inet static
+    address 172.29.244.11
+    netmask 255.255.255.0
+    bridge_ports bond0.244
+    bridge_stp off
+    bridge_waitport 0
+    bridge_fd 0

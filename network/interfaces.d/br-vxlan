@@ -1,0 +1,8 @@
+auto br-vxlan
+iface br-vxlan inet static
+    address 172.29.240.11
+    netmask 255.255.255.0
+    bridge_ports bond1.240
+    bridge_stp off
+    bridge_waitport 0
+    bridge_fd 0

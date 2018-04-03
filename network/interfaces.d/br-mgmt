@@ -1,0 +1,8 @@
+auto br-mgmt
+iface br-mgmt inet static
+    address 172.29.236.11
+    netmask 255.255.255.0
+    bridge_ports bond0.236
+    bridge_stp off
+    bridge_waitport 0
+    bridge_fd 0
