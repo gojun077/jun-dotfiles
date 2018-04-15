@@ -1,0 +1,41 @@
+# Original path: `/etc/network/interfaces`
+# Ubuntu 16.0.4-3 LTS
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+# kt-lguplus HP DL360 Gen 7 in 9F Server Room
+#
+# No default gateway in main routing table; instead two new custom
+# tables have been created in `/etc/iproute2/rt_tables`
+# Custom RT tables are named `enp4s0f0` and `enp4s0f1`
+
+source /etc/network/interfaces.d/*
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# The primary network interface
+#auto enp3s0f0
+#iface enp3s0f0 inet dhcp
+
+# Port 3
+auto enp4s0f0
+iface enp4s0f0 inet static
+   address 10.0.0.177
+   netmask 255.0.0.0
+   network 10.0.0.0
+   up ip route add 10.0.0.0/8 src 10.0.0.177 table enp4s0f0
+   up ip route add default via 10.0.0.1 table enp4s0f0
+   up ip rule add from 10.0.0.177 table enp4s0f0
+   up ip rule add to 10.0.0.177 table enp4s0f0
+
+# Port 4
+auto enp4s0f1
+iface enp4s0f1 inet static
+   address 172.23.0.177
+   netmask 255.255.0.0
+   network 172.23.0.0
+   up ip route add 172.23.0.0/16 src 172.23.0.177 table enp4s0f1
+   up ip route add default via 172.23.0.1 table enp4s0f1
+   up ip rule add from 172.23.0.177 table enp4s0f1
+   up ip rule add to 172.23.0.177 table enp4s0f1
