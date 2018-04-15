@@ -1,0 +1,12 @@
+[Unit]
+Description=launch darkhttpd for ubuntu local repo at boot
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/darkhttpd /mirror --port 11112 --pidfile /mirror/darkPID
+ExecStop=kill $(cat /mirror/darkPID)
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
