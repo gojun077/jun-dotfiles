@@ -69,12 +69,9 @@
 (column-number-mode 1)
 ; don't show menu bar
 (menu-bar-mode 0)
-; don't show scrollbar
-(scroll-bar-mode 0)
 ; highlight parens
 (show-paren-mode t)
-; don't show toolbar
-(tool-bar-mode 0)
+
 
 ;; Font settings
 (defun xftp (&optional frame)
@@ -183,6 +180,10 @@
   (load-theme 'sanityinc-solarized-light)
   (load "auctex.el" nil t t)
   (load "preview-latex.el" nil t t)
+  ; don't show scrollbar
+  (scroll-bar-mode -1)
+  ; don't show toolbar
+  (tool-bar-mode -1)
   ;; AUCTEX preview-latex font
   (set-default 'preview-scale-function 1.2))
 
