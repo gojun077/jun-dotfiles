@@ -290,8 +290,8 @@ if ! [ -d "$HOME"/.vim/after/ftplugin ]; then
   mkdir -p "$HOME"/.vim/after/ftplugin
 fi
 
-create_sym "$HOME/.vim/after/ftplugin/yaml.vim" "$HOME/dotfiles/yaml.vim"
-create_sym "$HOME/.vim/after/ftplugin/sh.vim" "$HOME/dotfiles/sh.vim"
+create_sym "$HOME/.vim/after/ftplugin/yaml.vim" "$HOME/dotfiles/vim/yaml.vim"
+create_sym "$HOME/.vim/after/ftplugin/sh.vim" "$HOME/dotfiles/vim/sh.vim"
 
 
 ######################################################
