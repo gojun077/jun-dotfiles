@@ -137,6 +137,7 @@ export WINEPREFIX=/MULTIMEDIA/wine
 
 alias ㅊㅇ='cd'
 alias 니='ls'
+alias ㅣㄴ='ls'
 alias wanderer='cd /MULTIMEDIA/vagrant_boxen'
 alias startxfce4='ssh-agent startxfce4'
 # When you run ssh-agent for the first time, you need to add
