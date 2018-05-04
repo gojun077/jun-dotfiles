@@ -21,6 +21,7 @@ http {
     # server_tokens off;
 
     server_names_hash_bucket_size 128;
+
     # server_name_in_redirect off;
 
     include /etc/nginx/mime.types;
@@ -37,7 +38,7 @@ http {
         server_name     ec2-13-125-143-146.ap-northeast-2.compute.amazonaws.com;
         root          /usr/share/nginx/html;
         server_tokens off;
-        add_header Cache-Control "no-store";  # global behavior for this server
+        add_header Cache-Control no-cache,no-store,must-revalidate;
 
         include /etc/nginx/default.d/*.conf;
 
@@ -59,7 +60,7 @@ http {
         server_name     13.125.143.146;
         root          /usr/share/nginx/html;
         server_tokens off;
-        add_header Cache-Control no-store;
+        add_header Cache-Control no-cache,no-store,must-revalidate;
 
         include /etc/nginx/default.d/*.conf;
 
