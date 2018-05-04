@@ -1,0 +1,147 @@
+user www-data;
+worker_processes auto;
+pid /run/nginx.pid;
+
+events {
+    worker_connections 768;
+    # multi_accept on;
+}
+
+http {
+
+    ##
+    # Basic Settings
+    ##
+
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    types_hash_max_size 2048;
+    # server_tokens off;
+
+    server_names_hash_bucket_size 128;
+    # server_name_in_redirect off;
+
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+        include /etc/nginx/conf.d/*.conf;
+
+        index    index.html index.htm;
+
+
+    server {
+        listen        80;
+        listen        [::]:80;
+        server_name     ec2-13-125-143-146.ap-northeast-2.compute.amazonaws.com;
+        root          /usr/share/nginx/html;
+        server_tokens off;
+        add_header Cache-Control "no-store";  # global behavior for this server
+
+        include /etc/nginx/default.d/*.conf;
+
+        # -----------------------------------------
+        #            Maintenance Mode
+        # -----------------------------------------
+        location / {
+            if (-f /usr/share/nginx/html/maintenance_on.html) {
+                add_header Cache-Control no-cache,no-store,must-revalidate;
+                return 302 https://maintenance.whalex.com;
+
+            }
+        }
+    }
+
+    server {
+        listen        80;
+        listen        [::]:80;
+        server_name     13.125.143.146;
+        root          /usr/share/nginx/html;
+        server_tokens off;
+        add_header Cache-Control no-store;
+
+        include /etc/nginx/default.d/*.conf;
+
+        # -----------------------------------------
+        #            Maintenance Mode
+        # -----------------------------------------
+        location / {
+            if (-f /usr/share/nginx/html/maintenance_on.html) {
+                add_header Cache-Control "no-store" always;
+                return 503;
+            }
+        }
+
+        # -----------------------------------------
+        # Error Pages
+        # -----------------------------------------
+        error_page 503 /maintenance_on.html;
+        location = /maintenance_on.html {
+            add_header Cache-Control no-cache,no-store,must-revalidate always;
+            root /usr/share/nginx/html/;
+        }
+
+    }
+
+
+
+    ##
+    # SSL Settings
+    ##
+
+    ssl_protocols TLSv1.1 TLSv1.2; # Dropping SSLv3, ref: POODLE
+    ssl_prefer_server_ciphers on;
+    ssl_ciphers HIGH:SEED:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!RSAPSK:!aDH:!aECDH:!EDH-DSS-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA:!SRP!DSS;
+
+    ##
+    # Logging Settings
+    ##
+
+    access_log /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log;
+
+    ##
+    # Gzip Settings
+    ##
+
+    gzip on;
+    gzip_disable "msie6";
+
+    # gzip_vary on;
+    # gzip_proxied any;
+    # gzip_comp_level 6;
+    # gzip_buffers 16 8k;
+    # gzip_http_version 1.1;
+    # gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+
+    ##
+    # Virtual Host Configs
+    ##
+
+    include /etc/nginx/conf.d/*.conf;
+    include /etc/nginx/sites-enabled/*;
+}
+
+
+#mail {
+#    # See sample authentication script at:
+#    # http://wiki.nginx.org/ImapAuthenticateWithApachePhpScript
+#
+#    # auth_http localhost/auth.php;
+#    # pop3_capabilities "TOP" "USER";
+#    # imap_capabilities "IMAP4rev1" "UIDPLUS";
+#
+#    server {
+#        listen     localhost:110;
+#        protocol   pop3;
+#        proxy      on;
+#    }
+#
+#    server {
+#        listen     localhost:143;
+#        protocol   imap;
+#        proxy      on;
+#    }
+#}
+
