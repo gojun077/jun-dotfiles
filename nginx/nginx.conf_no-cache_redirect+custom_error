@@ -82,7 +82,6 @@ http {
             add_header Cache-Control no-cache,no-store,must-revalidate always;
             root /usr/share/nginx/html/;
         }
-
     }
 
 
