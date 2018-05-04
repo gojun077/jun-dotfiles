@@ -76,7 +76,8 @@ set expandtab
 " On Fedora, you must install language-specific plugins for syntastic
 " i.e., 'vim-syntastic-python', 'vim-syntastic-sh', etc. to get
 " linter output for .py, .sh, and others files, respectively
-set rtp+=/usr/share/vim/vimfiles/plugin/
+"set rtp+=/usr/share/vim/vimfiles/plugin/
+set rtp+=/usr/share/vim/addons/plugin
 
 " Settings for Syntastic syntax checker plugin
 set statusline+=%#warningmsg#
