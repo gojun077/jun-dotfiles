@@ -32,13 +32,6 @@ Host gitlab.com
      IdentitiesOnly yes
      IdentityFile ~/.ssh/archjun_rsa
 
-Host vxtest
-     User ubuntu
-     Hostname 192.168.4.103
-     Port 22
-     IdentitiesOnly yes
-     IdentityFile ~/.ssh/cloud.key
-
 Host d257
      User archjun
      Hostname 10.10.10.100
@@ -60,13 +53,6 @@ Host xpsm1330
      IdentitiesOnly yes
      IdentityFile ~/.ssh/archjun_rsa
 
-Host EC2
-     User ec2-user
-     Hostname 52.78.21.252
-     Port 22
-     IdentitiesOnly yes
-     IdentityFile ~/.ssh/juns_aws_keys.pem
-
 Host ATTO  # Accessible through VPN or intranet only
      User peter.go
      Hostname 10.51.11.12
@@ -74,9 +60,3 @@ Host ATTO  # Accessible through VPN or intranet only
      IdentitiesOnly yes
      IdentityFile ~/.ssh/archjun_rsa
 
-Host mininet_test
-    User ubuntu
-    Hostname 192.168.8.166
-    Port 22
-    IdentitiesOnly yes
-    IdentityFile ~/.ssh/archjun_rsa
