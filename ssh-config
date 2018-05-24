@@ -9,6 +9,8 @@ ServerAliveCountMax=6
 StrictHostKeyChecking=no
 Compression=yes
 ForwardAgent=yes
+# Specify add'l ssh config files
+Include config_secure
 
 # Per Host Options
 Host bitbucket.org
