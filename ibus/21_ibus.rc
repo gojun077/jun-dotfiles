@@ -3,7 +3,7 @@
 
 if [ "$IM_CONFIG_PHASE" = 2 -a "$(cat /etc/X11/default-display-manager)" != '/usr/sbin/gdm3' ]; then
   # start IBus daemon with ibus-specific unix:tmpdir
-  IBUS_ENABLE_SYNC_MODE=0 /usr/bin/ibus-daemon --daemonize --xim --address 'unix:tmpdir=/tmp/ibus'
+  env IBUS_ENABLE_SYNC_MODE=0 /usr/bin/ibus-daemon -rdx --address 'unix:tmpdir=/tmp/ibus'
 fi
 
 if [ "$IM_CONFIG_PHASE" = 1 ]; then
