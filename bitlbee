@@ -144,10 +144,12 @@ OperPassword = md5:d1ZvN7q1n/ha3b3KsWaOJrufvriP
 ## The location of this file may be different on other distros/OSes. For
 ## example, try /etc/ssl/ca-bundle.pem on OpenSUSE.
 ##
-# CAfile = /etc/ssl/certs/ca-certificates.crt
+
+# CA certs list file for Ubuntu
+CAfile = /etc/ssl/certs/ca-certificates.crt
 
 # CA certs list for Archlinux
-CAfile = /etc/ssl/cert.pem
+#CAfile = /etc/ssl/cert.pem
 
 [defaults]
 
