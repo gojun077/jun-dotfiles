@@ -138,7 +138,7 @@ export WINEPREFIX=/MULTIMEDIA/wine
 alias ㅊㅇ='cd'
 alias 니='ls'
 alias ㅣㄴ='ls'
-alias vagrant='cd /MULTIMEDIA/vagrant_box'
+alias hobo='cd /MULTIMEDIA/vagrant_box'
 #alias startxfce4='ssh-agent startxfce4'  # Ubuntu uses gdm3
 # When you run ssh-agent for the first time, you need to add
 # your private key(s) with 'ssh-add /path/to/priv/key'
