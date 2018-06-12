@@ -11,6 +11,7 @@ Compression=yes
 ForwardAgent=yes
 # Specify add'l ssh config files
 Include config_secure
+Include config_dashboard
 
 # Per Host Options
 Host bitbucket.org
