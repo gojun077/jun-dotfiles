@@ -9,11 +9,11 @@ servers = (
     address = "chat.freenode.net";
     chatnet = "Freenode";
     port = "6697";
-    use_ssl = "yes";
-    ssl_cert = "~/.irssi/irssi.pem";
-    ssl_pass = "<irssi.pem_password>";
-    ssl_verify = "yes";
-    #ssl_capath = "/etc/ssl/certs";
+    use_tls = "yes";
+    tls_cert = "~/.irssi/certs/irssi.pem";
+    tls_pass = "";
+    tls_verify = "yes";
+#    tls_capath = "/etc/ssl/certs";
   },
   {
     address = "irc.gamesurge.net";
