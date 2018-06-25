@@ -145,4 +145,4 @@ alias hobo='cd /MULTIMEDIA/vagrant_box'
 alias genpw='date +%s | sha256sum | base64 | head -c 32 ; echo'
 alias wine='WINEARCH=win32 WINEPREFIX=/MULTIMEDIA/wine /usr/bin/wine'
 alias winecfg='WINEARCH=win32 WINEPREFIX=/MULTIMEDIA/wine winecfg'
-
+alias whalex='cd $HOME/Documents/whalex'
