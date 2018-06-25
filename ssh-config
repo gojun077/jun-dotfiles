@@ -63,3 +63,17 @@ Host ATTO  # Accessible through VPN or intranet only
      IdentitiesOnly yes
      IdentityFile ~/.ssh/archjun_rsa
 
+host haproxy0
+     user vagrant
+     hostname 192.168.26.210
+     port 22
+     identitiesonly yes
+     identityfile ~/.ssh/myvagrant
+
+host haproxy1
+     user vagrant
+     hostname 192.168.26.211
+     port 22
+     identitiesonly yes
+     identityfile ~/.ssh/myvagrant
+
