@@ -68,9 +68,9 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision "shell", inline: <<-SHELL
     apt-get update
-    apt-get install -y redis-server
+    apt-get install -y redis-sentinel
     ufw allow ssh
-    ufw allow 6379/tcp
+    ufw allow 26379/tcp
     ufw --force enable
   SHELL
 end
