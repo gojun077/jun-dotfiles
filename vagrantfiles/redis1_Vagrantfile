@@ -13,15 +13,12 @@ Vagrant.configure("2") do |config|
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
   config.vm.box = "ubuntu/bionic64"
-  config.vm.hostname = 'redis0'
+  config.vm.hostname = 'redis1'
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
   # `vagrant box outdated`. This is not recommended.
   config.vm.box_check_update = true
-
-  # SSH Settings
-  config.ssh.password = "vagrant"
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
@@ -59,7 +56,7 @@ Vagrant.configure("2") do |config|
     # Customize the amount of memory on the VM:
     vb.memory = "2048"
     vb.cpus = 1
-    vb.customize ["modifyvm", :id, "--name", "redis0"]
+    vb.customize ["modifyvm", :id, "--name", "redis1"]
   end
   #
   # View the documentation for the provider you are using for more
@@ -74,6 +71,6 @@ Vagrant.configure("2") do |config|
     apt-get install -y redis-server
     ufw allow ssh
     ufw allow 6379/tcp
-    ufw enable
+    ufw --force enable
   SHELL
 end
