@@ -69,12 +69,13 @@ Vagrant.configure("2") do |config|
   # Enable provisioning with a shell script. Additional provisioners such as
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
-  config.vm.provision "file", source: "~/.ssh/myvagrant.pub", destination: "~/.ssh/authorized_keys"
+
   config.vm.provision "shell", inline: <<-SHELL
     apt-get update
     apt-get install -y redis-server
     ufw allow ssh
     ufw allow 6379/tcp
     ufw enable
+    printf "%s\n" "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDHZZYTPrhFbgtOFGBdY/TKDkRt/5aBVfpMTkiviEjpGJcKLRwp16OJ6ZDFVx8zSj3rVLpdfT9klUhDfkm0987THT9F60mxJJO3NBr4QhD0vJsbNCJanMZyD+GOBSl6fBN+gjugtwGYXKg1JiipHiTW2Ddk37J9WOP+xuXmhKiRtNSCZllqz9TTKelhAAVusSMFZpauvQOiEklDLFxGxZwMO0NCwiBncNL442Xep2Cyg4LDvbmIenZudA9fdAoGQdIqeiP2W9itvYg55gBPBLZXju7sdH6J3S9GPOj9BXXbPH0JtlqNUfl+hCeoyWufdoO8Yilb+4peCHLnmLYeraRz vagrant" >> ~/.ssh/authorized_keys
   SHELL
 end
