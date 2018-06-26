@@ -20,9 +20,8 @@ Vagrant.configure("2") do |config|
   # `vagrant box outdated`. This is not recommended.
   config.vm.box_check_update = true
 
-  # SSH Key Settings
-  config.ssh.insert_key = false
-  config.ssh.private_key_path = "/home/junbuntu/.ssh/myvagrant"
+  # SSH Settings
+  config.ssh.password = "vagrant"
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
@@ -76,6 +75,5 @@ Vagrant.configure("2") do |config|
     ufw allow ssh
     ufw allow 6379/tcp
     ufw enable
-    printf "%s\n" "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDHZZYTPrhFbgtOFGBdY/TKDkRt/5aBVfpMTkiviEjpGJcKLRwp16OJ6ZDFVx8zSj3rVLpdfT9klUhDfkm0987THT9F60mxJJO3NBr4QhD0vJsbNCJanMZyD+GOBSl6fBN+gjugtwGYXKg1JiipHiTW2Ddk37J9WOP+xuXmhKiRtNSCZllqz9TTKelhAAVusSMFZpauvQOiEklDLFxGxZwMO0NCwiBncNL442Xep2Cyg4LDvbmIenZudA9fdAoGQdIqeiP2W9itvYg55gBPBLZXju7sdH6J3S9GPOj9BXXbPH0JtlqNUfl+hCeoyWufdoO8Yilb+4peCHLnmLYeraRz vagrant" >> ~/.ssh/authorized_keys
   SHELL
 end
