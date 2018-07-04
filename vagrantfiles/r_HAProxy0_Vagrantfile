@@ -67,9 +67,11 @@ Vagrant.configure("2") do |config|
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
     apt-get update
-    apt-get install -y haproxy keepalived
+    apt-get install -y haproxy keepalived redis-sentinel
     ufw allow ssh
     ufw allow 9000/tcp
+    ufw allow 6379/tcp
+    ufw allow 26379/tcp
     ufw --force enable
   SHELL
 end
