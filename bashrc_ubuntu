@@ -134,6 +134,7 @@ export ECORE_IMF_MODULE=xim
 
 export TERM=xterm-256color
 export WINEPREFIX=/MULTIMEDIA/wine
+export WHALEX="$HOME/Documents/whalex"
 
 alias ㅊㅇ='cd'
 alias 니='ls'
