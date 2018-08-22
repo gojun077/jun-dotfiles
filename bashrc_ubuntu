@@ -147,3 +147,7 @@ alias genpw='date +%s | sha256sum | base64 | head -c 32 ; echo'
 alias wine='WINEARCH=win32 WINEPREFIX=/MULTIMEDIA/wine /usr/bin/wine'
 alias winecfg='WINEARCH=win32 WINEPREFIX=/MULTIMEDIA/wine winecfg'
 alias whalex='cd $HOME/Documents/whalex'
+
+export GOROOT=/usr/local/go
+export GOPATH=/home/junbuntu/goproj
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/usr/local/go/bin:/home/junbuntu/goproj/bin
