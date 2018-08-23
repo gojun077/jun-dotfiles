@@ -83,5 +83,14 @@ Vagrant.configure("2") do |config|
       ln -s $HM/node-v8.11.4-linux-x64/lib/node_modules/npm/bin/npx-cli.js \
           /usr/local/bin/npx
     fi
+
+    if ! [ rpm -q epel-release ]; then
+      wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm -P /tmp
+      yum install -y /tmp/epel-release-latest-7.noarch.rpm
+    fi
+
+    if ! [ rpm -q nginx ]; then
+      yum install -y nginx
+    fi
   SHELL
 end
