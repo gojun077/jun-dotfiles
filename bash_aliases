@@ -1,0 +1,11 @@
+alias ssh='ssh -o "IdentitiesOnly yes"'
+alias scp='scp -o "IdentitiesOnly yes"'
+alias ㅊㅇ='cd'
+alias 니='ls'
+alias ㅣㄴ='ls'
+alias hobo='cd /MULTIMEDIA/vagrant_box'
+#alias startxfce4='ssh-agent startxfce4'  # Ubuntu uses gdm3
+alias genpw='date +%s | sha256sum | base64 | head -c 32 ; echo'
+alias wine='WINEARCH=win32 WINEPREFIX=/MULTIMEDIA/wine /usr/bin/wine'
+alias winecfg='WINEARCH=win32 WINEPREFIX=/MULTIMEDIA/wine winecfg'
+alias whalex='cd $HOME/Documents/whalex'
