@@ -32,6 +32,8 @@ Vagrant.configure("2") do |config|
   #config.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
   # http nginx
   config.vm.network :forwarded_port, guest: 80, host: 8080
+  # http proxy
+  config.vm.network :forwarded_port, guest:8081, host: 8081
   # https nginx
   config.vm.network :forwarded_port, guest: 443, host: 4430
   # for https://local.whalex.co.kr:3000/
