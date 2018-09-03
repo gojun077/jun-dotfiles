@@ -160,6 +160,7 @@ exec --no-startup-id dropbox start
 exec --no-startup-id env IBUS_ENABLE_SYNC_MODE=0 ibus-daemon -rdx
 exec --no-startup-id SpiderOakONE
 exec --no-startup-id clipit
+exec --no-startup-id nm-applet
 
 # Custom keybindings
 bindsym $mod+Shift+m exec emacs
