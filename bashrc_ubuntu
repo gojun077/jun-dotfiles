@@ -137,7 +137,7 @@ export WINEPREFIX=/MULTIMEDIA/wine
 export WHALEX="$HOME/Documents/whalex"
 
 if [ -f ~/.bash_aliases  ]; then
-  source ~/.bashrc_aliases
+  source ~/.bash_aliases
 fi
 
 # When you run ssh-agent for the first time, you need to add
