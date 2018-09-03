@@ -162,6 +162,8 @@ exec --no-startup-id SpiderOakONE
 exec --no-startup-id clipit
 exec --no-startup-id nm-applet
 exec --no-startup-id redshift-gtk -l 37.5667:126.9781
+exec --no-startup-id run_keybase
+
 # Add background wallpaper
 exec --no-startup-id feh --bg-scale ~/Dropbox/wallpapers/shared/backgrounds/1920x1200/potw1345a.jpg
 # Setup external monitor from work
