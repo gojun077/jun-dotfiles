@@ -4,15 +4,9 @@
 # Config for login shells (run at initial connection)
 
 if [ -f ~/.bashrc ]; then
+  #shellcheck source=/home/junbuntu/.bashrc
   source ~/.bashrc
 fi
 
 # For i3 WM ssh-agent
-if (ps -ef | grep -v grep | grep "/usr/bin/ssh-agent /usr/bin/im-launch i3"); then
-  kill "$(pidof ssh-agent)"
-elif pidof ssh-agent &>/dev/null; then
-  :
-else
-  eval "$(ssh-agent -s)"
-  ssh-add ~/.ssh/archjun_rsa
-fi
+ssh-add ~/.ssh/archjun_rsa
