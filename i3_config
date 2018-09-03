@@ -161,6 +161,7 @@ exec --no-startup-id env IBUS_ENABLE_SYNC_MODE=0 ibus-daemon -rdx
 exec --no-startup-id SpiderOakONE
 exec --no-startup-id clipit
 exec --no-startup-id nm-applet
+exec --no-startup-id redshift-gtk -l 37.5667:126.9781
 # Add background wallpaper
 exec --no-startup-id feh --bg-scale ~/Dropbox/wallpapers/shared/backgrounds/1920x1200/potw1345a.jpg
 # Setup external monitor from work
