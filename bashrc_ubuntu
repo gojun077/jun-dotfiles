@@ -138,6 +138,7 @@ export WINEPREFIX=/MULTIMEDIA/wine
 export WHALEX="$HOME/Documents/whalex"
 
 if [ -f ~/.bash_aliases  ]; then
+  #shellcheck source=/home/junbuntu/dotfiles/bash_aliases
   source ~/.bash_aliases
 fi
 
