@@ -162,6 +162,7 @@ exec --no-startup-id SpiderOakONE
 exec --no-startup-id clipit
 exec --no-startup-id nm-applet
 exec --no-startup-id redshift-gtk -l 37.5667:126.9781
+exec --no-startup-id xscreensaver -nosplash
 exec --no-startup-id run_keybase
 
 # Add background wallpaper
