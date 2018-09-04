@@ -144,6 +144,10 @@ fi
 
 # When you run ssh-agent for the first time, you need to add
 # your private key(s) with 'ssh-add /path/to/priv/key'
+if ! ssh-add -l; then
+  # For i3 WM ssh-agent
+  ssh-add ~/.ssh/archjun_rsa
+fi
 
 export GOROOT=/usr/local/go
 export GOPATH=/home/junbuntu/goproj
