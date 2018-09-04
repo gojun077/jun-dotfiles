@@ -165,7 +165,7 @@ exec --no-startup-id redshift-gtk -l 37.5667:126.9781
 exec --no-startup-id run_keybase
 
 # Add background wallpaper
-exec --no-startup-id feh --bg-scale ~/Dropbox/wallpapers/shared/backgrounds/1920x1200/potw1345a.jpg
+exec --no-startup-id feh --bg-fill -z -D 1200 ~/Dropbox/wallpapers/shared/backgrounds/1920x1200/
 # Setup external monitor from work
 exec --no-startup-id bash ~/.screenlayout/actwo_screens.sh
 
