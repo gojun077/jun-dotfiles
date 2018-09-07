@@ -31,9 +31,13 @@
 
 
 if which rpm 2>/dev/null; then
-  rpm -U /root/amazon-cloudwatch-agent.rpm
+  if ! rpm -q amazon-cloudwatch-agent; then
+    rpm -U /root/amazon-cloudwatch-agent.rpm
+  fi
 elif which dpkg 2>/dev/null; then
-  dpkg -i -E /root/amazon-cloudwatch-agent.deb
+  if ! dpkg -l amazon-cloudwatch-agent; then
+    dpkg -i -E /root/amazon-cloudwatch-agent.deb
+  fi
 else
   printf "%s\n" "### ERROR - Not a RHEL- or Debian-based System! ###"
   exit 1
