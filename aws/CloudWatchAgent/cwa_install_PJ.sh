@@ -30,12 +30,9 @@
 # https://s3.amazonaws.com/amazoncloudwatch-agent/linux/amd64/latest/AmazonCloudWatchAgent.zip
 
 
-rpmbin="$(which rpm 2>/dev/null)"
-dpkgbin="$(which dpkg 2>/dev/null)"
-
-if $rpmbin; then
-  rpm -U ./amazon-cloudwatch.rpm
-elif $dpkgbin; then
+if which rpm 2>/dev/null; then
+  rpm -U ./amazon-cloudwatch-agent.rpm
+elif which dpkg 2>/dev/null; then
   dpkg -i -E ./amazon-cloudwatch-agent.deb
 else
   printf "%s\n" "### ERROR - Not a RHEL- or Debian-based System! ###"
