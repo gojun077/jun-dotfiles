@@ -1,0 +1,6 @@
+{
+    "name": "AmazonCloudWatchAgent",
+    "platform": "linux",
+    "architecture": "amd64",
+    "version": "1.201929.0"
+}
