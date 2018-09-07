@@ -41,4 +41,3 @@ else
   printf "%s\n" "### ERROR - Not a RHEL- or Debian-based System! ###"
   exit 1
 fi
-
