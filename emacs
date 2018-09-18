@@ -14,10 +14,11 @@
 ;;; Code:
 (require 'package)
 (package-initialize)
-(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
-(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/") t)
+(add-to-list 'package-archives
+             '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/") t)
 (add-to-list 'load-path "~/.emacs.d/elpa") ;;personal elisp libs
+
 
 (require 'cl)
 (defvar gojun-pkglist
@@ -26,6 +27,7 @@
     color-theme-sanityinc-solarized
     fill-column-indicator
     flycheck
+    flycheck-gometalinter
     markdown-mode
     paredit
     racket-mode
