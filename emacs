@@ -2,7 +2,7 @@
 
 ;; jun's_emacs_file --- Summary
 ;; Jun Go gojun077@gmail.com
-;; Last Updated 2018-09-19
+;; Last Updated 2018-09-23
 
 ;;; Commentary:
 ;;  I have defined a custom function 'gojun-pkglist-installed-p' that
@@ -68,6 +68,18 @@
 ;; make #! script files executable on save (chmod +x)
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
 
+
+
+(defun go-mode-setup ()
+  ;; run 'go fmt' on .go source files before save
+  (add-hook 'before-save-hook 'gofmt-before-save)
+  ;; customize compile command to run go build
+  (if (not (string-match "go" compile-command))
+      (set (make-local-variable 'compile-command)
+           "go build -v && go test -v && go vet"))
+)
+(add-hook 'go-mode-hook 'go-mode-setup)
+
 ;; mode settings
 ; show col and line numbers
 (column-number-mode 1)
@@ -86,8 +98,6 @@
     xft-supported))
 (when (xftp)
   (let ((fontset "fontset-default"))
-;    (set-fontset-font fontset 'latin
-;                      '("monospace" . "unicode-bmp"))
     (set-fontset-font fontset 'latin
                       '("monofur" . "unicode-bmp"))
     (set-fontset-font fontset 'hangul
@@ -120,8 +130,8 @@
 
 ; Use spaces instead of tabs
 (setq-default indent-tabs-mode nil)
-; But when I must use TAB, set width to 4 chars
-(setq-default tab-width 4)
+; But when I must use TAB, set width to 2 chars
+(setq-default tab-width 2)
 ; formatting for C code
 (setq c-default-style "linux" c-basic-offset 4)
 ; shell script mode formatting
@@ -168,7 +178,15 @@
 (setq ido-everywhere t)
 ; use xetex to render pdf from LaTeX
 (setq TeX-engine 'xetex)
-
+; Allow EasyPG Assistant to use loopback for pinentry
+(setq epa-pinentry-mode 'loopback)
+; start emacs pinentry server
+(pinentry-start)
+; set PATH for emacs shell
+(setenv "PATH" (concat (getenv "PATH") ":/usr/local/go/bin:$HOME/goproj/bin"))
+; set exec-path for emacs to include GOLANG binaries
+(setq exec-path (append exec-path '("/usr/local/go/bin"
+                                    "$HOME/goproj/bin")))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
