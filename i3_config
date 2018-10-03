@@ -165,7 +165,7 @@ exec --no-startup-id redshift-gtk -l 37.5667:126.9781
 exec --no-startup-id xscreensaver -nosplash
 exec --no-startup-id run_keybase
 exec --no-startup-id rescuetime
-exec --no-startup-id pasystray
+exec --no-startup-id volumeicon
 
 # Add background wallpaper
 exec --no-startup-id feh --bg-fill -z -D 1200 ~/Dropbox/wallpapers/shared/backgrounds/1920x1200/
