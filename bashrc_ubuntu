@@ -142,6 +142,12 @@ if [ -f ~/.bash_aliases  ]; then
   source ~/.bash_aliases
 fi
 
+if [ -f ~/"SpiderOak Hive/bashrc_secure/bash_aliases_secure" ]; then
+  #shellcheck source=/home/junbuntu/dotfiles/bash_aliases
+  source ~/"SpiderOak Hive/bashrc_secure/bash_aliases_secure"
+fi
+
+
 # When you run ssh-agent for the first time, you need to add
 # your private key(s) with 'ssh-add /path/to/priv/key'
 if ! ssh-add -l; then
