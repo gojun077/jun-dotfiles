@@ -59,12 +59,14 @@
 (provide 'gojun-pkglist)
 
 (require 'flycheck)
+(require 'flycheck-pyflakes)
 (require 'rw-hunspell)
 (require 'rw-language-and-country-codes)
 (require 'rw-ispell)
 
 ;; turn on flychecking globally
 (add-hook 'after-init-hook 'global-flycheck-mode)
+(add-hook 'python-mode-hook 'flycheck-mode)
 
 ;; make #! script files executable on save (chmod +x)
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
