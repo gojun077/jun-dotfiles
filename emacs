@@ -2,7 +2,7 @@
 
 ;; jun's_emacs_file --- Summary
 ;; Jun Go gojun077@gmail.com
-;; Last Updated 2018-09-23
+;; Last Updated 2019-02-13
 
 ;;; Commentary:
 ;;  I have defined a custom function 'gojun-pkglist-installed-p' that
@@ -71,6 +71,30 @@
 ;; make #! script files executable on save (chmod +x)
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
 
+;; Capitalize keywords in SQL mode
+(add-hook 'sql-mode-hook 'sqlup-mode)
+;; Capitalize keywords in an interactive session (e.g. psql)
+(add-hook 'sql-interactive-mode-hook 'sqlup-mode)
+
+(setq sql-connection-alist
+      '((prod-wr (sql-product 'mysql)
+                  (sql-port 3306)
+                  (sql-server "prod-db-phoenix.cluster-cjb2mxw7e7wr.ap-northeast-2.rds.amazonaws.com")
+                  (sql-user "peer_db_admin"))
+        (prod-ro (sql-product 'mysql)
+                  (sql-port 3306)
+                  (sql-server "prod-db-phoenix.cluster-ro-cjb2mxw7e7wr.ap-northeast-2.rds.amazonaws.com")
+                  (sql-user "peer_db_admin"))
+        (dev (sql-product 'mysql)
+                  (sql-port 3306)
+                  (sql-server "whalex-dev-mini-cluster.cluster-csk9e5mrjeye.ap-northeast-2.rds.amazonaws.com")
+                  (sql-user "Act1108"))
+        (dev-main (sql-product 'mysql)
+                  (sql-port 3306)
+                  (sql-server "172.29.0.155")
+                  (sql-user "Act1108"))
+        )
+)
 
 
 (defun go-mode-setup ()
@@ -123,7 +147,7 @@
     ("4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" "4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default)))
  '(package-selected-packages
    (quote
-    (flycheck-pyflakes go-mode go-playground color-theme-solarized web-mode ein yaml-mode rw-language-and-country-codes rw-ispell rw-hunspell racket-mode paredit oz markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible)))
+    (flycheck-gometalinter sqlup-mode flycheck-pyflakes go-mode go-playground color-theme-solarized web-mode ein yaml-mode rw-language-and-country-codes rw-ispell rw-hunspell racket-mode paredit oz markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible)))
  '(python-shell-completion-native-disabled-interpreters (quote ("pypy ipython3"))))
 
 
