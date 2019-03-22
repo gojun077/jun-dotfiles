@@ -2,7 +2,7 @@
 
 ;; jun's_emacs_file --- Summary
 ;; Jun Go gojun077@gmail.com
-;; Last Updated 2019-02-13
+;; Last Updated 2019-03-22
 
 ;;; Commentary:
 ;;  I have defined a custom function 'gojun-pkglist-installed-p' that
@@ -23,7 +23,6 @@
 (require 'cl)
 (defvar gojun-pkglist
   '(ansible
-    ;auctex
     color-theme-sanityinc-solarized
     fill-column-indicator
     flycheck
@@ -77,14 +76,22 @@
 (add-hook 'sql-interactive-mode-hook 'sqlup-mode)
 
 (setq sql-connection-alist
-      '((prod-wr (sql-product 'mysql)
+      '((prod-wr-user (sql-product 'mysql)
                   (sql-port 3306)
                   (sql-server "prod-db-phoenix.cluster-cjb2mxw7e7wr.ap-northeast-2.rds.amazonaws.com")
                   (sql-user "peer_user"))
-        (prod-ro (sql-product 'mysql)
+        (prod-ro-user (sql-product 'mysql)
                   (sql-port 3306)
                   (sql-server "prod-db-phoenix.cluster-ro-cjb2mxw7e7wr.ap-northeast-2.rds.amazonaws.com")
                   (sql-user "peer_user"))
+        (prod-wr-admin (sql-product 'mysql)
+                  (sql-port 3306)
+                  (sql-server "prod-db-phoenix.cluster-cjb2mxw7e7wr.ap-northeast-2.rds.amazonaws.com")
+                  (sql-user "peer_db_admin"))
+        (prod-ro-admin (sql-product 'mysql)
+                  (sql-port 3306)
+                  (sql-server "prod-db-phoenix.cluster-ro-cjb2mxw7e7wr.ap-northeast-2.rds.amazonaws.com")
+                  (sql-user "peer_db_admin"))
         (dev (sql-product 'mysql)
                   (sql-port 3306)
                   (sql-server "whalex-dev-mini-cluster.cluster-csk9e5mrjeye.ap-northeast-2.rds.amazonaws.com")
@@ -205,10 +212,7 @@
 (setq ido-everywhere t)
 ; use xetex to render pdf from LaTeX
 (setq TeX-engine 'xetex)
-; Allow EasyPG Assistant to use loopback for pinentry
-(setq epa-pinentry-mode 'loopback)
-; start emacs pinentry server
-(pinentry-start)
+
 ; set PATH for emacs shell
 (setenv "PATH" (concat (getenv "PATH") ":/usr/local/go/bin:$HOME/goproj/bin"))
 ; set exec-path for emacs to include GOLANG binaries
@@ -227,7 +231,7 @@
 ; only run whitespace mode in graphical session
   (global-whitespace-mode 1)
   (load-theme 'sanityinc-solarized-light)
-  (load "auctex.el" nil t t)
+  ;(load "auctex.el" nil t t)
   (load "preview-latex.el" nil t t)
   ; don't show scrollbar
   (scroll-bar-mode -1)
