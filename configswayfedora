@@ -1,4 +1,4 @@
-# Default config for sway
+# Jun's config for sway on Fedora 28+
 #
 # Copy this to ~/.config/sway/config and edit it to your liking.
 #
@@ -107,9 +107,7 @@ exec --no-startup-id dropbox start
 exec --no-startup-id env IBUS_ENABLE_SYNC_MODE=0 ibus-daemon -rdx
 exec --no-startup-id SpiderOakONE
 exec --no-startup-id clipit
-exec --no-startup-id nm-applet
 exec --no-startup-id redshift-gtk -l 37.5667:126.9781
-exec --no-startup-id xscreensaver -nosplash
 exec --no-startup-id run_keybase
 exec --no-startup-id rescuetime
 exec --no-startup-id volumeicon
@@ -119,8 +117,8 @@ exec --no-startup-id volumeicon
 #
 bindsym $mod+Shift+m exec emacs
 bindsym $mod+Shift+w exec firefox
-bindsym $mod+Shift+g exec chromium-browser
-bindsym $mod+Shift+f exec nautilus
+bindsym $mod+Shift+g exec google-chrome
+bindsym $mod+Shift+f exec thunar
 bindsym --release $mod+Shift+z exec scrot -s ~/Pictures/scrot-$(date +%F_%H.%M.%S).png
 
 #
