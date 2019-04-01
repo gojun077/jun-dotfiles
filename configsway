@@ -73,6 +73,8 @@ output * bg /usr/share/backgrounds/f28/default/normalish/f28.png fill
 
     # exit sway (logs you out of your wayland session)
     bindsym $mod+Shift+e exit
+
+
 #
 # Moving around:
 #
@@ -222,6 +224,8 @@ bar {
         background #323232
         inactive_workspace #32323200 #32323200 #5c5c5c
     }
+
+    status_command i3status
 }
 
 include /etc/sway/config.d/*
