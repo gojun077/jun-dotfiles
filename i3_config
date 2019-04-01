@@ -178,3 +178,4 @@ bindsym $mod+Shift+w exec firefox
 bindsym $mod+Shift+g exec chromium-browser
 bindsym $mod+Shift+f exec nautilus
 bindsym --release $mod+Shift+z exec scrot -s ~/Pictures/scrot-$(date +%F_%H.%M.%S).png
+
