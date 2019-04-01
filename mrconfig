@@ -101,3 +101,6 @@ checkout = git clone 'ssh://git@bitbucket.org/gojun077/ud170_data_analysis_intro
 
 [Documents/osslab]
 checkout = git clone 'git@gitlab.com:osslabteam/osslab.git' 'osslab'
+
+[Documents/MOOC/unsw_computing1]
+checkout = git clone 'git@bitbucket.org:gojun077/unsw_computing1.git' 'unsw_computing1'
