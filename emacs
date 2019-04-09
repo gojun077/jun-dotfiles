@@ -36,6 +36,7 @@
     rw-hunspell
     rw-ispell
     rw-language-and-country-codes
+    visual-fill-column
     web-mode
     yaml-mode)
   "List of packages to ensure are installed at launch.")
@@ -69,6 +70,9 @@
 
 ;; make #! script files executable on save (chmod +x)
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
+
+;; use visual-fill-column mode with visual-line-mode
+(add-hook 'visual-line-mode-hook 'visual-fill-column-mode)
 
 ;; Capitalize keywords in SQL mode
 (add-hook 'sql-mode-hook 'sqlup-mode)
@@ -154,7 +158,7 @@
     ("4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" "4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default)))
  '(package-selected-packages
    (quote
-    (flycheck-gometalinter sqlup-mode flycheck-pyflakes go-mode go-playground color-theme-solarized web-mode ein yaml-mode rw-language-and-country-codes rw-ispell rw-hunspell racket-mode paredit oz markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible)))
+    (visual-fill-column flycheck-gometalinter sqlup-mode flycheck-pyflakes go-mode go-playground color-theme-solarized web-mode ein yaml-mode rw-language-and-country-codes rw-ispell rw-hunspell racket-mode paredit oz markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible)))
  '(python-shell-completion-native-disabled-interpreters (quote ("pypy ipython3"))))
 
 
@@ -231,8 +235,6 @@
 ; only run whitespace mode in graphical session
   (global-whitespace-mode 1)
   (load-theme 'sanityinc-solarized-light)
-  ;(load "auctex.el" nil t t)
-  (load "preview-latex.el" nil t t)
   ; don't show scrollbar
   (scroll-bar-mode -1)
   ; don't show toolbar
