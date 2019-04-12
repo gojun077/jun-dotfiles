@@ -141,7 +141,8 @@ channels = (
   { name = "silc"; chatnet = "SILC"; autojoin = "No"; },
   { name = "#archlinux"; chatnet = "freenode"; autojoin = "No"; },
   { name = "#kolla"; chatnet = "freenode"; autojoin = "No"; },
-  { name = "#openstack-ko"; chatnet = "freenode"; autojoin = "no"; }
+  { name = "#openstack-ko"; chatnet = "freenode"; autojoin = "No"; },
+  { name = "#wireguard"; chatnet = "freenode"; autojoin = "No"; }
 );
 
 aliases = {
