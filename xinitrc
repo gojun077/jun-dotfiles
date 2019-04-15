@@ -2,7 +2,7 @@
 # xinitrc
 # Launch an X11 Desktop Environment
 # The original path for this file is: ~/.xinitrc
-# Last updated 2016-7-17
+# Last updated 2019.03.26
 # Jun Go gojun077@gmail.com
 
 # USAGE:
@@ -12,20 +12,14 @@
 DEFAULT_SESSION=xfce4
 
 case $1 in
-  xmonad)
-    exec ssh-agent xmonad
+  i3)
+    exec ssh-agent i3
     ;;
   openbox)
     exec ssh-agent openbox-session
     ;;
   xfce4)
     exec ssh-agent startxfce4
-    ;;
-  awesome)
-    exec ssh-agent awesome
-    ;;
-  enlightenment)
-    exec ssh-agent enlightenment_start
     ;;
   *)
     exec $DEFAULT_SESSION
