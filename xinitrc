@@ -9,7 +9,7 @@
 # startx ~/.xinitrc <DE_name>
 # To launch DE_name
 
-DEFAULT_SESSION=xfce4
+DEFAULT_SESSION=startxfce4
 
 case $1 in
   i3)
