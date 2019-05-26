@@ -1,5 +1,5 @@
 [Network]
-Description=Settings for RPI 3B v1.2 ethernet port
+Description=Settings for RPI 3B v1.2 ethernet port; /etc/systemd/network/
 
 [Match]
 Name=eth0
