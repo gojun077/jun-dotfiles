@@ -19,3 +19,24 @@ MNEMOSYNE CONF FILES
 > Symlinks are created from `~/dotfiles/mnemosyne-conf/[FILE]` to
 > `~/.config/mnemosyne/[FILE]` with the exception of `machine.id`
 > which is unique per machine.
+
+## Share mnemosyne cards across multiple machines using Dropbox
+
+> The default path for mnemosyne card DB is
+> `$HOME/.local/share/mnemosyne`. I store all my Mnemosyne cards
+> on Dropbox with the PATH `$HOME/Dropbox/mnemosyne`. To make sure
+> a local instance of Mnemosyne uses cards from Dropbox, first remove
+> the local mnemosyne folder, then make a symlink from mnemosyne on
+> Dropbox to `~/.local/share`
+
+```sh
+rm -rf ~/.local/share/mnemosyne
+ln -s $HOME/Dropbox/mnemosyne/ $HOME/.local/share/
+```
+
+
+
+
+## References
+
+https://eatpeppershothot.blogspot.com/2015/12/sharing-mnemosyne-cards-across-multiple.html
