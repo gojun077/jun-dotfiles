@@ -1,8 +1,12 @@
 [Network]
-Description=Settings for RPI 3B v1.2 ethernet port; /etc/systemd/network/
+Description=Settings for RPI 3B v1.2 ethernet port
 Address=192.168.95.2/24
 Gateway=192.168.95.1
 DNS=1.1.1.1
 
+[Route]
+Metric=10
+
 [Match]
 Name=eth0
+
