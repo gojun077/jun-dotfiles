@@ -30,6 +30,7 @@
     flycheck-gometalinter
     go-mode
     go-playground
+    magit
     markdown-mode
     paredit
     racket-mode
