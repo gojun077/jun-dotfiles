@@ -81,6 +81,11 @@
 ;; Capitalize keywords in an interactive session (e.g. psql)
 (add-hook 'sql-interactive-mode-hook 'sqlup-mode)
 
+;; truncate long lines in sqli mode
+(add-hook 'sql-interactive-mode-hook
+          (lambda ()
+            (toggle-truncate-lines t)))
+
 (setq sql-connection-alist
       '((prod-wr-user (sql-product 'mysql)
                   (sql-port 3306)
