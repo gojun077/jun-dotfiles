@@ -2,7 +2,7 @@
 
 ;; jun's_emacs_file --- Summary
 ;; Jun Go gojun077@gmail.com
-;; Last Updated 2019-03-22
+;; Last Updated 2019.11.03
 
 ;;; Commentary:
 ;;  I have defined a custom function 'gojun-pkglist-installed-p' that
@@ -35,9 +35,6 @@
     paredit
     racket-mode
     realgud
-    rw-hunspell
-    rw-ispell
-    rw-language-and-country-codes
     visual-fill-column
     web-mode
     yaml-mode)
@@ -62,9 +59,7 @@
 
 (require 'flycheck)
 (require 'flycheck-pyflakes)
-(require 'rw-hunspell)
-(require 'rw-language-and-country-codes)
-(require 'rw-ispell)
+
 
 ;; turn on flychecking globally
 (add-hook 'after-init-hook 'global-flycheck-mode)
@@ -165,7 +160,7 @@
     ("4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" "4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default)))
  '(package-selected-packages
    (quote
-    (realgud magit visual-fill-column flycheck-gometalinter sqlup-mode flycheck-pyflakes go-mode go-playground color-theme-solarized web-mode ein yaml-mode rw-language-and-country-codes rw-ispell rw-hunspell racket-mode paredit oz markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible)))
+    (realgud magit visual-fill-column flycheck-gometalinter sqlup-mode flycheck-pyflakes go-mode go-playground color-theme-solarized web-mode ein yaml-mode rw-language-and-country-codes racket-mode paredit markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible)))
  '(python-shell-completion-native-disabled-interpreters (quote ("pypy ipython3"))))
 
 
@@ -173,6 +168,8 @@
 ;;   GLOBAL VARIABLES
 ;;======================
 
+; ensure GPG password input is handled by emacs during emacs session
+(setenv "GPG_AGENT_INFO" nil)
 ; Use spaces instead of tabs
 (setq-default indent-tabs-mode nil)
 ; But when I must use TAB, set width to 2 chars
@@ -207,13 +204,6 @@
 ; Enable temp files and autosaving
 (setq make-backup-files t)
 (setq auto-save-default t)
-; dictionary settings
-(setq ispell-program-name "hunspell")      ;; specify dictionary binary
-(setq ispell-dictionary "en_US_hunspell")  ;; specify dictionary
-(setq rw-hunspell-default-dictionary "en_US_hunspell")
-(setq rw-hunspell-dicpath-list (quote ("/usr/share/hunspell")))
-(setq rw-hunspell-make-dictionary-menu t)
-(setq rw-hunspell-use-rw-ispell t)
 ; Enable C-l, C-u change region to lower/upper case
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
