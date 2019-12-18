@@ -159,7 +159,6 @@ export GOROOT=/usr/local/go
 export GOPATH=/home/junbuntu/goproj
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/usr/local/go/bin:/home/junbuntu/goproj/bin:/home/junbuntu/.nvm"
 export PYTHONBREAKPOINT=ipdb.set_trace
-export PULSE_SERVER=127.0.0.1
 
 GPG_TTY=$(tty)
 export GPG_TTY
