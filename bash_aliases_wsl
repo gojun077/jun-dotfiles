@@ -1,0 +1,16 @@
+#bash alias file for WSL1 Ubuntu
+alias ssh='ssh -o "IdentitiesOnly yes"'
+alias scp='scp -o "IdentitiesOnly yes"'
+alias ㅊㅇ='cd'
+alias 니='ls'
+alias ㅣㄴ='ls'
+alias hobo='cd /MULTIMEDIA/vagrant_box'
+#alias startxfce4='ssh-agent startxfce4'  # Ubuntu uses gdm3
+#alias genpw='date +%s | sha256sum | base64 | head -c 32 ; echo'
+alias genpw='openssl rand -base64 32'
+alias wine='WINEARCH=win32 WINEPREFIX=/MULTIMEDIA/wine /usr/bin/wine'
+alias winecfg='WINEARCH=win32 WINEPREFIX=/MULTIMEDIA/wine winecfg'
+alias whalex='cd $HOME/Documents/whalex'
+alias kb='cd /run/user/1000/keybase/kbfs'
+alias hazip='curl http://icanhazip.com'
+alias nmap='"/mnt/c/Program Files (x86)/Nmap/nmap.exe"'
