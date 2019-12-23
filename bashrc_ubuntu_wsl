@@ -3,7 +3,7 @@
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
 #
-# NOTE: this .bashrc is for running on WSL1 (Windows Subsystem for Linux)
+# NOTE: this .bashrc is for WSL1 (Windows Subsystem for Linux)
 
 
 # If not running interactively, don't do anything
@@ -169,3 +169,7 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 #nvm use v9.10.0
+
+# Set XServer (using VcXserver for Win10) Display; Note that XServer
+# must be running before WSL starts
+export DISPLAY=:0
