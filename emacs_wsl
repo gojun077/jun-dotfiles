@@ -2,7 +2,7 @@
 
 ;; jun's_emacs_file for WSL Win10 --- Summary
 ;; Jun Go gojun077@gmail.com
-;; Last Updated 2019.12.23
+;; Last Updated 2019.12.24
 
 ;;; Commentary:
 ;;  I have defined a custom function 'gojun-pkglist-installed-p' that
