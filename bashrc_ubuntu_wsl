@@ -172,6 +172,6 @@ export NVM_DIR="$HOME/.nvm"
 
 # Set XServer (using VcXserver for Win10) Display; Note that XServer
 # must be running before WSL starts
-export DISPLAY=:0
+export DISPLAY=localhost:0.0
 export LIBGL_ALWAYS_INDIRECT=1
 
