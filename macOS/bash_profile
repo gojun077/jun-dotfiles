@@ -1,5 +1,5 @@
 #
-# ~/.bashrc
+# ~/.bash_profile for MacOS
 #
 
 # If not running interactively, don't do anything
@@ -10,7 +10,6 @@ export EDITOR=emacs
 export TERM=xterm-256color
 
 PS1='[\u@\h \W]\$ '
-alias ls='ls --color=auto'
 alias vi='vim'
 alias ㅊㅇ='cd'
 alias 니='ls'

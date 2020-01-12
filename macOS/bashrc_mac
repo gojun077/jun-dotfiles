@@ -11,7 +11,7 @@ export EDITOR="/usr/local/bin/emacs"
 export TERM=xterm-256color
 
 PS1='[\u@\h \W]\$ '
-alias ls='ls -FHG'
+alias ls='ls -G'
 alias vi='vim'
 alias ㅊㅇ='cd'
 alias 니='ls'
