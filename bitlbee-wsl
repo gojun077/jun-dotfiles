@@ -112,7 +112,7 @@ OperPassword = md5:d1ZvN7q1n/ha3b3KsWaOJrufvriP
 ## To disable the pinging, set at least one of these to 0.
 ##
 # PingInterval = 180
-# PingTimeOut = 300
+PingTimeOut = 0
 
 ## Using proxy servers for outgoing connections
 ##
