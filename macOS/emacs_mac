@@ -2,7 +2,7 @@
 
 ;; jun's_emacs_file --- Summary
 ;; Jun Go gojun077@gmail.com
-;; Last Updated 2018.01.24
+;; Last Updated 2020.01.14
 ;; Mac OS version
 
 ;;; Commentary:
@@ -17,23 +17,25 @@
 (package-initialize)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
 (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/") t)
-(add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/") t)
 (add-to-list 'load-path "~/.emacs.d/elpa") ;;personal elisp libs
 
 (require 'cl)
 (defvar gojun-pkglist
   '(ansible
-    auctex
     color-theme-sanityinc-solarized
     exec-path-from-shell  ; fix $PATH env var on MacOS for flycheck
     fill-column-indicator
     flycheck
+    flycheck-pyflakes
+    flycheck-gometalinter
+    go-mode
+    go-playground
+    magit
     markdown-mode
     paredit
     racket-mode
-    rw-hunspell
-    rw-ispell
-    rw-language-and-country-codes
+    realgud
+    visual-fill-column
     web-mode
     yaml-mode)
   "List of packages to ensure are installed at launch.")
@@ -61,15 +63,26 @@
   (exec-path-from-shell-initialize))
 
 (require 'flycheck)
-(require 'rw-hunspell)
-(require 'rw-language-and-country-codes)
-(require 'rw-ispell)
+(require 'flycheck-pyflakes)
 
 ;; turn on flychecking globally
 (add-hook 'after-init-hook #'global-flycheck-mode)
+(add-hook 'python-mode-hook 'flycheck-mode)
 
 ;; make #! script files executable on save (chmod +x)
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
+
+
+(defun go-mode-setup ()
+  ;; run 'go fmt' on .go source files before save
+  (add-hook 'before-save-hook 'gofmt-before-save)
+  ;; customize compile command to run go build
+  (if (not (string-match "go" compile-command))
+      (set (make-local-variable 'compile-command)
+           "go build -v && go test -v && go vet"))
+)
+(add-hook 'go-mode-hook 'go-mode-setup)
+
 
 ;; mode settings
 ; show col and line numbers
@@ -108,7 +121,7 @@
  '(package-selected-packages
    (quote
     (web-mode ein yaml-mode rw-language-and-country-codes racket-mode paredit markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible)))
- '(python-shell-completion-native-disabled-interpreters (quote ("pypy ipython3")))
+ '(python-shell-completion-native-disabled-interpreters (quote ("pypy ipython")))
 
 
 
@@ -137,6 +150,8 @@
 (setq python-shell-interpreter "/usr/local/bin/ipython"
       python-shell-interpreter-args "--simple-prompt -i --pprint")
 (setq ansi-color-for-comint-mode t)
+(setq python-check-command "/usr/bin/pyflakes")
+(setq flycheck-python-pyflakes-executable "/usr/bin/pyflakes")
 
 ; C-\ language toggle
 (setq default-input-method "korean-hangul")
@@ -148,13 +163,7 @@
 ; Enable temp files and autosaving
 (setq make-backup-files t)
 (setq auto-save-default t)
-; dictionary settings
-(setq ispell-program-name "hunspell")      ;; specify dictionary binary
-(setq ispell-dictionary "en_US_hunspell")  ;; specify dictionary
-(setq rw-hunspell-default-dictionary "en_US_hunspell")
-(setq rw-hunspell-dicpath-list (quote ("/usr/share/hunspell")))
-(setq rw-hunspell-make-dictionary-menu t)
-(setq rw-hunspell-use-rw-ispell t)
+
 ; Enable C-l, C-u change region to lower/upper case
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
@@ -166,6 +175,14 @@
 (setq ido-everywhere t)
 ; use xetex to render pdf from LaTeX
 (setq TeX-engine 'xetex)
+
+; set PATH for emacs shell
+(setenv "PATH" (concat (getenv "PATH") ":/usr/local/go/bin:$HOME/goproj/bin"))
+; set exec-path for emacs to include GOLANG binaries
+(setq exec-path (append exec-path '("/usr/local/go/bin" "$HOME/goproj/bin")))
+
+; bind 'M-x magit-status' to 'C-x g'
+(global-set-key (kbd "C-x g") 'magit-status)
 
 
 (custom-set-faces
@@ -179,15 +196,12 @@
 (when (display-graphic-p)
 ; only run whitespace mode in graphical session
   (global-whitespace-mode 1)
-  (load-theme 'sanityinc-solarized-light)
-  (load "auctex.el" nil t t)
-;  (load "preview-latex.el" nil t t)  ; this pkg not found in Mac OS
-  ;; AUCTEX preview-latex font
-  (set-default 'preview-scale-function 1.2))
+  (load-theme 'sanityinc-solarized-light))
 
 ;; Commands to run when Emacs launched in terminal mode
 (unless (display-graphic-p)
   (load-theme 'adwaita))
 
+(server-start)  ; emacsclient will open files in emacs session
 (provide '.emacs)
 ;;; .emacs ends here

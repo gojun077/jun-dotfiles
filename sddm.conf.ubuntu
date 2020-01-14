@@ -31,11 +31,10 @@ RebootCommand=/bin/systemctl reboot
 
 [Theme]
 # Current theme name
-#Current=ubuntu-theme
-Current=maui
+Current=ubuntu-theme
 
 # Cursor theme used in the greeter
-CursorTheme=
+CursorTheme=ubuntu-theme
 
 # Number of users to use as threshold
 # above which avatars are disabled
