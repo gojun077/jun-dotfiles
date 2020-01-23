@@ -16,8 +16,13 @@ alias vi='vim'
 alias ㅊㅇ='cd'
 alias 니='ls'
 alias screen='/usr/local/bin/screen'
+
+export GOROOT=/usr/local/go
+export GOPATH=/home/junbuntu/goproj
+export PATH="$PATH:/usr/local/go/bin:$HOME/goproj/bin:/usr/local/opt/mysql-client/bin"
+
 # When you run ssh-agent for the first time, you need to add
 # your private key(s) with 'ssh-add /path/to/priv/key'
-alias genpw='date +%s | shasum -a 256 | base64 | head -c 32 ; echo'
 
+alias genpw='date +%s | shasum -a 256 | base64 | head -c 32 ; echo'
 # vim: ts=2 sw=2 et :
