@@ -97,7 +97,7 @@
   ;; customize compile command to run go build
   (if (not (string-match "go" compile-command))
       (set (make-local-variable 'compile-command)
-           "go build -v && go test -v && go vet"))
+           "env GOOS=linux GOARCH=amd64 go build -v && go test -v && go vet"))
 )
 (add-hook 'go-mode-hook 'go-mode-setup)
 
