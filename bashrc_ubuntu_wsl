@@ -175,3 +175,15 @@ export NVM_DIR="$HOME/.nvm"
 export DISPLAY=localhost:0.0
 export LIBGL_ALWAYS_INDIRECT=1
 
+# Vagrant settings for WSL
+export VBOXPATH="/mnt/c/Program Files/Oracle/Virtualbox"
+export CMD32PATH="/mnt/c/Windows/System32"
+export PSPATH="/mnt/c/Windows/System32/WindowsPowerShell/v1.0"
+export PATH="$PATH:$VBOXPATH:$CMD32PATH:$PSPATH"
+export VAGRANT_WSL_ENABLE_WINDOWS_ACCESS="1"
+export VAGRANT_WSL_WINDOWS_ACCESS_USER_HOME_PATH="/home/junbuntu"
+
+
+export GOROOT=/usr/local/go
+export GOPATH=/home/junbuntu/goproj
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/local/go/bin:/home/junbuntu/goproj/bin
