@@ -2,7 +2,7 @@
 
 ;; jun's_emacs_file --- Summary
 ;; Jun Go gojun077@gmail.com
-;; Last Updated 2019.11.03
+;; Last Updated 2020.01.27
 
 ;;; Commentary:
 ;;  I have defined a custom function 'gojun-pkglist-installed-p' that
@@ -87,7 +87,7 @@
   ;; customize compile command to run go build
   (if (not (string-match "go" compile-command))
       (set (make-local-variable 'compile-command)
-           "go build -v && go test -v && go vet"))
+           "env GOOS=linux GOARCH=amd64 go build -v && go test -v && go vet"))
 )
 (add-hook 'go-mode-hook 'go-mode-setup)
 
