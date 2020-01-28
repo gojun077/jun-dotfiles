@@ -20,4 +20,5 @@ export PATH="$PATH:/usr/local/go/bin:$HOME/goproj/bin:/usr/local/opt/mysql-clien
 # your private key(s) with 'ssh-add /path/to/priv/key'
 
 alias genpw='date +%s | shasum -a 256 | base64 | head -c 32 ; echo'
+source ~/.bash_aliases
 # vim: ts=2 sw=2 et :

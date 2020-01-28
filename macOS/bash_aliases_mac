@@ -6,3 +6,4 @@ alias ㅊㅇ='cd'
 alias 니='ls'
 alias screen='/usr/local/bin/screen'
 alias hazip='curl http://icanhazip.com'
+source ~/.bash_aliases_secure
