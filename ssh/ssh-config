@@ -13,6 +13,7 @@ UseRoaming no
 # Specify add'l ssh config files
 Include config_secure
 Include config_dashboard
+Include config_work
 
 # Per Host Options
 Host bitbucket.org

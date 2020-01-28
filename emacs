@@ -2,7 +2,7 @@
 
 ;; jun's_emacs_file --- Summary
 ;; Jun Go gojun077@gmail.com
-;; Last Updated 2019.11.03
+;; Last Updated 2020.01.27
 
 ;;; Commentary:
 ;;  I have defined a custom function 'gojun-pkglist-installed-p' that
@@ -81,42 +81,13 @@
           (lambda ()
             (toggle-truncate-lines t)))
 
-(setq sql-connection-alist
-      '((prod-wr-user (sql-product 'mysql)
-                  (sql-port 3306)
-                  (sql-server "prod-db-phoenix.cluster-cjb2mxw7e7wr.ap-northeast-2.rds.amazonaws.com")
-                  (sql-user "peer_user"))
-        (prod-ro-user (sql-product 'mysql)
-                  (sql-port 3306)
-                  (sql-server "prod-db-phoenix.cluster-ro-cjb2mxw7e7wr.ap-northeast-2.rds.amazonaws.com")
-                  (sql-user "peer_user"))
-        (prod-wr-admin (sql-product 'mysql)
-                  (sql-port 3306)
-                  (sql-server "prod-db-phoenix.cluster-cjb2mxw7e7wr.ap-northeast-2.rds.amazonaws.com")
-                  (sql-user "peer_db_admin"))
-        (prod-ro-admin (sql-product 'mysql)
-                  (sql-port 3306)
-                  (sql-server "prod-db-phoenix.cluster-ro-cjb2mxw7e7wr.ap-northeast-2.rds.amazonaws.com")
-                  (sql-user "peer_db_admin"))
-        (dev (sql-product 'mysql)
-                  (sql-port 3306)
-                  (sql-server "whalex-dev-mini-cluster.cluster-csk9e5mrjeye.ap-northeast-2.rds.amazonaws.com")
-                  (sql-user "Act1108"))
-        (dev-main (sql-product 'mysql)
-                  (sql-port 3306)
-                  (sql-server "172.29.0.155")
-                  (sql-user "Act1108"))
-        )
-)
-
-
 (defun go-mode-setup ()
   ;; run 'go fmt' on .go source files before save
   (add-hook 'before-save-hook 'gofmt-before-save)
   ;; customize compile command to run go build
   (if (not (string-match "go" compile-command))
       (set (make-local-variable 'compile-command)
-           "go build -v && go test -v && go vet"))
+           "env GOOS=linux GOARCH=amd64 go build -v && go test -v && go vet"))
 )
 (add-hook 'go-mode-hook 'go-mode-setup)
 

@@ -183,3 +183,7 @@ export PATH="$PATH:$VBOXPATH:$CMD32PATH:$PSPATH"
 export VAGRANT_WSL_ENABLE_WINDOWS_ACCESS="1"
 export VAGRANT_WSL_WINDOWS_ACCESS_USER_HOME_PATH="/home/junbuntu"
 
+
+export GOROOT=/usr/local/go
+export GOPATH=/home/junbuntu/goproj
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/local/go/bin:/home/junbuntu/goproj/bin
