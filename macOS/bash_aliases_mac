@@ -1,0 +1,8 @@
+alias ssh='ssh -o "IdentitiesOnly yes"'
+alias scp='scp -o "IdentitiesOnly yes"'
+alias ls='ls -G'
+alias vi='vim'
+alias ㅊㅇ='cd'
+alias 니='ls'
+alias screen='/usr/local/bin/screen'
+alias hazip='curl http://icanhazip.com'

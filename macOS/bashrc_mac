@@ -1,7 +1,7 @@
 #
 # ~/.bashrc
 # for MAC OS
-# Last Updated: 2017-08-29
+# Last Updated: 2020.01.23
 
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
@@ -11,14 +11,9 @@ export EDITOR="/usr/local/bin/emacs"
 export TERM=xterm-256color
 
 PS1='[\u@\h \W]\$ '
-alias ls='ls -G'
-alias vi='vim'
-alias ㅊㅇ='cd'
-alias 니='ls'
-alias screen='/usr/local/bin/screen'
 
 export GOROOT=/usr/local/go
-export GOPATH=/home/junbuntu/goproj
+export GOPATH=/Users/pekoh/goproj
 export PATH="$PATH:/usr/local/go/bin:$HOME/goproj/bin:/usr/local/opt/mysql-client/bin"
 
 # When you run ssh-agent for the first time, you need to add
