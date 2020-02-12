@@ -1,10 +1,9 @@
-#
 # ~/.bashrc
 # for MAC OS
 # Last Updated: 2020.01.23
 
 # If not running interactively, don't do anything
-[[ $- != *i* ]] && return
+#[[ $- != *i* ]] && return
 
 export EDITOR="/usr/local/bin/emacs"
 
@@ -18,6 +17,7 @@ export PATH="$PATH:/usr/local/go/bin:$HOME/goproj/bin:/usr/local/opt/mysql-clien
 
 # When you run ssh-agent for the first time, you need to add
 # your private key(s) with 'ssh-add /path/to/priv/key'
+ssh-add ~/.ssh/archjun_rsa
 
 alias genpw='date +%s | shasum -a 256 | base64 | head -c 32 ; echo'
 source ~/.bash_aliases
