@@ -21,5 +21,5 @@ ssh-add ~/.ssh/archjun_rsa
 
 alias genpw='date +%s | shasum -a 256 | base64 | head -c 32 ; echo'
 source ~/.bash_aliases
-source /Users/pekoh/Google Drive/pekoh's_stuff/bashrc_mac_secure
+source "/Users/pekoh/Google Drive/pekoh's_stuff/bashrc_mac_secure"
 # vim: ts=2 sw=2 et :
