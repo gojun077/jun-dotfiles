@@ -17,7 +17,7 @@ export PATH="$PATH:/usr/local/go/bin:$HOME/goproj/bin:/usr/local/opt/mysql-clien
 
 # When you run ssh-agent for the first time, you need to add
 # your private key(s) with 'ssh-add /path/to/priv/key'
-ssh-add ~/.ssh/archjun_rsa
+#ssh-add ~/.ssh/archjun_rsa
 
 alias genpw='date +%s | shasum -a 256 | base64 | head -c 32 ; echo'
 source ~/.bash_aliases
