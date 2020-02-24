@@ -147,11 +147,11 @@
 ; python -m doctest myprog.py -v
 ;
 (setq python-shell-completion-native nil)
-(setq python-shell-interpreter "/usr/local/bin/ipython"
+(setq python-shell-interpreter "/Library/Frameworks/Python.framework/Versions/3.8/bin/ipython3"
       python-shell-interpreter-args "--simple-prompt -i --pprint")
 (setq ansi-color-for-comint-mode t)
-(setq python-check-command "/usr/bin/pyflakes")
-(setq flycheck-python-pyflakes-executable "/usr/bin/pyflakes")
+(setq python-check-command "/Library/Frameworks/Python.framework/Versions/3.8/bin/pyflakes")
+(setq flycheck-python-pyflakes-executable "/Library/Frameworks/Python.framework/Versions/3.8/bin/pyflakes")
 
 ; C-\ language toggle
 (setq default-input-method "korean-hangul")
