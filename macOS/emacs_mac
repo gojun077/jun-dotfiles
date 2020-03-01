@@ -98,8 +98,9 @@
 (tool-bar-mode 0)
 
 ;; Font settings
-(set-face-attribute 'default nil :font "Menlo")
-(set-face-attribute 'default nil :height 140)
+; the following requires cask 'font-monofur-nerd-font-mono'
+(set-face-attribute 'default nil :font "Monofur Nerd Font Mono")
+(set-face-attribute 'default nil :height 160)
 
 
 ;;=========================
