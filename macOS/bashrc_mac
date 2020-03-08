@@ -1,28 +1,25 @@
-#
 # ~/.bashrc
 # for MAC OS
-# Last Updated: 2017-08-29
+# Last Updated: 2020.01.23
 
 # If not running interactively, don't do anything
-[[ $- != *i* ]] && return
+#[[ $- != *i* ]] && return
 
 export EDITOR="/usr/local/bin/emacs"
 
 export TERM=xterm-256color
 
 PS1='[\u@\h \W]\$ '
-alias ls='ls -G'
-alias vi='vim'
-alias ㅊㅇ='cd'
-alias 니='ls'
-alias screen='/usr/local/bin/screen'
 
 export GOROOT=/usr/local/go
-export GOPATH=/home/junbuntu/goproj
+export GOPATH=/Users/pekoh/goproj
 export PATH="$PATH:/usr/local/go/bin:$HOME/goproj/bin:/usr/local/opt/mysql-client/bin"
 
 # When you run ssh-agent for the first time, you need to add
 # your private key(s) with 'ssh-add /path/to/priv/key'
+#ssh-add ~/.ssh/archjun_rsa
 
 alias genpw='date +%s | shasum -a 256 | base64 | head -c 32 ; echo'
+source ~/.bash_aliases
+source "/Users/pekoh/Google Drive/pekoh's_stuff/bashrc_mac_secure"
 # vim: ts=2 sw=2 et :
