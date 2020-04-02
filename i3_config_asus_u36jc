@@ -172,9 +172,9 @@ exec --no-startup-id volumeicon
 exec --no-startup-id parcellite
 
 # Add background wallpaper
-exec --no-startup-id feh --bg-fill -z -D 1024 ~/Dropbox/wallpapers/shared/backgrounds/1280x1024/
+exec --no-startup-id feh --bg-fill -z -D 1024 ~/Dropbox/wallpapers/shared/backgrounds/1920x1200/
 # Setup external monitor from work
-exec --no-startup-id bash ~/.screenlayout/arandr_u36jc_vga.sh
+exec --no-startup-id bash ~/.screenlayout/arandr_u36jc_hdmi_32in_1920x1080.sh
 
 # Custom keybindings
 bindsym $mod+Shift+m exec emacs
