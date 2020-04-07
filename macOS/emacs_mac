@@ -35,6 +35,7 @@
     paredit
     racket-mode
     realgud
+    unicode-whitespace
     visual-fill-column
     web-mode
     yaml-mode)
@@ -62,8 +63,12 @@
 (when (memq window-system '(mac ns x))
   (exec-path-from-shell-initialize))
 
+;; require declarations
 (require 'flycheck)
 (require 'flycheck-pyflakes)
+(require 'unicode-whitespace)
+(require 'whitespace)
+
 
 ;; turn on flychecking globally
 (add-hook 'after-init-hook #'global-flycheck-mode)
@@ -71,6 +76,9 @@
 
 ;; make #! script files executable on save (chmod +x)
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
+
+;; unicode-whitespace face settings
+(unicode-whitespace-setup 'subdued-faces)
 
 
 (defun go-mode-setup ()
@@ -118,7 +126,7 @@
  '(epg-gpg-program "/usr/local/MacGPG2/bin/gpg2")
  '(package-selected-packages
    (quote
-    (exec-path-from-shell yaml-mode web-mode rw-language-and-country-codes rw-ispell rw-hunspell racket-mode paredit markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized auctex ansible))))
+    (unicode-whitespace exec-path-from-shell yaml-mode web-mode rw-language-and-country-codes rw-ispell rw-hunspell racket-mode paredit markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized auctex ansible))))
  '(package-selected-packages
    (quote
     (web-mode ein yaml-mode rw-language-and-country-codes racket-mode paredit markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible)))
