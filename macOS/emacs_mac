@@ -67,7 +67,6 @@
 (require 'flycheck)
 (require 'flycheck-pyflakes)
 (require 'unicode-whitespace)
-(require 'whitespace)
 
 
 ;; turn on flychecking globally
