@@ -67,11 +67,11 @@
 (require 'flycheck)
 (require 'flycheck-pyflakes)
 (require 'unicode-whitespace)
-
+(require 'whitespace)
 
 ;; turn on flychecking globally
 (add-hook 'after-init-hook #'global-flycheck-mode)
-(add-hook 'python-mode-hook 'flycheck-mode)
+(add-hook 'python-mode-hook #'flycheck-mode)
 
 ;; make #! script files executable on save (chmod +x)
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
@@ -137,6 +137,10 @@
 ;;   GLOBAL VARIABLES
 ;;======================
 
+;; limit line length
+(setq whitespace-line-column 80)
+;; set fill column indicator to 80
+(setq-default fill-column 80)
 ; Use spaces instead of tabs
 (setq-default indent-tabs-mode nil)
 ; But when I must use TAB, set width to 4 chars
