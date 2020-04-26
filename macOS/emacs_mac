@@ -16,7 +16,8 @@
 (require 'package)
 (package-initialize)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
-(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/") t)
+(add-to-list 'package-archives '("marmalade" .
+                                 "http://marmalade-repo.org/packages/") t)
 (add-to-list 'load-path "~/.emacs.d/elpa") ;;personal elisp libs
 
 (require 'cl)
@@ -128,15 +129,25 @@
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
    (quote
-    ("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default)))
+    ("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4"
+     default)))
  '(epg-gpg-program "/usr/local/MacGPG2/bin/gpg2")
  '(package-selected-packages
    (quote
-    (unicode-whitespace exec-path-from-shell yaml-mode web-mode rw-language-and-country-codes rw-ispell rw-hunspell racket-mode paredit markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized auctex ansible))))
- '(package-selected-packages
-   (quote
-    (web-mode ein yaml-mode rw-language-and-country-codes racket-mode paredit markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible)))
- '(python-shell-completion-native-disabled-interpreters (quote ("pypy ipython")))
+    (web-mode
+     ein yaml-mode
+     rw-language-and-country-codes
+     racket-mode
+     paredit
+     markdown-mode
+     flycheck
+     fill-column-indicator
+     color-theme-sanityinc-solarized
+     ansible)))
+'(python-shell-completion-native-disabled-interpreters
+  (quote
+   ("pypy ipython")))
+)
 
 
 
