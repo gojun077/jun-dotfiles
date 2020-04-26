@@ -2,7 +2,7 @@
 
 ;; jun's_emacs_file --- Summary
 ;; Jun Go gojun077@gmail.com
-;; Last Updated 2020.01.14
+;; Last Updated 2020.04.26
 ;; Mac OS version
 
 ;;; Commentary:
@@ -79,6 +79,11 @@
 ;; unicode-whitespace face settings
 (unicode-whitespace-setup 'subdued-faces)
 
+;; enable fci-mode for all files
+(add-hook 'after-change-major-mode-hook 'fci-mode)
+
+;; enable whitespace-mode for all files
+(add-hook 'after-change-major-mode-hook 'whitespace-mode)
 
 (defun go-mode-setup ()
   ;; run 'go fmt' on .go source files before save
@@ -103,6 +108,8 @@
 (show-paren-mode t)
 ; don't show toolbar
 (tool-bar-mode 0)
+; Enable ido-mode
+(ido-mode 1)
 
 ;; Font settings
 ; the following requires cask 'font-monofur-nerd-font-mono'
@@ -179,8 +186,7 @@
 ; Enable C-l, C-u change region to lower/upper case
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
-; Enable ido-mode
-(ido-mode 1)
+
 ; enable ido flex matching
 (setq ido-enable-flex-matching t)
 ; enable ido everywhere
