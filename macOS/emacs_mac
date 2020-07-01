@@ -2,7 +2,7 @@
 
 ;; jun's_emacs_file --- Summary
 ;; Jun Go gojun077@gmail.com
-;; Last Updated 2020.01.14
+;; Last Updated 2020.04.26
 ;; Mac OS version
 
 ;;; Commentary:
@@ -16,7 +16,8 @@
 (require 'package)
 (package-initialize)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
-(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/") t)
+(add-to-list 'package-archives '("marmalade" .
+                                 "http://marmalade-repo.org/packages/") t)
 (add-to-list 'load-path "~/.emacs.d/elpa") ;;personal elisp libs
 
 (require 'cl)
@@ -35,6 +36,7 @@
     paredit
     racket-mode
     realgud
+    unicode-whitespace
     visual-fill-column
     web-mode
     yaml-mode)
@@ -62,16 +64,27 @@
 (when (memq window-system '(mac ns x))
   (exec-path-from-shell-initialize))
 
+;; require declarations
 (require 'flycheck)
 (require 'flycheck-pyflakes)
+(require 'unicode-whitespace)
+(require 'whitespace)
 
 ;; turn on flychecking globally
 (add-hook 'after-init-hook #'global-flycheck-mode)
-(add-hook 'python-mode-hook 'flycheck-mode)
+(add-hook 'python-mode-hook #'flycheck-mode)
 
 ;; make #! script files executable on save (chmod +x)
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
 
+;; unicode-whitespace face settings
+(unicode-whitespace-setup 'subdued-faces)
+
+;; enable fci-mode for all files
+(add-hook 'after-change-major-mode-hook 'fci-mode)
+
+;; enable whitespace-mode for all files
+(add-hook 'after-change-major-mode-hook 'whitespace-mode)
 
 (defun go-mode-setup ()
   ;; run 'go fmt' on .go source files before save
@@ -96,6 +109,8 @@
 (show-paren-mode t)
 ; don't show toolbar
 (tool-bar-mode 0)
+; Enable ido-mode
+(ido-mode 1)
 
 ;; Font settings
 ; the following requires cask 'font-monofur-nerd-font-mono'
@@ -114,15 +129,25 @@
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
    (quote
-    ("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default)))
+    ("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4"
+     default)))
  '(epg-gpg-program "/usr/local/MacGPG2/bin/gpg2")
  '(package-selected-packages
    (quote
-    (exec-path-from-shell yaml-mode web-mode rw-language-and-country-codes rw-ispell rw-hunspell racket-mode paredit markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized auctex ansible))))
- '(package-selected-packages
-   (quote
-    (web-mode ein yaml-mode rw-language-and-country-codes racket-mode paredit markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible)))
- '(python-shell-completion-native-disabled-interpreters (quote ("pypy ipython")))
+    (web-mode
+     ein yaml-mode
+     rw-language-and-country-codes
+     racket-mode
+     paredit
+     markdown-mode
+     flycheck
+     fill-column-indicator
+     color-theme-sanityinc-solarized
+     ansible)))
+'(python-shell-completion-native-disabled-interpreters
+  (quote
+   ("pypy ipython")))
+)
 
 
 
@@ -130,6 +155,10 @@
 ;;   GLOBAL VARIABLES
 ;;======================
 
+;; limit line length
+(setq whitespace-line-column 80)
+;; set fill column indicator to 80
+(setq-default fill-column 80)
 ; Use spaces instead of tabs
 (setq-default indent-tabs-mode nil)
 ; But when I must use TAB, set width to 4 chars
@@ -168,8 +197,7 @@
 ; Enable C-l, C-u change region to lower/upper case
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
-; Enable ido-mode
-(ido-mode 1)
+
 ; enable ido flex matching
 (setq ido-enable-flex-matching t)
 ; enable ido everywhere
@@ -178,9 +206,9 @@
 (setq TeX-engine 'xetex)
 
 ; set PATH for emacs shell
-(setenv "PATH" (concat (getenv "PATH") ":/usr/local/go/bin:$HOME/goproj/bin"))
+(setenv "PATH" (concat (getenv "PATH") ":/usr/local/go/bin:$HOME/go/bin"))
 ; set exec-path for emacs to include GOLANG binaries
-(setq exec-path (append exec-path '("/usr/local/go/bin" "$HOME/goproj/bin")))
+(setq exec-path (append exec-path '("/usr/local/go/bin" "$HOME/go/bin")))
 
 ; bind 'M-x magit-status' to 'C-x g'
 (global-set-key (kbd "C-x g") 'magit-status)

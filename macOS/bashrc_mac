@@ -12,8 +12,8 @@ export TERM=xterm-256color
 PS1='[\u@\h \W]\$ '
 
 export GOROOT=/usr/local/go
-export GOPATH=/Users/pekoh/goproj
-export PATH="$PATH:/usr/local/go/bin:$HOME/goproj/bin:/usr/local/opt/mysql-client/bin"
+export GOPATH=/Users/pekoh/go
+export PATH="/usr/local/Cellar/sqlite/3.31.1/bin:$PATH:/usr/local/go/bin:$GOPATH/bin:/usr/local/opt/mysql-client/bin"
 
 # When you run ssh-agent for the first time, you need to add
 # your private key(s) with 'ssh-add /path/to/priv/key'
