@@ -100,22 +100,17 @@
 (show-paren-mode t)
 
 
+
+
 ;; Font settings
-(defun xftp (&optional frame)
-  "Return t if FRAME support XFT font backend."
-  (let ((xft-supported))
-    (mapc (lambda (x) (if (eq x 'xft) (setq xft-supported t)))
-          (frame-parameter frame 'font-backend))
-    xft-supported))
-(when (xftp)
-  (let ((fontset "fontset-default"))
-    (set-fontset-font fontset 'latin
-                      '("monofur" . "unicode-bmp"))
-    (set-fontset-font fontset 'hangul
-                      '("NanumGothic" . "unicode-bmp"))
-    (set-face-attribute 'default nil
-                        :font fontset
-                        :height 140)))
+(let ((fontset "fontset-default"))
+  (set-fontset-font fontset 'latin
+                    '("monofur" . "unicode-bmp"))
+  (set-fontset-font fontset 'hangul
+                    '("NanumGothic" . "unicode-bmp"))
+  (set-face-attribute 'default nil
+                      :font fontset
+                      :height 140))
 
 ;;=========================
 ;;   CUSTOM MENU OPTIONS
@@ -128,11 +123,32 @@
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
    (quote
-    ("4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" "4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default)))
+    ("4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328"
+     "4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4"
+     default)))
  '(package-selected-packages
    (quote
-    (realgud magit visual-fill-column flycheck-gometalinter sqlup-mode flycheck-pyflakes go-mode go-playground color-theme-solarized web-mode ein yaml-mode rw-language-and-country-codes racket-mode paredit markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible)))
- '(python-shell-completion-native-disabled-interpreters (quote ("pypy ipython3"))))
+    (magit
+     visual-fill-column
+     flycheck-gometalinter
+     sqlup-mode
+     flycheck-pyflakes
+     go-mode
+     go-playground
+     color-theme-solarized
+     web-mode
+     ein
+     yaml-mode
+     rw-language-and-country-codes
+     racket-mode
+     paredit
+     markdown-mode
+     flycheck
+     fill-column-indicator
+     color-theme-sanityinc-solarized
+     ansible)))
+ '(python-shell-completion-native-disabled-interpreters
+   (quote ("pypy ipython3"))))
 
 
 ;;======================
