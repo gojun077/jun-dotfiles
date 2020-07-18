@@ -20,42 +20,34 @@
 (add-to-list 'load-path "~/.emacs.d/elpa") ;;personal elisp libs
 
 
-(require 'cl)
-(defvar gojun-pkglist
-  '(ansible
-    color-theme-sanityinc-solarized
-    fill-column-indicator
-    flycheck
-    flycheck-pyflakes
-    flycheck-gometalinter
-    go-mode
-    go-playground
-    magit
-    markdown-mode
-    paredit
-    racket-mode
-    realgud
-    visual-fill-column
-    web-mode
-    yaml-mode)
-  "List of packages to ensure are installed at launch.")
-
-(defun gojun-pkglist-installed-p ()
-  (loop for p in gojun-pkglist
-        when (not (package-installed-p p)) do (return nil)
-        finally (return t)))
-
-(unless (gojun-pkglist-installed-p)
-  ;; check for new packages (package versions)
-  (message "%s" "Emacs is now refreshing its package database...")
+(unless (package-installed-p 'use-package)
   (package-refresh-contents)
-  (message "%s" " done.")
-  ;; install the missing packages
-  (dolist (p gojun-pkglist)
-    (when (not (package-installed-p p))
-      (package-install p))))
+  (package-install 'use-package))
 
-(provide 'gojun-pkglist)
+(require 'use-package)
+(setq use-package-always-ensure t)
+
+(defvar gojun-pkglist
+ '(ansible
+   color-theme-sanityinc-solarized
+   fill-column-indicator
+   flycheck
+   flycheck-pyflakes
+   flycheck-gometalinter
+   go-mode
+   go-playground
+   magit
+   markdown-mode
+   paredit
+   racket-mode
+   realgud
+   visual-fill-column
+   web-mode
+   yaml-mode)
+ "List of packages to ensure are installed at launch.")
+
+(dolist (package gojun-pkglist)
+  (use-package package))
 
 (require 'flycheck)
 (require 'flycheck-pyflakes)
@@ -122,33 +114,10 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   (quote
-    ("4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328"
-     "4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4"
-     default)))
+   '("4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" "4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default))
  '(package-selected-packages
-   (quote
-    (magit
-     visual-fill-column
-     flycheck-gometalinter
-     sqlup-mode
-     flycheck-pyflakes
-     go-mode
-     go-playground
-     color-theme-solarized
-     web-mode
-     ein
-     yaml-mode
-     rw-language-and-country-codes
-     racket-mode
-     paredit
-     markdown-mode
-     flycheck
-     fill-column-indicator
-     color-theme-sanityinc-solarized
-     ansible)))
- '(python-shell-completion-native-disabled-interpreters
-   (quote ("pypy ipython3"))))
+   '(magit visual-fill-column flycheck-gometalinter sqlup-mode flycheck-pyflakes go-mode go-playground color-theme-solarized web-mode ein yaml-mode rw-language-and-country-codes racket-mode paredit markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible))
+ '(python-shell-completion-native-disabled-interpreters '("pypy ipython3")))
 
 
 ;;======================
