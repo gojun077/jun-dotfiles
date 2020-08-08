@@ -2,14 +2,7 @@
 
 ;; jun's_emacs_file --- Summary
 ;; Jun Go gojun077@gmail.com
-;; Last Updated 2020.01.27
-
-;;; Commentary:
-;;  I have defined a custom function 'gojun-pkglist-installed-p' that
-;;  will check if certain Emacs packages are installed.  If not found
-;;  Emacs will automatically download them from melpa/marmalade and
-;;  install them.  This conf file also includes some tweaks for Korean
-;;  language support.
+;; Last Updated 2020.08.08
 
 ;;; Code:
 (require 'package)
@@ -38,9 +31,11 @@
    go-playground
    magit
    markdown-mode
-   paredit
+   rainbow-delimiters
    racket-mode
    realgud
+   scala-mode
+   smartparens
    visual-fill-column
    web-mode
    yaml-mode)
@@ -51,11 +46,16 @@
 
 (require 'flycheck)
 (require 'flycheck-pyflakes)
+(require 'smartparens-config)
 
 
 ;; turn on flychecking globally
 (add-hook 'after-init-hook 'global-flycheck-mode)
 (add-hook 'python-mode-hook 'flycheck-mode)
+
+;; hooks for racket-mode
+(add-hook 'racket-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'racket-mode-hook #'smartparens-mode)
 
 ;; make #! script files executable on save (chmod +x)
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
@@ -116,7 +116,7 @@
  '(custom-safe-themes
    '("4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" "4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default))
  '(package-selected-packages
-   '(magit visual-fill-column flycheck-gometalinter sqlup-mode flycheck-pyflakes go-mode go-playground color-theme-solarized web-mode ein yaml-mode rw-language-and-country-codes racket-mode paredit markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible))
+   '(use-package rainbow-delimiters smartparens magit visual-fill-column flycheck-gometalinter sqlup-mode flycheck-pyflakes go-mode go-playground color-theme-solarized web-mode ein yaml-mode rw-language-and-country-codes racket-mode markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible))
  '(python-shell-completion-native-disabled-interpreters '("pypy ipython3")))
 
 
