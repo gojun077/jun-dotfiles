@@ -2,14 +2,7 @@
 
 ;; jun's_emacs_file --- Summary
 ;; Jun Go gojun077@gmail.com
-;; Last Updated 2020.01.27
-
-;;; Commentary:
-;;  I have defined a custom function 'gojun-pkglist-installed-p' that
-;;  will check if certain Emacs packages are installed.  If not found
-;;  Emacs will automatically download them from melpa/marmalade and
-;;  install them.  This conf file also includes some tweaks for Korean
-;;  language support.
+;; Last Updated 2020.08.08
 
 ;;; Code:
 (require 'package)
@@ -20,50 +13,49 @@
 (add-to-list 'load-path "~/.emacs.d/elpa") ;;personal elisp libs
 
 
-(require 'cl)
-(defvar gojun-pkglist
-  '(ansible
-    color-theme-sanityinc-solarized
-    fill-column-indicator
-    flycheck
-    flycheck-pyflakes
-    flycheck-gometalinter
-    go-mode
-    go-playground
-    magit
-    markdown-mode
-    paredit
-    racket-mode
-    realgud
-    visual-fill-column
-    web-mode
-    yaml-mode)
-  "List of packages to ensure are installed at launch.")
-
-(defun gojun-pkglist-installed-p ()
-  (loop for p in gojun-pkglist
-        when (not (package-installed-p p)) do (return nil)
-        finally (return t)))
-
-(unless (gojun-pkglist-installed-p)
-  ;; check for new packages (package versions)
-  (message "%s" "Emacs is now refreshing its package database...")
+(unless (package-installed-p 'use-package)
   (package-refresh-contents)
-  (message "%s" " done.")
-  ;; install the missing packages
-  (dolist (p gojun-pkglist)
-    (when (not (package-installed-p p))
-      (package-install p))))
+  (package-install 'use-package))
 
-(provide 'gojun-pkglist)
+(require 'use-package)
+(setq use-package-always-ensure t)
+
+(defvar gojun-pkglist
+ '(ansible
+   color-theme-sanityinc-solarized
+   fill-column-indicator
+   flycheck
+   flycheck-pyflakes
+   flycheck-gometalinter
+   go-mode
+   go-playground
+   magit
+   markdown-mode
+   rainbow-delimiters
+   racket-mode
+   realgud
+   scala-mode
+   smartparens
+   visual-fill-column
+   web-mode
+   yaml-mode)
+ "List of packages to ensure are installed at launch.")
+
+(dolist (package gojun-pkglist)
+  (use-package package))
 
 (require 'flycheck)
 (require 'flycheck-pyflakes)
+(require 'smartparens-config)
 
 
 ;; turn on flychecking globally
 (add-hook 'after-init-hook 'global-flycheck-mode)
 (add-hook 'python-mode-hook 'flycheck-mode)
+
+;; hooks for racket-mode
+(add-hook 'racket-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'racket-mode-hook #'smartparens-mode)
 
 ;; make #! script files executable on save (chmod +x)
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
@@ -100,22 +92,17 @@
 (show-paren-mode t)
 
 
+
+
 ;; Font settings
-(defun xftp (&optional frame)
-  "Return t if FRAME support XFT font backend."
-  (let ((xft-supported))
-    (mapc (lambda (x) (if (eq x 'xft) (setq xft-supported t)))
-          (frame-parameter frame 'font-backend))
-    xft-supported))
-(when (xftp)
-  (let ((fontset "fontset-default"))
-    (set-fontset-font fontset 'latin
-                      '("monofur" . "unicode-bmp"))
-    (set-fontset-font fontset 'hangul
-                      '("NanumGothic" . "unicode-bmp"))
-    (set-face-attribute 'default nil
-                        :font fontset
-                        :height 140)))
+(let ((fontset "fontset-default"))
+  (set-fontset-font fontset 'latin
+                    '("monofur" . "unicode-bmp"))
+  (set-fontset-font fontset 'hangul
+                    '("NanumGothic" . "unicode-bmp"))
+  (set-face-attribute 'default nil
+                      :font fontset
+                      :height 140))
 
 ;;=========================
 ;;   CUSTOM MENU OPTIONS
@@ -127,12 +114,10 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   (quote
-    ("4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" "4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default)))
+   '("4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" "4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default))
  '(package-selected-packages
-   (quote
-    (realgud magit visual-fill-column flycheck-gometalinter sqlup-mode flycheck-pyflakes go-mode go-playground color-theme-solarized web-mode ein yaml-mode rw-language-and-country-codes racket-mode paredit markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible)))
- '(python-shell-completion-native-disabled-interpreters (quote ("pypy ipython3"))))
+   '(use-package rainbow-delimiters smartparens magit visual-fill-column flycheck-gometalinter sqlup-mode flycheck-pyflakes go-mode go-playground color-theme-solarized web-mode ein yaml-mode rw-language-and-country-codes racket-mode markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible))
+ '(python-shell-completion-native-disabled-interpreters '("pypy ipython3")))
 
 
 ;;======================
