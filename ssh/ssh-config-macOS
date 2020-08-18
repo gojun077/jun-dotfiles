@@ -1,16 +1,15 @@
 # Jun's ssh config ~/.ssh/config
 # Created 2016-02-12
-# Last Updated 2020-02-24
+# Last Updated 2020-05-29
 
 # Global Defaults
 TCPKeepAlive=yes
-ServerAliveInterval=15
+ServerAliveInterval=20
 ServerAliveCountMax=6
 StrictHostKeyChecking=no
 Compression=yes
 ForwardAgent=yes
-Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
-UseRoaming no
+#Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
 
 # MacOS-specific settings
 AddKeysToAgent yes
