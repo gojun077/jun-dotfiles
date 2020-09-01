@@ -5,13 +5,6 @@
 ;; Last Updated 2020.08.18
 ;; Mac OS version
 
-;;; Commentary:
-;;  I have defined a custom function 'gojun-pkglist-installed-p' that
-;;  will check if certain Emacs packages are installed.  If not found
-;;  Emacs will automatically download them from melpa/marmalade and
-;;  install them.  This conf file also includes some tweaks for Korean
-;;  language support.
-
 ;;; Code:
 (require 'package)
 (package-initialize)
