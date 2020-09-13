@@ -135,7 +135,6 @@ export ECORE_IMF_MODULE=xim
 
 export TERM=xterm-256color
 export WINEPREFIX=/MULTIMEDIA/wine
-export WHALEX="$HOME/Documents/whalex"
 
 if [ -f ~/.bash_aliases  ]; then
   #shellcheck source=/home/junbuntu/dotfiles/bash_aliases
