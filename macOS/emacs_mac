@@ -2,7 +2,7 @@
 
 ;; jun's_emacs_file --- Summary
 ;; Jun Go gojun077@gmail.com
-;; Last Updated 2020.09.02
+;; Last Updated 2020.10.12
 ;; Mac OS version
 
 ;;; Code:
@@ -87,8 +87,6 @@
 )
 (add-hook 'go-mode-hook 'go-mode-setup)
 
-;; enable shellcheck linting for shell scripts
-(add-hook 'sh-mode-hook 'flycheck-mode)
 
 ;; mode settings
 ; show col and line numbers
