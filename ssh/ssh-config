@@ -1,5 +1,5 @@
 # Jun's ssh config ~/.ssh/config
-# Last Updated 2020-01-12
+# Last Updated 2020-09-13
 
 # Global Defaults
 TCPKeepAlive=yes
@@ -12,7 +12,7 @@ Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.
 UseRoaming no
 # Specify add'l ssh config files
 Include config_secure
-Include config_dashboard
+Include config_homelab
 Include config_work
 
 # Per Host Options

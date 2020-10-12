@@ -23,6 +23,7 @@
 (defvar gojun-pkglist
  '(ansible
    color-theme-sanityinc-solarized
+   exec-path-from-shell
    fill-column-indicator
    flycheck
    flycheck-pyflakes
@@ -116,7 +117,7 @@
  '(custom-safe-themes
    '("4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" "4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default))
  '(package-selected-packages
-   '(use-package rainbow-delimiters smartparens magit visual-fill-column flycheck-gometalinter sqlup-mode flycheck-pyflakes go-mode go-playground color-theme-solarized web-mode ein yaml-mode rw-language-and-country-codes racket-mode markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible))
+   '(exec-path-from-shell use-package rainbow-delimiters smartparens magit visual-fill-column flycheck-gometalinter sqlup-mode flycheck-pyflakes go-mode go-playground color-theme-solarized web-mode ein yaml-mode rw-language-and-country-codes racket-mode markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible))
  '(python-shell-completion-native-disabled-interpreters '("pypy ipython3")))
 
 
@@ -177,6 +178,13 @@
 ; set exec-path for emacs to include GOLANG binaries
 (setq exec-path (append exec-path '("/usr/local/go/bin"
                                     "$HOME/goproj/bin")))
+(use-package exec-path-from-shell
+  :ensure t
+  :defer  2
+  :config
+  (dolist (var '("GOPATH"))
+    (add-to-list 'exec-path-from-shell-variables var))
+  (exec-path-from-shell-initialize))
 
 ; bind 'M-x magit-status' to 'C-x g'
 (global-set-key (kbd "C-x g") 'magit-status)
