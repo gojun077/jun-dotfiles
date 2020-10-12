@@ -2,7 +2,7 @@
 
 ;; jun's_emacs_file --- Summary
 ;; Jun Go gojun077@gmail.com
-;; Last Updated 2020.08.18
+;; Last Updated 2020.09.02
 ;; Mac OS version
 
 ;;; Code:
@@ -23,6 +23,7 @@
 (defvar gojun-pkglist
  '(ansible
    color-theme-sanityinc-solarized
+   exec-path-from-shell
    fill-column-indicator
    flycheck
    flycheck-pyflakes
@@ -86,6 +87,8 @@
 )
 (add-hook 'go-mode-hook 'go-mode-setup)
 
+;; enable shellcheck linting for shell scripts
+(add-hook 'sh-mode-hook 'flycheck-mode)
 
 ;; mode settings
 ; show col and line numbers
@@ -129,7 +132,7 @@
  '(epg-gpg-program "/usr/local/MacGPG2/bin/gpg2")
  '(package-selected-packages
    (quote
-    (use-package web-mode ein yaml-mode rw-language-and-country-codes racket-mode paredit markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible)))
+    (go-mode go-playground flycheck-gometalinter rainbow-delimiters magit smartparens use-package web-mode ein yaml-mode rw-language-and-country-codes racket-mode paredit markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible)))
  '(python-shell-completion-native-disabled-interpreters (quote ("pypy ipython"))))
 
 

@@ -13,7 +13,7 @@ PS1='[\u@\h \W]\$ '
 
 export GOROOT=/usr/local/go
 export GOPATH=/Users/pekoh/go
-export PATH="/usr/local/Cellar/sqlite/3.31.1/bin:/usr/local/opt/openjdk@11/bin:/usr/local/go/bin:$GOPATH/bin:/usr/local/opt/mysql-client/bin:$PATH"
+export PATH="/usr/local/Cellar/sqlite/3.31.1/bin:/usr/local/opt/openjdk@11/bin:/usr/local/go/bin:$GOPATH/bin:/usr/local/opt/mysql-client/bin:/Users/pekoh/.pyenv/shims:/Library/Frameworks/Python.framework/Versions/3.8/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/MacGPG2/bin:/usr/local/share/dotnet:~/.dotnet/tools"
 
 # When you run ssh-agent for the first time, you need to add
 # your private key(s) with 'ssh-add /path/to/priv/key'
