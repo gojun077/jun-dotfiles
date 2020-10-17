@@ -9,3 +9,6 @@ if [ -f ~/.bashrc ]; then
   . ~/.bashrc
 fi
 
+ulimit -n 200000
+ulimit -u 65536
+
