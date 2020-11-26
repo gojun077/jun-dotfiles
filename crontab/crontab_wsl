@@ -1,0 +1,7 @@
+# Minute   Hour   Day of Month       Month          Day of Week        Command
+14    8    *    *   *    $HOME/Documents/eak-fifa-devops/gossly/gossly_wrapper.sh >> /tmp/crontab.log 2>&1
+#01    9    *    *   *    $HOME/Documents/eak-fifa-devops/fifa-cuervos/cuervos.py chg0130111 >> /tmp/crontab.log 2>&1
+20    9    *    *   *    "$HOME/Documents/eak-fifa-devops/p4_conf_file_v7r/p4_v7r_wrapper.sh" "wsl" >> /tmp/crontab.log 2>&1
+34    *    *    *   *    $HOME/Documents/eak-fifa-devops/fifa-cuervos/cuervos.py chg013701 --mode test >> /tmp/crontab.log 2>&1
+57    3    1    *   *    cat /dev/null > /tmp/crontab.log
+48    1    *    *   *    find $HOME/Documents/term_sessions -type f -name "*.log" -mtime +90 -print -delete >> /tmp/crontab.log 2>&1
