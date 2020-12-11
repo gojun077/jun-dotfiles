@@ -174,10 +174,10 @@
 (setq TeX-engine 'xetex)
 
 ; set PATH for emacs shell
-(setenv "PATH" (concat (getenv "PATH") ":/usr/local/go/bin:$HOME/goproj/bin"))
+(setenv "PATH" (concat (getenv "PATH") ":/usr/local/go/bin:$GOPATH/bin"))
 ; set exec-path for emacs to include GOLANG binaries
 (setq exec-path (append exec-path '("/usr/local/go/bin"
-                                    "$HOME/go/bin")))
+                                    "$GOPATH/bin")))
 ;; (use-package exec-path-from-shell
 ;;   :ensure t
 ;;   :defer  2
