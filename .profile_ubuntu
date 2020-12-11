@@ -12,7 +12,7 @@
 if [ -n "$BASH_VERSION" ]; then
     # include .bashrc if it exists
     if [ -f "$HOME/.bashrc" ]; then
-	. "$HOME/.bashrc"
+      . "$HOME/.bashrc"
     fi
 fi
 
@@ -27,6 +27,8 @@ if [ -d "$HOME/.local/bin" ] ; then
 fi
 
 export GOROOT=/usr/local/go
-export GOPATH=/home/junbuntu/goproj
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/usr/games:/usr/local/go/bin:/home/junbuntu/goproj/bin:/home/junbuntu/.nvm:/home/junbuntu/.local/bin"
-
+export GOPATH=/home/junbuntu/go
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/usr/games:/usr/local/go/bin:$GOPATH/bin:/home/junbuntu/.nvm:/home/junbuntu/.local/bin"
+export PYTHONBREAKPOINT=ipdb.set_trace
+export NVM_DIR="$HOME/.nvm"
+source "$HOME/.cargo/env"

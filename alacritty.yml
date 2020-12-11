@@ -1,4 +1,4 @@
-# MacOS X Configuration for Alacritty, the GPU enhanced terminal emulator.
+# Ubuntu Configuration for Alacritty, the GPU enhanced terminal emulator.
 
 # Import additional configuration files
 #
@@ -108,7 +108,7 @@ font:
     #   - (macOS) Menlo
     #   - (Linux/BSD) monospace
     #   - (Windows) Consolas
-    family: Monofur Nerd Font Mono
+    family: monofur
     #family: NanumGothicCoding
 
     # The `style` can be specified to pick a specific face.
