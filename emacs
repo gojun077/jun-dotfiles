@@ -174,17 +174,17 @@
 (setq TeX-engine 'xetex)
 
 ; set PATH for emacs shell
-(setenv "PATH" (concat (getenv "PATH") ":/usr/local/go/bin:$HOME/goproj/bin"))
+(setenv "PATH" (concat (getenv "PATH") ":/usr/local/go/bin:$GOPATH/bin"))
 ; set exec-path for emacs to include GOLANG binaries
 (setq exec-path (append exec-path '("/usr/local/go/bin"
-                                    "$HOME/goproj/bin")))
-(use-package exec-path-from-shell
-  :ensure t
-  :defer  2
-  :config
-  (dolist (var '("GOPATH"))
-    (add-to-list 'exec-path-from-shell-variables var))
-  (exec-path-from-shell-initialize))
+                                    "$GOPATH/bin")))
+;; (use-package exec-path-from-shell
+;;   :ensure t
+;;   :defer  2
+;;   :config
+;;   (dolist (var '("GOPATH"))
+;;     (add-to-list 'exec-path-from-shell-variables var))
+;;   (exec-path-from-shell-initialize))
 
 ; bind 'M-x magit-status' to 'C-x g'
 (global-set-key (kbd "C-x g") 'magit-status)

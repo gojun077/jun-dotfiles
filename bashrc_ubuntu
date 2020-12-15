@@ -154,9 +154,6 @@ if ! ssh-add -l; then
   ssh-add ~/.ssh/archjun_rsa
 fi
 
-export GOROOT=/usr/local/go
-export GOPATH=/home/junbuntu/goproj
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/usr/games:/usr/local/go/bin:/home/junbuntu/goproj/bin:/home/junbuntu/.nvm:/home/junbuntu/.local/bin"
 export PYTHONBREAKPOINT=ipdb.set_trace
 
 GPG_TTY=$(tty)
@@ -165,5 +162,4 @@ export GPG_TTY
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-#nvm use v9.10.0
-
+source "$HOME/.cargo/env"
