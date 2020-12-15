@@ -146,11 +146,14 @@ if [ -f ~/"SpiderOak Hive/bashrc_secure/bash_aliases_secure" ]; then
   source ~/"SpiderOak Hive/bashrc_secure/bash_aliases_secure"
 fi
 
+# start ssh-agent if it's not running; this is useful
+# for non-GUI ssh sessions
+if ! pidof ssh-agent; then
+  eval $(ssh-agent)
+fi
 
-# When you run ssh-agent for the first time, you need to add
-# your private key(s) with 'ssh-add /path/to/priv/key'
+# if no ssh privkeys added to ssh-agent, add them
 if ! ssh-add -l; then
-  # For i3 WM ssh-agent
   ssh-add ~/.ssh/archjun_rsa
 fi
 
