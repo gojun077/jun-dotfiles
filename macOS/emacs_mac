@@ -2,7 +2,7 @@
 
 ;; jun's_emacs_file --- Summary
 ;; Jun Go gojun077@gmail.com
-;; Last Updated 2020.10.12
+;; Last Updated 2020.11.26
 ;; Mac OS version
 
 ;;; Code:
@@ -83,7 +83,7 @@
   ;; customize compile command to run go build
   (if (not (string-match "go" compile-command))
       (set (make-local-variable 'compile-command)
-           "env GOOS=darwin GOARCH=amd64 go build -v && go test -v && go vet"))
+           "env GOOS=darwin GOARCH=amd64 go build -v -o bin/$(basename $(pwd)) && go test -v && go vet"))
 )
 (add-hook 'go-mode-hook 'go-mode-setup)
 
@@ -160,11 +160,11 @@
 ; python -m doctest myprog.py -v
 ;
 (setq python-shell-completion-native nil)
-(setq python-shell-interpreter "/Library/Frameworks/Python.framework/Versions/3.8/bin/ipython3"
+(setq python-shell-interpreter "~/.pyenv/shims/ipython"
       python-shell-interpreter-args "--simple-prompt -i --pprint")
 (setq ansi-color-for-comint-mode t)
-(setq python-check-command "/Library/Frameworks/Python.framework/Versions/3.8/bin/pyflakes")
-(setq flycheck-python-pyflakes-executable "/Library/Frameworks/Python.framework/Versions/3.8/bin/pyflakes")
+(setq python-check-command "~/.pyenv/shims/pyflakes")
+(setq flycheck-python-pyflakes-executable "~/.pyenv/shims/pyflakes")
 
 ; C-\ language toggle
 (setq default-input-method "korean-hangul")

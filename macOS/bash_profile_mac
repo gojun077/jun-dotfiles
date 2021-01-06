@@ -1,14 +1,9 @@
 # ~/.bash_profile
-# Setting PATH for Python 3.8
-# The original version is saved in .bash_profile.pysave
-PATH="/Library/Frameworks/Python.framework/Versions/3.8/bin:${PATH}"
-export PATH
-eval "$(pyenv init -)"
 
 if [ -f ~/.bashrc ]; then
   . ~/.bashrc
 fi
 
-ulimit -n 200000
-ulimit -u 65536
+sudo launchctl limit maxfiles 65536 200000
+ulimit -n 65536 200000
 
