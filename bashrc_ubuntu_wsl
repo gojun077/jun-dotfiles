@@ -123,7 +123,7 @@ fi
 # Jun's customizations for Ubuntu bashrc
 
 export BROWSER=chromium
-export EDITOR=emacs
+export EDITOR=vim
 
 ##### ibus IME settings #####
 export GTK_IM_MODULE=ibus
@@ -137,19 +137,11 @@ export ECORE_IMF_MODULE=xim
 #############################
 
 export TERM=xterm-256color
-export WINEPREFIX=/MULTIMEDIA/wine
-export WHALEX="$HOME/Documents/whalex"
 
 if [ -f ~/.bash_aliases  ]; then
   #shellcheck source=/home/junbuntu/dotfiles/bash_aliases
   source ~/.bash_aliases
 fi
-
-if [ -f ~/"SpiderOak Hive/bashrc_secure/bash_aliases_secure" ]; then
-  #shellcheck source=/home/junbuntu/dotfiles/bash_aliases
-  source ~/"SpiderOak Hive/bashrc_secure/bash_aliases_secure"
-fi
-
 
 if ! pidof ssh-agent; then
   eval $(ssh-agent)
@@ -187,5 +179,4 @@ export VAGRANT_WSL_WINDOWS_ACCESS_USER_HOME_PATH="/home/junbuntu"
 export GOROOT=/usr/local/go
 export GOPATH=/home/junbuntu/goproj
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/local/go/bin:/home/junbuntu/goproj/bin
-ulimit -n 65536 200000
 
