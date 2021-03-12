@@ -1,6 +1,6 @@
 # ~/.bashrc
 # for MAC OS
-# Last Updated: 2020.01.23
+# Last Updated: 2021.03.12
 
 # If not running interactively, don't do anything
 #[[ $- != *i* ]] && return
@@ -12,7 +12,7 @@ export TERM=xterm-256color
 PS1='[\u@\h \W]\$ '
 
 export GOROOT=/usr/local/go
-export GOPATH=/Users/pekoh/go
+export GOPATH="/Users/${USER}/go"
 export PATH="/usr/local/Cellar/sqlite/3.31.1/bin:/usr/local/opt/openjdk@11/bin:/usr/local/go/bin:$GOPATH/bin:/usr/local/opt/mysql-client/bin:$HOME/.pyenv/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/MacGPG2/bin:/usr/local/share/dotnet:~/.dotnet/tools"
 eval "$(pyenv init -)"
 
@@ -22,5 +22,5 @@ eval "$(pyenv init -)"
 
 alias genpw='date +%s | shasum -a 256 | base64 | head -c 32 ; echo'
 source ~/.bash_aliases
-source "/Users/pekoh/Google Drive/pekoh's_stuff/bashrc_mac_secure"
+#source "/Users/pekoh/Google Drive/pekoh's_stuff/bashrc_mac_secure"
 # vim: ts=2 sw=2 et :
