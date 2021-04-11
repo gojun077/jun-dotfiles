@@ -377,8 +377,8 @@ font:
 #   - (Windows) powershell
 shell:
   program: /usr/local/bin/bash
-#  args:
-#    - --login
+  args:
+    - --login
 
 # Startup directory
 #

@@ -2,7 +2,7 @@
 
 ;; jun's_emacs_file --- Summary
 ;; Jun Go gojun077@gmail.com
-;; Last Updated 2020.11.26
+;; Last Updated Apr 9 2021
 ;; Mac OS version
 
 ;;; Code:
@@ -35,8 +35,8 @@
    rainbow-delimiters
    racket-mode
    realgud
-   scala-mode
    smartparens
+   terraform-mode
    unicode-whitespace
    visual-fill-column
    web-mode
@@ -48,6 +48,7 @@
 
 
 ;; setting below to fix $PATH env var on MacOS X
+(require 'exec-path-from-shell)
 (when (memq window-system '(mac ns x))
   (exec-path-from-shell-initialize))
 
@@ -87,6 +88,10 @@
 )
 (add-hook 'go-mode-hook 'go-mode-setup)
 
+;; hook for terraform buffers
+(add-hook 'terraform-mode-hook #'terraform-format-on-save-mode)
+
+
 
 ;; mode settings
 ; show col and line numbers
@@ -125,13 +130,11 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   (quote
-    ("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default)))
+   '("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default))
  '(epg-gpg-program "/usr/local/MacGPG2/bin/gpg2")
  '(package-selected-packages
-   (quote
-    (go-mode go-playground flycheck-gometalinter rainbow-delimiters magit smartparens use-package web-mode ein yaml-mode rw-language-and-country-codes racket-mode paredit markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible)))
- '(python-shell-completion-native-disabled-interpreters (quote ("pypy ipython"))))
+   '(terraform-mode go-mode go-playground flycheck-gometalinter rainbow-delimiters magit smartparens use-package web-mode ein yaml-mode rw-language-and-country-codes racket-mode paredit markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible))
+ '(python-shell-completion-native-disabled-interpreters '("pypy ipython")))
 
 
 ;;======================
@@ -140,8 +143,10 @@
 
 ;; limit line length
 (setq whitespace-line-column 80)
+;; set fill column to 75
+(setq-default fill-column 75)
 ;; set fill column indicator to 80
-(setq-default fill-column 80)
+(setq fci-rule-column 80)
 ; Use spaces instead of tabs
 (setq-default indent-tabs-mode nil)
 ; But when I must use TAB, set width to 4 chars
