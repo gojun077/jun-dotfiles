@@ -2,7 +2,7 @@
 
 ;; jun's_emacs_file --- Summary
 ;; Jun Go gojun077@gmail.com
-;; Last Updated 2020.08.08
+;; Last Updated 2021.04.11
 
 ;;; Code:
 (require 'package)
@@ -200,6 +200,7 @@
 (when (display-graphic-p)
 ; only run whitespace mode in graphical session
   (global-whitespace-mode 1)
+  (add-hook 'after-change-major-mode-hook 'whitespace-mode)
   (load-theme 'sanityinc-solarized-light)
   ; don't show scrollbar
   (scroll-bar-mode -1)
