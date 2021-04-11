@@ -37,6 +37,8 @@
    realgud
    scala-mode
    smartparens
+   terraform-mode
+   unicode-whitespace
    visual-fill-column
    web-mode
    yaml-mode)
@@ -200,7 +202,24 @@
 (when (display-graphic-p)
 ; only run whitespace mode in graphical session
   (global-whitespace-mode 1)
+
+  ;; limit line length
+  (setq whitespace-line-column 80)
+
+  ;; set fill column to 75
+  (setq-default fill-column 75)
+
+  ;; set fill column indicator to 80
+  (setq fci-rule-column 80)
+
+  ;; enable fci-mode for all files
+  (add-hook 'after-change-major-mode-hook 'fci-mode)
+
   (add-hook 'after-change-major-mode-hook 'whitespace-mode)
+
+  ;; unicode-whitespace face settings
+  (unicode-whitespace-setup 'subdued-faces)
+
   (load-theme 'sanityinc-solarized-light)
   ; don't show scrollbar
   (scroll-bar-mode -1)
