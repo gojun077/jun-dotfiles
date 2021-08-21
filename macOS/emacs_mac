@@ -2,8 +2,8 @@
 
 ;; jun's_emacs_file --- Summary
 ;; Jun Go gojun077@gmail.com
-;; Last Updated Apr 9 2021
-;; Mac OS version
+;; Last Updated Jul 2 2021
+;; Mac OS version for Emacs 27.x
 
 ;;; Code:
 (require 'package)
@@ -30,6 +30,7 @@
    flycheck-gometalinter
    go-mode
    go-playground
+   jenkinsfile-mode
    magit
    markdown-mode
    rainbow-delimiters
@@ -45,12 +46,6 @@
 
 (dolist (package gojun-pkglist)
   (use-package package))
-
-
-;; setting below to fix $PATH env var on MacOS X
-(require 'exec-path-from-shell)
-(when (memq window-system '(mac ns x))
-  (exec-path-from-shell-initialize))
 
 ;; require declarations
 (require 'flycheck)
@@ -133,7 +128,7 @@
    '("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default))
  '(epg-gpg-program "/usr/local/MacGPG2/bin/gpg2")
  '(package-selected-packages
-   '(terraform-mode go-mode go-playground flycheck-gometalinter rainbow-delimiters magit smartparens use-package web-mode ein yaml-mode rw-language-and-country-codes racket-mode paredit markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible))
+   '(jenkinsfile-mode terraform-mode go-mode go-playground flycheck-gometalinter rainbow-delimiters magit smartparens use-package web-mode ein yaml-mode rw-language-and-country-codes racket-mode paredit markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible))
  '(python-shell-completion-native-disabled-interpreters '("pypy ipython")))
 
 
