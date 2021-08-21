@@ -177,8 +177,8 @@ exec --no-startup-id feh --bg-fill -z -D 1024 ~/Dropbox/wallpapers/shared/backgr
 exec --no-startup-id bash ~/.screenlayout/arandr_u36jc_hdmi_32in_1920x1080.sh
 
 # Custom keybindings
+bindsym $mod+Shift+b exec brave-browser-nightly
 bindsym $mod+Shift+m exec emacs
-bindsym $mod+Shift+w exec brave-browser
 bindsym $mod+Shift+g exec chromium-browser
 bindsym $mod+Shift+f exec nautilus
 bindsym --release $mod+Shift+z exec scrot -s ~/Pictures/scrot-$(date +%F_%H.%M.%S).png
