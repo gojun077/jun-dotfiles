@@ -1,0 +1,12 @@
+[Unit]
+Description="Run 'restart_nginx.service' every 70 days"
+
+[Timer]
+OnBootSec = 60min  ; set timer relative to when the machine was booted up
+OnActiveSec = 50day
+OnUnitActiveSec = 50day
+RandomizedDelaySec = 1day
+Persistent=true
+
+[Install]
+WantedBy=timers.target
