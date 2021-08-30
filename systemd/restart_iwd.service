@@ -4,7 +4,7 @@ After = network.target
 
 [Service]
 Type = oneshot
-ExecStart = "/usr/bin/systemctl restart iwd.service"
+ExecStart = "/home/archjun/dotfiles/systemd/restart_iwd.sh"
 
 [Install]
 WantedBy=multi-user.target

@@ -3,6 +3,7 @@ Description="Run 'restart_iwd.service' about every 60 min"
 
 [Timer]
 OnBootSec = 60min  ; set timer relative to when the machine was booted up
+OnActiveSec = 60min
 OnUnitActiveSec = 60min
 RandomizedDelaySec = 127
 Persistent=true
