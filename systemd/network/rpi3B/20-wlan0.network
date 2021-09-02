@@ -1,9 +1,9 @@
 [Network]
-Description=Settings for RPI 3B wireless iface
+Description="Settings for RPI3b wireless iface"
 DHCP=ipv4
 
 [Match]
 Name=wlan0
 
-[DHCP]
-RouteMetric=20
+[DHCPv4]
+UseDNS=true
