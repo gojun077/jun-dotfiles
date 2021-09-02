@@ -1,0 +1,9 @@
+[Network]
+Description="Settings for XPS m1330 wireless iface"
+DHCP=ipv4
+
+[Match]
+Name=wlan0
+
+[DHCPv4]
+UseDNS=true
