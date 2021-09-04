@@ -1,11 +1,11 @@
 [Unit]
-Description="Run 'restart_iwd.service' about every 60 min"
+Description="Run 'restart_iwd.service' about every 15 min"
 
 [Timer]
-OnBootSec = 60min  ; set timer relative to when the machine was booted up
-OnActiveSec = 60min
-OnUnitActiveSec = 60min
-RandomizedDelaySec = 127
+OnBootSec = 15min  ; set timer relative to when the machine was booted up
+OnActiveSec = 15min
+OnUnitActiveSec = 15min
+RandomizedDelaySec = 67
 Persistent=true
 
 [Install]
