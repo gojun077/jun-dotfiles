@@ -166,20 +166,24 @@ exec --no-startup-id SpiderOakONE
 #exec --no-startup-id nm-applet
 exec --no-startup-id redshift-gtk -l 37.5667:126.9781
 exec --no-startup-id xscreensaver -nosplash
-exec --no-startup-id run_keybase
+#exec --no-startup-id run_keybase
 exec --no-startup-id rescuetime
 exec --no-startup-id volumeicon
 exec --no-startup-id parcellite
 
 # Add background wallpaper
-exec --no-startup-id feh --bg-fill -z -D 1024 ~/Dropbox/wallpapers/shared/backgrounds/1920x1200/
-# Setup external monitor from work
-exec --no-startup-id bash ~/.screenlayout/arandr_u36jc_hdmi_32in_1920x1080.sh
+exec --no-startup-id feh --bg-fill -z \
+  -D 1024 ~/Dropbox/wallpapers/shared/backgrounds/1920x1200/
+# xrandr screenlayout for large external monitor
+exec --no-startup-id bash \
+  ~/.screenlayout/arandr_u36jc_hdmi_32_1920x1080_nouveau.sh
 
 # Custom keybindings
 bindsym $mod+Shift+b exec brave-browser-nightly
 bindsym $mod+Shift+m exec emacs
 bindsym $mod+Shift+g exec chromium-browser
 bindsym $mod+Shift+f exec nautilus
-bindsym --release $mod+Shift+z exec scrot -s ~/Pictures/scrot-$(date +%F_%H.%M.%S).png
+# screenshot shortcut
+bindsym --release $mod+Shift+z exec scrot -s \
+  ~/Pictures/scrot-$(date +%F_%H.%M.%S).png
 
