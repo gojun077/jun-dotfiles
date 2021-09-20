@@ -47,8 +47,8 @@ HISTCONTROL=ignoreboth
 shopt -s histappend
 
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
-HISTSIZE=2000
-HISTFILESIZE=4000
+HISTSIZE=10000
+HISTFILESIZE=50000
 
 # start ssh-agent if it's not running; this is useful
 # for non-GUI ssh sessions
