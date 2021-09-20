@@ -146,11 +146,18 @@ if [ -f ~/"SpiderOak Hive/bashrc_secure/bash_aliases_secure" ]; then
   source ~/"SpiderOak Hive/bashrc_secure/bash_aliases_secure"
 fi
 
-# start ssh-agent if it's not running; this is useful
-# for non-GUI ssh sessions
-if ! pidof ssh-agent; then
-  eval $(ssh-agent)
+# start ssh-agent if it's not running; but run only one at a time
+# https://wiki.archlinux.org/title/SSH_keys#ssh-agent
+if ! pgrep -u "$USER" ssh-agent > /dev/null; then
+    ssh-agent -t 1h > "$XDG_RUNTIME_DIR/ssh-agent.env"
 fi
+if [[ ! "$SSH_AUTH_SOCK" ]]; then
+    source "$XDG_RUNTIME_DIR/ssh-agent.env" >/dev/null
+fi
+
+#if ! pidof ssh-agent; then
+#  eval $(ssh-agent)
+#fi
 
 # if no ssh privkeys added to ssh-agent, add them
 if ! ssh-add -l; then
