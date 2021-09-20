@@ -1,8 +1,12 @@
-# Default config for sway
-#
-# Copy this to ~/.config/sway/config and edit it to your liking.
+# sway tiling WM config for ASUS u36jc with Intel+Nvidia dual graphics
+# default config '/etc/sway/config' which I copied to ~/.config/sway/config
+# and customized.
 #
 # Read `man 5 sway` for a complete reference.
+# Created on: Sep 21 2021
+# Created by: gojun077@gmail.com
+# Last Updated: Sep 21 2021
+
 
 ### Variables
 #
@@ -14,7 +18,7 @@ set $down j
 set $up k
 set $right l
 # Your preferred terminal emulator
-set $term foot
+set $term "LIBGL_ALWAYS_SOFTWARE=1 alacritty"
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
@@ -26,14 +30,18 @@ include /etc/sway/config-vars.d/*
 # Old Xorg tools like'arandr', 'xrandr' don't work in Wayland. You need to
 # arrange your displays DIY, where origin (0, 0) is at the top left-hand
 # corner. You can find the names of your monitors with
-# 'swaymsg -t get_outputs'.
+# 'swaymsg -t get_outputs'. 'man 5 swa-output' for examples
 output LVDS-1 mode 1366x768 pos 0 0
 output HDMI-A-2 mode 1920x1080 pos 1366 0
+output VGA-2 disable
 
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
-output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
+output LVDS-1 bg \~/Dropbox/wallpapers/shared/backgrounds/1366x768/hubble_1366x768_nebula.jpg fit
+output HDMI-A-2 bg ~/Dropbox/wallpapers/shared/backgrounds/1920x1200/NGC_6503_Spiral_Galaxy_1920x1200_wallpaper.jpg fill
+#output HDMI-A-2 bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
+
 #
 # Example configuration:
 #
@@ -123,6 +131,9 @@ output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
     # Bind workspaces 1 and 2 to monitor LVDS-1
     workspace 1 output LVDS-1
     workspace 2 output LVDS-1
+    # Bind workspaces 3 and 4 to monitor HDMI-A-2
+    workspace 3 output HDMI-A-2
+    workspace 4 output HDMI-A-2
     # Switch to workspace
     bindsym $mod+1 workspace number 1
     bindsym $mod+2 workspace number 2
@@ -226,5 +237,28 @@ bar {
         inactive_workspace #32323200 #32323200 #5c5c5c
     }
 }
+
+
+# Load Daemons on Startup
+exec --no-startup-id dropbox start
+exec --no-startup-id env IBUS_ENABLE_SYNC_MODE=0 ibus-daemon -rdx
+exec --no-startup-id SpiderOakONE
+#exec --no-startup-id redshift-gtk -l 37.5667:126.9781
+#exec --no-startup-id run_keybase
+exec --no-startup-id rescuetime
+exec --no-startup-id volumeicon
+exec wl-paste -t text --watch clipman store
+
+# Custom Keyboard shortcuts
+# Custom keybindings
+bindsym $mod+Shift+b exec brave-browser-nightly
+bindsym $mod+Shift+m exec emacs
+bindsym $mod+Shift+g exec chromium-browser
+bindsym $mod+Shift+f exec nautilus
+# screenshot shortcut (select area)
+bindsym --release $mod+Shift+z exec grim -g "$(slurp)" \
+  ~/Pictures/grim-$(date +%F_%H.%M.%S).png
+# video capture shortcut (select area)
+bindsym --release $mod+Shift+v wf-recorder -g "$(slurp)"
 
 include /etc/sway/config.d/*
