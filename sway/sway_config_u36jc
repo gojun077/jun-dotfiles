@@ -38,7 +38,7 @@ output VGA-2 disable
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
-output LVDS-1 bg \~/Dropbox/wallpapers/shared/backgrounds/1366x768/hubble_1366x768_nebula.jpg fit
+output LVDS-1 bg ~/Dropbox/wallpapers/shared/backgrounds/1366x768/hubble_1366x768_nebula.jpg fit
 output HDMI-A-2 bg ~/Dropbox/wallpapers/shared/backgrounds/1920x1200/NGC_6503_Spiral_Galaxy_1920x1200_wallpaper.jpg fill
 #output HDMI-A-2 bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
 
@@ -252,14 +252,16 @@ exec wl-paste -t text --watch clipman store
 
 # Custom Keyboard shortcuts
 # Custom keybindings
-bindsym $mod+Shift+b exec brave-browser-nightly
+#bindsym $mod+Shift+b exec MOZ_ENABLE_WAYLAND=1 firefox  # FF runs in native Wayland!
+bindsym $mod+Shift+b exec brave-browser-nightly --enable-features=UseOzonePlatform --ozone-platform=wayland
 bindsym $mod+Shift+m exec emacs
 bindsym $mod+Shift+g exec chromium-browser
 bindsym $mod+Shift+f exec nautilus
+bindsym $mod+Shift+p exec clipman pick  # view clipboard
 # screenshot shortcut (select area)
 bindsym --release $mod+Shift+z exec grim -g "$(slurp)" \
   ~/Pictures/grim-$(date +%F_%H.%M.%S).png
 # video capture shortcut (select area)
-bindsym --release $mod+Shift+v wf-recorder -g "$(slurp)"
+bindsym $mod+Shift+v wf-recorder -g "$(slurp)"
 
 include /etc/sway/config.d/*
