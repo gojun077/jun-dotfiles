@@ -241,8 +241,8 @@ bar {
 
 
 # Load Daemons on Startup
+exec --no-startup-id fcitx5 -d  # fcitx5 IME works with Wayland
 exec --no-startup-id dropbox start
-exec --no-startup-id env IBUS_ENABLE_SYNC_MODE=0 ibus-daemon -rdx
 exec --no-startup-id SpiderOakONE
 #exec --no-startup-id redshift-gtk -l 37.5667:126.9781
 #exec --no-startup-id run_keybase
@@ -252,8 +252,8 @@ exec wl-paste -t text --watch clipman store
 
 # Custom Keyboard shortcuts
 # Custom keybindings
-#bindsym $mod+Shift+b exec MOZ_ENABLE_WAYLAND=1 firefox  # FF runs in native Wayland!
-bindsym $mod+Shift+b exec brave-browser-nightly --enable-features=UseOzonePlatform --ozone-platform=wayland
+bindsym $mod+Shift+b exec MOZ_ENABLE_WAYLAND=1 firefox  # FF runs in native Wayland!
+#bindsym $mod+Shift+b exec brave-browser-nightly --enable-features=UseOzonePlatform --ozone-platform=wayland
 bindsym $mod+Shift+m exec emacs
 bindsym $mod+Shift+g exec chromium-browser
 bindsym $mod+Shift+f exec nautilus
@@ -262,6 +262,6 @@ bindsym $mod+Shift+p exec clipman pick  # view clipboard
 bindsym --release $mod+Shift+z exec grim -g "$(slurp)" \
   ~/Pictures/grim-$(date +%F_%H.%M.%S).png
 # video capture shortcut (select area)
-bindsym $mod+Shift+v wf-recorder -g "$(slurp)"
+#bindsym $mod+Shift+v wf-recorder -g "$(slurp)"
 
 include /etc/sway/config.d/*
