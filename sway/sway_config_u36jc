@@ -5,7 +5,7 @@
 # Read `man 5 sway` for a complete reference.
 # Created on: Sep 21 2021
 # Created by: gojun077@gmail.com
-# Last Updated: Sep 21 2021
+# Last Updated: Sep 24 2021
 
 
 ### Variables
@@ -134,7 +134,7 @@ output HDMI-A-2 bg ~/Dropbox/wallpapers/shared/backgrounds/1920x1200/NGC_6503_Sp
     # Bind workspaces 1-3 to monitor HDMI-A-2
     workspace 1 output HDMI-A-2
     workspace 2 output HDMI-A-2
-    workspace 2 output HDMI-A-2
+    workspace 3 output HDMI-A-2
     # Switch to workspace
     bindsym $mod+1 workspace number 1
     bindsym $mod+2 workspace number 2
@@ -225,29 +225,38 @@ bindsym $mod+r mode "resize"
 # Status Bar:
 #
 # Read `man 5 sway-bar` for more information about this section.
+# bar {
+#     position top
+
+#     # When the status_command prints a new line to stdout, swaybar updates.
+#     # The default just shows the current date and time.
+#     status_command while date +'%Y-%m-%d %l:%M:%S %p'; do sleep 1; done
+
+#     colors {
+#         statusline #ffffff
+#         background #323232
+#         inactive_workspace #32323200 #32323200 #5c5c5c
+#     }
+# }
+
 bar {
-    position top
-
-    # When the status_command prints a new line to stdout, swaybar updates.
-    # The default just shows the current date and time.
-    status_command while date +'%Y-%m-%d %l:%M:%S %p'; do sleep 1; done
-
-    colors {
-        statusline #ffffff
-        background #323232
-        inactive_workspace #32323200 #32323200 #5c5c5c
-    }
+    swaybar_command waybar
 }
 
+# 10-pixel border around every window
+gaps inner 10
+
+# Remove title bar of each window
+default_border pixel 3
 
 # Load Daemons on Startup
-exec --no-startup-id fcitx5 -d  # fcitx5 IME works with Wayland
+exec --no-startup-id fcitx5 -d -r # fcitx5 IME works with Wayland
 exec --no-startup-id dropbox start
 exec --no-startup-id SpiderOakONE
-#exec --no-startup-id redshift-gtk -l 37.5667:126.9781
+# using redshift-wayland fork below
+exec --no-startup-id redshift-gtk -l 37.5667:126.9781
 #exec --no-startup-id run_keybase
 exec --no-startup-id rescuetime
-exec --no-startup-id volumeicon
 exec wl-paste -t text --watch clipman store
 
 # Custom Keyboard shortcuts
