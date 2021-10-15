@@ -256,7 +256,7 @@ exec --no-startup-id SpiderOakONE
 # using redshift-wayland fork below
 exec --no-startup-id redshift-gtk -l 37.5667:126.9781
 #exec --no-startup-id run_keybase
-exec --no-startup-id rescuetime
+#exec --no-startup-id rescuetime
 exec wl-paste -t text --watch clipman store
 
 # Custom Keyboard shortcuts
