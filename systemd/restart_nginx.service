@@ -1,0 +1,10 @@
+[Unit]
+Description = Restart 'nginx.service' on Debian Stretch
+After = network.target
+
+[Service]
+Type = oneshot
+ExecStart = "/home/admin/dotfiles/systemd/restart_nginx.sh"
+
+[Install]
+WantedBy=multi-user.target

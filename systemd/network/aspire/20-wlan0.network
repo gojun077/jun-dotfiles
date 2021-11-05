@@ -1,5 +1,5 @@
 [Network]
-Description="Settings for RPI3b wireless iface"
+Description=Settings for Acer Aspire D257 wireless iface
 DHCP=ipv4
 
 [Match]

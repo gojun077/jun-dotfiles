@@ -1,0 +1,9 @@
+[Match]
+Name=br0
+
+[Network]
+Address=192.168.0.77/24
+Broadcast=192.168.0.255
+
+[Route]
+Gateway=192.168.0.78

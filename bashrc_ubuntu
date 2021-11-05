@@ -17,8 +17,8 @@ HISTCONTROL=ignoreboth
 shopt -s histappend
 
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
-HISTSIZE=1000
-HISTFILESIZE=2000
+HISTSIZE=10000
+HISTFILESIZE=50000
 
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
@@ -121,18 +121,6 @@ fi
 
 export BROWSER=chromium
 export EDITOR=emacs
-
-##### ibus IME settings #####
-export GTK_IM_MODULE=ibus
-export XMODIFIERS=@im=ibus
-export QT_IM_MODULE=ibus
-export CLUTTER_IM_MODULE=ibus
-export ECORE_IMF_MODULE=xim
-# Note: for ibus to work in non-GTK/QT apps, the ibus-daemon
-# must be launched with the following options:
-#env IBUS_ENABLE_SYNC_MODE=0 ibus-daemon -rdx &
-#############################
-
 export TERM=xterm-256color
 export WINEPREFIX=/MULTIMEDIA/wine
 
@@ -146,11 +134,18 @@ if [ -f ~/"SpiderOak Hive/bashrc_secure/bash_aliases_secure" ]; then
   source ~/"SpiderOak Hive/bashrc_secure/bash_aliases_secure"
 fi
 
-# start ssh-agent if it's not running; this is useful
-# for non-GUI ssh sessions
-if ! pidof ssh-agent; then
-  eval $(ssh-agent)
+# start ssh-agent if it's not running; but run only one at a time
+# https://wiki.archlinux.org/title/SSH_keys#ssh-agent
+if ! pgrep -u "$USER" ssh-agent > /dev/null; then
+    ssh-agent -t 1h > "$XDG_RUNTIME_DIR/ssh-agent.env"
 fi
+if [[ ! "$SSH_AUTH_SOCK" ]]; then
+    source "$XDG_RUNTIME_DIR/ssh-agent.env" >/dev/null
+fi
+
+#if ! pidof ssh-agent; then
+#  eval "$(ssh-agent)"
+#fi
 
 # if no ssh privkeys added to ssh-agent, add them
 if ! ssh-add -l; then

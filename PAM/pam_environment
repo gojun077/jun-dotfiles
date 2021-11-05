@@ -1,0 +1,5 @@
+# these env vars will be sourced by PAM on every login
+GTK_IM_MODULE DEFAULT=fcitx
+QT_IM_MODULE  DEFAULT=fcitx
+XMODIFIERS    DEFAULT=\@im=fcitx
+MOZ_ENABLE_WAYLAND=1

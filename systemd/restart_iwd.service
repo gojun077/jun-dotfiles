@@ -1,0 +1,10 @@
+[Unit]
+Description = Restart 'iwd.service' on Archlinux
+After = network.target
+
+[Service]
+Type = oneshot
+ExecStart = "/home/archjun/dotfiles/systemd/restart_iwd.sh"
+
+[Install]
+WantedBy=multi-user.target

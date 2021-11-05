@@ -1,5 +1,5 @@
 # Jun's ssh config ~/.ssh/config
-# Last Updated 2020-09-13
+# Last Updated Sep 21 2021
 
 # Global Defaults
 TCPKeepAlive=yes
@@ -8,6 +8,7 @@ ServerAliveCountMax=6
 StrictHostKeyChecking=no
 Compression=yes
 ForwardAgent=yes
+AddKeysToAgent=yes
 Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
 UseRoaming no
 # Specify add'l ssh config files
