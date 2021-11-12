@@ -1,1 +1,0 @@
-set ssl:ca-file "/etc/ssl/certs/ca-certificates.crt"

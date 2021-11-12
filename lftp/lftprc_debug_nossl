@@ -1,0 +1,2 @@
+debug
+set ftp:ssl-allow false

@@ -1,1 +1,0 @@
-set ssl:ca-file "/etc/ssl/cert.pem"
