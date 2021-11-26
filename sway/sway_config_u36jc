@@ -261,10 +261,10 @@ exec wl-paste -t text --watch clipman store
 
 # Custom Keyboard shortcuts
 # Custom keybindings
-bindsym $mod+Shift+b exec MOZ_ENABLE_WAYLAND=1 firefox  # FF runs in native Wayland!
-#bindsym $mod+Shift+b exec brave-browser-nightly --enable-features=UseOzonePlatform --ozone-platform=wayland
+#bindsym $mod+Shift+b exec MOZ_ENABLE_WAYLAND=1 firefox  # FF runs in native Wayland!
+#bindsym $mod+Shift+g exec chromium-browser
+bindsym $mod+Shift+b exec brave-browser-nightly --enable-features=UseOzonePlatform --ozone-platform=wayland
 bindsym $mod+Shift+m exec emacs
-bindsym $mod+Shift+g exec chromium-browser
 bindsym $mod+Shift+f exec nautilus
 bindsym $mod+Shift+p exec clipman pick  # view clipboard
 # screenshot shortcut (select area)
