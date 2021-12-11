@@ -119,7 +119,7 @@ fi
 
 # Jun's customizations for Ubuntu bashrc
 
-export BROWSER=chromium
+export BROWSER=firefox
 export EDITOR=emacs
 export TERM=xterm-256color
 export WINEPREFIX=/MULTIMEDIA/wine

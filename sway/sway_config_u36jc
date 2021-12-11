@@ -5,7 +5,7 @@
 # Read `man 5 sway` for a complete reference.
 # Created on: Sep 21 2021
 # Created by: gojun077@gmail.com
-# Last Updated: Sep 24 2021
+# Last Updated: Dec 11 2021
 
 
 ### Variables
@@ -22,8 +22,8 @@ set $term "LIBGL_ALWAYS_SOFTWARE=1 alacritty"
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
-set $menu dmenu_path | dmenu | xargs swaymsg exec --
-
+#set $menu dmenu_path | dmenu | xargs swaymsg exec --
+set $menu dmenu_path | wofi -d | xargs swaymsg exec --
 include /etc/sway/config-vars.d/*
 
 ### Monitor Layout
@@ -269,6 +269,6 @@ bindsym $mod+Shift+p exec clipman pick  # view clipboard
 bindsym --release $mod+Shift+z exec grim -g "$(slurp)" \
   ~/Pictures/grim-$(date +%F_%H.%M.%S).png
 # video capture shortcut (select area)
-#bindsym $mod+Shift+v wf-recorder -g "$(slurp)"
+bindsym $mod+Shift+v wf-recorder -g "$(slurp)"
 
 include /etc/sway/config.d/*
