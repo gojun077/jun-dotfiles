@@ -269,7 +269,7 @@ bindsym $mod+Shift+p exec clipman pick  # view clipboard
 bindsym --release $mod+Shift+z exec grim -g "$(slurp)" \
   ~/Pictures/grim-$(date +%F_%H.%M.%S).png
 # video capture shortcut (select area)
-bindsym Ctrl+Shift+Print exec wf-recorder -g "$(slurp)" -f ~/Videos/recording.mp4 -o HDMI-A-2
+bindsym Ctrl+Shift+Print exec wf-recorder -g "$(slurp)" -f ~/Videos/recording.mp4
 # stop video capture
 bindsym Ctrl+Shift+Backspace exec killall -s SIGINT wf-recorder
 include /etc/sway/config.d/*
