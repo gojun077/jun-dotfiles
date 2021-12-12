@@ -5,7 +5,7 @@
 # Read `man 5 sway` for a complete reference.
 # Created on: Sep 21 2021
 # Created by: gojun077@gmail.com
-# Last Updated: Dec 11 2021
+# Last Updated: Dec 12 2021
 
 
 ### Variables
@@ -247,21 +247,29 @@ bar {
 # Remove title bar of each window
 default_border pixel 3
 
+#
 # Load Daemons on Startup
+#
+# IME for CJK
 exec --no-startup-id fcitx5 -d -r # fcitx5 IME works with Wayland
+# Cloud Sync - Dropbox
 exec --no-startup-id dropbox start
+# Cloud Sync - Spideroak ONE
 exec --no-startup-id SpiderOakONE
-# using redshift-wayland fork below
+# ActivityWatch server
+exec --no-startup-id aw-server
+# ActivityWatch client for Wayland
+exec --no-startup-id "logdir=~/.cache/activitywatch/log/aw-watcher-window-wayland; mkdir -p $logdir; RUST_BACKTRACE=1 aw-watcher-window-wayland > $logdir/$(date -Iseconds).log 2>&1"
+# Screen temp color shift - using redshift-wayland fork
 exec --no-startup-id redshift-gtk -l 37.5667:126.9781
 #exec --no-startup-id run_keybase
-#exec --no-startup-id rescuetime
-exec wl-paste -t text --watch clipman store
+# Clipboard for SwayWM
+exec wl-paste -t text --watch clipman store --no-persist --max-items=1024
 
-# Custom Keyboard shortcuts
-# Custom keybindings
+#
+# Custom Keyboard shortcuts/keybindings
+#
 bindsym $mod+Shift+b exec MOZ_ENABLE_WAYLAND=1 firefox  # FF runs in native Wayland!
-#bindsym $mod+Shift+g exec chromium-browser
-#bindsym $mod+Shift+b exec brave-browser-nightly --enable-features=UseOzonePlatform --ozone-platform=wayland
 bindsym $mod+Shift+m exec emacs
 bindsym $mod+Shift+f exec nautilus
 bindsym $mod+Shift+p exec clipman pick  # view clipboard
