@@ -5,7 +5,10 @@
 # and launches an Activity Watch client for watching Wayland
 # windows. This only works for Sway WM >= v1.5
 
-RUST_BACKTRACE=full XDG_RUNTIME_DIR=/run/junbuntu/1000 \
-  WAYLAND_DISPLAY=wayland-0 aw-watcher-window-wayland > \
-  ~/.cache/activitywatch/log/aw-watcher-window-wayland/$(date -Iseconds).log \
-  2>&1
+RUST_BACKTRACE=full aw-watcher-window-wayland /home/junbuntu/.cache/activitywatch/log/aw-watcher-window-wayland/$(date -Iseconds).log 2>&1 &
+if $? -eq 0; then
+  printf "%s\n" "aw-watcher-window-wayland launch SUCCESS"
+else
+  printf "%s\n" "aw-watcher-window-wayland launch FAILURE"
+fi
+
