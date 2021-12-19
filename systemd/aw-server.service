@@ -1,0 +1,10 @@
+[Unit]
+Description = Start Activity Watch server
+
+[Service]
+Type=OneShot
+ExecStart=/usr/local/bin/aw-server
+Restart=always
+
+[Install]
+WantedBy=graphical.target
