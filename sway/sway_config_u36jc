@@ -259,7 +259,7 @@ exec --no-startup-id SpiderOakONE
 # ActivityWatch server
 #exec --no-startup-id aw-server
 # ActivityWatch client for Wayland
-#exec --no-startup-id  RUST_BACKTRACE=1 aw-watcher-window-wayland > ~/.cache/activitywatch/log/aw-watcher-window-wayland/$(date -Iseconds).log 2>&1
+exec --no-startup-id  /usr/local/bin/start_aw-watcher-window-wayland.sh
 # Screen temp color shift - using redshift-wayland fork
 exec --no-startup-id redshift-gtk -l 37.5667:126.9781
 #exec --no-startup-id run_keybase

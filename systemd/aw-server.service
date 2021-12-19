@@ -2,7 +2,9 @@
 Description = Start Activity Watch server
 
 [Service]
-Type=OneShot
+User=junbuntu
+Group=junbuntu
+Type=simple
 ExecStart=/usr/local/bin/aw-server
 Restart=always
 
