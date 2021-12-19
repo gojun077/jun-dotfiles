@@ -5,7 +5,7 @@
 # Read `man 5 sway` for a complete reference.
 # Created on: Sep 21 2021
 # Created by: gojun077@gmail.com
-# Last Updated: Dec 12 2021
+# Last Updated: Dec 17 2021
 
 
 ### Variables
@@ -52,9 +52,9 @@ output HDMI-A-2 bg ~/Dropbox/wallpapers/shared/backgrounds/1920x1200/NGC_6503_Sp
 ### Idle configuration
 
 exec swayidle -w \
-          timeout 300 'swaylock -f -c 000000' \
-          timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
-          before-sleep 'swaylock -f -c 000000'
+          timeout 600 'swaylock -f -c 000000' \
+          #timeout 600 'swaymsg "output LVDS-1 dpms off"' resume 'swaymsg "output * dpms on"' \
+          #before-sleep 'swaylock -f -c 000000'
 
 # This will lock your screen after 300 seconds of inactivity, then turn off
 # your displays after another 300 seconds, and turn your screens back on when
@@ -257,9 +257,9 @@ exec --no-startup-id dropbox start
 # Cloud Sync - Spideroak ONE
 exec --no-startup-id SpiderOakONE
 # ActivityWatch server
-exec --no-startup-id aw-server
+#exec --no-startup-id aw-server
 # ActivityWatch client for Wayland
-exec --no-startup-id  bash -c 'logdir=~/.cache/activitywatch/log/aw-watcher-window-wayland; mkdir -p $logdir; RUST_BACKTRACE=1 aw-watcher-window-wayland > $logdir/$(date -Iseconds).log 2>&1'
+#exec --no-startup-id  RUST_BACKTRACE=1 aw-watcher-window-wayland > ~/.cache/activitywatch/log/aw-watcher-window-wayland/$(date -Iseconds).log 2>&1
 # Screen temp color shift - using redshift-wayland fork
 exec --no-startup-id redshift-gtk -l 37.5667:126.9781
 #exec --no-startup-id run_keybase
