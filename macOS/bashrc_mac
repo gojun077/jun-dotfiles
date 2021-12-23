@@ -1,6 +1,6 @@
 # ~/.bashrc
 # for MAC OS
-# Last Updated: 2021.03.03
+# Last Updated: Dec 23 2021
 
 # If not running interactively, don't do anything
 #[[ $- != *i* ]] && return
@@ -11,9 +11,6 @@ export TERM=xterm-256color
 
 PS1='[\u@\h \W]\$ '
 
-export GOROOT=/usr/local/go
-export GOPATH=/Users/peter.koh/go
-export PATH="/usr/local/Cellar/sqlite/3.31.1/bin:/usr/local/opt/openjdk@11/bin:/usr/local/go/bin:$GOPATH/bin:/usr/local/opt/mysql-client/bin:$HOME/.pyenv/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/MacGPG2/bin:/usr/local/share/dotnet:~/.dotnet/tools:~/Downloads/google-cloud-sdk/bin:/usr/local/opt/libpq/bin"
 eval "$(pyenv init -)"
 
 # When you run ssh-agent for the first time, you need to add
