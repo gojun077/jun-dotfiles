@@ -1,0 +1,12 @@
+[Unit]
+Description = Start Activity Watch server
+
+[Service]
+User=junbuntu
+Group=junbuntu
+Type=simple
+ExecStart=/usr/local/bin/aw-server
+Restart=always
+
+[Install]
+WantedBy=graphical.target
