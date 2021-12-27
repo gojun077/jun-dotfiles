@@ -1,15 +1,10 @@
 #!/bin/bash
 #~/.bash_profile_ubuntu
 #
-# Last Updated: Dec 23 2021
+# Last Updated: Dec 27 2021
 #
 # Config for interactive login shell (run at initial connection)
 
-export BROWSER=firefox
-export EDITOR=emacs
-export TERM=xterm-256color
-export WINEPREFIX=/MULTIMEDIA/wine
-export PYTHONBREAKPOINT=ipdb.set_trace
 
 if [ -f ~/.bash_aliases  ]; then
   #shellcheck source=/home/junbuntu/dotfiles/bash_aliases
@@ -57,16 +52,20 @@ if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin:$PATH"
 fi
 
-
 if [ -d ~/.cargo ]; then
   source "$HOME/.cargo/env"
 fi
 
+
+export BROWSER=firefox
+export EDITOR=emacs
+export TERM=xterm-256color
+export WINEPREFIX=/MULTIMEDIA/wine
 GPG_TTY=$(tty)
 export GPG_TTY
 export GOROOT=/usr/local/go
 export GOPATH=/home/junbuntu/go
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/usr/games:/usr/local/go/bin:$GOPATH/bin:/home/junbuntu/.nvm:/home/junbuntu/.local/bin"
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/usr/games:/usr/local/go/bin:$GOPATH/bin:/home/junbuntu/.nvm:$GOROOT/bin"
 export PYTHONBREAKPOINT=ipdb.set_trace
 export NVM_DIR="$HOME/.nvm"
-source "$HOME/.cargo/env"
+
