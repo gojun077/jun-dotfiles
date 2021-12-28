@@ -49,6 +49,7 @@
 (require 'flycheck)
 (require 'flycheck-pyflakes)
 (require 'unicode-whitespace)
+(require 'smartparens-config)
 (require 'whitespace)
 
 ;; turn on flychecking globally
