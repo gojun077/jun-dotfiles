@@ -11,7 +11,7 @@ export TERM=xterm-256color
 
 PS1='[\u@\h \W]\$ '
 
-eval "$(pyenv init -)"
+eval "$(/usr/local/bin/pyenv init -)"
 
 # When you run ssh-agent for the first time, you need to add
 # your private key(s) with 'ssh-add /path/to/priv/key'

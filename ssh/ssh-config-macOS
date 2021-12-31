@@ -1,6 +1,6 @@
 # Jun's ssh config ~/.ssh/config
-# Created 2016-02-12
-# Last Updated 2020-05-29
+# Created Feb 12 2016
+# Last Updated Dec 28 2021
 
 # Global Defaults
 TCPKeepAlive=yes
@@ -8,12 +8,12 @@ ServerAliveInterval=20
 ServerAliveCountMax=6
 StrictHostKeyChecking=no
 Compression=yes
-ForwardAgent=yes
 #Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
 
 # MacOS-specific settings
 AddKeysToAgent yes
 UseKeychain yes
+IgnoreUnknown UseKeyChain
 
 # Specify add'l ssh config files
 Include config_secure
@@ -28,17 +28,17 @@ Host bitbucket.org
     IdentitiesOnly yes
     IdentityFile ~/.ssh/archjun_rsa
 
-Host github.com
+Host github
     User gojun077
     Hostname github.com
     PreferredAuthentications publickey
     IdentitiesOnly yes
     IdentityFile ~/.ssh/archjun_rsa
 
-Host gitlab.com
+Host gitlab
     User gojun077
     Hostname gitlab.com
-    PreferredAuthentications publickey
+    PreferredAuthentications publickey,keyboard-interactive
     IdentitiesOnly yes
     IdentityFile ~/.ssh/archjun_rsa
 
