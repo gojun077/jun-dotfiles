@@ -2,13 +2,12 @@
 
 ;; jun's_emacs_file --- Summary
 ;; Jun Go gojun077@gmail.com
-;; Last Updated 2021.04.11
+;; Last Updated Dec 29 2021
 
 ;;; Code:
 (require 'package)
 (package-initialize)
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
 (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/") t)
 (add-to-list 'load-path "~/.emacs.d/elpa") ;;personal elisp libs
 
@@ -49,8 +48,9 @@
 
 (require 'flycheck)
 (require 'flycheck-pyflakes)
+(require 'unicode-whitespace)
 (require 'smartparens-config)
-
+(require 'whitespace)
 
 ;; turn on flychecking globally
 (add-hook 'after-init-hook 'global-flycheck-mode)
@@ -82,7 +82,7 @@
   ;; customize compile command to run go build
   (if (not (string-match "go" compile-command))
       (set (make-local-variable 'compile-command)
-           "env GOOS=linux GOARCH=amd64 go build -v && go test -v && go vet"))
+           "env GOOS=linux GOARCH=amd64 go build -v -o bin/$(basename $(pwd)) && go test -v && go vet"))
 )
 (add-hook 'go-mode-hook 'go-mode-setup)
 
@@ -93,8 +93,6 @@
 (menu-bar-mode 0)
 ; highlight parens
 (show-paren-mode t)
-
-
 
 
 ;; Font settings
@@ -119,8 +117,9 @@
  '(custom-safe-themes
    '("4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" "4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default))
  '(package-selected-packages
-   '(exec-path-from-shell use-package rainbow-delimiters smartparens magit visual-fill-column flycheck-gometalinter sqlup-mode flycheck-pyflakes go-mode go-playground color-theme-solarized web-mode ein yaml-mode rw-language-and-country-codes racket-mode markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible))
- '(python-shell-completion-native-disabled-interpreters '("pypy ipython3")))
+   '(yaml-mode web-mode visual-fill-column use-package unicode-whitespace terraform-mode smartparens rainbow-delimiters racket-mode markdown-mode magit go-playground flycheck-pyflakes flycheck-gometalinter fill-column-indicator exec-path-from-shell color-theme-sanityinc-solarized ansible))
+ '(python-shell-completion-native-disabled-interpreters '("pypy ipython3"))
+ '(warning-suppress-types '((comp))))
 
 
 ;;======================
@@ -175,19 +174,6 @@
 ; use xetex to render pdf from LaTeX
 (setq TeX-engine 'xetex)
 
-; set PATH for emacs shell
-(setenv "PATH" (concat (getenv "PATH") ":/usr/local/go/bin:$GOPATH/bin"))
-; set exec-path for emacs to include GOLANG binaries
-(setq exec-path (append exec-path '("/usr/local/go/bin"
-                                    "$GOPATH/bin")))
-;; (use-package exec-path-from-shell
-;;   :ensure t
-;;   :defer  2
-;;   :config
-;;   (dolist (var '("GOPATH"))
-;;     (add-to-list 'exec-path-from-shell-variables var))
-;;   (exec-path-from-shell-initialize))
-
 ; bind 'M-x magit-status' to 'C-x g'
 (global-set-key (kbd "C-x g") 'magit-status)
 
@@ -200,7 +186,17 @@
 
 ;; Commands to run when Emacs launched in graphical mode
 (when (display-graphic-p)
-; only run whitespace mode in graphical session
+  (use-package exec-path-from-shell
+    :ensure t
+    :defer 2
+    :config
+    (dolist (var '("PATH" "MANPATH" "GOPATH" "GOROOT" "LC_TYPE"
+                 "LC_ALL" "LANG" "SSH_AGENT_PID" "SSH_AUTH_SOCK"
+                 "SHELL"))
+      (add-to-list 'exec-path-from-shell-variables var))
+    (exec-path-from-shell-initialize))
+
+  ; only run whitespace mode in graphical session
   (global-whitespace-mode 1)
 
   ;; limit line length
@@ -226,7 +222,8 @@
   ; don't show toolbar
   (tool-bar-mode -1)
   ;; AUCTEX preview-latex font
-  (set-default 'preview-scale-function 1.2))
+  (set-default 'preview-scale-function 1.2)
+)
 
 ;; Commands to run when Emacs launched in terminal mode
 (unless (display-graphic-p)
