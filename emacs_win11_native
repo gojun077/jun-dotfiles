@@ -131,8 +131,7 @@
 ; python -m doctest myprog.py -v
 ;
 (setq python-shell-completion-native nil)
-(setq python-shell-interpreter "python"
-      python-shell-interpreter-args "--simple-prompt -i --pprint c:/Users/pj/AppData/Local/Microsoft/WindowsApps/python3.exe")
+(setq python-shell-interpreter "python3.exe")
 (setq ansi-color-for-comint-mode t)
 (setq python-check-command "c:/Users/pj/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.9_qbz5n2kfra8p0/LocalCache/local-packages/Python39/Scripts/pyflakes3.exe")
 (setq flycheck-python-pyflakes-executable "c:/Users/pj/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.9_qbz5n2kfra8p0/LocalCache/local-packages/Python39/Scripts/pyflakes3.exe")
