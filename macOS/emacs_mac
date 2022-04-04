@@ -2,7 +2,7 @@
 
 ;; jun's_emacs_file --- Summary
 ;; Jun Go gojun077@gmail.com
-;; Last Updated Jul 2 2021
+;; Last Updated Apr 4 2022
 ;; Mac OS version for Emacs 27.x
 
 ;;; Code:
@@ -26,10 +26,12 @@
    exec-path-from-shell
    fill-column-indicator
    flycheck
-   flycheck-pyflakes
+   flycheck-haskell
    flycheck-gometalinter
+   flycheck-pyflakes
    go-mode
    go-playground
+   haskell-mode
    jenkinsfile-mode
    magit
    markdown-mode
@@ -128,7 +130,7 @@
    '("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default))
  '(epg-gpg-program "/usr/local/MacGPG2/bin/gpg2")
  '(package-selected-packages
-   '(jenkinsfile-mode terraform-mode go-mode go-playground flycheck-gometalinter rainbow-delimiters magit smartparens use-package web-mode ein yaml-mode rw-language-and-country-codes racket-mode paredit markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible))
+   '(flycheck-haskell haskell-mode jenkinsfile-mode terraform-mode go-mode go-playground flycheck-gometalinter rainbow-delimiters magit smartparens use-package web-mode ein yaml-mode rw-language-and-country-codes racket-mode paredit markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible))
  '(python-shell-completion-native-disabled-interpreters '("pypy ipython")))
 
 
