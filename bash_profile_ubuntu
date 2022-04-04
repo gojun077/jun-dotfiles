@@ -27,11 +27,6 @@ fi
 if [[ ! "$SSH_AUTH_SOCK" ]]; then
     source "$XDG_RUNTIME_DIR/ssh-agent.env" >/dev/null
 fi
-
-# if no ssh privkeys added to ssh-agent, add them
-if ! ssh-add -l; then
-  ssh-add ~/.ssh/archjun_rsa
-fi
 ###################################################################
 
 # if running bash
