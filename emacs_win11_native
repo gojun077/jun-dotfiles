@@ -1,9 +1,11 @@
 ; -*- mode: emacs-lisp -*-
 
-;; jun's_emacs_file --- Summary
+;; jun's_emacs_file for Win11 --- Summary
 ;; Jun Go gojun077@gmail.com
-;; Last Updated Apr 4 2022
-;; Mac OS version for Emacs 27.x
+;; Last Updated Feb 13 2022
+
+;; Note: path to this file on Windows is
+;; C:\Users\<user>\AppData\Roaming\.emacs
 
 ;;; Code:
 (require 'package)
@@ -26,13 +28,10 @@
    exec-path-from-shell
    fill-column-indicator
    flycheck
-   flycheck-haskell
-   flycheck-gometalinter
    flycheck-pyflakes
+   flycheck-gometalinter
    go-mode
    go-playground
-   haskell-mode
-   jenkinsfile-mode
    magit
    markdown-mode
    rainbow-delimiters
@@ -49,31 +48,35 @@
 (dolist (package gojun-pkglist)
   (use-package package))
 
-;; require declarations
 (require 'flycheck)
 (require 'flycheck-pyflakes)
 (require 'unicode-whitespace)
+(require 'smartparens-config)
 (require 'whitespace)
 
 ;; turn on flychecking globally
-(add-hook 'after-init-hook #'global-flycheck-mode)
-(add-hook 'python-mode-hook #'flycheck-mode)
-
-;; make #! script files executable on save (chmod +x)
-(add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
-
-;; unicode-whitespace face settings
-(unicode-whitespace-setup 'subdued-faces)
-
-;; enable fci-mode for all files
-(add-hook 'after-change-major-mode-hook 'fci-mode)
-
-;; enable whitespace-mode for all files
-(add-hook 'after-change-major-mode-hook 'whitespace-mode)
+(add-hook 'after-init-hook 'global-flycheck-mode)
+(add-hook 'python-mode-hook 'flycheck-mode)
 
 ;; hooks for racket-mode
 (add-hook 'racket-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'racket-mode-hook #'smartparens-mode)
+
+;; make #! script files executable on save (chmod +x)
+(add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
+
+;; use visual-fill-column mode with visual-line-mode
+(add-hook 'visual-line-mode-hook 'visual-fill-column-mode)
+
+;; Capitalize keywords in SQL mode
+(add-hook 'sql-mode-hook 'sqlup-mode)
+;; Capitalize keywords in an interactive session (e.g. psql)
+(add-hook 'sql-interactive-mode-hook 'sqlup-mode)
+
+;; truncate long lines in sqli mode
+(add-hook 'sql-interactive-mode-hook
+          (lambda ()
+            (toggle-truncate-lines t)))
 
 (defun go-mode-setup ()
   ;; run 'go fmt' on .go source files before save
@@ -81,73 +84,39 @@
   ;; customize compile command to run go build
   (if (not (string-match "go" compile-command))
       (set (make-local-variable 'compile-command)
-           "env GOOS=darwin GOARCH=amd64 go build -v -o bin/$(basename $(pwd)) && go test -v && go vet"))
+           "env GOOS=windows GOARCH=amd64 go build -v -o bin/$(basename $(pwd)) && go test -v && go vet"))
 )
 (add-hook 'go-mode-hook 'go-mode-setup)
-
-;; hook for terraform buffers
-(add-hook 'terraform-mode-hook #'terraform-format-on-save-mode)
-
-
 
 ;; mode settings
 ; show col and line numbers
 (column-number-mode 1)
 ; don't show menu bar
 (menu-bar-mode 0)
-
-; don't show scrollbar
-(scroll-bar-mode 0)
 ; highlight parens
 (show-paren-mode t)
-; don't show toolbar
-(tool-bar-mode 0)
-; Enable ido-mode
-(ido-mode 1)
+
 
 ;; Font settings
-;; monofur on MacOS requires cask 'font-monofur-nerd-font-mono'
 (let ((fontset "fontset-default"))
   (set-fontset-font fontset 'latin
-                    '("Monofur Nerd Font Mono" . "unicode-bmp"))
+                    '("Consolas"))
   (set-fontset-font fontset 'hangul
-                    '("NanumGothic" . "unicode-bmp"))
+                    '("NanumGothic"))
   (set-face-attribute 'default nil
                       :font fontset
-                      :height 160))
-
-
-;;=========================
-;;   CUSTOM MENU OPTIONS
-;;=========================
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   '("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default))
- '(epg-gpg-program "/usr/local/MacGPG2/bin/gpg2")
- '(package-selected-packages
-   '(flycheck-haskell haskell-mode jenkinsfile-mode terraform-mode go-mode go-playground flycheck-gometalinter rainbow-delimiters magit smartparens use-package web-mode ein yaml-mode rw-language-and-country-codes racket-mode paredit markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible))
- '(python-shell-completion-native-disabled-interpreters '("pypy ipython")))
-
+                      :height 140))
 
 ;;======================
 ;;   GLOBAL VARIABLES
 ;;======================
 
-;; limit line length
-(setq whitespace-line-column 80)
-;; set fill column to 75
-(setq-default fill-column 75)
-;; set fill column indicator to 80
-(setq fci-rule-column 80)
+; ensure GPG password input is handled by emacs during emacs session
+(setenv "GPG_AGENT_INFO" nil)
 ; Use spaces instead of tabs
 (setq-default indent-tabs-mode nil)
-; But when I must use TAB, set width to 4 chars
-(setq-default tab-width 4)
+; But when I must use TAB, set width to 2 chars
+(setq-default tab-width 2)
 ; formatting for C code
 (setq c-default-style "linux" c-basic-offset 4)
 ; shell script mode formatting
@@ -162,11 +131,10 @@
 ; python -m doctest myprog.py -v
 ;
 (setq python-shell-completion-native nil)
-(setq python-shell-interpreter "~/.pyenv/shims/ipython"
-      python-shell-interpreter-args "--simple-prompt -i --pprint")
+(setq python-shell-interpreter "python3.exe")
 (setq ansi-color-for-comint-mode t)
-(setq python-check-command "~/.pyenv/shims/pyflakes")
-(setq flycheck-python-pyflakes-executable "~/.pyenv/shims/pyflakes")
+(setq python-check-command "c:/Users/pj/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.9_qbz5n2kfra8p0/LocalCache/local-packages/Python39/Scripts/pyflakes3.exe")
+(setq flycheck-python-pyflakes-executable "c:/Users/pj/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.9_qbz5n2kfra8p0/LocalCache/local-packages/Python39/Scripts/pyflakes3.exe")
 
 ; C-\ language toggle
 (setq default-input-method "korean-hangul")
@@ -174,15 +142,15 @@
 (setq initial-frame-alist (quote ((fullscreen . maximized))))
 ; create backups in $HOME/tmp
 ; bkup files will have '!' in place of directory separator '/'
-(setq backup-directory-alist '(("." . "~/tmp")))
+(setq backup-directory-alist '(("" . "~/tmp")))
 ; Enable temp files and autosaving
 (setq make-backup-files t)
 (setq auto-save-default t)
-
 ; Enable C-l, C-u change region to lower/upper case
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
-
+; Enable ido-mode
+(ido-mode 1)
 ; enable ido flex matching
 (setq ido-enable-flex-matching t)
 ; enable ido everywhere
@@ -190,32 +158,45 @@
 ; use xetex to render pdf from LaTeX
 (setq TeX-engine 'xetex)
 
-; set PATH for emacs shell
-(setenv "PATH" (concat (getenv "PATH") ":/usr/local/go/bin:$HOME/go/bin"))
-; set exec-path for emacs to include GOLANG binaries
-(setq exec-path (append exec-path '("/usr/local/go/bin" "$HOME/go/bin")))
-
 ; bind 'M-x magit-status' to 'C-x g'
 (global-set-key (kbd "C-x g") 'magit-status)
 
+  ;; limit line length
+  (setq whitespace-line-column 80)
 
+  ;; set fill column to 75
+  (setq-default fill-column 75)
+
+  ;; set fill column indicator to 80
+  (setq fci-rule-column 80)
+
+  ;; enable fci-mode for all files
+  (add-hook 'after-change-major-mode-hook 'fci-mode)
+
+  (add-hook 'after-change-major-mode-hook 'whitespace-mode)
+
+  ;; unicode-whitespace face settings
+  (unicode-whitespace-setup 'subdued-faces)
+
+  (load-theme 'sanityinc-solarized-light)
+  ; don't show scrollbar
+  (scroll-bar-mode -1)
+  ; don't show toolbar
+  (tool-bar-mode -1)
+  ;; AUCTEX preview-latex font
+  (set-default 'preview-scale-function 1.2)
+(provide '.emacs)
+;;; emacs ends here
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
-
-;; Commands to run when Emacs launched in graphical mode
-(when (display-graphic-p)
-; only run whitespace mode in graphical session
-  (global-whitespace-mode 1)
-  (load-theme 'sanityinc-solarized-light))
-
-;; Commands to run when Emacs launched in terminal mode
-(unless (display-graphic-p)
-  (load-theme 'adwaita))
-
-(server-start)  ; emacsclient will open files in emacs session
-(provide '.emacs)
-;;; .emacs ends here

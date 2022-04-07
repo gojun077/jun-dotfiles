@@ -1,12 +1,15 @@
 http://live.mixcraiova.ro:8241
 http://185.33.21.112:11038
 http://51.75.147.168:8050
+http://uk5.internet-radio.com:8256
+http://cmvs.uncool.club:2121/vinyl-stacks.m3u
 http://prem2.di.fm/atmosphericbreaks_hi?b1e8ab696a279ebb68c48cab
 http://streams.greenhost.nl:8080/barok
 http://bpstream.hostco.de:3000
 http://prem2.di.fm/breaks_hi?b1e8ab696a279ebb68c48cab
 http://breakz-high.rautemusik.fm/?ref=radiobrowserinfo
 http://23.82.11.87:9028
+http://23.82.11.88:4428
 http://23.82.11.28:12628
 http://strm112.1.fm/classical_mobile_aac
 http://108.61.154.147:5938
@@ -37,4 +40,8 @@ http://wshu.streamguys.org/wshu-baroque
 http://stream.srg-ssr.ch/m/rsj/mp3_128
 http://69.64.69.158:7061
 http://cmvs.uncool.club:2121/vinyl-stacks.m3u
+http://uk2.internet-radio.com:8121
+http://69.64.69.158:7061
+http://uk5.internet-radio.com:8011
 http://us5.internet-radio.com:8201
+http://uk5.internet-radio.com:8023
