@@ -5,7 +5,7 @@
 # Read `man 5 sway` for a complete reference.
 # Created on: Sep 21 2021
 # Created by: gojun077@gmail.com
-# Last Updated: Dec 17 2021
+# Last Updated: Jan 1 2022
 
 
 ### Variables
@@ -22,8 +22,8 @@ set $term "LIBGL_ALWAYS_SOFTWARE=1 alacritty"
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
-#set $menu dmenu_path | dmenu | xargs swaymsg exec --
-set $menu dmenu_path | wofi -d | xargs swaymsg exec --
+set $menu dmenu_path | dmenu | xargs swaymsg exec --
+#set $menu dmenu_path | wofi -d | xargs swaymsg exec --
 include /etc/sway/config-vars.d/*
 
 ### Monitor Layout
@@ -51,14 +51,18 @@ output HDMI-A-2 bg ~/Dropbox/wallpapers/shared/backgrounds/1920x1200/NGC_6503_Sp
 
 ### Idle configuration
 
+# This will lock your screen after 600 seconds of inactivity, then turn off
+# your displays after another 600 seconds, and turn your screens back on when
+# resumed. It will also lock your screen before your computer goes to sleep.
+
+#exec swayidle -w \
+#          timeout 600 'swaylock -f -c 000000' \
+#          timeout 600 'swaymsg "output LVDS-1 dpms off"' resume 'swaymsg "output * dpms on"' \
+#          before-sleep 'swaylock -f -c 000000'
+
 exec swayidle -w \
           timeout 600 'swaylock -f -c 000000' \
-          #timeout 600 'swaymsg "output LVDS-1 dpms off"' resume 'swaymsg "output * dpms on"' \
-          #before-sleep 'swaylock -f -c 000000'
-
-# This will lock your screen after 300 seconds of inactivity, then turn off
-# your displays after another 300 seconds, and turn your screens back on when
-# resumed. It will also lock your screen before your computer goes to sleep.
+          before-sleep 'swaylock -f -c 000000'
 
 ### Input configuration
 #
@@ -256,13 +260,12 @@ exec --no-startup-id fcitx5 -d -r # fcitx5 IME works with Wayland
 exec --no-startup-id dropbox start
 # Cloud Sync - Spideroak ONE
 exec --no-startup-id SpiderOakONE
-# ActivityWatch server
-#exec --no-startup-id aw-server
 # ActivityWatch client for Wayland
 exec --no-startup-id  /usr/local/bin/start_aw-watcher-window-wayland.sh
 # Screen temp color shift - using redshift-wayland fork
 exec --no-startup-id redshift-gtk -l 37.5667:126.9781
-#exec --no-startup-id run_keybase
+# Keybase app
+exec --no-startup-id run_keybase
 # Clipboard for SwayWM
 exec wl-paste -t text --watch clipman store --no-persist --max-items=1024
 
