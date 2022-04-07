@@ -141,4 +141,3 @@ if [ -f "$HOME/Downloads/google-cloud-sdk/completion.bash.inc" ]; then
   . "$HOME/Downloads/google-cloud-sdk/completion.bash.inc"
 fi
 
-[ -f "/home/junbuntu/.ghcup/env" ] && source "/home/junbuntu/.ghcup/env" # ghcup-env

@@ -60,7 +60,7 @@ GPG_TTY=$(tty)
 export GPG_TTY
 export GOROOT=/usr/local/go
 export GOPATH=/home/junbuntu/go
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/usr/games:$GOPATH/bin:/home/junbuntu/.nvm:$GOROOT/bin"
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/usr/games:$GOPATH/bin:$HOME/.nvm:$GOROOT/bin:$HOME/.ghcup/bin:$HOME/.cabal/bin"
 export PYTHONBREAKPOINT=ipdb.set_trace
 export NVM_DIR="$HOME/.nvm"
 
