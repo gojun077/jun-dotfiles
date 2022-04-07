@@ -52,6 +52,11 @@
 (require 'unicode-whitespace)
 (require 'smartparens-config)
 (require 'whitespace)
+(require 'haskell-interactive-mode)
+(require 'haskell-process)
+
+(add-hook 'haskell-mode-hook 'interactive-haskell-mode)
+
 
 ;; turn on flychecking globally
 (add-hook 'after-init-hook 'global-flycheck-mode)
