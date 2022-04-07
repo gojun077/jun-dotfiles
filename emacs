@@ -2,7 +2,7 @@
 
 ;; jun's_emacs_file --- Summary
 ;; Jun Go gojun077@gmail.com
-;; Last Updated Dec 29 2021
+;; Last Updated Apr 7 2022
 
 ;;; Code:
 (require 'package)
@@ -29,6 +29,7 @@
    flycheck-gometalinter
    go-mode
    go-playground
+   haskell-mode
    magit
    markdown-mode
    rainbow-delimiters
@@ -117,7 +118,7 @@
  '(custom-safe-themes
    '("4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" "4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default))
  '(package-selected-packages
-   '(yaml-mode web-mode visual-fill-column use-package unicode-whitespace terraform-mode smartparens rainbow-delimiters racket-mode markdown-mode magit go-playground flycheck-pyflakes flycheck-gometalinter fill-column-indicator exec-path-from-shell color-theme-sanityinc-solarized ansible))
+   '(haskell-mode yaml-mode web-mode visual-fill-column use-package unicode-whitespace terraform-mode smartparens rainbow-delimiters racket-mode markdown-mode magit go-playground flycheck-pyflakes flycheck-gometalinter fill-column-indicator exec-path-from-shell color-theme-sanityinc-solarized ansible))
  '(python-shell-completion-native-disabled-interpreters '("pypy ipython3"))
  '(warning-suppress-types '((comp))))
 
