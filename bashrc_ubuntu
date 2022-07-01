@@ -140,3 +140,4 @@ fi
 if [ -f "$HOME/Downloads/google-cloud-sdk/completion.bash.inc" ]; then
   . "$HOME/Downloads/google-cloud-sdk/completion.bash.inc"
 fi
+

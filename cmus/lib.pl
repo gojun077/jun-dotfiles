@@ -1,4 +1,4 @@
-http://stream.srg-ssr.ch/m/rsj/mp3_128
+http://live.mixcraiova.ro:8241
 http://185.33.21.112:11038
 http://live.nsbradio.co.uk:8904
 http://51.75.147.168:8050
@@ -19,8 +19,9 @@ http://149.56.147.197:8648
 http://ice4.somafm.com/groovesalad-128-aac
 http://mediaserv38.live-streams.nl:8006/stream
 http://jfm1.hostingradio.ru:14536/ijstream.mp3
-http://jazzradio.ice.infomaniak.ch/jazzradio-high.mp3
 http://live.wostreaming.net/playlist/ppm-jazz24aac256-ibc1.m3u
+http://eu8.fastcast4u.com:5068
+http://jazzradio.ice.infomaniak.ch/jazzradio-high.mp3
 http://jphip.com:8800
 http://stream.klassikradio.de/barock/mp3-192
 http://167.114.64.181:8325
@@ -36,6 +37,7 @@ http://live.mixcraiova.ro:8241
 http://streaming03.zfast.co.uk:8085/autodj
 http://ice.somafm.com/secretagent
 http://wshu.streamguys.org/wshu-baroque
+http://play.organlive.com:8002/320pb
 http://69.64.69.158:7061
 http://uk5.internet-radio.com:8011
 http://us5.internet-radio.com:8201
