@@ -2,7 +2,7 @@
 
 ;; jun's_emacs_file --- Summary
 ;; Jun Go gojun077@gmail.com
-;; Last Updated Apr 4 2022
+;; Last Updated Apr 7 2022
 ;; Mac OS version for Emacs 27.x
 
 ;;; Code:
@@ -31,6 +31,7 @@
    flycheck-pyflakes
    go-mode
    go-playground
+   groovy-mode
    haskell-mode
    jenkinsfile-mode
    magit
@@ -54,6 +55,11 @@
 (require 'flycheck-pyflakes)
 (require 'unicode-whitespace)
 (require 'whitespace)
+(require 'haskell-interactive-mode)
+(require 'haskell-process)
+
+;; Enable C-x C-l in haskell files to launch interpreter
+(add-hook 'haskell-mode-hook 'interactive-haskell-mode)
 
 ;; turn on flychecking globally
 (add-hook 'after-init-hook #'global-flycheck-mode)
@@ -194,6 +200,7 @@
 (setenv "PATH" (concat (getenv "PATH") ":/usr/local/go/bin:$HOME/go/bin"))
 ; set exec-path for emacs to include GOLANG binaries
 (setq exec-path (append exec-path '("/usr/local/go/bin" "$HOME/go/bin")))
+(setq exec-path (append exec-path '("$HOME/.ghcup/bin")))
 
 ; bind 'M-x magit-status' to 'C-x g'
 (global-set-key (kbd "C-x g") 'magit-status)
