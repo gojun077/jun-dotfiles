@@ -9,7 +9,7 @@ StrictHostKeyChecking=no
 Compression=yes
 ForwardAgent=yes
 AddKeysToAgent=yes
-Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
+Ciphers aes256-ctr,aes192-ctr,aes128-ctr
 UseRoaming no
 # Specify add'l ssh config files
 Include config_secure
