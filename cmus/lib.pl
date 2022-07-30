@@ -1,6 +1,5 @@
-http://live.mixcraiova.ro:8241
+http://stream.srg-ssr.ch/m/rsj/mp3_128
 http://185.33.21.112:11038
-http://live.nsbradio.co.uk:8904
 http://51.75.147.168:8050
 http://cmvs.uncool.club:2121/vinyl-stacks.m3u
 http://prem2.di.fm/atmosphericbreaks_hi?b1e8ab696a279ebb68c48cab
@@ -10,8 +9,6 @@ http://prem2.di.fm/breaks_hi?b1e8ab696a279ebb68c48cab
 http://breakz-high.rautemusik.fm/?ref=radiobrowserinfo
 http://23.82.11.87:9028
 http://23.82.11.88:4428
-http://23.82.11.28:12628
-http://us5.internet-radio.com:8283
 http://strm112.1.fm/classical_mobile_aac
 http://108.61.154.147:5938
 http://graalradio.com:8123/future
@@ -19,10 +16,8 @@ http://149.56.147.197:8648
 http://ice4.somafm.com/groovesalad-128-aac
 http://mediaserv38.live-streams.nl:8006/stream
 http://jfm1.hostingradio.ru:14536/ijstream.mp3
-http://live.wostreaming.net/playlist/ppm-jazz24aac256-ibc1.m3u
-http://eu8.fastcast4u.com:5068
 http://jazzradio.ice.infomaniak.ch/jazzradio-high.mp3
-http://jphip.com:8800
+http://live.wostreaming.net/playlist/ppm-jazz24aac256-ibc1.m3u
 http://stream.klassikradio.de/barock/mp3-192
 http://167.114.64.181:8325
 http://121.159.140.57:8000
@@ -32,12 +27,11 @@ http://east-mp3-128.streamthejazzgroove.com/stream
 http://stream.nauticradio.net:14280
 http://145.239.26.146:7750
 http://lyd.nrk.no/nrk_radio_klassisk_mp3_h
+http://live.nsbradio.co.uk:8904
 http://procyon.shoutca.st:8098
-http://live.mixcraiova.ro:8241
 http://streaming03.zfast.co.uk:8085/autodj
 http://ice.somafm.com/secretagent
 http://wshu.streamguys.org/wshu-baroque
-http://play.organlive.com:8002/320pb
 http://69.64.69.158:7061
 http://uk5.internet-radio.com:8011
 http://us5.internet-radio.com:8201
