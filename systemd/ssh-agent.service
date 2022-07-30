@@ -1,0 +1,10 @@
+[Unit]
+Description=SSH key agent service file for user; see https://wiki.archlinux.org/title/SSH_keys#Start_ssh-agent_with_systemd_user
+
+[Service]
+Type=simple
+Environment=SSH_AUTH_SOCK=%t/ssh-agent.socket
+ExecStart=/usr/bin/ssh-agent -D -a $SSH_AUTH_SOCK
+
+[Install]
+WantedBy=default.target
