@@ -11,13 +11,8 @@ export TERM=xterm-256color
 
 PS1='[\u@\h \W]\$ '
 
-eval "$(/usr/local/bin/pyenv init -)"
-
-# When you run ssh-agent for the first time, you need to add
-# your private key(s) with 'ssh-add /path/to/priv/key'
-#ssh-add ~/.ssh/archjun_rsa
+#eval "$(/usr/local/bin/pyenv init -)"
 
 alias genpw='date +%s | shasum -a 256 | base64 | head -c 32 ; echo'
 source ~/.bash_aliases
-#source "/Users/pekoh/Google Drive/pekoh's_stuff/bashrc_mac_secure"
 # vim: ts=2 sw=2 et :
