@@ -1,4 +1,5 @@
 # ~/.bash_profile
+# for MacOS
 
 if [ -f ~/.bashrc ]; then
   . ~/.bashrc
@@ -18,6 +19,6 @@ export GOROOT=/usr/local/go
 export GOPATH=/Users/peter.koh/go
 export PATH="/usr/local/Cellar/sqlite/3.31.1/bin:/usr/local/opt/openjdk@11/bin:/usr/local/go/bin:$GOPATH/bin:/usr/local/opt/mysql-client/bin:$HOME/.pyenv/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/MacGPG2/bin:/usr/local/share/dotnet:~/.dotnet/tools:$HOME/Downloads/google-cloud-sdk/bin:/usr/local/opt/libpq/bin:/Library/TeX/texbin"
 eval "$(pyenv init --path)"
-
+ssh-add --apple-load-keychain
 
 [[ -f ~/.bashrc ]] && source ~/.bashrc # ghcup-env
