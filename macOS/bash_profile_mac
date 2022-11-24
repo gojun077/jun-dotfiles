@@ -2,7 +2,7 @@
 # for MacOS
 
 if [ -f ~/.bashrc ]; then
-  . ~/.bashrc
+  source ~/.bashrc
 fi
 
 sudo launchctl limit maxfiles 65536 200000
@@ -21,4 +21,3 @@ export PATH="/usr/local/Cellar/sqlite/3.31.1/bin:/usr/local/opt/openjdk@11/bin:/
 eval "$(pyenv init --path)"
 ssh-add --apple-load-keychain
 
-[[ -f ~/.bashrc ]] && source ~/.bashrc # ghcup-env
