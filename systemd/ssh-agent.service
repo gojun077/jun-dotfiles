@@ -1,5 +1,6 @@
+# see https://wiki.archlinux.org/title/SSH_keys#Start_ssh-agent_with_systemd_user
 [Unit]
-Description=SSH key agent service file for user; see https://wiki.archlinux.org/title/SSH_keys#Start_ssh-agent_with_systemd_user
+Description=SSH key agent service file for user 
 
 [Service]
 Type=simple
