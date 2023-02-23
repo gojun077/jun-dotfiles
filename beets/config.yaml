@@ -1,0 +1,26 @@
+# config options for beets audio tagger
+directory: /tier2/beets_tagged_audio/
+paths:
+  default: $genre/$albumartist/$album/$track $title
+  singleton: Non-Album/$artist - $title
+  comp: $genre/$album/$track $title
+threaded: yes
+plugins: chroma fromfilename convert
+import:
+  copy: yes  # whether to copy files into library dir when exec `beet import`
+  write: yes  # write ID3 tags to files during `beet import`
+  group_albums: no
+  duplicate_action: skip
+  import: beetslog.txt
+replace:
+  '\s+': _
+  "'": _
+replaygain:
+  backend: ffmpeg
+convert:
+  command: ffmpeg -i $source -y -vn -aq 2 $dest
+  extension: mp3
+
+musicbrainz:
+  extra_tags: [year, label]
+
