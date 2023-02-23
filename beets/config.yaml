@@ -1,7 +1,7 @@
 # config options for beets audio tagger
 directory: /tier2/beets_tagged_audio/
 paths:
-  default: $genre/$albumartist/$album/$track $title
+  default: $albumartist/$album/$track $title
   singleton: Non-Album/$artist - $title
   comp: $genre/$album/$track $title
 threaded: yes
