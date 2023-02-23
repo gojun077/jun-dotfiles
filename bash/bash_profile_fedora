@@ -24,7 +24,7 @@ if [ -d ~/.cargo ]; then
   source "$HOME/.cargo/env"
 fi
 
-eval $(keychain --eval --quiet --agents ssh,gpg --gpg2 --noask)
+eval $(keychain --eval --quiet --agents gpg --gpg2 --noask)
 
 GPG_TTY=$(tty)
 export GPG_TTY

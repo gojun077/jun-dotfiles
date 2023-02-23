@@ -1,0 +1,10 @@
+[Unit]
+Description=User service to launch tmux startup script
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=%h/bin/tmux_sway_argo.sh
+
+[Install]
+WantedBy=default.target
