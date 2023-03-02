@@ -1,0 +1,13 @@
+[Unit]
+Description=User service to launch tmux startup script
+After=network.target
+Documentation=man:tmux(1)
+
+[Service]
+Type=oneshot
+ExecStart=%h/bin/tmux_sway_argo.sh
+ExecStop=/usr/bin/tmux kill-server
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

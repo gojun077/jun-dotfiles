@@ -1,5 +1,5 @@
-# Jun's ssh config ~/.ssh/config
-# Last Updated Sep 21 2021
+# Jun's ssh config; original path: `~/.ssh/config`
+# Last Updated Feb 24 2023
 
 # Global Defaults
 TCPKeepAlive=yes
@@ -7,11 +7,13 @@ ServerAliveInterval=15
 ServerAliveCountMax=6
 StrictHostKeyChecking=no
 Compression=yes
-ForwardAgent=yes
+#ForwardAgent=yes  # forward all SSH keys in per-host settings, not globally
+# use gpg-agent instead of ssh-agent for key caching
+IdentityAgent /run/user/1000/gnupg/S.gpg-agent.ssh
 AddKeysToAgent=yes
 Ciphers aes256-ctr,aes192-ctr,aes128-ctr
 UseRoaming no
-# Specify add'l ssh config files
+# Specify add'l ssh config files not in version control
 Include config_secure
 Include config_homelab
 Include config_work
