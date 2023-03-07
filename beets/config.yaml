@@ -10,8 +10,8 @@ import:
   copy: yes  # whether to copy files into library dir when exec `beet import`
   write: yes  # write ID3 tags to files during `beet import`
   group_albums: no
-  duplicate_action: skip
-  import: beetslog.txt
+  duplicate_action: ask
+  log: beetslog.txt
 replace:
   '\s+': _
   "'": _
