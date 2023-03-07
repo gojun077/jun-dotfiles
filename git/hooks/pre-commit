@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+#
+# Created on: Nov 24 2022
+# Created by: gojun077@gmail.com
+# Last Updated: Nov 24 2022
+#
+# git pre-commit hooks for linting common file types like POSIX shell
+# scripts, `.json`, `.yaml`/`yml`, `.py`, `.tf`, etc.
+#
+# I referred to the recipes in the repo
+# https://github.com/mparker17/simple-linter-git-hooks which I have
+# customized to suit my needs. Other references:
+#
+# - https://stackoverflow.com/questions/26624368/handle-multiple-pre-commit-hooks
+#
+# Under `.git/hooks/` in your repo, you can only have one `pre-commit`
+# file, but you can call multiple sub-scripts from it.
+
+pchdir=".git/hooks/pre-commit.d"
+
+cd "$pchdir" || printf "%s\\n" \
+  "*${pchdir}* directory not found!"; exit 1
+
+myhooks=$(python3 -c "import os; fileL = [p.name for p in os.scandir(os.getcwd()) if p.is_file()]; [print(e) for e in fileL]")
+
+for hook in $myhooks; do
+  bash "$hook"
+  RESULT=$?
+  if [ $RESULT != 0 ]; then
+    echo "pre-commit.d/$hook exit code $RESULT, abort commit"
+    exit $RESULT
+  fi
+done
+
+exit 0
