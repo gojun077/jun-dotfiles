@@ -104,6 +104,7 @@ lftp
 libpq
 lua
 markdown
+midnight-commander
 mplayer
 mr
 mysql-client
@@ -127,7 +128,7 @@ the_silver_searcher
 tree
 tty-clock
 wget
-youtube-dl
+yt-dlp
 ```
 
 ## References
