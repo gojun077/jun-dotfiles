@@ -8,11 +8,9 @@ ServerAliveCountMax=6
 StrictHostKeyChecking=no
 Compression=yes
 #ForwardAgent=yes  # forward all SSH keys in per-host settings, not globally
-# use gpg-agent instead of ssh-agent for key caching
-IdentityAgent /run/user/1000/gnupg/S.gpg-agent.ssh
 AddKeysToAgent=yes
+UseRoaming no  # https://www.openssh.com/txt/release-7.1p2 CVE
 Ciphers aes256-ctr,aes192-ctr,aes128-ctr
-UseRoaming no
 # Specify add'l ssh config files not in version control
 Include config_secure
 Include config_homelab
