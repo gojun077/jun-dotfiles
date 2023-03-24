@@ -4,7 +4,7 @@ Description=SSH key agent service file for user
 
 [Service]
 Type=simple
-Environment=SSH_AUTH_SOCK=/run/user/1000/gnupg/S.gpg-agent.ssh
+Environment=SSH_AUTH_SOCK=%t/ssh-agent.socket
 ExecStart=/usr/bin/ssh-agent -D -a $SSH_AUTH_SOCK
 
 [Install]
