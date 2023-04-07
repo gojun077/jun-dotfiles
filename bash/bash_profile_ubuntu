@@ -1,33 +1,20 @@
 #!/bin/bash
 #~/.bash_profile_ubuntu
 #
-# Last Updated: Dec 27 2021
+# Last Updated: Apr 8 2023
 #
 # Config for interactive login shell (run at initial connection)
 
 
 if [ -f ~/.bash_aliases  ]; then
-  #shellcheck source=/home/junbuntu/dotfiles/bash_aliases
+  #shellcheck source=$HOME/dotfiles/bash_aliases
   source ~/.bash_aliases
 fi
 
 if [ -f ~/"SpiderOak Hive/bashrc_secure/bash_aliases_secure" ]; then
-  #shellcheck source=/home/junbuntu/dotfiles/bash_aliases
+  #shellcheck source=$HOME/dotfiles/bash_aliases
   source ~/"SpiderOak Hive/bashrc_secure/bash_aliases_secure"
 fi
-
-###################################################################
-#       SSH AGENT AND KEY SETTINGS
-#
-# start ssh-agent if it's not running; but run only one at a time
-# https://wiki.archlinux.org/title/SSH_keys#ssh-agent
-if ! pgrep -u "$USER" ssh-agent > /dev/null; then
-    ssh-agent -t 1h > "$XDG_RUNTIME_DIR/ssh-agent.env"
-fi
-if [[ ! "$SSH_AUTH_SOCK" ]]; then
-    source "$XDG_RUNTIME_DIR/ssh-agent.env" >/dev/null
-fi
-###################################################################
 
 # if running bash
 if [ -n "$BASH_VERSION" ]; then
@@ -47,20 +34,13 @@ if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin:$PATH"
 fi
 
-if [ -d ~/.cargo ]; then
-  source "$HOME/.cargo/env"
-fi
-
-
 export BROWSER=firefox
-export EDITOR=emacs
+export EDITOR=vim
 export TERM=xterm-256color
 export WINEPREFIX=/MULTIMEDIA/wine
 GPG_TTY=$(tty)
 export GPG_TTY
 export GOROOT=/usr/local/go
-export GOPATH=/home/junbuntu/go
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/usr/games:$GOPATH/bin:$HOME/.nvm:$GOROOT/bin:$HOME/.ghcup/bin:$HOME/.cabal/bin"
-export PYTHONBREAKPOINT=ipdb.set_trace
-export NVM_DIR="$HOME/.nvm"
+export GOPATH="$HOME/go"
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/usr/games:$GOPATH/bin:$GOROOT/bin:$PATH"
 
