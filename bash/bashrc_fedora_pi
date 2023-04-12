@@ -1,13 +1,8 @@
-#
-# bashrc file for root user /root/.bashrc
-#
-
-# If not running interactively, don't do anything
-[[ $- != *i* ]] && return
+# .bashrc for Fedora on RPI4B
 
 # Source global definitions
 if [ -f /etc/bashrc ]; then
-        . /etc/bashrc
+	. /etc/bashrc
 fi
 
 # User specific environment
@@ -21,10 +16,13 @@ export PATH
 # export SYSTEMD_PAGER=
 
 # User specific aliases and functions
-alias rm='rm -i'
-alias cp='cp -i'
-alias mv='mv -i'
-alias ls='ls --color=auto'
+if [ -d ~/.bashrc.d ]; then
+  for rc in ~/.bashrc.d/*; do
+    if [ -f "$rc" ]; then
+      . "$rc"
+    fi
+  done
+fi
 
-# Red root prompt
-PS1='\[\033[01;31m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[01;34m\]#\033[00m\] '
+unset rc
+
