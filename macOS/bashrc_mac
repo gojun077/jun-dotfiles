@@ -1,6 +1,6 @@
 # ~/.bashrc
 # for MAC OS
-# Last Updated: Dec 23 2021
+# Last Updated: Apr 12 2023
 
 # If not running interactively, don't do anything
 #[[ $- != *i* ]] && return
@@ -13,6 +13,6 @@ PS1='[\u@\h \W]\$ '
 
 #eval "$(/usr/local/bin/pyenv init -)"
 
-alias genpw='date +%s | shasum -a 256 | base64 | head -c 32 ; echo'
+alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
 source ~/.bash_aliases
 # vim: ts=2 sw=2 et :

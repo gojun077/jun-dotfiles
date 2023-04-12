@@ -26,19 +26,19 @@ Host bitbucket.org
     Hostname bitbucket.org
     PreferredAuthentications publickey
     IdentitiesOnly yes
-    IdentityFile ~/.ssh/archjun_rsa
+    IdentityFile ~/.ssh/archjun-newgen
 
 Host github
     User gojun077
     Hostname github.com
     PreferredAuthentications publickey
     IdentitiesOnly yes
-    IdentityFile ~/.ssh/archjun_rsa
+    IdentityFile ~/.ssh/archjun-newgen
 
 Host gitlab
     User gojun077
     Hostname gitlab.com
     PreferredAuthentications publickey,keyboard-interactive
     IdentitiesOnly yes
-    IdentityFile ~/.ssh/archjun_rsa
+    IdentityFile ~/.ssh/archjun-newgen
 
