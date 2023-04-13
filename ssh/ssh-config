@@ -13,8 +13,6 @@ UseRoaming no  # https://www.openssh.com/txt/release-7.1p2 CVE
 Ciphers aes256-ctr,aes192-ctr,aes128-ctr
 # Specify add'l ssh config files not in version control
 Include config_secure
-Include config_homelab
-Include config_work
 
 # Per Host Options
 Host bitbucket.org
@@ -22,19 +20,19 @@ Host bitbucket.org
     Hostname bitbucket.org
     PreferredAuthentications publickey
     IdentitiesOnly yes
-    IdentityFile ~/.ssh/archjun_rsa
+    IdentityFile ~/.ssh/archjun-newgen
 
 Host github.com
     User gojun077
     Hostname github.com
     PreferredAuthentications publickey
     IdentitiesOnly yes
-    IdentityFile ~/.ssh/archjun_rsa
+    IdentityFile ~/.ssh/archjun-newgen
 
 Host gitlab.com
     User gojun077
     Hostname gitlab.com
     PreferredAuthentications publickey
     IdentitiesOnly yes
-    IdentityFile ~/.ssh/archjun_rsa
+    IdentityFile ~/.ssh/archjun-newgen
 
