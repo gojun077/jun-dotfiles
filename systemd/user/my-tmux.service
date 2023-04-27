@@ -6,7 +6,7 @@ Documentation=man:tmux(1)
 [Service]
 Type=oneshot
 ExecStart=%h/bin/tmux_sway_argo.sh
-ExecStop=/usr/bin/tmux kill-server
+ExecStop=/usr/bin/tmux kill-session -t argosway
 RemainAfterExit=yes
 
 [Install]
