@@ -2,7 +2,7 @@
 
 ;; jun's_emacs_file --- Summary
 ;; Jun Go gojun077@gmail.com
-;; Last Updated Apr 7 2022
+;; Last Updated Apr 27 2023
 ;; Mac OS version for Emacs 27.x
 
 ;;; Code:
@@ -28,6 +28,7 @@
    flycheck
    flycheck-haskell
    flycheck-gometalinter
+   flycheck-mypy
    flycheck-pyflakes
    go-mode
    go-playground
