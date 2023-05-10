@@ -3,7 +3,6 @@ http://stream.srg-ssr.ch/m/rsj/mp3_128
 http://185.33.21.112:11038
 http://cmvs.uncool.club:2121/vinyl-stacks.m3u
 http://184.75.212.82:1025
-http://40.89.141.247:8052
 http://streams.greenhost.nl:8080/barok
 http://bpstream.hostco.de:3000
 http://strm112.1.fm/classical_mobile_aac
