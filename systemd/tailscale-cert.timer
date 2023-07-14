@@ -7,10 +7,10 @@
 Description="Run 'tailscale-cert.service' every 7 days"
 
 [Timer]
-OnBootSec = 10min
-OnActiveSec = 20min
-OnUnitActiveSec = 20min
-RandomizedDelaySec = 1min
+OnBootSec = 7days
+OnActiveSec = 7days
+OnUnitActiveSec = 7days
+RandomizedDelaySec = 30min
 Persistent=true
 
 [Install]
