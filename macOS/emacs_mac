@@ -1,9 +1,10 @@
 ; -*- mode: emacs-lisp -*-
 
-;; jun's_emacs_file --- Summary
-;; Jun Go gojun077@gmail.com
-;; Last Updated Apr 27 2023
-;; Mac OS version for Emacs 27.x
+;; .emacs for MacOS --- Summary
+;; Created on: sometime in Winter 2019
+;; Created by: gopeterjun@naver.com
+;; Last Updated Jul 16 2023
+
 
 ;;; Code:
 (require 'package)
@@ -22,9 +23,8 @@
 
 (defvar gojun-pkglist
  '(ansible
-   color-theme-sanityinc-solarized
+   solarized-theme
    exec-path-from-shell
-   fill-column-indicator
    flycheck
    flycheck-haskell
    flycheck-gometalinter
@@ -73,9 +73,6 @@
 ;; unicode-whitespace face settings
 (unicode-whitespace-setup 'subdued-faces)
 
-;; enable fci-mode for all files
-(add-hook 'after-change-major-mode-hook 'fci-mode)
-
 ;; enable whitespace-mode for all files
 (add-hook 'after-change-major-mode-hook 'whitespace-mode)
 
@@ -122,7 +119,7 @@
                     '("NanumGothic" . "unicode-bmp"))
   (set-face-attribute 'default nil
                       :font fontset
-                      :height 160))
+                      :height 170))
 
 
 ;;=========================
@@ -146,12 +143,15 @@
 ;;   GLOBAL VARIABLES
 ;;======================
 
+;; run emacs in server mode - connect to server with `emacsclient`
+(server-mode 1)
 ;; limit line length
 (setq whitespace-line-column 80)
 ;; set fill column to 75
 (setq-default fill-column 75)
-;; set fill column indicator to 80
-(setq fci-rule-column 80)
+;; enable native fill column indicator (included in emacs v27+)
+(global-display-fill-column-indicator-mode 1)
+
 ; Use spaces instead of tabs
 (setq-default indent-tabs-mode nil)
 ; But when I must use TAB, set width to 4 chars
@@ -218,8 +218,7 @@
 ;; Commands to run when Emacs launched in graphical mode
 (when (display-graphic-p)
 ; only run whitespace mode in graphical session
-  (global-whitespace-mode 1)
-  (load-theme 'sanityinc-solarized-light))
+  (global-whitespace-mode 1))
 
 ;; Commands to run when Emacs launched in terminal mode
 (unless (display-graphic-p)
