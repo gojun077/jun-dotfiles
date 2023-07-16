@@ -1,0 +1,15 @@
+[Unit]
+Description=calibre ebook library headless server
+After=network-online.target time-sync.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=jundora
+TimeoutSec=5min
+KillSignal=SIGTERM
+RemainAfterExit=yes
+ExecStart=/home/jundora/bin/start_calibre-server.sh
+
+[Install]
+WantedBy=multi-user.target

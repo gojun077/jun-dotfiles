@@ -1,0 +1,17 @@
+# Created on: Jul 14 2023
+# Created by: gopeterjun@naver.com
+# Last Updated: Jul 14 2023
+# original path to file: /etc/systemd/system/tailscale-cert.service
+
+[Unit]
+Description=Renew Let's Encrypt cert via "tailscale cert" and reload nginx
+After=network.target tailscaled.service
+Requires=tailscaled.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/tailscale cert --cert-file /var/lib/tailscale/certs/argonaut.finch-blues.ts.net.crt --key-file /var/lib/tailscale/certs/argonaut.finch-blues.ts.net.key argonaut.finch-blues.ts.net
+ExecStartPost=/usr/bin/systemctl reload nginx
+
+[Install]
+WantedBy=multi-user.target

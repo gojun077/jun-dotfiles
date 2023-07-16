@@ -1,3 +1,9 @@
+# Note: systemd user services normally only launch after the user
+# logs in. If you want your user service to start on boot, you have
+# to use `loginctl enable-linger <username>` to have the user
+# process running without any open session. See 2.2 in
+# https://wiki.archlinux.org/title/systemd/User
+
 [Unit]
 Description=User service to launch tmux startup script
 After=network.target

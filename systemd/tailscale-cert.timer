@@ -1,0 +1,17 @@
+# Created on: Jul 14 2023
+# Created by: gopeterjun@naver.com
+# Last Updated: Jul 14 2023
+# Original path to file: /etc/systemd/system/tailscale-cert.timer
+
+[Unit]
+Description="Run 'tailscale-cert.service' every 7 days"
+
+[Timer]
+OnBootSec = 7days
+OnActiveSec = 7days
+OnUnitActiveSec = 7days
+RandomizedDelaySec = 30min
+Persistent=true
+
+[Install]
+WantedBy=timers.target
