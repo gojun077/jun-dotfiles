@@ -153,7 +153,7 @@
 ;
 (setq python-shell-completion-native nil)
 (setq python-shell-interpreter "ipython3"
-      python-shell-interpreter-args "--simple-prompt -i --pprint")
+      python-shell-interpreter-args "--simple-prompt -i --InteractiveShell.display_page=True")
 (setq ansi-color-for-comint-mode t)
 (setq python-check-command "/usr/bin/pyflakes")
 (setq flycheck-python-pyflakes-executable "/usr/bin/pyflakes")
