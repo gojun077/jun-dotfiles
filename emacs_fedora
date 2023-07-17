@@ -133,7 +133,7 @@
 ; start emacs in server mode
 (server-mode 1)
 ; ensure GPG password input is handled by emacs during emacs session
-(setenv "GPG_AGENT_INFO" nil)
+;(setenv "GPG_AGENT_INFO" nil)
 ; Use spaces instead of tabs
 (setq-default indent-tabs-mode nil)
 ; But when I must use TAB, set width to 2 chars
