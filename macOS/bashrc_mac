@@ -1,11 +1,15 @@
-# ~/.bashrc
-# for MacOS
-# Last Updated: Jul 17 2023
+# for MAC OS
+# Last Updated: Aug 2 2023
 
 # If not running interactively, don't do anything
 #[[ $- != *i* ]] && return
 
+export EDITOR="/usr/local/bin/emacsclient"
+# Do not export TERM because this will be set automatically
+# by GNU `screen` or `tmux` terminal multiplexers
+
 PS1='[\u@\h \W]\$ '
+
 alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
 source ~/.bash_aliases
 # vim: ts=2 sw=2 et :
