@@ -12,5 +12,6 @@ export EDITOR="/usr/local/bin/emacsclient"
 PS1='[\u@\h \W]\$ '
 
 alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
+alias enox="/usr/local/bin/emacsclient -nw"
 source ~/.bash_aliases
 # vim: ts=2 sw=2 et :
