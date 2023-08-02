@@ -25,6 +25,7 @@
    solarized-theme
    exec-path-from-shell
    flycheck
+   flycheck-mypy
    flycheck-pyflakes
    flycheck-gometalinter
    go-mode
@@ -103,7 +104,7 @@
 ;; Font settings
 (let ((fontset "fontset-default"))
   (set-fontset-font fontset 'latin
-                    '("MonofurNerdFont" . "unicode-bmp"))
+                    '("MonofurNerdFontMono" . "unicode-bmp"))
   (set-fontset-font fontset 'hangul
                     '("NanumGothic" . "unicode-bmp"))
   (set-face-attribute 'default nil
@@ -129,6 +130,8 @@
 ;;   GLOBAL VARIABLES
 ;;======================
 
+; start emacs in server mode
+(server-mode 1)
 ; ensure GPG password input is handled by emacs during emacs session
 (setenv "GPG_AGENT_INFO" nil)
 ; Use spaces instead of tabs

@@ -2,7 +2,7 @@
 #
 # Created on: Jul 31 2022
 # Created by gojun077
-# Last Updated: May 15 2023
+# Last Updated: Jul 17 2023
 #
 # These settings are sourced by the login shell
 
@@ -40,3 +40,4 @@ export GTK_IM_MODULE=fcitx
 export QT_IM_MODULE=fcitx
 export XMODIFIERS="@im=fcitx"
 export KUBECONFIG=$HOME/.kube/config/kubeconfig
+export EDITOR="emacsclient -nw"

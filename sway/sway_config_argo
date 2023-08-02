@@ -260,6 +260,8 @@ exec --no-startup-id fcitx5 -d -r # fcitx5 IME works with Wayland
 exec --no-startup-id run_keybase
 # Clipboard for SwayWM
 exec wl-paste -t text --watch clipman store --no-persist --max-items=1024
+# Start emacs (`(server-mode 1)` is set in .emacs)
+exec emacs
 
 #
 # Custom Keyboard shortcuts/keybindings
