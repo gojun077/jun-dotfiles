@@ -1,17 +1,15 @@
 # ~/.bashrc
 # for MAC OS
-# Last Updated: Apr 12 2023
+# Last Updated: Aug 2 2023
 
 # If not running interactively, don't do anything
 #[[ $- != *i* ]] && return
 
-export EDITOR="/usr/local/bin/emacs"
-
-export TERM=xterm-256color
+export EDITOR="/usr/local/bin/emacsclient"
+# Do not export TERM because this will be set automatically
+# by GNU `screen` or `tmux` terminal multiplexers
 
 PS1='[\u@\h \W]\$ '
-
-#eval "$(/usr/local/bin/pyenv init -)"
 
 alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
 source ~/.bash_aliases
