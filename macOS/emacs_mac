@@ -3,65 +3,64 @@
 ;; .emacs for MacOS --- Summary
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated Jul 16 2023
+;; Last Updated Oct 15 2023
 
 
 ;;; Code:
 (require 'package)
-(package-initialize)
-(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
-(add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/") t)
-(add-to-list 'load-path "~/.emacs.d/elpa") ;;personal elisp libs
 
+;; Add package archives
+(setq package-archives
+      '(("melpa" . "http://melpa.org/packages/")
+        ("gnu" . "http://elpa.gnu.org/packages/")))
 
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-
-(require 'use-package)
-(setq use-package-always-ensure t)
-
+;; List of packages to ensure are installed
 (defvar gojun-pkglist
- '(ansible
-   solarized-theme
-   exec-path-from-shell
-   flycheck
-   flycheck-haskell
-   flycheck-gometalinter
-   flycheck-mypy
-   flycheck-pyflakes
-   go-mode
-   go-playground
-   groovy-mode
-   haskell-mode
-   jenkinsfile-mode
-   magit
-   markdown-mode
-   rainbow-delimiters
-   racket-mode
-   realgud
-   smartparens
-   terraform-mode
-   unicode-whitespace
-   visual-fill-column
-   web-mode
-   yaml-mode)
- "List of packages to ensure are installed at launch.")
+  '(ansible
+    blacken
+    solarized-theme
+    exec-path-from-shell
+    flycheck
+    flycheck-mypy
+    flymake-go
+    flymake-hadolint
+    flymake-racket
+    flymake-ruff
+    flymake-shellcheck
+    go-mode
+    go-playground
+    groovy-mode
+    jenkinsfile-mode
+    magit
+    markdown-mode
+    rainbow-delimiters
+    racket-mode
+    realgud
+    smartparens
+    terraform-mode
+    unicode-whitespace
+    visual-fill-column
+    web-mode
+    yaml-mode))
 
-(dolist (package gojun-pkglist)
-  (use-package package))
+;; Initialize the package system
+(unless (bound-and-true-p package--initialized)
+  (package-initialize))
+
+;; Check and install missing packages
+(dolist (pkg gojun-pkglist)
+  (unless (package-installed-p pkg)
+    (unless (assoc pkg package-archive-contents)
+      (package-refresh-contents))
+    (package-install pkg)))
+
 
 ;; require declarations
 (require 'flycheck)
 (require 'flycheck-mypy)
-(require 'flycheck-pyflakes)
 (require 'unicode-whitespace)
 (require 'whitespace)
-(require 'haskell-interactive-mode)
-(require 'haskell-process)
 
-;; Enable C-x C-l in haskell files to launch interpreter
-(add-hook 'haskell-mode-hook 'interactive-haskell-mode)
 
 ;; turn on flychecking globally
 (add-hook 'after-init-hook #'global-flycheck-mode)
@@ -94,12 +93,11 @@
 (add-hook 'terraform-mode-hook #'terraform-format-on-save-mode)
 
 
-
 ;; mode settings
 ; show col and line numbers
 (column-number-mode 1)
 ; don't show menu bar
-(menu-bar-mode 0)
+;(menu-bar-mode 0)
 
 ; don't show scrollbar
 (scroll-bar-mode 0)
@@ -135,7 +133,7 @@
    '("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default))
  '(epg-gpg-program "/usr/local/MacGPG2/bin/gpg2")
  '(package-selected-packages
-   '(flycheck-mypy flycheck-haskell haskell-mode jenkinsfile-mode terraform-mode go-mode go-playground flycheck-gometalinter rainbow-delimiters magit smartparens use-package web-mode ein yaml-mode rw-language-and-country-codes racket-mode paredit markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible))
+   '(flymake-racket flymake-hadolint flymake-ruff flymake-go exec-path-from-shell solarized-theme blacken flycheck-mypy jenkinsfile-mode terraform-mode go-mode go-playground rainbow-delimiters magit smartparens web-mode ein yaml-mode rw-language-and-country-codes racket-mode paredit markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible))
  '(python-shell-completion-native-disabled-interpreters '("pypy ipython")))
 
 
@@ -173,8 +171,7 @@
 (setq python-shell-interpreter "~/.pyenv/shims/ipython"
       python-shell-interpreter-args "--simple-prompt -i --pprint")
 (setq ansi-color-for-comint-mode t)
-(setq python-check-command "~/.pyenv/shims/pyflakes")
-(setq flycheck-python-pyflakes-executable "~/.pyenv/shims/pyflakes")
+(setq python-check-command "/usr/local/bin/ruff")
 
 ; C-\ language toggle
 (setq default-input-method "korean-hangul")

@@ -5,8 +5,7 @@
 #[[ $- != *i* ]] && return
 
 export EDITOR="/usr/local/bin/emacsclient"
-# Do not export TERM because this will be set automatically
-# by GNU `screen` or `tmux` terminal multiplexers
+export TERM=screen-256color
 
 PS1='[\u@\h \W]\$ '
 
