@@ -3,49 +3,51 @@
 ;; My .emacs
 ;; Created on: Sometime in 2011
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Jul 16 2023
+;; Last Updated: Oct 15 2023
 
 ;;; Code:
 (require 'package)
-(package-initialize)
-(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
-(add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/") t)
-(add-to-list 'load-path "~/.emacs.d/elpa") ;;personal elisp libs
 
+;; Add package archives
+(setq package-archives
+      '(("gnu" . "http://elpa.gnu.org/packages/")
+        ("melpa" . "http://melpa.org/packages/")))
 
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-
-(require 'use-package)
-(setq use-package-always-ensure t)
-
+;; List of packages to ensure are installed
 (defvar gojun-pkglist
- '(ansible
-   solarized-theme
-   exec-path-from-shell
-   flycheck
-   flycheck-mypy
-   flycheck-pyflakes
-   flycheck-gometalinter
-   go-mode
-   go-playground
-   haskell-mode
-   magit
-   markdown-mode
-   rainbow-delimiters
-   racket-mode
-   realgud
-   smartparens
-   terraform-mode
-   unicode-whitespace
-   visual-fill-column
-   web-mode
-   yaml-mode)
- "List of packages to ensure are installed at launch.")
+  '(ansible
+    solarized-theme
+    exec-path-from-shell
+    flycheck
+    flycheck-mypy
+    flycheck-pyflakes
+    flycheck-gometalinter
+    go-mode
+    go-playground
+    haskell-mode
+    magit
+    markdown-mode
+    rainbow-delimiters
+    racket-mode
+    realgud
+    smartparens
+    terraform-mode
+    unicode-whitespace
+    visual-fill-column
+    web-mode
+    yaml-mode))
 
-(dolist (package gojun-pkglist)
-  (use-package package))
+;; Initialize the package system
+(unless (bound-and-true-p package--initialized)
+  (package-initialize))
+
+;; Check and install missing packages
+(dolist (pkg gojun-pkglist)
+  (unless (package-installed-p pkg)
+    (unless (assoc pkg package-archive-contents)
+      (package-refresh-contents))
+    (package-install pkg)))
+
 
 (require 'flycheck)
 (require 'flycheck-pyflakes)
@@ -121,7 +123,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(realgud realgud-ipdb haskell-mode yaml-mode web-mode visual-fill-column use-package unicode-whitespace terraform-mode smartparens rainbow-delimiters racket-mode markdown-mode magit go-playground flycheck-pyflakes flycheck-gometalinter fill-column-indicator exec-path-from-shell color-theme-sanityinc-solarized ansible))
+   '("ansible" realgud realgud-ipdb haskell-mode yaml-mode web-mode visual-fill-column use-package unicode-whitespace terraform-mode smartparens rainbow-delimiters racket-mode markdown-mode magit go-playground flycheck-pyflakes flycheck-gometalinter fill-column-indicator exec-path-from-shell color-theme-sanityinc-solarized ansible))
  '(python-shell-completion-native-disabled-interpreters '("pypy ipython3"))
  '(warning-suppress-types '((comp))))
 
