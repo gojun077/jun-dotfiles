@@ -3,7 +3,7 @@
 ;; .emacs for MacOS --- Summary
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated Oct 15 2023
+;; Last Updated Oct 17 2023
 
 
 ;;; Code:
@@ -33,6 +33,7 @@
     jenkinsfile-mode
     magit
     markdown-mode
+    org-trello
     rainbow-delimiters
     racket-mode
     realgud
@@ -58,6 +59,7 @@
 ;; require declarations
 (require 'flycheck)
 (require 'flycheck-mypy)
+(require 'org-trello)
 (require 'unicode-whitespace)
 (require 'whitespace)
 
@@ -133,7 +135,7 @@
    '("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default))
  '(epg-gpg-program "/usr/local/MacGPG2/bin/gpg2")
  '(package-selected-packages
-   '(flymake-racket flymake-hadolint flymake-ruff flymake-go exec-path-from-shell solarized-theme blacken flycheck-mypy jenkinsfile-mode terraform-mode go-mode go-playground rainbow-delimiters magit smartparens web-mode ein yaml-mode rw-language-and-country-codes racket-mode paredit markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible))
+   '(org-trello flymake-racket flymake-hadolint flymake-ruff flymake-go exec-path-from-shell solarized-theme blacken flycheck-mypy jenkinsfile-mode terraform-mode go-mode go-playground rainbow-delimiters magit smartparens web-mode ein yaml-mode rw-language-and-country-codes racket-mode paredit markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible))
  '(python-shell-completion-native-disabled-interpreters '("pypy ipython")))
 
 
@@ -200,6 +202,12 @@
 ; set exec-path for emacs to include GOLANG binaries
 (setq exec-path (append exec-path '("/usr/local/go/bin" "$HOME/go/bin")))
 (setq exec-path (append exec-path '("$HOME/.ghcup/bin")))
+
+; org-mode settings
+(setq org-todo-keywords
+      '((sequence "TODO" "Inbox" "Anywhere" "Read/Review" "Calls"
+                  "Computer" "Errands" "Home" "Office" "Waiting For" "|"
+                  "DONE" "Completed" "Canceled")))
 
 ; bind 'M-x magit-status' to 'C-x g'
 (global-set-key (kbd "C-x g") 'magit-status)
