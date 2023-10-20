@@ -3,7 +3,7 @@
 ;; .emacs for MacOS --- Summary
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated Oct 17 2023
+;; Last Updated Oct 20 2023
 
 
 ;;; Code:
@@ -26,7 +26,6 @@
     flymake-hadolint
     flymake-racket
     flymake-ruff
-    flymake-shellcheck
     go-mode
     go-playground
     groovy-mode
@@ -64,9 +63,7 @@
 (require 'whitespace)
 
 
-;; turn on flychecking globally
-(add-hook 'after-init-hook #'global-flycheck-mode)
-(add-hook 'python-mode-hook #'flycheck-mode)
+(add-hook 'python-mode-hook #'flymake-ruff-load)
 
 ;; make #! script files executable on save (chmod +x)
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
