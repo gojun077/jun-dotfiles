@@ -6,52 +6,69 @@
 ;; Last Updated: Oct 20 2023
 
 ;;; Code:
-(require 'package)
 
-;; Add package archives
-(setq package-archives
-      '(("gnu" . "http://elpa.gnu.org/packages/")
-        ("melpa" . "http://melpa.org/packages/")))
+;; use straight.el instead of package.el
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 6))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
-;; List of packages to ensure are installed
-(defvar gojun-pkglist
-  '(ansible
-    exec-path-from-shell
-    flymake-ruff
-    go-mode
-    go-playground
-    haskell-mode
-    magit
-    markdown-mode
-    racket-mode
-    rainbow-delimiters
-    realgud
-    smartparens
-    solarized-theme
-    terraform-mode
-    unicode-whitespace
-    visual-fill-column
-    web-mode
-    yaml-mode))
+;; Install use-package
+(straight-use-package 'use-package)
 
-;; Initialize the package system
-(unless (bound-and-true-p package--initialized)
-  (package-initialize))
-
-;; Check and install missing packages
-(dolist (pkg gojun-pkglist)
-  (unless (package-installed-p pkg)
-    (unless (assoc pkg package-archive-contents)
-      (package-refresh-contents))
-    (package-install pkg)))
+(use-package ansible
+  :straight t)
+(use-package exec-path-from-shell
+  :straight t)
+(use-package flymake-ruff
+  :straight t)
+(use-package go-mode
+  :straight t)
+(use-package go-playground
+  :straight t)
+(use-package markdown-mode
+  :straight t)
+(use-package org-trello
+  :straight (:build (:not compile)) t)
+(use-package racket-mode
+  :straight t)
+(use-package realgud
+  :straight t)
+(use-package solarized-theme
+  :straight t)
+(use-package smartparens
+  :straight t)
+(use-package unicode-whitespace
+  :straight t)
+(use-package visual-fill-column
+  :straight t)
+(use-package web-mode
+  :straight t)
+(use-package yaml-mode
+  :straight t)
 
 (require 'flymake-ruff)
 (require 'unicode-whitespace)
 (require 'smartparens-config)
 (require 'whitespace)
-(require 'haskell-interactive-mode)
-(require 'haskell-process)
+(require 'treesit)
 
+;; M-x treesit-install-language-grammar bash
+(add-to-list
+ 'treesit-language-source-alist
+ '(bash "https://github.com/tree-sitter/tree-sitter-bash.git"))
+
+;; sh-mode use bash-ts-mode
+(add-to-list 'major-mode-remap-alist
+             '(sh-mode . bash-ts-mode))
 
 (add-hook 'python-base-mode-hook 'flymake-mode)
 
@@ -114,7 +131,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(flymake-go flymake-hadolint flymake-ruff go-mode org-trello "ansible" realgud realgud-ipdb haskell-mode yaml-mode web-mode visual-fill-column use-package unicode-whitespace terraform-mode smartparens rainbow-delimiters racket-mode markdown-mode magit go-playground fill-column-indicator exec-path-from-shell color-theme-sanityinc-solarized ansible))
+   '(flymake-go flymake-hadolint flymake-ruff go-mode org-trello realgud realgud-ipdb yaml-mode web-mode visual-fill-column use-package unicode-whitespace smartparens rainbow-delimiters racket-mode markdown-mode magit go-playground fill-column-indicator exec-path-from-shell ansible))
  '(python-shell-completion-native-disabled-interpreters '("pypy ipython3"))
  '(warning-suppress-types '((comp))))
 
@@ -175,6 +192,13 @@
 (setq ido-everywhere t)
 ; use xetex to render pdf from LaTeX
 (setq TeX-engine 'xetex)
+
+
+; org-mode settings
+(setq org-todo-keywords
+      '((sequence "TODO" "Inbox" "Anywhere" "Read/Review" "Calls"
+                  "Computer" "Errands" "Home" "Office" "Waiting For" "|"
+                  "DONE" "Completed" "Canceled")))
 
 ; bind 'M-x magit-status' to 'C-x g'
 (global-set-key (kbd "C-x g") 'magit-status)
