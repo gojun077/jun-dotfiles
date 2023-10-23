@@ -34,6 +34,8 @@
   :straight t)
 (use-package go-playground
   :straight t)
+(use-package magit
+  :straight t)
 (use-package markdown-mode
   :straight t)
 (use-package org-trello
@@ -130,8 +132,16 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(org-agenda-files
+   '("/tier2/encrypted_repos/gpj-org-mode-files/next_actions.org"))
+ '(org-trello-current-prefix-keybinding "C-c o" nil (org-trello))
  '(package-selected-packages
-   '(flymake-go flymake-hadolint flymake-ruff go-mode org-trello realgud realgud-ipdb yaml-mode web-mode visual-fill-column use-package unicode-whitespace smartparens rainbow-delimiters racket-mode markdown-mode magit go-playground fill-column-indicator exec-path-from-shell ansible))
+   '(flymake-go flymake-hadolint flymake-ruff go-mode org-trello realgud
+                realgud-ipdb yaml-mode web-mode visual-fill-column
+                use-package unicode-whitespace smartparens
+                rainbow-delimiters racket-mode markdown-mode magit
+                go-playground fill-column-indicator
+                exec-path-from-shell ansible))
  '(python-shell-completion-native-disabled-interpreters '("pypy ipython3"))
  '(warning-suppress-types '((comp))))
 
