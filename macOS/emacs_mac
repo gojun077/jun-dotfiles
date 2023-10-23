@@ -7,63 +7,71 @@
 
 
 ;;; Code:
-(require 'package)
 
-;; Add package archives
-(setq package-archives
-      '(("melpa" . "http://melpa.org/packages/")
-        ("gnu" . "http://elpa.gnu.org/packages/")))
+;; use straight.el instead of package.el
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 6))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
-;; List of packages to ensure are installed
-(defvar gojun-pkglist
-  '(ansible
-    blacken
-    solarized-theme
-    exec-path-from-shell
-    flycheck
-    flycheck-mypy
-    flymake-go
-    flymake-hadolint
-    flymake-racket
-    flymake-ruff
-    go-mode
-    go-playground
-    groovy-mode
-    jenkinsfile-mode
-    magit
-    markdown-mode
-    org-trello
-    rainbow-delimiters
-    racket-mode
-    realgud
-    smartparens
-    terraform-mode
-    unicode-whitespace
-    visual-fill-column
-    web-mode
-    yaml-mode))
+;; Install use-package
+(straight-use-package 'use-package)
 
-;; Initialize the package system
-(unless (bound-and-true-p package--initialized)
-  (package-initialize))
+(use-package ansible
+  :straight t)
+(use-package blacken
+  :straight t)
+(use-package exec-path-from-shell
+  :straight t)
+(use-package flymake-ruff
+  :straight t)
+(use-package go-mode
+  :straight t)
+(use-package go-playground
+  :straight t)
+(use-package magit
+  :straight t)
+(use-package markdown-mode
+  :straight t)
+(use-package org-trello
+  :straight (:build (:not compile)) t)
+(use-package racket-mode
+  :straight t)
+(use-package rainbow-delimiters
+  :straight t)
+(use-package solarized-theme
+  :straight t)
+(use-package smartparens
+  :straight t)
+(use-package unicode-whitespace
+  :straight t)
+(use-package visual-fill-column
+  :straight t)
+(use-package web-mode
+  :straight t)
+(use-package yaml-mode
+  :straight t)
 
-;; Check and install missing packages
-(dolist (pkg gojun-pkglist)
-  (unless (package-installed-p pkg)
-    (unless (assoc pkg package-archive-contents)
-      (package-refresh-contents))
-    (package-install pkg)))
-
-
-;; require declarations
-(require 'flycheck)
-(require 'flycheck-mypy)
-(require 'org-trello)
+(require 'flymake-ruff)
 (require 'unicode-whitespace)
+(require 'smartparens-config)
 (require 'whitespace)
 
+(add-hook 'python-base-mode-hook (lambda ()
+                                   (flymake-mode 1)
+                                   (blacken-mode 1)))
 
-(add-hook 'python-mode-hook #'flymake-ruff-load)
+;; hooks for racket-mode
+(add-hook 'racket-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'racket-mode-hook #'smartparens-mode)
 
 ;; make #! script files executable on save (chmod +x)
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
@@ -74,10 +82,6 @@
 ;; enable whitespace-mode for all files
 (add-hook 'after-change-major-mode-hook 'whitespace-mode)
 
-;; hooks for racket-mode
-(add-hook 'racket-mode-hook #'rainbow-delimiters-mode)
-(add-hook 'racket-mode-hook #'smartparens-mode)
-
 (defun go-mode-setup ()
   ;; run 'go fmt' on .go source files before save
   (add-hook 'before-save-hook 'gofmt-before-save)
@@ -87,9 +91,6 @@
            "env GOOS=darwin GOARCH=amd64 go build -v -o bin/$(basename $(pwd)) && go test -v && go vet"))
 )
 (add-hook 'go-mode-hook 'go-mode-setup)
-
-;; hook for terraform buffers
-(add-hook 'terraform-mode-hook #'terraform-format-on-save-mode)
 
 
 ;; mode settings
@@ -132,7 +133,7 @@
    '("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default))
  '(epg-gpg-program "/usr/local/MacGPG2/bin/gpg2")
  '(package-selected-packages
-   '(org-trello flymake-racket flymake-hadolint flymake-ruff flymake-go exec-path-from-shell solarized-theme blacken flycheck-mypy jenkinsfile-mode terraform-mode go-mode go-playground rainbow-delimiters magit smartparens web-mode ein yaml-mode rw-language-and-country-codes racket-mode paredit markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible))
+   '(org-trello flymake-ruff exec-path-from-shell solarized-theme blacken go-mode go-playground rainbow-delimiters magit smartparens web-mode ein yaml-mode rw-language-and-country-codes racket-mode paredit markdown-mode fill-column-indicator ansible))
  '(python-shell-completion-native-disabled-interpreters '("pypy ipython")))
 
 
@@ -170,7 +171,7 @@
 (setq python-shell-interpreter "~/.pyenv/shims/ipython"
       python-shell-interpreter-args "--simple-prompt -i --pprint")
 (setq ansi-color-for-comint-mode t)
-(setq python-check-command "/usr/local/bin/ruff")
+
 
 ; C-\ language toggle
 (setq default-input-method "korean-hangul")
