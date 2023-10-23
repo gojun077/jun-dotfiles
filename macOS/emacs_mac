@@ -3,7 +3,9 @@
 ;; .emacs for MacOS --- Summary
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated Oct 20 2023
+;; Last Updated Oct 23 2023
+;;
+;; This config file is for Emacs 29.1 and above
 
 
 ;;; Code:
