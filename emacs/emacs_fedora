@@ -3,7 +3,9 @@
 ;; My .emacs
 ;; Created on: Sometime in 2011
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Oct 20 2023
+;; Last Updated: Oct 23 2023
+;;
+;; These configs are for Emacs 29.1 and higher.
 
 ;;; Code:
 
@@ -25,6 +27,8 @@
 (straight-use-package 'use-package)
 
 (use-package ansible
+  :straight t)
+(use-package blacken
   :straight t)
 (use-package exec-path-from-shell
   :straight t)
