@@ -130,8 +130,9 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default))
+   '("4c56af497ddf0e30f65a7232a8ee21b3d62a8c332c6b268c81e9ea99b11da0d3" "4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default))
  '(epg-gpg-program "/usr/local/MacGPG2/bin/gpg2")
+ '(org-trello-current-prefix-keybinding "C-c o" nil (org-trello))
  '(package-selected-packages
    '(org-trello flymake-ruff exec-path-from-shell solarized-theme blacken go-mode go-playground rainbow-delimiters magit smartparens web-mode ein yaml-mode rw-language-and-country-codes racket-mode paredit markdown-mode fill-column-indicator ansible))
  '(python-shell-completion-native-disabled-interpreters '("pypy ipython")))
@@ -209,6 +210,14 @@
 
 ; bind 'M-x magit-status' to 'C-x g'
 (global-set-key (kbd "C-x g") 'magit-status)
+
+; Enable option key as Meta key on MacOS
+( setq mac-command-modifier 'super
+  ns-command-modifier 'super
+  mac-option-modifier 'meta
+  ns-option-modifier 'meta
+  mac-right-option-modifier 'meta
+  ns-right-option-modifier 'meta)
 
 
 (custom-set-faces
