@@ -46,7 +46,7 @@
   :straight (:build (:not compile)) t)
 (use-package racket-mode
   :straight t)
-(use-package realgud
+(use-package rainbow-delimiters
   :straight t)
 (use-package solarized-theme
   :straight t)
@@ -76,7 +76,9 @@
 (add-to-list 'major-mode-remap-alist
              '(sh-mode . bash-ts-mode))
 
-(add-hook 'python-base-mode-hook 'flymake-mode)
+(add-hook 'python-base-mode-hook (lambda ()
+                                   (flymake-mode 1)
+                                   (blacken-mode 1)))
 
 ;; hooks for racket-mode
 (add-hook 'racket-mode-hook #'rainbow-delimiters-mode)
