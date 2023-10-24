@@ -3,7 +3,7 @@
 ;; .emacs for MacOS --- Summary
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated Oct 23 2023
+;; Last Updated Oct 24 2023
 ;;
 ;; This config file is for Emacs 29.1 and above
 
@@ -66,6 +66,8 @@
 (require 'unicode-whitespace)
 (require 'smartparens-config)
 (require 'whitespace)
+
+(add-hook 'after-init-hook (lambda () (load-theme 'sanityinc-solarized-light)))
 
 (add-hook 'python-base-mode-hook (lambda ()
                                    (flymake-mode 1)
@@ -150,7 +152,7 @@
 (setq whitespace-line-column 80)
 ;; set fill column to 75
 (setq-default fill-column 75)
-;; enable native fill column indicator (included in emacs v27+)
+;; enable native fill column indicator (included in emacs 27+)
 (global-display-fill-column-indicator-mode 1)
 
 ; Use spaces instead of tabs
