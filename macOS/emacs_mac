@@ -80,12 +80,6 @@
 ;; make #! script files executable on save (chmod +x)
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
 
-;; unicode-whitespace face settings
-(unicode-whitespace-setup 'subdued-faces)
-
-;; enable whitespace-mode for all files
-(add-hook 'after-change-major-mode-hook 'whitespace-mode)
-
 (defun go-mode-setup ()
   ;; run 'go fmt' on .go source files before save
   (add-hook 'before-save-hook 'gofmt-before-save)
@@ -148,12 +142,6 @@
 
 ;; run emacs in server mode - connect to server with `emacsclient`
 (server-mode 1)
-;; limit line length
-(setq whitespace-line-column 80)
-;; set fill column to 75
-(setq-default fill-column 75)
-;; enable native fill column indicator (included in emacs 27+)
-(global-display-fill-column-indicator-mode 1)
 
 ; Use spaces instead of tabs
 (setq-default indent-tabs-mode nil)
@@ -180,8 +168,6 @@
 
 ; C-\ language toggle
 (setq default-input-method "korean-hangul")
-; Start emacs maximized
-(setq initial-frame-alist (quote ((fullscreen . maximized))))
 ; create backups in $HOME/tmp
 ; bkup files will have '!' in place of directory separator '/'
 (setq backup-directory-alist '(("." . "~/tmp")))
@@ -233,8 +219,23 @@
 
 ;; Commands to run when Emacs launched in graphical mode
 (when (display-graphic-p)
-; only run whitespace mode in graphical session
-  (global-whitespace-mode 1))
+  ; only run whitespace mode in graphical session
+  (global-whitespace-mode 1)
+  ; limit line length
+  (setq whitespace-line-column 80)
+  ; set fill column to 75
+  (setq-default fill-column 75)
+  ; enable native fill column indicator (included in emacs 27+)
+  (global-display-fill-column-indicator-mode 1)
+  ; unicode-whitespace face settings
+  (unicode-whitespace-setup 'subdued-faces)
+  ; enable whitespace-mode for all files
+  (add-hook 'after-change-major-mode-hook 'whitespace-mode)
+  ; disable scrollbar
+  (scroll-bar-mode -1)
+  ; disable toolbar
+  (tool-bar-mode -1)
+  )
 
 ;; Commands to run when Emacs launched in terminal mode
 (unless (display-graphic-p)
