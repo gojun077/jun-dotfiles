@@ -3,9 +3,10 @@
 ;; .emacs for MacOS --- Summary
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated Oct 24 2023
+;; Last Updated Oct 26 2023
 ;;
-;; This config file is for Emacs 29.1 and above
+;; This config file is for Emacs 29.1 and above and contains extra
+;; keyconfigs for skhd keyboard shortcut manager and Yabai WM on MacOS
 
 
 ;;; Code:
@@ -218,6 +219,15 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+;;=============================
+;;   Emacs Yabai WM functions
+;;=============================
+
+(global-set-key (kbd "s-<up>") (lambda () (interactive) (shell-command "yabai -m window --focus north")));
+(global-set-key (kbd "s-<down>") (lambda () (interactive) (shell-command "yabai -m window --focus south")));
+(global-set-key (kbd "s-<left>") (lambda () (interactive) (shell-command "yabai -m window --focus west")));
+(global-set-key (kbd "s-<up>") (lambda () (interactive) (shell-command "yabai -m window --focus east")));
 
 ;; Commands to run when Emacs launched in graphical mode
 (when (display-graphic-p)
