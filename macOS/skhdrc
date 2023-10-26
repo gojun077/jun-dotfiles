@@ -1,0 +1,26 @@
+# skhdrc (original path: ~/.skhdrc)
+#
+# Created on: Oct 25 2023
+# Created by: gopeterjun@naver.com
+# Last Updated: Oct 26 2023
+#
+# PJ's config file for skhd keyboard shortcut manager for macOS
+
+# open terminal
+cmd - return : /Applications/Alacritty.app/Contents/MacOS/alacritty
+
+# open Emacs
+cmd - m : /Applications/Emacs.app/Contents/MacOS/emacs
+
+# open Browser (Arc)
+cmd - a : /Applications/Arc.app/Contents/MacOS/Arc
+
+##############################################
+#     Keyboard shortcuts for Yabai WM
+##############################################
+
+# focus window (same as Sway/i3 hotkeys)
+cmd - up    : yabai -m window --focus north
+cmd - down  : yabai -m window --focus south
+cmd - left  : yabai -m window --focus west
+cmd - right : yabai -m window --focus east

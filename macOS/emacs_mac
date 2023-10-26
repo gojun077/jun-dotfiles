@@ -3,7 +3,10 @@
 ;; .emacs for MacOS --- Summary
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated Oct 20 2023
+;; Last Updated Oct 26 2023
+;;
+;; This config file is for Emacs 29.1 and above and contains extra
+;; keyconfigs for skhd keyboard shortcut manager and Yabai WM on MacOS
 
 
 ;;; Code:
@@ -65,6 +68,8 @@
 (require 'smartparens-config)
 (require 'whitespace)
 
+(add-hook 'after-init-hook (lambda () (load-theme 'sanityinc-solarized-light)))
+
 (add-hook 'python-base-mode-hook (lambda ()
                                    (flymake-mode 1)
                                    (blacken-mode 1)))
@@ -75,12 +80,6 @@
 
 ;; make #! script files executable on save (chmod +x)
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
-
-;; unicode-whitespace face settings
-(unicode-whitespace-setup 'subdued-faces)
-
-;; enable whitespace-mode for all files
-(add-hook 'after-change-major-mode-hook 'whitespace-mode)
 
 (defun go-mode-setup ()
   ;; run 'go fmt' on .go source files before save
@@ -130,8 +129,11 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default))
+   '("4c56af497ddf0e30f65a7232a8ee21b3d62a8c332c6b268c81e9ea99b11da0d3" "4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default))
  '(epg-gpg-program "/usr/local/MacGPG2/bin/gpg2")
+ '(org-agenda-files
+   '("~/Documents/repos/encrypted-repos/gpj-org-mode-files/next_actions.org"))
+ '(org-trello-current-prefix-keybinding "C-c o" nil (org-trello))
  '(package-selected-packages
    '(org-trello flymake-ruff exec-path-from-shell solarized-theme blacken go-mode go-playground rainbow-delimiters magit smartparens web-mode ein yaml-mode rw-language-and-country-codes racket-mode paredit markdown-mode fill-column-indicator ansible))
  '(python-shell-completion-native-disabled-interpreters '("pypy ipython")))
@@ -143,12 +145,6 @@
 
 ;; run emacs in server mode - connect to server with `emacsclient`
 (server-mode 1)
-;; limit line length
-(setq whitespace-line-column 80)
-;; set fill column to 75
-(setq-default fill-column 75)
-;; enable native fill column indicator (included in emacs v27+)
-(global-display-fill-column-indicator-mode 1)
 
 ; Use spaces instead of tabs
 (setq-default indent-tabs-mode nil)
@@ -175,8 +171,6 @@
 
 ; C-\ language toggle
 (setq default-input-method "korean-hangul")
-; Start emacs maximized
-(setq initial-frame-alist (quote ((fullscreen . maximized))))
 ; create backups in $HOME/tmp
 ; bkup files will have '!' in place of directory separator '/'
 (setq backup-directory-alist '(("." . "~/tmp")))
@@ -210,6 +204,14 @@
 ; bind 'M-x magit-status' to 'C-x g'
 (global-set-key (kbd "C-x g") 'magit-status)
 
+; Enable option key as Meta key on MacOS
+( setq mac-command-modifier 'super
+  ns-command-modifier 'super
+  mac-option-modifier 'meta
+  ns-option-modifier 'meta
+  mac-right-option-modifier 'meta
+  ns-right-option-modifier 'meta)
+
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -218,10 +220,34 @@
  ;; If there is more than one, they won't work right.
  )
 
+;;=============================
+;;   Emacs Yabai WM functions
+;;=============================
+
+(global-set-key (kbd "s-<up>") (lambda () (interactive) (shell-command "yabai -m window --focus north")));
+(global-set-key (kbd "s-<down>") (lambda () (interactive) (shell-command "yabai -m window --focus south")));
+(global-set-key (kbd "s-<left>") (lambda () (interactive) (shell-command "yabai -m window --focus west")));
+(global-set-key (kbd "s-<up>") (lambda () (interactive) (shell-command "yabai -m window --focus east")));
+
 ;; Commands to run when Emacs launched in graphical mode
 (when (display-graphic-p)
-; only run whitespace mode in graphical session
-  (global-whitespace-mode 1))
+  ; only run whitespace mode in graphical session
+  (global-whitespace-mode 1)
+  ; limit line length
+  (setq whitespace-line-column 80)
+  ; set fill column to 75
+  (setq-default fill-column 75)
+  ; enable native fill column indicator (included in emacs 27+)
+  (global-display-fill-column-indicator-mode 1)
+  ; unicode-whitespace face settings
+  (unicode-whitespace-setup 'subdued-faces)
+  ; enable whitespace-mode for all files
+  (add-hook 'after-change-major-mode-hook 'whitespace-mode)
+  ; disable scrollbar
+  (scroll-bar-mode -1)
+  ; disable toolbar
+  (tool-bar-mode -1)
+  )
 
 ;; Commands to run when Emacs launched in terminal mode
 (unless (display-graphic-p)
