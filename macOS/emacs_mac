@@ -167,7 +167,11 @@
 (setq python-shell-interpreter "~/.pyenv/shims/ipython"
       python-shell-interpreter-args "--simple-prompt -i --pprint")
 (setq ansi-color-for-comint-mode t)
-
+(setq python-check-command "/usr/local/bin/ruff")
+(setq python-flymake-command '("ruff"
+                               "--quiet"
+                               "--stdin-filename=stdin"
+                               "-"))
 
 ; C-\ language toggle
 (setq default-input-method "korean-hangul")
