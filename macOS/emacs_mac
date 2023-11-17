@@ -3,7 +3,7 @@
 ;; .emacs for MacOS --- Summary
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated Nov 16 2023
+;; Last Updated Nov 17 2023
 ;;
 ;; This config file is for Emacs 29.1 and above and contains extra
 ;; keyconfigs for skhd keyboard shortcut manager and Yabai WM on MacOS
@@ -71,7 +71,7 @@
 (require 'whitespace)
 
 (add-hook 'after-init-hook (lambda () (load-theme 'sanityinc-solarized-light)))
-
+(add-hook 'elisp-lisp-mode-hook #'flymake-mode)
 (add-hook 'python-base-mode-hook (lambda ()
                                    (flymake-mode 1)
                                    (blacken-mode 1)))
