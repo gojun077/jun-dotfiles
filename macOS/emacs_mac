@@ -70,7 +70,6 @@
 (require 'smartparens-config)
 (require 'whitespace)
 
-(add-hook 'after-init-hook (lambda () (load-theme 'sanityinc-solarized-light)))
 (add-hook 'elisp-lisp-mode-hook #'flymake-mode)
 (add-hook 'python-base-mode-hook (lambda ()
                                    (flymake-mode 1)
@@ -116,12 +115,13 @@
                     '("Monofur Nerd Font Mono" . "unicode-bmp"))
   (set-fontset-font fontset 'hangul
                     '("NanumGothic" . "unicode-bmp"))
-  (set-face-attribute 'default nil
-                      :font fontset
-                      :height 170)
   (set-face-attribute 'mode-line nil
                       :font fontset
-                      :height 120))
+                      :height 120)
+  ; the following must be the last font statement
+  (set-face-attribute 'default nil
+                      :font fontset
+                      :height 170))
 
 
 ;;=========================
