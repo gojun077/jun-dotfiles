@@ -119,12 +119,12 @@
                     '("MonofurNerdFontMono" . "unicode-bmp"))
   (set-fontset-font fontset 'hangul
                     '("NanumGothic" . "unicode-bmp"))
-  (set-face-attribute 'default nil
-                      :font fontset
-                      :height 140)
   (set-face-attribute 'mode-line nil
                       :font fontset
-                      :height 110))
+                      :height 110)
+  (set-face-attribute 'default nil
+                      :font fontset
+                      :height 140))
 
 
 ;;=========================
