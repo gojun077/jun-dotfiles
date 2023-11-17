@@ -2,7 +2,7 @@
 #
 # Created on: Oct 25 2023
 # Created by: gopeterjun@naver.com
-# Last Updated: Oct 26 2023
+# Last Updated: Oct 29 2023
 #
 # PJ's config file for skhd keyboard shortcut manager for macOS
 
@@ -15,6 +15,9 @@ cmd - m : /Applications/Emacs.app/Contents/MacOS/emacs
 # open Browser (Arc)
 cmd - a : /Applications/Arc.app/Contents/MacOS/Arc
 
+# open Finder (file manager)
+shift + cmd - f : open -a Finder
+
 ##############################################
 #     Keyboard shortcuts for Yabai WM
 ##############################################
@@ -24,3 +27,20 @@ cmd - up    : yabai -m window --focus north
 cmd - down  : yabai -m window --focus south
 cmd - left  : yabai -m window --focus west
 cmd - right : yabai -m window --focus east
+
+# swap focused window
+shift + cmd - right : yabai -m window --swap east
+shift + cmd - left  : yabai -m window --swap west
+shift + cmd - up    : yabai -m window --swap north
+shift + cmd - down  : yabai -m window --swap south
+
+# move focused window
+shift + cmd - l    : yabai -m window --warp east
+shift + cmd - h    : yabai -m window --warp west
+shift + cmd - j    : yabai -m window --warp north
+shift + cmd - k    : yabai -m window --warp south
+
+# prevents skhd from monitoring events for listed processes
+.blacklist [
+    "TigerVNC Viewer"
+]

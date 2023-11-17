@@ -3,7 +3,7 @@
 ;; .emacs for MacOS --- Summary
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated Oct 26 2023
+;; Last Updated Oct 29 2023
 ;;
 ;; This config file is for Emacs 29.1 and above and contains extra
 ;; keyconfigs for skhd keyboard shortcut manager and Yabai WM on MacOS
@@ -50,9 +50,9 @@
   :straight t)
 (use-package rainbow-delimiters
   :straight t)
-(use-package solarized-theme
-  :straight t)
 (use-package smartparens
+  :straight t)
+(use-package solarized-theme
   :straight t)
 (use-package unicode-whitespace
   :straight t)
@@ -116,7 +116,10 @@
                     '("NanumGothic" . "unicode-bmp"))
   (set-face-attribute 'default nil
                       :font fontset
-                      :height 170))
+                      :height 170)
+  (set-face-attribute 'mode-line nil
+                      :font fontset
+                      :height 140))
 
 
 ;;=========================
@@ -167,7 +170,11 @@
 (setq python-shell-interpreter "~/.pyenv/shims/ipython"
       python-shell-interpreter-args "--simple-prompt -i --pprint")
 (setq ansi-color-for-comint-mode t)
-
+(setq python-check-command "/usr/local/bin/ruff")
+(setq python-flymake-command '("ruff"
+                               "--quiet"
+                               "--stdin-filename=stdin"
+                               "-"))
 
 ; C-\ language toggle
 (setq default-input-method "korean-hangul")
@@ -196,10 +203,18 @@
 (setq exec-path (append exec-path '("$HOME/.ghcup/bin")))
 
 ; org-mode settings
+(setq org-timer-default-timer 25)
+; play sound when org-timer completes
+(add-hook 'org-timer-done-hook (lambda () (interactive)
+                                 (shell-command "afplay $HOME/Downloads/ShipsBell.wav")))
 (setq org-todo-keywords
       '((sequence "TODO" "Inbox" "Anywhere" "Read/Review" "Calls"
                   "Computer" "Errands" "Home" "Office" "Waiting For" "|"
                   "DONE" "Completed" "Canceled")))
+
+
+
+
 
 ; bind 'M-x magit-status' to 'C-x g'
 (global-set-key (kbd "C-x g") 'magit-status)
