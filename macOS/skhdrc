@@ -2,7 +2,7 @@
 #
 # Created on: Oct 25 2023
 # Created by: gopeterjun@naver.com
-# Last Updated: Oct 29 2023
+# Last Updated: Nov 17 2023
 #
 # PJ's config file for skhd keyboard shortcut manager for macOS
 
@@ -39,6 +39,9 @@ shift + cmd - l    : yabai -m window --warp east
 shift + cmd - h    : yabai -m window --warp west
 shift + cmd - j    : yabai -m window --warp north
 shift + cmd - k    : yabai -m window --warp south
+
+# restart yabai
+ctrl + alt + cmd - r: yabai --restart-service
 
 # prevents skhd from monitoring events for listed processes
 .blacklist [
