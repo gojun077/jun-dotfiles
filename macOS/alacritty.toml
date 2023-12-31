@@ -148,7 +148,7 @@ mods = "Alt"
 
 [[keyboard.bindings]]
 chars = "\u001B`"
-key = "Grave"
+key = "`"
 mods = "Alt"
 
 [shell]
