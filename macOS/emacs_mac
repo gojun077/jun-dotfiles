@@ -268,18 +268,18 @@
   (scroll-bar-mode -1)
   ; disable toolbar
   (tool-bar-mode -1)
-  ;(load-theme 'sanityinc-tomorrow-blue)
-  ;(load-theme 'sanityinc-tomorrow-bright)
-  (load-theme 'sanityinc-tomorrow-day)
-  ;(load-theme 'sanityinc-tomorrow-night)
-  ;(load-theme 'sanityinc-solarized-light)
-  ;(load-theme 'sanityinc-solarized-light-high-contrast)
-  ;(load-theme 'solarized-light-high-contrast)
+  ;(load-theme 'sanityinc-tomorrow-blue t)
+  ;(load-theme 'sanityinc-tomorrow-bright t)
+  (load-theme 'sanityinc-tomorrow-day t)
+  ;(load-theme 'sanityinc-tomorrow-night t)
+  ;(load-theme 'sanityinc-solarized-light t)
+  ;(load-theme 'sanityinc-solarized-light-high-contrast t)
+  ;(load-theme 'solarized-light-high-contrast t)
   )
 
 ;; Commands to run when Emacs launched in terminal mode
 (unless (display-graphic-p)
-  (load-theme 'adwaita))
+  (load-theme 'adwaita t))
 
 (server-start)  ; emacsclient will open files in emacs session
 (provide '.emacs)
