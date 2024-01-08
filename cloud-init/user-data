@@ -1,0 +1,9 @@
+#cloud-config
+
+users:
+  - name: pj
+    passwd: "$6$IMNvV8gpraVl6s2u$LuS62c9ljs90/rTBgfD/kf1DGWxXCmNS1EOvYYIixRJzgNl8XQSsJY7SkzlTOs5/YrwLwwL/9fdTPOwhINw65."
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJhU17VuEc6XGVEoLSz+OpFZCfc8jVSqrOHgI1i9jfde gopeterjun@naver.com
+    groups: [ sudo ]
