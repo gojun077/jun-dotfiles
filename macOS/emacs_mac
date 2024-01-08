@@ -3,7 +3,7 @@
 ;; .emacs for MacOS --- Summary
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated Nov 17 2023
+;; Last Updated Dec 14 2023
 ;;
 ;; This config file is for Emacs 29.1 and above and contains extra
 ;; keyconfigs for skhd keyboard shortcut manager and Yabai WM on MacOS
@@ -33,6 +33,8 @@
 (use-package blacken
   :straight t)
 (use-package color-theme-sanityinc-tomorrow
+  :straight t)
+(use-package cyberpunk-theme
   :straight t)
 (use-package exec-path-from-shell
   :straight t)
@@ -117,13 +119,13 @@
                     '("Monofur Nerd Font Mono" . "unicode-bmp"))
   (set-fontset-font fontset 'hangul
                     '("NanumGothic" . "unicode-bmp"))
-  (set-face-attribute 'mode-line nil
-                      :font fontset
-                      :height 120)
-  ; the following must be the last font statement
   (set-face-attribute 'default nil
                       :font fontset
-                      :height 170))
+                      :height 170)
+  (set-face-attribute 'mode-line nil
+                      :font fontset
+                      :height 90))
+
 
 
 ;;=========================
@@ -268,13 +270,14 @@
   (scroll-bar-mode -1)
   ; disable toolbar
   (tool-bar-mode -1)
-  ;(load-theme 'sanityinc-tomorrow-blue t)
-  ;(load-theme 'sanityinc-tomorrow-bright t)
-  (load-theme 'sanityinc-tomorrow-day t)
-  ;(load-theme 'sanityinc-tomorrow-night t)
-  ;(load-theme 'sanityinc-solarized-light t)
-  ;(load-theme 'sanityinc-solarized-light-high-contrast t)
-  ;(load-theme 'solarized-light-high-contrast t)
+  ;(load-theme 'cyberpunk t)
+  ;(load-theme 'sanityinc-tomorrow-blue)
+  ;(load-theme 'sanityinc-tomorrow-bright)
+  (load-theme 'sanityinc-tomorrow-day)
+  ;(load-theme 'sanityinc-tomorrow-night)
+  ;(load-theme 'sanityinc-solarized-light)
+  ;(load-theme 'sanityinc-solarized-light-high-contrast)
+  ;(load-theme 'solarized-light-high-contrast)
   )
 
 ;; Commands to run when Emacs launched in terminal mode

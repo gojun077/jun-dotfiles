@@ -1,4 +1,6 @@
 # MacOS X Configuration for Alacritty, the GPU enhanced terminal emulator.
+#
+# Note: YAML config is deprecated in Alacritty v0.13 and above!
 
 # Import additional configuration files
 #
