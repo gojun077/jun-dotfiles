@@ -2,7 +2,7 @@
 #
 # Created on: Oct 25 2023
 # Created by: gopeterjun@naver.com
-# Last Updated: Nov 17 2023
+# Last Updated: Jan 18 2024
 #
 # PJ's config file for skhd keyboard shortcut manager for macOS
 
@@ -11,9 +11,6 @@ cmd - return : /Applications/Alacritty.app/Contents/MacOS/alacritty
 
 # open Emacs
 cmd - m : /Applications/Emacs.app/Contents/MacOS/emacs
-
-# open Browser (Arc)
-cmd - a : /Applications/Arc.app/Contents/MacOS/Arc
 
 # open Finder (file manager)
 shift + cmd - f : open -a Finder
