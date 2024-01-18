@@ -85,6 +85,7 @@
 
 ;; make #! script files executable on save (chmod +x)
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
+(add-hook 'sh-mode-hook #'flymake-mode)
 
 (defun go-mode-setup ()
   ;; run 'go fmt' on .go source files before save
