@@ -3,7 +3,7 @@
 ;; .emacs for MacOS --- Summary
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated Jan 18 2023
+;; Last Updated Jan 18 2024
 ;;
 ;; This config file is for Emacs 29.1 and above and contains extra
 ;; keyconfigs for skhd keyboard shortcut manager and Yabai WM on MacOS
