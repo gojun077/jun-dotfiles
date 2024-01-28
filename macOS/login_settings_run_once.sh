@@ -3,15 +3,18 @@
 #
 # Last Updated: Jan 28 2024
 #
-# This file is for MacOS ONLY, and should be manually executed in a new
-# shell after booting. `login_settings_run_once.sh` plays the role of
-# `.bash_profile` in Linux and other non-macOS POSIX environments.
-
-# On MacOS, however, `.bash_profile` acts differently; because every shell
-# in the macOS GUI is a login shell, settings stored in `.bash_profile`
-# will be executed multiple times! So if you have some recursive settings
-# like `export PATH=/foo/mypath:$PATH`, your PATH var will get hopelessly
-# cluttered if you declare PATH in .bash_profile on macOS :(
+# This file is for MacOS ONLY, and is intended to be `source`d, not
+# executed!
+#
+# Source this file in a new shell after
+# booting. `login_settings_run_once.sh` plays the role of `.bash_profile`
+# in Linux and other non-macOS POSIX environments.
+#
+# On MacOS, however, `.bash_profile` acts differently because every shell
+# in the macOS GUI is a login shell. This means that settings in
+# `.bash_profile` will be executed multiple times! So if you have some
+# recursive settings like `export PATH=/foo/mypath:$PATH`, your PATH var
+# will get hopelessly cluttered if you declare it in macOS .bash_profile
 #
 # Therefore `login_settings_run_once.sh` contains settings that should only
 # be defined once per GUI shell session. The best case is if you are using
@@ -22,8 +25,8 @@
 # windows in the `screen` or `tmux` without cluttering up your bash shell
 # namespace!
 
-sudo launchctl limit maxfiles 65536 200000
-ulimit -n 65536 200000
+#sudo launchctl limit maxfiles 65536 200000
+#ulimit -n 65536 200000
 
 if [ -f ~/.bashrc ]; then
   source ~/.bashrc
