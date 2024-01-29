@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# ~/.bashrc for MAC OS root user
+#
+# Created On: 2021(?)
+# Created by: gopeterjun@naver.com
+# Last Updated: Jan 29 2024
+
+# If not running interactively, don't do anything
+#[[ $- != *i* ]] && return
+
+# don't put duplicate lines or lines starting with space in the history.
+# See bash(1) for more options
+HISTCONTROL=ignoreboth
+
+# append to the history file, don't overwrite it
+shopt -s histappend
+
+HISTSIZE=10000
+HISTFILESIZE=15000
+
+# check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+shopt -s checkwinsize
+
+
+export EDITOR="/usr/local/bin/emacsclient"
+export TERM=screen-256color
+
+PS1="\[\033[31m\]\h:\W \u\$\[\033[0m\] "
+
+alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
+alias enox="/usr/local/bin/emacsclient -nw"
+source ~/.bash_aliases
+# vim: ts=2 sw=2 et :
