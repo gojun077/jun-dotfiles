@@ -58,9 +58,9 @@ endif
 if &t_Co > 2 || has("gui_running")
   syntax on
   set hlsearch
-  colo elflord
+  "colo elflord
   "colorscheme shine
-  "colo evening
+  colo evening
 endif
 
 " Tab settings
