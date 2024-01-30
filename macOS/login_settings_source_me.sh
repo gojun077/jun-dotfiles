@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# login_settings_run_once.sh
+# login_settings_source_me.sh
 #
-# Last Updated: Jan 28 2024
+# Last Updated: Jan 30 2024
 #
 # This file is for MacOS ONLY, and is intended to be `source`d, not
 # executed!
