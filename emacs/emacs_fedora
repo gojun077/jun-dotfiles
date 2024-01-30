@@ -3,64 +3,80 @@
 ;; My .emacs
 ;; Created on: Sometime in 2011
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Jul 16 2023
+;; Last Updated: Jan 18 2024
+;;
+;; These configs are for Emacs 29.1 and higher.
 
 ;;; Code:
-(require 'package)
-(package-initialize)
-(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
-(add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/") t)
-(add-to-list 'load-path "~/.emacs.d/elpa") ;;personal elisp libs
 
+;; use straight.el instead of package.el
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 6))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
+;; Install use-package
+(straight-use-package 'use-package)
 
-(require 'use-package)
-(setq use-package-always-ensure t)
+(use-package ansible
+  :straight t)
+(use-package blacken
+  :straight t)
+(use-package exec-path-from-shell
+  :straight t)
+(use-package flymake-hadolint
+  :straight t)
+(use-package flymake-ruff
+  :straight t)
+(use-package go-mode
+  :straight t)
+(use-package go-playground
+  :straight t)
+(use-package magit
+  :straight t)
+(use-package markdown-mode
+  :straight t)
+(use-package org-trello
+  :straight (:build (:not compile)) t)
+(use-package racket-mode
+  :straight t)
+(use-package rainbow-delimiters
+  :straight t)
+(use-package smartparens
+  :straight t)
+(use-package solarized-theme
+  :straight t)
+(use-package tex
+  :straight auctex)
+(use-package unicode-whitespace
+  :straight t)
+(use-package visual-fill-column
+  :straight t)
+(use-package web-mode
+  :straight t)
+(use-package yaml-mode
+  :straight t)
 
-(defvar gojun-pkglist
- '(ansible
-   solarized-theme
-   exec-path-from-shell
-   flycheck
-   flycheck-mypy
-   flycheck-pyflakes
-   flycheck-gometalinter
-   go-mode
-   go-playground
-   haskell-mode
-   magit
-   markdown-mode
-   rainbow-delimiters
-   racket-mode
-   realgud
-   smartparens
-   terraform-mode
-   unicode-whitespace
-   visual-fill-column
-   web-mode
-   yaml-mode)
- "List of packages to ensure are installed at launch.")
-
-(dolist (package gojun-pkglist)
-  (use-package package))
-
-(require 'flycheck)
-(require 'flycheck-pyflakes)
+(require 'flymake-ruff)
 (require 'unicode-whitespace)
 (require 'smartparens-config)
 (require 'whitespace)
-(require 'haskell-interactive-mode)
-(require 'haskell-process)
-
-(add-hook 'haskell-mode-hook 'interactive-haskell-mode)
 
 
-;; turn on flychecking globally
-(add-hook 'after-init-hook 'global-flycheck-mode)
-(add-hook 'python-mode-hook 'flycheck-mode)
+(add-hook 'elisp-lisp-mode-hook #'flymake-mode)
+(add-hook 'python-base-mode-hook (lambda ()
+                                   (flymake-mode 1)
+                                   (blacken-mode 1)))
+
+(add-hook 'visual-line-mode-hook #'visual-fill-column-mode)
 
 ;; hooks for racket-mode
 (add-hook 'racket-mode-hook #'rainbow-delimiters-mode)
@@ -68,15 +84,12 @@
 
 ;; make #! script files executable on save (chmod +x)
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
-
-;; use visual-fill-column mode with visual-line-mode
-(add-hook 'visual-line-mode-hook 'visual-fill-column-mode)
+(add-hook 'sh-mode-hook #'flymake-mode)
 
 ;; Capitalize keywords in SQL mode
 (add-hook 'sql-mode-hook 'sqlup-mode)
 ;; Capitalize keywords in an interactive session (e.g. psql)
 (add-hook 'sql-interactive-mode-hook 'sqlup-mode)
-
 ;; truncate long lines in sqli mode
 (add-hook 'sql-interactive-mode-hook
           (lambda ()
@@ -107,9 +120,13 @@
                     '("MonofurNerdFontMono" . "unicode-bmp"))
   (set-fontset-font fontset 'hangul
                     '("NanumGothic" . "unicode-bmp"))
+  (set-face-attribute 'mode-line nil
+                      :font fontset
+                      :height 110)
   (set-face-attribute 'default nil
                       :font fontset
                       :height 140))
+
 
 ;;=========================
 ;;   CUSTOM MENU OPTIONS
@@ -120,8 +137,15 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(org-agenda-files
+   '("/tier2/encrypted_repos/gpj-org-mode-files/next_actions.org"))
+ '(org-trello-current-prefix-keybinding "C-c o" nil (org-trello))
  '(package-selected-packages
-   '(realgud realgud-ipdb haskell-mode yaml-mode web-mode visual-fill-column use-package unicode-whitespace terraform-mode smartparens rainbow-delimiters racket-mode markdown-mode magit go-playground flycheck-pyflakes flycheck-gometalinter fill-column-indicator exec-path-from-shell color-theme-sanityinc-solarized ansible))
+   '(flymake-go flymake-hadolint flymake-ruff go-mode org-trello
+                yaml-mode web-mode visual-fill-column go-playground
+                use-package unicode-whitespace smartparens ansible
+                rainbow-delimiters racket-mode markdown-mode magit
+                exec-path-from-shell))
  '(python-shell-completion-native-disabled-interpreters '("pypy ipython3"))
  '(warning-suppress-types '((comp))))
 
@@ -133,7 +157,7 @@
 ; start emacs in server mode
 (server-mode 1)
 ; ensure GPG password input is handled by emacs during emacs session
-(setenv "GPG_AGENT_INFO" nil)
+;(setenv "GPG_AGENT_INFO" nil)
 ; Use spaces instead of tabs
 (setq-default indent-tabs-mode nil)
 ; But when I must use TAB, set width to 2 chars
@@ -153,10 +177,13 @@
 ;
 (setq python-shell-completion-native nil)
 (setq python-shell-interpreter "ipython3"
-      python-shell-interpreter-args "--simple-prompt -i --pprint")
+      python-shell-interpreter-args "--simple-prompt -i --InteractiveShell.display_page=True")
 (setq ansi-color-for-comint-mode t)
-(setq python-check-command "/usr/bin/pyflakes")
-(setq flycheck-python-pyflakes-executable "/usr/bin/pyflakes")
+(setq python-check-command "/home/jundora/.local/bin/ruff")
+(setq python-flymake-command '("ruff"
+                               "--quiet"
+                               "--stdin-filename=stdin"
+                               "-"))
 
 ; C-\ language toggle
 (setq default-input-method "korean-hangul")
@@ -177,8 +204,22 @@
 (setq ido-enable-flex-matching t)
 ; enable ido everywhere
 (setq ido-everywhere t)
-; use xetex to render pdf from LaTeX
-(setq TeX-engine 'xetex)
+
+
+; org-mode settings
+(setq org-todo-keywords
+      '((sequence "TODO" "Inbox" "Anywhere" "Read/Review" "Calls"
+                  "Computer" "Errands" "Home" "Office" "Waiting For" "|"
+                  "DONE" "Completed" "Canceled")))
+
+; AUCTeX settings
+(setq TeX-auto-save t)
+(setq TeX-parse-self t)
+(setq-default TeX-master nil)
+(add-hook 'LaTeX-mode-hook #'flymake-mode)
+; AUCTEX preview-latex font
+(set-default 'preview-scale-function 1.2)
+
 
 ; bind 'M-x magit-status' to 'C-x g'
 (global-set-key (kbd "C-x g") 'magit-status)
@@ -204,32 +245,25 @@
 
   ; only run whitespace mode in graphical session
   (global-whitespace-mode 1)
-
-  ;; limit line length
+  ; limit line length
   (setq whitespace-line-column 80)
-
-  ;; set fill column to 75
+  ; set fill column to 75
   (setq fill-column 75)
-
-  ;; enable fill column indicator
+  ; enable native fill column indicator (emacs 27+)
   (global-display-fill-column-indicator-mode 1)
-
+  ; enable whitespace-mode for all files
   (add-hook 'after-change-major-mode-hook 'whitespace-mode)
-
-  ;; unicode-whitespace face settings
+  ; unicode-whitespace face settings
   (unicode-whitespace-setup 'subdued-faces)
-
   ; don't show scrollbar
   (scroll-bar-mode -1)
   ; don't show toolbar
   (tool-bar-mode -1)
-  ;; AUCTEX preview-latex font
-  (set-default 'preview-scale-function 1.2)
 )
 
 ;; Commands to run when Emacs launched in terminal mode
 (unless (display-graphic-p)
-  (load-theme 'adwaita))
+  (load-theme 'adwaita t))
 
 (provide 'emacs)
 ;;; emacs ends here

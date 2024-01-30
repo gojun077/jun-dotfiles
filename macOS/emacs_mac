@@ -3,82 +3,89 @@
 ;; .emacs for MacOS --- Summary
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated Jul 16 2023
+;; Last Updated Jan 18 2024
+;;
+;; This config file is for Emacs 29.1 and above and contains extra
+;; keyconfigs for skhd keyboard shortcut manager and Yabai WM on MacOS
 
 
 ;;; Code:
-(require 'package)
-(package-initialize)
-(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
-(add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/") t)
-(add-to-list 'load-path "~/.emacs.d/elpa") ;;personal elisp libs
 
+;; use straight.el instead of package.el
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 6))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
+;; Install use-package
+(straight-use-package 'use-package)
 
-(require 'use-package)
-(setq use-package-always-ensure t)
+(use-package ansible
+  :straight t)
+(use-package blacken
+  :straight t)
+(use-package color-theme-sanityinc-tomorrow
+  :straight t)
+(use-package cyberpunk-theme
+  :straight t)
+(use-package exec-path-from-shell
+  :straight t)
+(use-package flymake-ruff
+  :straight t)
+(use-package go-mode
+  :straight t)
+(use-package go-playground
+  :straight t)
+(use-package magit
+  :straight t)
+(use-package markdown-mode
+  :straight t)
+(use-package org-trello
+  :straight (:build (:not compile)) t)
+(use-package racket-mode
+  :straight t)
+(use-package rainbow-delimiters
+  :straight t)
+(use-package smartparens
+  :straight t)
+(use-package solarized-theme
+  :straight t)
+(use-package tex
+  :straight auctex)
+(use-package unicode-whitespace
+  :straight t)
+(use-package visual-fill-column
+  :straight t)
+(use-package web-mode
+  :straight t)
+(use-package yaml-mode
+  :straight t)
 
-(defvar gojun-pkglist
- '(ansible
-   solarized-theme
-   exec-path-from-shell
-   flycheck
-   flycheck-haskell
-   flycheck-gometalinter
-   flycheck-mypy
-   flycheck-pyflakes
-   go-mode
-   go-playground
-   groovy-mode
-   haskell-mode
-   jenkinsfile-mode
-   magit
-   markdown-mode
-   rainbow-delimiters
-   racket-mode
-   realgud
-   smartparens
-   terraform-mode
-   unicode-whitespace
-   visual-fill-column
-   web-mode
-   yaml-mode)
- "List of packages to ensure are installed at launch.")
-
-(dolist (package gojun-pkglist)
-  (use-package package))
-
-;; require declarations
-(require 'flycheck)
-(require 'flycheck-mypy)
-(require 'flycheck-pyflakes)
+(require 'flymake-ruff)
 (require 'unicode-whitespace)
+(require 'smartparens-config)
 (require 'whitespace)
-(require 'haskell-interactive-mode)
-(require 'haskell-process)
 
-;; Enable C-x C-l in haskell files to launch interpreter
-(add-hook 'haskell-mode-hook 'interactive-haskell-mode)
-
-;; turn on flychecking globally
-(add-hook 'after-init-hook #'global-flycheck-mode)
-(add-hook 'python-mode-hook #'flycheck-mode)
-
-;; make #! script files executable on save (chmod +x)
-(add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
-
-;; unicode-whitespace face settings
-(unicode-whitespace-setup 'subdued-faces)
-
-;; enable whitespace-mode for all files
-(add-hook 'after-change-major-mode-hook 'whitespace-mode)
+(add-hook 'elisp-lisp-mode-hook #'flymake-mode)
+(add-hook 'python-base-mode-hook (lambda ()
+                                   (flymake-mode 1)
+                                   (blacken-mode 1)))
 
 ;; hooks for racket-mode
 (add-hook 'racket-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'racket-mode-hook #'smartparens-mode)
+
+;; make #! script files executable on save (chmod +x)
+(add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
+(add-hook 'sh-mode-hook #'flymake-mode)
 
 (defun go-mode-setup ()
   ;; run 'go fmt' on .go source files before save
@@ -90,16 +97,12 @@
 )
 (add-hook 'go-mode-hook 'go-mode-setup)
 
-;; hook for terraform buffers
-(add-hook 'terraform-mode-hook #'terraform-format-on-save-mode)
-
-
 
 ;; mode settings
 ; show col and line numbers
 (column-number-mode 1)
 ; don't show menu bar
-(menu-bar-mode 0)
+;(menu-bar-mode 0)
 
 ; don't show scrollbar
 (scroll-bar-mode 0)
@@ -119,7 +122,11 @@
                     '("NanumGothic" . "unicode-bmp"))
   (set-face-attribute 'default nil
                       :font fontset
-                      :height 170))
+                      :height 170)
+  (set-face-attribute 'mode-line nil
+                      :font fontset
+                      :height 90))
+
 
 
 ;;=========================
@@ -132,10 +139,14 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default))
+   '(default))
  '(epg-gpg-program "/usr/local/MacGPG2/bin/gpg2")
+ '(org-agenda-files
+   '("~/Documents/repos/encrypted-repos/gpj-org-mode-files/next_actions.org"))
+ '(org-trello-current-prefix-keybinding "C-c o" nil (org-trello))
  '(package-selected-packages
-   '(flycheck-mypy flycheck-haskell haskell-mode jenkinsfile-mode terraform-mode go-mode go-playground flycheck-gometalinter rainbow-delimiters magit smartparens use-package web-mode ein yaml-mode rw-language-and-country-codes racket-mode paredit markdown-mode flycheck fill-column-indicator color-theme-sanityinc-solarized ansible))
+   '(org-trello flymake-ruff exec-path-from-shell solarized-theme blacken go-mode go-playground rainbow-delimiters magit smartparens web-mode ein yaml-mode rw-language-and-country-codes racket-mode paredit markdown-mode fill-column-indicator ansible))
+ '(pdf-latex-command "xetex")
  '(python-shell-completion-native-disabled-interpreters '("pypy ipython")))
 
 
@@ -145,12 +156,6 @@
 
 ;; run emacs in server mode - connect to server with `emacsclient`
 (server-mode 1)
-;; limit line length
-(setq whitespace-line-column 80)
-;; set fill column to 75
-(setq-default fill-column 75)
-;; enable native fill column indicator (included in emacs v27+)
-(global-display-fill-column-indicator-mode 1)
 
 ; Use spaces instead of tabs
 (setq-default indent-tabs-mode nil)
@@ -173,13 +178,14 @@
 (setq python-shell-interpreter "~/.pyenv/shims/ipython"
       python-shell-interpreter-args "--simple-prompt -i --pprint")
 (setq ansi-color-for-comint-mode t)
-(setq python-check-command "~/.pyenv/shims/pyflakes")
-(setq flycheck-python-pyflakes-executable "~/.pyenv/shims/pyflakes")
+(setq python-check-command "/usr/local/bin/ruff")
+(setq python-flymake-command '("ruff"
+                               "--quiet"
+                               "--stdin-filename=stdin"
+                               "-"))
 
 ; C-\ language toggle
 (setq default-input-method "korean-hangul")
-; Start emacs maximized
-(setq initial-frame-alist (quote ((fullscreen . maximized))))
 ; create backups in $HOME/tmp
 ; bkup files will have '!' in place of directory separator '/'
 (setq backup-directory-alist '(("." . "~/tmp")))
@@ -202,10 +208,33 @@
 (setenv "PATH" (concat (getenv "PATH") ":/usr/local/go/bin:$HOME/go/bin"))
 ; set exec-path for emacs to include GOLANG binaries
 (setq exec-path (append exec-path '("/usr/local/go/bin" "$HOME/go/bin")))
-(setq exec-path (append exec-path '("$HOME/.ghcup/bin")))
+
+; org-mode settings
+(setq org-timer-default-timer 25)
+; play sound when org-timer completes
+(add-hook 'org-timer-done-hook (lambda () (interactive)
+                                 (shell-command "afplay $HOME/Downloads/ShipsBell.wav")))
+(setq org-todo-keywords
+      '((sequence "TODO" "Inbox" "Anywhere" "Read/Review" "Calls"
+                  "Computer" "Errands" "Home" "Office" "Waiting For" "|"
+                  "DONE" "Completed" "Canceled")))
+
+; AUCTeX settings
+(setq TeX-auto-save t)
+(setq TeX-parse-self t)
+(setq-default TeX-master nil)
+(add-hook 'LaTeX-mode-hook #'flymake-mode)
 
 ; bind 'M-x magit-status' to 'C-x g'
 (global-set-key (kbd "C-x g") 'magit-status)
+
+; Enable option key as Meta key on MacOS
+( setq mac-command-modifier 'super
+  ns-command-modifier 'super
+  mac-option-modifier 'meta
+  ns-option-modifier 'meta
+  mac-right-option-modifier 'meta
+  ns-right-option-modifier 'meta)
 
 
 (custom-set-faces
@@ -215,14 +244,46 @@
  ;; If there is more than one, they won't work right.
  )
 
+;;=============================
+;;   Emacs Yabai WM functions
+;;=============================
+
+(global-set-key (kbd "s-<up>") (lambda () (interactive) (shell-command "yabai -m window --focus north")));
+(global-set-key (kbd "s-<down>") (lambda () (interactive) (shell-command "yabai -m window --focus south")));
+(global-set-key (kbd "s-<left>") (lambda () (interactive) (shell-command "yabai -m window --focus west")));
+(global-set-key (kbd "s-<up>") (lambda () (interactive) (shell-command "yabai -m window --focus east")));
+
 ;; Commands to run when Emacs launched in graphical mode
 (when (display-graphic-p)
-; only run whitespace mode in graphical session
-  (global-whitespace-mode 1))
+  ; only run whitespace mode in graphical session
+  (global-whitespace-mode 1)
+  ; limit line length
+  (setq whitespace-line-column 80)
+  ; set fill column to 75
+  (setq-default fill-column 75)
+  ; enable native fill column indicator (included in emacs 27+)
+  (global-display-fill-column-indicator-mode 1)
+  ; unicode-whitespace face settings
+  (unicode-whitespace-setup 'subdued-faces)
+  ; enable whitespace-mode for all files
+  (add-hook 'after-change-major-mode-hook 'whitespace-mode)
+  ; disable scrollbar
+  (scroll-bar-mode -1)
+  ; disable toolbar
+  (tool-bar-mode -1)
+  ;(load-theme 'cyberpunk t)
+  ;(load-theme 'sanityinc-tomorrow-blue)
+  ;(load-theme 'sanityinc-tomorrow-bright)
+  (load-theme 'sanityinc-tomorrow-day)
+  ;(load-theme 'sanityinc-tomorrow-night)
+  ;(load-theme 'sanityinc-solarized-light)
+  ;(load-theme 'sanityinc-solarized-light-high-contrast)
+  ;(load-theme 'solarized-light-high-contrast)
+  )
 
 ;; Commands to run when Emacs launched in terminal mode
 (unless (display-graphic-p)
-  (load-theme 'adwaita))
+  (load-theme 'adwaita t))
 
 (server-start)  ; emacsclient will open files in emacs session
 (provide '.emacs)

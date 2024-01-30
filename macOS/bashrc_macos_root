@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# ~/.bashrc for MAC OS
+# ~/.bashrc for MAC OS root user
 #
 # Created On: 2021(?)
 # Created by: gopeterjun@naver.com
@@ -26,12 +26,7 @@ shopt -s checkwinsize
 export EDITOR="/usr/local/bin/emacsclient"
 export TERM=screen-256color
 
-# Prompt: "user@hostname CurrentWorkingDirectory $ " no color
-#PS1='[\u@\h \W]\$ '
-# Same as above, but user@host in green, CWD in blue
-PS1="\[\033[01;32m\]\u@\h\[\033[00m\] \[\033[01;34m\]\W\[\033[00m\]\$ "
-# Prompt: "user@host:" in green, "full path to CWD" in blue
-#PS1="\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ "
+PS1="\[\033[31m\]\h:\W \u\$\[\033[0m\] "
 
 alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
 alias enox="/usr/local/bin/emacsclient -nw"

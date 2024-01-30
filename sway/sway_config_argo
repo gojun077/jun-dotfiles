@@ -5,12 +5,12 @@
 # Read `man 5 sway` for a complete reference.
 # Created on: Sep 21 2021
 # Created by: gojun077@gmail.com
-# Last Updated: Jun 21 2023
+# Last Updated: Oct 26 2023
 
 
 ### Variables
 #
-# Logo key. Use Mod1 for Alt.
+# Logo/Super/Hyper key. Use Mod1 for Alt.
 set $mod Mod4
 # Home row direction keys, like vim
 set $left h

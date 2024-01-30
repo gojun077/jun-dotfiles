@@ -1,4 +1,7 @@
 # Ubuntu Configuration for Alacritty, the GPU enhanced terminal emulator.
+#
+# Note: `alacritty.yml` is deprecated in v0.13 and above - the new config
+# file is `alacritty.toml`.
 
 # Import additional configuration files
 #

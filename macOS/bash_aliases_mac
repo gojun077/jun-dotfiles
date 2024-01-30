@@ -1,9 +1,13 @@
-alias ssh='ssh -o "IdentitiesOnly yes"'
-alias scp='scp -o "IdentitiesOnly yes"'
-alias ls='ls -G'
+# enable color support of ls and also add handy aliases
+alias ls='ls --color=auto'
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+alias ssha='ssh -o "IdentitiesOnly yes"'
+alias scpa='scp -o "IdentitiesOnly yes"'
+#alias ls='ls -G'
 alias vi='vim'
 alias ㅊㅇ='cd'
 alias 니='ls'
 alias screen='/usr/local/bin/screen'
-alias hazip='curl http://icanhazip.com'
-source ~/.bash_aliases_secure
+#source ~/.bash_aliases_secure
