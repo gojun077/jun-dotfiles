@@ -1,0 +1,25 @@
+# Per-user `~/.bash_profile` for Ubuntu on RPI4B
+#
+# Created on: Apr 8 2022
+# Created by: gopeterjun@naver.com
+# Last Updated: Jul 17 2023
+#
+# These settings are sourced by the login shell
+
+if [ -f ~/.bashrc ]; then
+  source ~/.bashrc
+fi
+
+# set PATH so it includes user's private bin if it exists
+if [ -d "$HOME/bin" ] ; then
+    PATH="$HOME/bin:$PATH"
+fi
+
+if [ -d "$HOME/.local/bin" ] ; then
+    PATH="$HOME/.local/bin:$PATH"
+fi
+
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH"
+export TERM=xterm-256color
+export EDITOR=vim
+export KUBECONFIG="$HOME/.kube/config/kubeconfig"
