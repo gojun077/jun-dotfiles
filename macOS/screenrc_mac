@@ -1,6 +1,7 @@
 #
 # Jun's GNU Screen config file
 # ~/.screenrc
+# Last Updated: Feb 2 2024
 #
 
 ################
@@ -45,7 +46,9 @@ term screen-256color
 #
 # Back Color Erase
 #
-#defbce on
+# erase background with current bg color; otherwise Vim themes (and probably
+# other programs that make use of background colors) will look weird
+defbce on
 
 #################
 #
