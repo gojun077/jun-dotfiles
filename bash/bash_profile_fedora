@@ -2,7 +2,7 @@
 #
 # Created on: Jul 31 2022
 # Created by gojun077
-# Last Updated: Jul 17 2023
+# Last Updated: Feb 23 2024
 #
 # These settings are sourced by the login shell
 
@@ -39,5 +39,5 @@ export XDG_SESSION_TYPE=wayland
 export GTK_IM_MODULE=fcitx
 export QT_IM_MODULE=fcitx
 export XMODIFIERS="@im=fcitx"
-export KUBECONFIG=$HOME/.kube/config/kubeconfig
+export KUBECONFIG=$HOME/.kube/config
 export EDITOR="emacsclient -nw"
