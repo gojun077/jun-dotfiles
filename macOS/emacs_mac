@@ -3,7 +3,7 @@
 ;; .emacs for MacOS --- Summary
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated Jan 18 2024
+;; Last Updated Mar 3 2024
 ;;
 ;; This config file is for Emacs 29.1 and above and contains extra
 ;; keyconfigs for skhd keyboard shortcut manager and Yabai WM on MacOS
@@ -210,6 +210,7 @@
 (setq exec-path (append exec-path '("/usr/local/go/bin" "$HOME/go/bin")))
 
 ; org-mode settings
+(setq org-directory "~/Documents/repos/personal/org")
 (setq org-timer-default-timer 25)
 ; play sound when org-timer completes
 (add-hook 'org-timer-done-hook (lambda () (interactive)
@@ -218,6 +219,15 @@
       '((sequence "TODO" "Inbox" "Anywhere" "Read/Review" "Calls"
                   "Computer" "Errands" "Home" "Office" "Waiting For" "|"
                   "DONE" "Completed" "Canceled")))
+(setq org-refile-targets
+      '(("~/Documents/repos/encrypted/gpj-org-mode-files/next_actions.org" :maxlevel . 1)
+        ("~/Documents/repos/encrypted/gpj-org-mode-files/projects.org" :level . 1)
+        ("~/Documents/repos/encrypted/gpj-org-mode-files/someday_maybe.org" :level . 1)
+        ("~/Documents/repos/encrypted/gpj-org-mode-files/closed_cards.org" :level . 1)))
+(setq org-default-notes-file (concat org-directory "/capture.org"))
+(global-set-key (kbd "C-c l") #'org-store-link)
+(global-set-key (kbd "C-c a") #'org-agenda)
+(global-set-key (kbd "C-c c") #'org-capture)
 
 ; AUCTeX settings
 (setq TeX-auto-save t)
