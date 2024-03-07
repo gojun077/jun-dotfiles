@@ -3,7 +3,7 @@
 ;; .emacs for MacOS --- Summary
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated Mar 3 2024
+;; Last Updated Mar 7 2024
 ;;
 ;; This config file is for Emacs 29.1 and above and contains extra
 ;; keyconfigs for skhd keyboard shortcut manager and Yabai WM on MacOS
@@ -138,11 +138,10 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   '(default))
+ '(custom-safe-themes '(default))
  '(epg-gpg-program "/usr/local/MacGPG2/bin/gpg2")
  '(org-agenda-files
-   '("~/Documents/repos/encrypted-repos/gpj-org-mode-files/next_actions.org"))
+   '("~/Documents/repos/encrypted/gpj-org-mode-files/next_actions.org"))
  '(org-trello-current-prefix-keybinding "C-c o" nil (org-trello))
  '(package-selected-packages
    '(org-trello flymake-ruff exec-path-from-shell solarized-theme blacken go-mode go-playground rainbow-delimiters magit smartparens web-mode ein yaml-mode rw-language-and-country-codes racket-mode paredit markdown-mode fill-column-indicator ansible))
@@ -214,11 +213,12 @@
 (setq org-timer-default-timer 25)
 ; play sound when org-timer completes
 (add-hook 'org-timer-done-hook (lambda () (interactive)
-                                 (shell-command "afplay $HOME/Downloads/ShipsBell.wav")))
+                                 (shell-command "/usr/bin/afplay $HOME/Downloads/media/ShipsBell.wav")))
 (setq org-todo-keywords
       '((sequence "TODO" "Inbox" "Anywhere" "Read/Review" "Calls"
                   "Computer" "Errands" "Home" "Office" "Waiting For" "|"
                   "DONE" "Completed" "Canceled")))
+
 (setq org-refile-targets
       '(("~/Documents/repos/encrypted/gpj-org-mode-files/next_actions.org" :maxlevel . 1)
         ("~/Documents/repos/encrypted/gpj-org-mode-files/projects.org" :level . 1)
