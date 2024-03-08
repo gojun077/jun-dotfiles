@@ -60,14 +60,14 @@ if &t_Co > 2 || has("gui_running")
   "colo blue
   "colo darkblue
   "colo elflord
-  "colo shine
+  colo shine
   "colo evening
   "colo wildcharm
   "colo slate
   "colo pablo
   "colo zaibatsu
   "colo koehler
-  colo nord
+  "colo nord
 endif
 syntax on
 set hlsearch

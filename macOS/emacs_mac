@@ -101,9 +101,8 @@
 ;; mode settings
 ; show col and line numbers
 (column-number-mode 1)
-; don't show menu bar
+; don't show menu bar - doesn't work on MacOS
 ;(menu-bar-mode 0)
-
 ; don't show scrollbar
 (scroll-bar-mode 0)
 ; highlight parens
@@ -140,6 +139,7 @@
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes '(default))
  '(epg-gpg-program "/usr/local/MacGPG2/bin/gpg2")
+ '(menu-bar-mode nil)
  '(org-agenda-files
    '("~/Documents/repos/encrypted/gpj-org-mode-files/next_actions.org"))
  '(org-trello-current-prefix-keybinding "C-c o" nil (org-trello))
