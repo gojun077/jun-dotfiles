@@ -3,7 +3,7 @@
 ;; .emacs for MacOS --- Summary
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated Mar 7 2024
+;; Last Updated Mar 12 2024
 ;;
 ;; This config file is for Emacs 29.1 and above and contains extra
 ;; keyconfigs for skhd keyboard shortcut manager and Yabai WM on MacOS
@@ -25,6 +25,8 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+;; ensure latest org version is loaded by straight.el
+(straight-use-package 'org)
 ;; Install use-package
 (straight-use-package 'use-package)
 
@@ -47,6 +49,8 @@
 (use-package magit
   :straight t)
 (use-package markdown-mode
+  :straight t)
+(use-package org-roam
   :straight t)
 (use-package org-trello
   :straight (:build (:not compile)) t)
@@ -119,12 +123,13 @@
                     '("Monofur Nerd Font Mono" . "unicode-bmp"))
   (set-fontset-font fontset 'hangul
                     '("NanumGothic" . "unicode-bmp"))
-  (set-face-attribute 'default nil
-                      :font fontset
-                      :height 170)
   (set-face-attribute 'mode-line nil
                       :font fontset
-                      :height 90))
+                      :height 90)
+  (set-face-attribute 'default nil
+                      :font fontset
+                      :height 170))
+
 
 
 
@@ -208,7 +213,9 @@
 ; set exec-path for emacs to include GOLANG binaries
 (setq exec-path (append exec-path '("/usr/local/go/bin" "$HOME/go/bin")))
 
+;------------------------------------------------------------
 ; org-mode settings
+;------------------------------------------------------------
 (setq org-directory "~/Documents/repos/personal/org")
 (setq org-timer-default-timer 25)
 ; play sound when org-timer completes
@@ -228,6 +235,11 @@
 (global-set-key (kbd "C-c l") #'org-store-link)
 (global-set-key (kbd "C-c a") #'org-agenda)
 (global-set-key (kbd "C-c c") #'org-capture)
+
+; org-roam minor mode settings
+(setq org-roam-directory (file-truename
+                          "~/Documents/repos/personal/pj-org-roam"))
+(org-roam-db-autosync-mode)
 
 ; AUCTeX settings
 (setq TeX-auto-save t)
