@@ -3,7 +3,7 @@
 ;; .emacs for MacOS --- Summary
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated Mar 29 2024
+;; Last Updated Apr 5 2024
 ;;
 ;; This config file is for Emacs 29.1 and above and contains extra
 ;; keyconfigs for skhd keyboard shortcut manager and Yabai WM on MacOS
@@ -229,6 +229,7 @@
 (setq org-refile-targets
       '(("~/Documents/repos/encrypted/gpj-org-mode-files/next_actions.org" :maxlevel . 1)
         ("~/Documents/repos/encrypted/gpj-org-mode-files/projects.org" :level . 1)
+        ("~/Documents/repos/encrypted/gpj-org-mode-files/waiting_for.org" :level . 1)
         ("~/Documents/repos/encrypted/gpj-org-mode-files/someday_maybe.org" :level . 1)
         ("~/Documents/repos/encrypted/gpj-org-mode-files/closed_cards.org" :level . 1)))
 (setq org-default-notes-file (concat org-directory "/capture.org"))
