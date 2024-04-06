@@ -3,7 +3,7 @@
 ;; .emacs for MacOS --- Summary
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated Apr 5 2024
+;; Last Updated Apr 6 2024
 ;;
 ;; This config file is for Emacs 29.1 and above and contains extra
 ;; keyconfigs for skhd keyboard shortcut manager and Yabai WM on MacOS
@@ -45,6 +45,8 @@
 (use-package go-mode
   :straight t)
 (use-package go-playground
+  :straight t)
+(use-package leuven-theme
   :straight t)
 (use-package magit
   :straight t)
@@ -262,6 +264,13 @@
   mac-right-option-modifier 'meta
   ns-right-option-modifier 'meta)
 
+;; leuven-theme specific settings
+;; https://github.com/fniessen/emacs-leuven-theme
+(setq leuven-scale-outline-headlines 1.2)
+(setq leuven-scale-org-agenda-structure 1.2)
+(setq leuven-scale-org-document-title 1.5)
+(setq leuven-scale-volatile-highlight 1.2)
+
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -297,15 +306,19 @@
   (scroll-bar-mode -1)
   ; disable toolbar
   (tool-bar-mode -1)
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ; Emacs color themes
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;(load-theme 'cyberpunk t)
+  (load-theme 'leuven t)
   ;(load-theme 'sanityinc-tomorrow-blue)
   ;(load-theme 'sanityinc-tomorrow-bright)
-  (load-theme 'sanityinc-tomorrow-day)
+  ;(load-theme 'sanityinc-tomorrow-day)
   ;(load-theme 'sanityinc-tomorrow-night)
   ;(load-theme 'sanityinc-solarized-light)
   ;(load-theme 'sanityinc-solarized-light-high-contrast)
   ;(load-theme 'solarized-light-high-contrast)
-  )
+)
 
 ;; Commands to run when Emacs launched in terminal mode
 (unless (display-graphic-p)
