@@ -3,7 +3,7 @@
 ;; .emacs for MacOS --- Summary
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated Apr 6 2024
+;; Last Updated Apr 9 2024
 ;;
 ;; This config file is for Emacs 29.1 and above and contains extra
 ;; keyconfigs for skhd keyboard shortcut manager and Yabai WM on MacOS
@@ -224,9 +224,9 @@
 (add-hook 'org-timer-done-hook (lambda () (interactive)
                                  (shell-command "/usr/bin/afplay $HOME/Downloads/media/ShipsBell.wav")))
 (setq org-todo-keywords
-      '((sequence "TODO" "Inbox" "Anywhere" "Read/Review" "Calls"
+      '((sequence "TODO(t)" "Anywhere" "Read/Review" "Calls"
                   "Computer" "Errands" "Home" "Office" "Waiting For" "|"
-                  "DONE" "Completed" "Canceled")))
+                  "DONE(d)" "Canceled(c)")))
 
 (setq org-refile-targets
       '(("~/Documents/repos/encrypted/gpj-org-mode-files/next_actions.org" :maxlevel . 1)
