@@ -224,10 +224,10 @@
 (add-hook 'org-timer-done-hook (lambda () (interactive)
                                  (shell-command "/usr/bin/afplay $HOME/Downloads/media/ShipsBell.wav")))
 (setq org-todo-keywords
-      '((sequence "TODO(t)" "Anywhere" "Read/Review" "Calls"
+      '((sequence "TODO(t!)" "Anywhere" "Read/Review" "Calls"
                   "Computer" "Errands" "Home" "Office" "Waiting For" "|"
-                  "DONE(d)")
-        (sequence "|" "Canceled(c)")))
+                  "DONE(d!)")
+        (sequence "|" "Canceled(c@)")))
 
 (setq org-refile-targets
       '(("~/Documents/repos/encrypted/gpj-org-mode-files/next_actions.org" :maxlevel . 1)
