@@ -80,6 +80,7 @@
 (require 'smartparens-config)
 (require 'whitespace)
 
+
 (add-hook 'elisp-lisp-mode-hook #'flymake-mode)
 (add-hook 'python-base-mode-hook (lambda ()
                                    (flymake-mode 1)
@@ -229,7 +230,20 @@
                   "DONE(d!)")
         (sequence "|" "Canceled(c@)")))
 
-(setq org-log-done 'time)
+(setq org-log-done 'time)  ; timestamps for DONE status
+; add 'CREATED: <timestamp>' when new TODO state is changed
+(add-hook 'org-after-todo-state-change-hook
+          (lambda ()
+            (save-excursion
+              (org-back-to-heading)
+              (let ((text (buffer-substring (point) (progn (outline-next-heading) (point)))))
+                (if (string-match "CREATED: " text)
+                    ;; string was found, noop
+                    nil
+                  ;; string not found, insert CREATED timestamp
+                  (let ((time-stamp (format-time-string (org-time-stamp-format t) (current-time))))
+                    (end-of-line)
+                    (insert (concat "\nCREATED: " time-stamp))))))))
 
 (setq org-refile-targets
       '(("~/Documents/repos/encrypted/gpj-org-mode-files/next_actions.org" :maxlevel . 1)
