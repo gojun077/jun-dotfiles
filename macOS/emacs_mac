@@ -226,7 +226,8 @@
 (setq org-todo-keywords
       '((sequence "TODO(t)" "Anywhere" "Read/Review" "Calls"
                   "Computer" "Errands" "Home" "Office" "Waiting For" "|"
-                  "DONE(d)" "Canceled(c)")))
+                  "DONE(d)")
+        (sequence "|" "Canceled(c)")))
 
 (setq org-refile-targets
       '(("~/Documents/repos/encrypted/gpj-org-mode-files/next_actions.org" :maxlevel . 1)
