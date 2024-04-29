@@ -271,6 +271,14 @@
 ; bind 'M-x magit-status' to 'C-x g'
 (global-set-key (kbd "C-x g") 'magit-status)
 
+;; leuven-theme specific settings
+;; https://github.com/fniessen/emacs-leuven-theme
+(setq leuven-scale-outline-headlines 1.2)
+(setq leuven-scale-org-agenda-structure 1.2)
+(setq leuven-scale-org-document-title 1.5)
+(setq leuven-scale-volatile-highlight 1.2)
+
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -306,6 +314,18 @@
   (scroll-bar-mode -1)
   ; don't show toolbar
   (tool-bar-mode -1)
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ; Emacs color themes
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;(load-theme 'cyberpunk t)
+  (load-theme 'leuven t)
+  ;(load-theme 'sanityinc-tomorrow-blue)
+  ;(load-theme 'sanityinc-tomorrow-bright)
+  ;(load-theme 'sanityinc-tomorrow-day)
+  ;(load-theme 'sanityinc-tomorrow-night)
+  ;(load-theme 'sanityinc-solarized-light)
+  ;(load-theme 'sanityinc-solarized-light-high-contrast)
+  ;(load-theme 'solarized-light-high-contrast)
 )
 
 ;; Commands to run when Emacs launched in terminal mode
