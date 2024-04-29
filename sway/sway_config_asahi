@@ -291,7 +291,7 @@ exec emacs
 bindsym $mod+Shift+b exec MOZ_ENABLE_WAYLAND=1 firefox  # FF runs in native Wayland!
 bindsym $mod+Shift+m exec emacs
 bindsym $mod+Shift+f exec thunar
-bindsym $mod+Shift+p exec clipman pick  # view clipboard
+bindsym $mod+Shift+p exec clipman pick -t wofi # view clipboard
 # screenshot shortcut (select area)
 bindsym --release $mod+Shift+z exec grim -g "$(slurp)" \
   ~/Pictures/grim-$(date +%F_%H.%M.%S).png
