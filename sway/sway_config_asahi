@@ -96,7 +96,7 @@ input "76:617:peter.koh___s_Mouse" {
     accel_profile flat
     pointer_accel -0.1
     natural_scroll enabled
-    scroll_factor 0.4
+    scroll_factor 1.2
     scroll_method two_finger
     middle_emulation disabled
     click_method clickfinger
