@@ -1,6 +1,6 @@
 ; -*- mode: emacs-lisp -*-
 
-;; My .emacs
+;; My .emacs for Fedora Linux
 ;; Created on: Sometime in 2011
 ;; Created by: gopeterjun@naver.com
 ;; Last Updated: Jan 18 2024
@@ -209,7 +209,7 @@
 ; org-mode settings
 (setq org-todo-keywords
       '((sequence "TODO" "Inbox" "Anywhere" "Read/Review" "Calls"
-                  "Computer" "Errands" "Home" "Office" "Waiting For" "|"
+                  "Computer" "Errands" "Home" "Office" "|"
                   "DONE" "Completed" "Canceled")))
 
 ; AUCTeX settings

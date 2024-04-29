@@ -38,10 +38,14 @@ include /etc/sway/config-vars.d/*
 #   output HDMI-A-1 resolution 1920x1080 position 1920,0
 #
 # You can get the names of your outputs by running: swaymsg -t get_outputs
-# built-in MBP M1 panel
-output eDP-1 resolution 3456x2160 position 0 0 
-# curved 30" monitor in home office
-output HDMI-A-1 resolution 1920x1080 position 1920 0 
+#
+# built-in MBP M1 panel on left
+output eDP-1 resolution 3456x2160 scale 2 position 0 0
+#output HDMI-A-1 resolution 1920x1080 position 3456 0
+# below monitor is for home office
+#output HDMI-A-1 resolution 1920x1080@60Hz position 1728 0
+# below monitor is LG monitor at UJET office
+output HDMI-A-1 resolution 3840x2160 scale 1.5 position 1728 0
 #
 ### Output configuration
 #
@@ -49,7 +53,7 @@ output HDMI-A-1 resolution 1920x1080 position 1920 0
 # Fedora default wallpaper /usr/share/backgrounds/default.png
 #output HEADLESS-1 bg /usr/share/backgrounds/default.png fill
 output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
-#
+
 
 ### Idle configuration
 
@@ -75,6 +79,31 @@ exec swayidle -w \
 # You can get the names of your inputs by running: swaymsg -t get_inputs
 # Read `man 5 sway-input` for more information about this section.
 
+input "1452:835:Apple_Internal_Keyboard_/_Trackpad" {
+    dwt enabled                 #Disable while typing
+    tap enabled                 #Tap registers as a click
+    accel_profile adaptive      #adaptive/flat cursor acceleration
+    pointer_accel 0             #From -1 to 1: Speed of cursor
+    natural_scroll enabled      #Direction of Scroll
+    scroll_factor 0.4           #Speed of Scrolling gets multiplied by this factor
+    scroll_method two_finger    #none|two_finger|edge|on_button_down
+    middle_emulation enabled    #Enables middle click
+    tap_button_map lrm          #1Finger > Left Click , 2Finger > Right Click, 3Fingers > MiddleClick
+}
+
+# settings for Apple Magic Mouse on Asahi Linux
+input "76:617:peter.koh___s_Mouse" {
+    accel_profile flat
+    pointer_accel -0.1
+    natural_scroll enabled
+    scroll_factor 0.4
+    scroll_method two_finger
+    middle_emulation disabled
+    click_method clickfinger
+    tap_button_map lrm
+}
+
+
 ### Key bindings
 #
 # Basics:
@@ -83,8 +112,7 @@ exec swayidle -w \
     bindsym $mod+Return exec $term
 
     # Kill focused window
-    #bindsym $mod+Shift+q kill  # this conflicts with a MacOS logout hotkey
-    bindsym $mod+Shift+x kill
+    bindsym $mod+Shift+q kill
 
     # Start your launcher
     bindsym $mod+d exec $menu
@@ -140,30 +168,17 @@ exec swayidle -w \
     bindsym $mod+9 workspace number 9
     bindsym $mod+0 workspace number 10
     # Move focused container to workspace
-    #bindsym $mod+Shift+1 move container to workspace number 1
-    #bindsym $mod+Shift+2 move container to workspace number 2
-    #bindsym $mod+Shift+3 move container to workspace number 3
-    #bindsym $mod+Shift+4 move container to workspace number 4
-    #bindsym $mod+Shift+5 move container to workspace number 5
-    #bindsym $mod+Shift+6 move container to workspace number 6
-    #bindsym $mod+Shift+7 move container to workspace number 7
-    #bindsym $mod+Shift+8 move container to workspace number 8
-    #bindsym $mod+Shift+9 move container to workspace number 9
-    #bindsym $mod+Shift+0 move container to workspace number 10
+    bindsym $mod+Shift+1 move container to workspace number 1
+    bindsym $mod+Shift+2 move container to workspace number 2
+    bindsym $mod+Shift+3 move container to workspace number 3
+    bindsym $mod+Shift+4 move container to workspace number 4
+    bindsym $mod+Shift+5 move container to workspace number 5
+    bindsym $mod+Shift+6 move container to workspace number 6
+    bindsym $mod+Shift+7 move container to workspace number 7
+    bindsym $mod+Shift+8 move container to workspace number 8
+    bindsym $mod+Shift+9 move container to workspace number 9
+    bindsym $mod+Shift+0 move container to workspace number 10
 
-    # mod+Shift+n conflicts with screenshot shortcut on MacOS
-    # and I often access SwayWM via TigerVNC on MacOS
-    # so I am using Ctrl+n below
-    bindsym Ctrl+1 move container to workspace number 1
-    bindsym Ctrl+2 move container to workspace number 2
-    bindsym Ctrl+3 move container to workspace number 3
-    bindsym Ctrl+4 move container to workspace number 4
-    bindsym Ctrl+5 move container to workspace number 5
-    bindsym Ctrl+6 move container to workspace number 6
-    bindsym Ctrl+7 move container to workspace number 7
-    bindsym Ctrl+8 move container to workspace number 8
-    bindsym Ctrl+9 move container to workspace number 9
-    bindsym Ctrl+0 move container to workspace number 10
     # Note: workspaces can have any name you want, not just numbers.
     # We just use 1-10 as the default.
 #
