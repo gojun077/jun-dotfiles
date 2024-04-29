@@ -45,7 +45,7 @@ output eDP-1 resolution 3456x2160 scale 2 position 0 0
 # below monitor is for home office
 #output HDMI-A-1 resolution 1920x1080@60Hz position 1728 0
 # below monitor is LG monitor at UJET office
-output HDMI-A-1 resolution 3840x2160 scale 1.5 position 1728 0
+output HDMI-A-1 resolution 3840x2160@60Hz scale 1.5 position 1728 0
 #
 ### Output configuration
 #
@@ -278,6 +278,8 @@ default_border pixel 3
 exec --no-startup-id fcitx5 -d -r # fcitx5 IME works with Wayland
 # Keybase app
 exec --no-startup-id run_keybase
+# keybase redirector /run/user/1000/kbfs -> /keybase
+exec keybase-redirector /keybase
 # Clipboard for SwayWM
 exec wl-paste -t text --watch clipman store --no-persist --max-items=1024
 # Start emacs (`(server-mode 1)` is set in .emacs)
@@ -298,3 +300,5 @@ bindsym Ctrl+Shift+F12 exec wf-recorder -g "$(slurp)" -f ~/Videos/recording.mp4
 # stop video capture
 bindsym Ctrl+Shift+Backspace exec killall -s SIGINT wf-recorder
 include /etc/sway/config.d/*
+# lock screen
+bindsym --release $mod+Shift+l exec 'swaylock -f -c 000000'

@@ -3,7 +3,7 @@
 ;; My .emacs for Fedora Linux
 ;; Created on: Sometime in 2011
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Jan 18 2024
+;; Last Updated: Apr 29 2024
 ;;
 ;; These configs are for Emacs 29.1 and higher.
 
@@ -54,8 +54,8 @@
   :straight t)
 (use-package solarized-theme
   :straight t)
-(use-package tex
-  :straight auctex)
+;(use-package tex
+;  :straight auctex)
 (use-package unicode-whitespace
   :straight t)
 (use-package visual-fill-column
@@ -112,6 +112,8 @@
 (menu-bar-mode 0)
 ; highlight parens
 (show-paren-mode t)
+; Enable ido-mode
+(ido-mode 1)
 
 
 ;; Font settings
@@ -198,19 +200,64 @@
 ; Enable C-l, C-u change region to lower/upper case
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
-; Enable ido-mode
-(ido-mode 1)
+
 ; enable ido flex matching
 (setq ido-enable-flex-matching t)
 ; enable ido everywhere
 (setq ido-everywhere t)
+; use xetex to render pdf from LaTeX
+(setq TeX-engine 'xetex)
 
-
+;------------------------------------------------------------
 ; org-mode settings
+;------------------------------------------------------------
+(setq org-directory "~/Documents/repos/personal/org")
+(setq org-timer-default-timer 25)
+; play sound when org-timer completes
+(add-hook 'org-timer-done-hook (lambda () (interactive)
+                                 (shell-command "/usr/bin/ffmpeg $HOME/Downloads/media/ShipsBell.wav")))
 (setq org-todo-keywords
-      '((sequence "TODO" "Inbox" "Anywhere" "Read/Review" "Calls"
-                  "Computer" "Errands" "Home" "Office" "|"
-                  "DONE" "Completed" "Canceled")))
+      '((sequence "TODO(t!)" "Anywhere(!)" "Read/Review(!)" "Calls(!)"
+                  "Computer(!)" "Errands(!)" "Home(!)" "Office(!)" "|"
+                  "DONE(d!)")
+        (sequence "|" "Canceled(c@)")))
+
+(setq org-log-done 'time)  ; timestamps for DONE status
+; add 'CREATED: <timestamp>' when new TODO state is changed
+(add-hook 'org-after-todo-state-change-hook
+          (lambda ()
+            (save-excursion
+              (org-back-to-heading)
+              (let ((text (buffer-substring (point) (progn (outline-next-heading) (point)))))
+                (if (string-match "CREATED: " text)
+                    ;; string was found, noop
+                    nil
+                  ;; string not found, insert CREATED timestamp
+                  (let ((time-stamp (format-time-string (org-time-stamp-format t) (current-time))))
+                    (end-of-line)
+                    (insert (concat "\nCREATED: " time-stamp))))))))
+
+(setq org-refile-targets
+      '(("~/Documents/repos/encrypted/gpj-org-mode-files/next_actions.org" :maxlevel . 1)
+        ("~/Documents/repos/encrypted/gpj-org-mode-files/projects.org" :level . 1)
+        ("~/Documents/repos/encrypted/gpj-org-mode-files/waiting_for.org" :level . 1)
+        ("~/Documents/repos/encrypted/gpj-org-mode-files/someday_maybe.org" :level . 1)
+        ("~/Documents/repos/encrypted/gpj-org-mode-files/closed_cards.org" :level . 1)))
+(setq org-default-notes-file (concat org-directory "/capture.org"))
+(setq org-agenda-skip-scheduled-if-done t)
+(setq org-agenda-skip-deadline-if-done t)
+(setq org-agenda-skip-timestamp-if-done t)
+(global-set-key (kbd "C-c l") #'org-store-link)
+(global-set-key (kbd "C-c a") #'org-agenda)
+(global-set-key (kbd "C-c c") #'org-capture)
+
+; org-roam minor mode settings
+(setq org-roam-directory (file-truename
+                          "~/Documents/repos/personal/pj-org-roam"))
+
+; the following line causes an error in Emacs on Linux, but works on MacOS
+;(org-roam-db-autosync-mode)
+
 
 ; AUCTeX settings
 (setq TeX-auto-save t)
