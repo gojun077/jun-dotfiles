@@ -3,7 +3,7 @@
 ;; My .emacs for Fedora Linux
 ;; Created on: Sometime in 2011
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Apr 29 2024
+;; Last Updated: Apr 30 2024
 ;;
 ;; These configs are for Emacs 29.1 and higher.
 
@@ -119,7 +119,7 @@
 ;; Font settings
 (let ((fontset "fontset-default"))
   (set-fontset-font fontset 'latin
-                    '("MonofurNerdFontMono" . "unicode-bmp"))
+                    '("FiraMono" . "unicode-bmp"))
   (set-fontset-font fontset 'hangul
                     '("NanumGothic" . "unicode-bmp"))
   (set-face-attribute 'mode-line nil
@@ -215,7 +215,7 @@
 (setq org-timer-default-timer 25)
 ; play sound when org-timer completes
 (add-hook 'org-timer-done-hook (lambda () (interactive)
-                                 (shell-command "/usr/bin/ffmpeg $HOME/Downloads/media/ShipsBell.wav")))
+                                 (shell-command "/usr/bin/aplay $HOME/Downloads/media/ShipsBell.wav")))
 (setq org-todo-keywords
       '((sequence "TODO(t!)" "Anywhere(!)" "Read/Review(!)" "Calls(!)"
                   "Computer(!)" "Errands(!)" "Home(!)" "Office(!)" "|"

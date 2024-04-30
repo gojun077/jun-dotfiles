@@ -1,0 +1,12 @@
+# bash_aliases_asahi
+# Created on: Apr 30 2024
+# Created by: gopeterjun@naver.com
+# Last Updated: Apr 30 2024
+#
+# .bash_aliases for Asahi Linux intended to be sourced by .bashrc
+
+alias ㅊㅇ='cd'
+alias 니='ls'
+alias ㅣㄴ='ls'
+alias hazip='curl https://icanhazip.com'
+source ~/.bash_aliases_secure  # this file is not stored in version control

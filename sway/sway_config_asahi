@@ -5,7 +5,7 @@
 # Read `man 5 sway` for a complete reference.
 # Created on: Apr 28 2024
 # Created by: gojun077@gmail.com
-# Last Updated: Apr 28 2024
+# Last Updated: Apr 30 2024
 
 
 ### Variables
@@ -278,8 +278,6 @@ default_border pixel 3
 exec --no-startup-id fcitx5 -d -r # fcitx5 IME works with Wayland
 # Keybase app
 exec --no-startup-id run_keybase
-# keybase redirector /run/user/1000/kbfs -> /keybase
-exec keybase-redirector /keybase
 # Clipboard for SwayWM
 exec wl-paste -t text --watch clipman store --no-persist --max-items=1024
 # Start emacs (`(server-mode 1)` is set in .emacs)
