@@ -10,4 +10,6 @@ alias 니='ls'
 alias ㅣㄴ='ls'
 alias hazip='curl https://icanhazip.com'
 alias ls='ls --color=auto'
+alias chromium-browser='chromium-browser --ozone-platform=wayland'
+alias code='code --ozone-platform=wayland'
 source ~/.bash_aliases_secure  # this file is not stored in version control
