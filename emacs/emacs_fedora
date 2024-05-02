@@ -232,13 +232,17 @@
               (org-back-to-heading)
               (let ((text (buffer-substring (point) (progn (outline-next-heading) (point)))))
                 (if (string-match "CREATED: " text)
-                    ;; string was found, noop
+                    ;; if string was found, noop
                     nil
-                  ;; string not found, insert CREATED timestamp
-                  (let ((time-stamp (format-time-string (org-time-stamp-format t) (current-time))))
-                    (end-of-line)
-                    (insert (concat "\nCREATED: " time-stamp))))))))
-
+                  ;; else, (1) move cursor back to current heading
+                  (outline-previous-heading)
+                  ;;(end-of-line)
+                  ;; (2) insert timestamp on next line
+                  (forward-line 1)
+                  (insert (concat "CREATED: "
+                      (format-time-string (org-time-stamp-format t)
+                                          (current-time))
+                      "\n")))))))
 (setq org-refile-targets
       '(("~/Documents/repos/encrypted/gpj-org-mode-files/next_actions.org" :maxlevel . 1)
         ("~/Documents/repos/encrypted/gpj-org-mode-files/projects.org" :level . 1)
