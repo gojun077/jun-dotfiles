@@ -3,7 +3,7 @@
 ;; My .emacs for Fedora Linux
 ;; Created on: Sometime in 2011
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Apr 30 2024
+;; Last Updated: May 2 2024
 ;;
 ;; These configs are for Emacs 29.1 and higher.
 
@@ -119,7 +119,7 @@
 ;; Font settings
 (let ((fontset "fontset-default"))
   (set-fontset-font fontset 'latin
-                    '("FiraMono" . "unicode-bmp"))
+                    '("MonofurNerdFontMono" . "unicode-bmp"))
   (set-fontset-font fontset 'hangul
                     '("NanumGothic" . "unicode-bmp"))
   (set-face-attribute 'mode-line nil
@@ -127,7 +127,9 @@
                       :height 110)
   (set-face-attribute 'default nil
                       :font fontset
-                      :height 140))
+                      :height 150))
+
+;; font names on Linux 'MonofurNerdFontMono', 'FiraMono'
 
 
 ;;=========================
