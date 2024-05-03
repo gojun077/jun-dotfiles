@@ -103,33 +103,16 @@ input "76:617:peter.koh___s_Mouse" {
     tap_button_map lrm
 }
 
-
-# Input device: Logi K855 Keyboard
-#   Type: Keyboard
-#   Identifier: 1133:45938:Logi_K855_Keyboard
-#   Product ID: 45938
-#   Vendor ID: 1133
-#   Active Keyboard Layout: English (US)
-#   Libinput Send Events: enabled
-
-input "1133:45938:Logi_K855_Keyboard" {
-    # Left Alt is swapped with Left Win
-    xkb_options altwin:swap_lalt_lwin
-}
-
-
-# Input device: MX Anywhere 3S Mouse
-#   Type: Mouse
-#   Identifier: 1133:45111:MX_Anywhere_3S_Mouse
-#   Product ID: 45111
-#   Vendor ID: 1133
-#   Libinput Send Events: enabled
-
 input "1133:45111:MX_Anywhere_3S_Mouse" {
     accel_profile adaptive
     pointer_accel 0
     natural_scroll enabled  # scroll up moves screen down
     scroll_factor 1.0
+}
+
+input "1133:45938:Logi_K855_Keyboard" {
+    # swap Left Alt with Left Win like Mac keybaord
+    xkb_options altwin:swap_lalt_lwin
 }
 
 
@@ -271,6 +254,12 @@ mode "resize" {
     bindsym Escape mode "default"
 }
 bindsym $mod+r mode "resize"
+
+#
+# Brightness control
+#
+    bindsym XF86MonBrightnessDown exec brightnessctl set 10-
+    bindsym XF86MonBrightnessUp exec brightnessctl set +10
 
 #
 # Status Bar:
