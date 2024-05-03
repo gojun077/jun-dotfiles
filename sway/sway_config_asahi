@@ -5,7 +5,7 @@
 # Read `man 5 sway` for a complete reference.
 # Created on: Apr 28 2024
 # Created by: gojun077@gmail.com
-# Last Updated: Apr 30 2024
+# Last Updated: May 3 2024
 
 
 ### Variables
@@ -43,9 +43,9 @@ include /etc/sway/config-vars.d/*
 output eDP-1 resolution 3456x2160 scale 2 position 0 0
 #output HDMI-A-1 resolution 1920x1080 position 3456 0
 # below monitor is for home office
-#output HDMI-A-1 resolution 1920x1080@60Hz position 1728 0
+output HDMI-A-1 resolution 1920x1080@60Hz position 1728 0
 # below monitor is LG monitor at UJET office
-output HDMI-A-1 resolution 3840x2160@60Hz scale 1.5 position 1728 0
+#output HDMI-A-1 resolution 3840x2160@60Hz scale 1.5 position 1728 0
 #
 ### Output configuration
 #
@@ -101,6 +101,35 @@ input "76:617:peter.koh___s_Mouse" {
     middle_emulation disabled
     click_method clickfinger
     tap_button_map lrm
+}
+
+
+# Input device: Logi K855 Keyboard
+#   Type: Keyboard
+#   Identifier: 1133:45938:Logi_K855_Keyboard
+#   Product ID: 45938
+#   Vendor ID: 1133
+#   Active Keyboard Layout: English (US)
+#   Libinput Send Events: enabled
+
+input "1133:45938:Logi_K855_Keyboard" {
+    # Left Alt is swapped with Left Win
+    xkb_options altwin:swap_lalt_lwin
+}
+
+
+# Input device: MX Anywhere 3S Mouse
+#   Type: Mouse
+#   Identifier: 1133:45111:MX_Anywhere_3S_Mouse
+#   Product ID: 45111
+#   Vendor ID: 1133
+#   Libinput Send Events: enabled
+
+input "1133:45111:MX_Anywhere_3S_Mouse" {
+    accel_profile adaptive
+    pointer_accel 0
+    natural_scroll enabled  # scroll up moves screen down
+    scroll_factor 1.0
 }
 
 
