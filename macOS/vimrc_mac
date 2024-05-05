@@ -3,7 +3,7 @@
 " Maintainer:   Bram Moolenaar <Bram@vim.org>
 " Last Updated:  2016-12-28
 " Customized by: Jun Go
-" Last change:  2017-11-02
+" Last change:  Feb 2 2024
 "
 " To use it, copy it to
 "     for Unix and OS/2:  ~/.vimrc
@@ -56,12 +56,21 @@ endif
 " Also switch on highlighting the last used search pattern.
 " And specify colorscheme (aka 'colo')
 if &t_Co > 2 || has("gui_running")
-  syntax on
-  set hlsearch
+  "default colors defined in /usr/share/vim/vim90/colors/ on MacOS
+  "colo blue
+  "colo darkblue
   "colo elflord
-  "colorscheme shine
-  colo evening
+  colo shine
+  "colo evening
+  "colo wildcharm
+  "colo slate
+  "colo pablo
+  "colo zaibatsu
+  "colo koehler
+  "colo nord
 endif
+syntax on
+set hlsearch
 
 " Tab settings
 set smartindent
@@ -73,7 +82,7 @@ set expandtab
 " The following is the default plugins path for vim on Arch
 "set packpath=/usr/share/vim/vimfiles/plugin/
 " Run Time Path for Mac OS
-set runtimepath=~/.vim,~/.vim/vimfiles/plugin,/usr/share/vim,/usr/share/vim/vim80,/usr/share/vim/vimfiles/after,~/.vim/after,/usr/share/vim/vimfiles/plugin/
+set runtimepath=~/.vim,~/.vim/vimfiles/plugin,/usr/share/vim,/usr/share/vim/vim90,/usr/share/vim/vimfiles/after,~/.vim/after,/usr/share/vim/vimfiles/plugin/
 
 " Settings for Syntastic syntax checker plugin
 set statusline+=%#warningmsg#

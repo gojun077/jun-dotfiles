@@ -58,7 +58,7 @@ tooltip label {
     border-radius: 0;
 }
 
-#backlight, #network, #pulseaudio {
+#backlight, #network, {
     padding: 0 3px;
     margin: 0 3px;
     border: 1px dotted rgba(100, 114, 125, 0.5);

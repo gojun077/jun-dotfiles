@@ -10,4 +10,4 @@ alias vi='vim'
 alias ㅊㅇ='cd'
 alias 니='ls'
 alias screen='/usr/local/bin/screen'
-#source ~/.bash_aliases_secure
+source ~/.bash_aliases_secure
