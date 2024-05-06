@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: May 2 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: May 2 2024
+;; Last Updated: May 7 2024
 ;;
 ;; These configs are for Emacs 29.1 and higher.
 
@@ -270,8 +270,25 @@
 ; org-roam minor mode settings
 (setq org-roam-directory (file-truename
                           "~/Documents/repos/personal/pj-org-roam"))
-
 (org-roam-db-autosync-mode)
+; Note: You are prompted for a node name when you open the
+; org-roam capture template - this name will be the filename
+(setq org-roam-capture-templates
+ '(("p" "permanent" plain
+    "%?"
+    :target (file+head "permanent/${slug}.org"
+                       "#+title: ${title}\n")
+    :immediate-finish t
+    :unnarrowed t)
+   ("l" "literature" plain
+    "\n* Source\n\nAuthor: %^{Author}\nTitle: %^{title}\nOoK Index: \nYear: %^{Year}\nPages: \nPublisher: \n\n* Summary\n\n%?"
+    :target (file+head "literature/${slug}.org"
+                       "#+title: ${title}\n")
+    :immediate-finish t
+    :unnarrowed t)))
+(global-set-key (kbd "C-c n c") #'org-roam-capture)
+; the following shortcut only works in org-mode
+(define-key org-mode-map (kbd "C-c n i") #'org-roam-node-insert)
 
 
 ; AUCTeX settings
