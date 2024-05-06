@@ -22,4 +22,4 @@ fi
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH"
 export TERM=xterm-256color
 export EDITOR=vim
-export KUBECONFIG="$HOME/.kube/config/kubeconfig"
+export KUBECONFIG="$HOME/.kube/config"
