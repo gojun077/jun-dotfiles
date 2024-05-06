@@ -286,6 +286,8 @@
     :immediate-finish t
     :unnarrowed t)))
 (global-set-key (kbd "C-c n c") #'org-roam-capture)
+; the following shortcut only works in org-mode
+(define-key org-mode-map (kbd "C-c n i") #'org-roam-node-insert)
 
 ; AUCTeX settings
 (setq TeX-auto-save t)
