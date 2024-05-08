@@ -5,7 +5,7 @@
 # Read `man 5 sway` for a complete reference.
 # Created on: Apr 28 2024
 # Created by: gojun077@gmail.com
-# Last Updated: May 4 2024
+# Last Updated: May 8 2024
 
 
 ### Variables
@@ -18,8 +18,7 @@ set $down j
 set $up k
 set $right l
 # Your preferred terminal emulator
-#set $term "LIBGL_ALWAYS_SOFTWARE=1 alacritty"
-set $term "alacritty"
+set $term "wezterm"
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
@@ -43,9 +42,9 @@ include /etc/sway/config-vars.d/*
 output eDP-1 resolution 3456x2160 scale 2 position 0 0
 #output HDMI-A-1 resolution 1920x1080 position 3456 0
 # below monitor is for home office
-output HDMI-A-1 resolution 1920x1080@60Hz position 1728 0
+#output HDMI-A-1 resolution 1920x1080@60Hz position 1728 0
 # below monitor is LG monitor at UJET office
-#output HDMI-A-1 resolution 3840x2160@60Hz scale 1.5 position 1728 0
+output HDMI-A-1 resolution 3840x2160@60Hz scale 1.5 position 1728 0
 #
 ### Output configuration
 #
@@ -94,7 +93,7 @@ input "1452:835:Apple_Internal_Keyboard_/_Trackpad" {
 # settings for Apple Magic Mouse on Asahi Linux
 input "76:617:peter.koh___s_Mouse" {
     accel_profile flat
-    pointer_accel -0.1
+    pointer_accel -0.3
     natural_scroll enabled
     scroll_factor 1.2
     scroll_method two_finger
@@ -302,6 +301,8 @@ exec --no-startup-id /opt/keybase/Keybase --ozone-platform=wayland
 exec --no-startup-id pasystray
 # Clipboard for SwayWM
 exec wl-paste -t text --watch clipman store --no-persist --max-items=1024
+# Set XDG_CURRENT_DESKTOP for dbus; needed for 'xdg-desktop-portal-wlr'
+exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 # Start emacs (`(server-mode 1)` is set in .emacs)
 exec emacs
 
