@@ -5,7 +5,7 @@
 # Read `man 5 sway` for a complete reference.
 # Created on: Apr 28 2024
 # Created by: gojun077@gmail.com
-# Last Updated: May 10 2024
+# Last Updated: May 12 2024
 
 
 ### Variables
@@ -294,7 +294,9 @@ default_border pixel 3
 # IME for CJK
 exec --no-startup-id fcitx5 -d -r # fcitx5 IME works with Wayland
 # Keybase KBFS mount
-exec --no-startup-id mkdir /run/user/1000/keybase/kbfs; kbfsfuse
+exec --no-startup-id mkdir /run/user/1000/keybase/kbfs
+# Start kbfsfuse
+exec --no-startup-id kbfsfuse
 # Keybase GUI launch in Wayland mode
 exec --no-startup-id /opt/keybase/Keybase --ozone-platform=wayland
 # Audio applet in systray (wayland friendly)
