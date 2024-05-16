@@ -16,26 +16,27 @@
     "modules-right": ["pulseaudio", "network", "cpu", "memory", "disk", "temperature", "custom/clock", "tray"],
     // Modules configuration
 
-    "sway/workspaces": {
-         "disable-scroll": true,
-         "all-outputs": true,
-         "format": "{name}: {icon}",
-         "format-icons": {
-             "1": "⠁",
-             "2": "⠃",
-             "3": "⠇",
-             "4": "⠞",
-             "5": "⠟",
-             "6": "⠿",
-             "7": "七",
-             "8": "八",
-             "9": "九",
-             "10": "十",
-             "urgent": "",
-             "focused": "",
-             "default": ""
-         }
-     },
+    // "sway/workspaces": {
+    //      "disable-scroll": true,
+    //      "all-outputs": false,
+    //      "format": "{name} {icon}",
+    //      "format-icons": {
+    //          "1": "⠁",
+    //          "2": "⠃",
+    //          "3": "⠇",
+    //          "4": "⠞",
+    //          "5": "⠟",
+    //          "6": "⠿",
+    //          "7": "七",
+    //          "8": "八",
+    //          "9": "九",
+    //          "10": "十",
+    //          "urgent": "",
+    //          "focused": "",
+    //          "default": "",
+    //          "active": "*",
+    //      }
+    //  },
     //"keyboard-state": {
     //    "numlock": true,
     //    "capslock": true,
@@ -116,7 +117,7 @@
     },
     "battery": {
         "states": {
-             "good": 95,
+            // "good": 95,
             "warning": 30,
             "critical": 15
         },

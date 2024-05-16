@@ -5,7 +5,7 @@
 # Read `man 5 sway` for a complete reference.
 # Created on: Apr 28 2024
 # Created by: gojun077@gmail.com
-# Last Updated: May 12 2024
+# Last Updated: May 16 2024
 
 
 ### Variables
@@ -299,8 +299,8 @@ exec --no-startup-id mkdir /run/user/1000/keybase/kbfs
 exec --no-startup-id kbfsfuse
 # Keybase GUI launch in Wayland mode
 exec --no-startup-id /opt/keybase/Keybase --ozone-platform=wayland
-# Audio applet in systray (wayland friendly)
-exec --no-startup-id pasystray
+# Audio applet in systray (not needed; provided in my waybar config)
+#exec --no-startup-id pasystray
 # Clipboard for SwayWM
 exec wl-paste -t text --watch clipman store --no-persist --max-items=1024
 # Set XDG_CURRENT_DESKTOP for dbus; needed for 'xdg-desktop-portal-wlr'
