@@ -7,10 +7,10 @@ Last Updated: May 16 2024
 */
 
 
-* {
+/* {
     font-family: "Font Awesome 6 Free";
     font-size: 12px;
-}
+}*/
 
 window .modules-left #workspaces {
     min-height: 0;
@@ -44,7 +44,6 @@ window .modules-left #workspaces button {
     /*color: alpha(mix(@theme_text_color, #ffffff, 0.25), 0.35);*/
     /*color: mix(@theme_text_color, #C0C0C0, 0.25);*/
 }
-
 
 window .modules-left #workspaces button.focused:hover,
 window .modules-left #workspaces button.focused {

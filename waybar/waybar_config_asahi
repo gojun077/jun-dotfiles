@@ -12,7 +12,7 @@
     // Choose the order of the modules
     "modules-left": ["sway/workspaces"],
     "modules-center": ["sway/window"],
-    "modules-right": ["network", "cpu", "memory", "disk", "temperature", "custom/clock", "tray"],
+    "modules-right": ["pulseaudio", "network", "cpu", "memory", "disk", "temperature", "backlight", "battery", "custom/clock", "tray",],
     // Modules configuration
 
     //"sway/workspaces": {
@@ -81,15 +81,15 @@
         "spacing": 8
     },
     "custom/clock": {
-        "exec": "date +'%c'",
+        "exec": "date +'%F  %H-%M-%S'",
         "interval": 5,
     },
     "cpu": {
-        "format": "{usage}% 🤖",
+        "format": "{usage}% ",
         "tooltip": false
     },
     "memory": {
-        "format": "{}% mem"
+        "format": "{}% "
     },
     "disk": {
         "interval": 30,
@@ -104,15 +104,13 @@
         "format": "{temperatureC}°C {icon}",
         "format-icons": ["🌡"]
     },
-
     "backlight": {
         "device": "apple-panel-b1",
         "format": "{percent}% {icon}",
         "format-icons": ["🔅", "🔆"]
     },
-
     "battery": {
-        "bat": "macsmc-power",
+        "bat": "macsmc-battery",
         "states": {
             //"good": 95,
             "warning": 30,
@@ -124,9 +122,8 @@
         //"format-alt": "{time} {icon}",
         // "format-good": "", // An empty format will hide the module
         // "format-full": "",
-        "format-icons": ["<U+F244>", "<U+F243>", "<U+F242>", "<U+F241>", "<U+F240>"]
+        "format-icons": ["", "", "", "", ""],
     },
-
     "network": {
         //"interface": "wlp1s0f0", // (Optional) To force the use of this interface
         "format-wifi": "{essid} ({signalStrength}%) 📶",
@@ -136,27 +133,25 @@
         "format-disconnected": "Disconnected ≠",
         //"format-alt": "{ifname}: {ipaddr}/{cidr}"
     },
-
     "pulseaudio": {
         "scroll-step": 1, // %, can be a float
-        "format": "{volume}% {icon}",
+        "format": "{volume}% {icon} {format_source}",
         "format-bluetooth": "{volume}% {icon} {format_source}",
-        "format-bluetooth-muted": "🔇 {format_source}",
-        "format-muted": "🔇 {format_source}",
-        "format-source": "{volume}% ",
-        "format-source-muted": "",
+        "format-bluetooth-muted": " {icon} {format_source}",
+        "format-muted": " {format_source}",
+        "format-source": "{volume}% ",
+        "format-source-muted": "",
         "format-icons": {
-            "headphone": "🎧",
-            "hands-free": "👐",
-            "headset": "🎧🎙",
-            "phone": "📞",
-            "portable": "📻",
-            "car": "🚗",
-            "default": ["🔈", "🔉", "🔊"]
-            },
+            "headphone": "",
+            "hands-free": "",
+            "headset": "",
+            "phone": "",
+            "portable": "",
+            "car": "",
+            "default": ["", "", ""],
+        },
         "on-click": "pavucontrol"
     },
-
     // "custom/media": {
     //     "format": "{icon} {}",
     //     "return-type": "json",
