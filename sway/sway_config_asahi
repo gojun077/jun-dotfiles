@@ -44,7 +44,7 @@ output eDP-1 resolution 3456x2160 scale 2 position 0 0
 # below monitor is for home office
 output HDMI-A-1 resolution 1920x1080@60Hz position 1728 0
 # below monitor is LG monitor at UJET office
-#output HDMI-A-1 resolution 3840x2160@60Hz scale 1.5 position 1728 0
+output HDMI-A-1 resolution 3840x2160@60Hz scale 1.5 position 1728 0
 #
 ### Output configuration
 #
