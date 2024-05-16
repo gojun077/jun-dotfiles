@@ -1,7 +1,10 @@
-{
-    // original path: ~/.config/waybar/config
-    // Waybar config file for Asahi Linux
+// original path: ~/.config/waybar/config
+// Waybar config file for Asahi Linux
+// Created on: May 16 2024
+// Created by: gopeterjun@naver.com
+// Last Updated: May 16 2024
 
+{
     // "Layer": "top", // Waybar at top layer
     // "position": "bottom", // Waybar position (top|bottom|left|right)
     "height": 30, // Waybar height (to be removed for auto height)
@@ -101,14 +104,17 @@
         "format": "{temperatureC}°C {icon}",
         "format-icons": ["🌡"]
     },
+
     "backlight": {
-        "device": "acpi_video1",
+        "device": "apple-panel-b1",
         "format": "{percent}% {icon}",
         "format-icons": ["🔅", "🔆"]
     },
+
     "battery": {
+        "bat": "macsmc-power",
         "states": {
-            // "good": 95,
+            //"good": 95,
             "warning": 30,
             "critical": 15
         },
@@ -118,36 +124,39 @@
         //"format-alt": "{time} {icon}",
         // "format-good": "", // An empty format will hide the module
         // "format-full": "",
-        "format-icons": ["🔋"]
+        "format-icons": ["<U+F244>", "<U+F243>", "<U+F242>", "<U+F241>", "<U+F240>"]
     },
+
     "network": {
-        "interface": "wlp1s0f0", // (Optional) To force the use of this interface
+        //"interface": "wlp1s0f0", // (Optional) To force the use of this interface
         "format-wifi": "{essid} ({signalStrength}%) 📶",
-        //"format-ethernet": "{ipaddr}/{cidr}",
+        "format-ethernet": "{ipaddr}/{cidr} 🖧",
         "tooltip-format": "{ifname} via {gwaddr}",
         "format-linked": "{ifname} (No IP) ﹦",
         "format-disconnected": "Disconnected ≠",
         //"format-alt": "{ifname}: {ipaddr}/{cidr}"
     },
-    //"pulseaudio": {
-        // "scroll-step": 1, // %, can be a float
-    //    "format": "{volume}% {icon}",
-    //    "format-bluetooth": "{volume}% {icon} {format_source}",
-    //    "format-bluetooth-muted": "🔇 {format_source}",
-    //    "format-muted": "🔇 {format_source}",
-        //"format-source": "{volume}% ",
-        //"format-source-muted": "",
-    //    "format-icons": {
+
+    "pulseaudio": {
+        "scroll-step": 1, // %, can be a float
+        "format": "{volume}% {icon}",
+        "format-bluetooth": "{volume}% {icon} {format_source}",
+        "format-bluetooth-muted": "🔇 {format_source}",
+        "format-muted": "🔇 {format_source}",
+        "format-source": "{volume}% ",
+        "format-source-muted": "",
+        "format-icons": {
             "headphone": "🎧",
-    //        "hands-free": "👐",
-    //        "headset": "🎧🎙",
-    //        "phone": "📞",
-    //        "portable": "📻",
-    //        "car": "🚗",
-    //        "default": ["🔈", "🔉", "🔊"]
-    //    },
-    //    "on-click": "pavucontrol"
-    //},
+            "hands-free": "👐",
+            "headset": "🎧🎙",
+            "phone": "📞",
+            "portable": "📻",
+            "car": "🚗",
+            "default": ["🔈", "🔉", "🔊"]
+            },
+        "on-click": "pavucontrol"
+    },
+
     // "custom/media": {
     //     "format": "{icon} {}",
     //     "return-type": "json",

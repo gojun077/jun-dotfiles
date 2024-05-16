@@ -1,4 +1,3 @@
-{
 // Waybar config - original path to config: ~/.config/waybar/config
 // Last Updated: May 16 2024
 // Fonts needed to render all the emojis, symbols, and braille:
@@ -6,6 +5,7 @@
 // google-noto-sans-egyptian-hieroglyphs-fonts
 // gdouros-symbola-fonts
 
+{
     // "Layer": "top", // Waybar at top layer
     // "position": "bottom", // Waybar position (top|bottom|left|right)
     "height": 30, // Waybar height (to be removed for auto height)
@@ -116,8 +116,9 @@
         "format-icons": ["🔅", "🔆"]
     },
     "battery": {
+        "bat": "macsmc-battery",
         "states": {
-            // "good": 95,
+            //"good": 95,
             "warning": 30,
             "critical": 15
         },
@@ -127,7 +128,7 @@
         //"format-alt": "{time} {icon}",
         // "format-good": "", // An empty format will hide the module
         // "format-full": "",
-        "format-icons": ["🔋"]
+        "format-icons": ["<U+F244>", "<U+F243>", "<U+F242>", "<U+F241>", "<U+F240>"]
     },
     "network": {
         //"interface": "br0", // (Optional) To force the use of this interface

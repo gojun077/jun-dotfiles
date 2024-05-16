@@ -7,6 +7,11 @@ Last Updated: May 16 2024
 */
 
 
+* {
+    font-family: "Font Awesome 6 Free";
+    font-size: 12px;
+}
+
 window .modules-left #workspaces {
     min-height: 0;
 }
