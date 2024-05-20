@@ -81,7 +81,7 @@
         "spacing": 8
     },
     "custom/clock": {
-        "exec": "date +'%F  %H-%M-%S'",
+        "exec": "date +'%F  %H:%M:%S'",
         "interval": 5,
     },
     "cpu": {
