@@ -3,7 +3,7 @@
 # original path: ~/.config/alacritty/alacritty.toml
 #
 # Created on: May 20 2024
-# Last Updated: May 20 2024
+# Last Updated: May 24 2024
 #
 # Starting from Alacritty v0.13, the config file format is TOML
 # (Tom's Obvious Minimal Language). Previous versions used YAML.
@@ -11,7 +11,7 @@
 # `alacritty migrate` command
 
 [font]
-size = 17.0
+size = 15.0
 
 [window]
 
@@ -26,4 +26,4 @@ history = 10000
 
 [shell]
 args = ["--login"]
-program = "/usr/local/bin/bash"
+program = "/usr/bin/bash"
