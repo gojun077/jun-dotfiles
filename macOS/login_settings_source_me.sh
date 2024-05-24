@@ -1,29 +1,28 @@
 #!/usr/bin/env bash
-# login_settings_run_once.sh
+# login_settings_source_me.sh
 #
-# Last Updated: Jan 28 2024
+# Last Updated: Mar 4 2024
 #
 # This file is for MacOS ONLY, and is intended to be `source`d, not
 # executed!
 #
-# Source this file in a new shell after
-# booting. `login_settings_run_once.sh` plays the role of `.bash_profile`
-# in Linux and other non-macOS POSIX environments.
+# Source this file in a new shell after booting.
+# `login_settings_source_me.sh` plays the role of `.bash_profile` in Linux 
+# and other non-macOS POSIX environments.
 #
 # On MacOS, however, `.bash_profile` acts differently because every shell
 # in the macOS GUI is a login shell. This means that settings in
-# `.bash_profile` will be executed multiple times! So if you have some
-# recursive settings like `export PATH=/foo/mypath:$PATH`, your PATH var
-# will get hopelessly cluttered if you declare it in macOS .bash_profile
+# `.bash_profile` will be executed every time a new terminal session is
+# started! So if you have some recursive settings like
+# `export PATH=/foo/mypath:$PATH`, your PATH var will get hopelessly
+# cluttered if you declare it in macOS `~/.bash_profile`
 #
-# Therefore `login_settings_run_once.sh` contains settings that should only
-# be defined once per GUI shell session. The best case is if you are using
-# a terminal multiplexer like GNU Screen or `tmux`; before launching the
-# multiplexer in a terminal, first execute `./login_settings_run_once.sh`
-# in the session. Now if you start a multiplexer session, it will inherit
-# all the declarations made below and you can open multiple tabs and
-# windows in the `screen` or `tmux` without cluttering up your bash shell
-# namespace!
+# This script contains settings that should only be defined once per
+# GUI shell session. The best case is if you are using a terminal
+# multiplexer like GNU Screen or `tmux`; before launching the
+# multiplexer in a terminal, first `source login_settings_source_me.sh`
+# then start the multiplexer session. Then the multiplexer panes will
+# inherit all the declarations made below.
 
 #sudo launchctl limit maxfiles 65536 200000
 #ulimit -n 65536 200000

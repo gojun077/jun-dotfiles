@@ -1,0 +1,328 @@
+# sway tiling WM config for Macbook Pro M1 running Asahi Linux
+# Default config '/etc/sway/config' copied to ~/.config/sway/config
+# and customized.
+#
+# Read `man 5 sway` for a complete reference.
+# Created on: Apr 28 2024
+# Created by: gojun077@gmail.com
+# Last Updated: May 16 2024
+
+
+### Variables
+#
+# Logo/Super/Hyper key. Use Mod1 for Alt.
+set $mod Mod4
+# Home row direction keys, like vim
+set $left h
+set $down j
+set $up k
+set $right l
+# Your preferred terminal emulator
+set $term "alacritty"
+# Your preferred application launcher
+# Note: pass the final command to swaymsg so that the resulting window can be opened
+# on the original workspace that the command was run on.
+#set $menu dmenu_path | dmenu | xargs swaymsg exec --
+set $menu dmenu_path | wofi -d | xargs swaymsg exec --
+include /etc/sway/config-vars.d/*
+
+### Monitor Layout
+# Old Xorg tools like'arandr', 'xrandr' don't work in Wayland. You need to
+# arrange your displays DIY, where origin (0, 0) is at the top left-hand
+# corner. You can find the names of your monitors with
+# 'swaymsg -t get_outputs'. 'man 5 sway-output' for examples
+#
+# Example configuration:
+#
+#   output HDMI-A-1 resolution 1920x1080 position 1920,0
+#
+# You can get the names of your outputs by running: swaymsg -t get_outputs
+#
+# built-in MBP M1 panel on left
+output eDP-1 resolution 3456x2160 scale 2 position 0 0
+#output HDMI-A-1 resolution 1920x1080 position 3456 0
+# below monitor is for home office (right)
+#output HDMI-A-1 resolution 1920x1080@60Hz position 1728 0
+# below monitor is LG monitor at UJET office (right)
+output HDMI-A-1 resolution 3840x2160@60Hz scale 1.5 position 1728 0
+#
+### Output configuration
+#
+# Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
+# Fedora default wallpaper /usr/share/backgrounds/default.png
+#output HEADLESS-1 bg /usr/share/backgrounds/default.png fill
+output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
+
+
+### Idle configuration
+
+# This will lock your screen after 600 seconds of inactivity, then turn off
+# your displays after another 600 seconds, and turn your screens back on when
+# resumed. It will also lock your screen before your computer goes to sleep.
+
+exec swayidle -w \
+          timeout 600 'swaylock -f -c 000000' \
+          before-sleep 'swaylock -f -c 000000'
+
+### Input configuration
+#
+# Example configuration:
+#
+#   input "2:14:SynPS/2_Synaptics_TouchPad" {
+#       dwt enabled
+#       tap enabled
+#       natural_scroll enabled
+#       middle_emulation enabled
+#   }
+#
+# You can get the names of your inputs by running: swaymsg -t get_inputs
+# Read `man 5 sway-input` for more information about this section.
+
+input "1452:835:Apple_Internal_Keyboard_/_Trackpad" {
+    dwt enabled                 #Disable while typing
+    tap enabled                 #Tap registers as a click
+    accel_profile adaptive      #adaptive/flat cursor acceleration
+    pointer_accel 0             #From -1 to 1: Speed of cursor
+    natural_scroll enabled      #Direction of Scroll
+    scroll_factor 0.4           #Speed of Scrolling gets multiplied by this factor
+    scroll_method two_finger    #none|two_finger|edge|on_button_down
+    middle_emulation enabled    #Enables middle click
+    tap_button_map lrm          #1Finger > Left Click , 2Finger > Right Click, 3Fingers > MiddleClick
+}
+
+# settings for Apple Magic Mouse on Asahi Linux
+input "76:617:peter.koh___s_Mouse" {
+    accel_profile flat
+    pointer_accel -0.3
+    natural_scroll enabled
+    scroll_factor 1.2
+    scroll_method two_finger
+    middle_emulation disabled
+    click_method clickfinger
+    tap_button_map lrm
+}
+
+input "1133:45111:MX_Anywhere_3S_Mouse" {
+    accel_profile adaptive
+    pointer_accel 0
+    natural_scroll enabled  # scroll up moves screen down
+    scroll_factor 1.0
+}
+
+input "1133:45938:Logi_K855_Keyboard" {
+    # swap Left Alt with Left Win like Mac keybaord
+    xkb_options altwin:swap_lalt_lwin
+}
+
+
+### Key bindings
+#
+# Basics:
+#
+    # Start a terminal
+    bindsym $mod+Return exec $term
+
+    # Kill focused window
+    bindsym $mod+Shift+q kill
+
+    # Start your launcher
+    bindsym $mod+d exec $menu
+
+    # Drag floating windows by holding down $mod and left mouse button.
+    # Resize them with right mouse button + $mod.
+    # Despite the name, also works for non-floating windows.
+    # Change normal to inverse to use left mouse button for resizing and right
+    # mouse button for dragging.
+    floating_modifier $mod normal
+
+    # Reload the configuration file
+    bindsym $mod+Shift+c reload
+
+    # Exit sway (logs you out of your Wayland session)
+    bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -b 'Yes, exit sway' 'swaymsg exit'
+#
+# Moving around:
+#
+    # Move your focus around
+    bindsym $mod+$left focus left
+    bindsym $mod+$down focus down
+    bindsym $mod+$up focus up
+    bindsym $mod+$right focus right
+    # Or use $mod+[up|down|left|right]
+    bindsym $mod+Left focus left
+    bindsym $mod+Down focus down
+    bindsym $mod+Up focus up
+    bindsym $mod+Right focus right
+
+    # Move the focused window with the same, but add Shift
+    bindsym $mod+Shift+$left move left
+    bindsym $mod+Shift+$down move down
+    bindsym $mod+Shift+$up move up
+    bindsym $mod+Shift+$right move right
+    # Ditto, with arrow keys
+    bindsym $mod+Shift+Left move left
+    bindsym $mod+Shift+Down move down
+    bindsym $mod+Shift+Up move up
+    bindsym $mod+Shift+Right move right
+#
+# Workspaces:
+#
+    # Switch to workspace
+    bindsym $mod+1 workspace number 1
+    bindsym $mod+2 workspace number 2
+    bindsym $mod+3 workspace number 3
+    bindsym $mod+4 workspace number 4
+    bindsym $mod+5 workspace number 5
+    bindsym $mod+6 workspace number 6
+    bindsym $mod+7 workspace number 7
+    bindsym $mod+8 workspace number 8
+    bindsym $mod+9 workspace number 9
+    bindsym $mod+0 workspace number 10
+    # Move focused container to workspace
+    bindsym $mod+Shift+1 move container to workspace number 1
+    bindsym $mod+Shift+2 move container to workspace number 2
+    bindsym $mod+Shift+3 move container to workspace number 3
+    bindsym $mod+Shift+4 move container to workspace number 4
+    bindsym $mod+Shift+5 move container to workspace number 5
+    bindsym $mod+Shift+6 move container to workspace number 6
+    bindsym $mod+Shift+7 move container to workspace number 7
+    bindsym $mod+Shift+8 move container to workspace number 8
+    bindsym $mod+Shift+9 move container to workspace number 9
+    bindsym $mod+Shift+0 move container to workspace number 10
+
+    # Note: workspaces can have any name you want, not just numbers.
+    # We just use 1-10 as the default.
+#
+# Layout stuff:
+#
+    # You can "split" the current object of your focus with
+    # $mod+b or $mod+v, for horizontal and vertical splits
+    # respectively.
+    bindsym $mod+b splith
+    bindsym $mod+v splitv
+
+    # Switch the current container between different layout styles
+    bindsym $mod+s layout stacking
+    bindsym $mod+w layout tabbed
+    bindsym $mod+e layout toggle split
+
+    # Make the current focus fullscreen
+    bindsym $mod+f fullscreen
+
+    # Toggle the current focus between tiling and floating mode
+    bindsym $mod+Shift+space floating toggle
+
+    # Swap focus between the tiling area and the floating area
+    bindsym $mod+space focus mode_toggle
+
+    # Move focus to the parent container
+    bindsym $mod+a focus parent
+#
+# Scratchpad:
+#
+    # Sway has a "scratchpad", which is a bag of holding for windows.
+    # You can send windows there and get them back later.
+
+    # Move the currently focused window to the scratchpad
+    bindsym $mod+Shift+minus move scratchpad
+
+    # Show the next scratchpad window or hide the focused scratchpad window.
+    # If there are multiple scratchpad windows, this command cycles through them.
+    bindsym $mod+minus scratchpad show
+#
+# Resizing containers:
+#
+mode "resize" {
+    # left will shrink the containers width
+    # right will grow the containers width
+    # up will shrink the containers height
+    # down will grow the containers height
+    bindsym $left resize shrink width 10px
+    bindsym $down resize grow height 10px
+    bindsym $up resize shrink height 10px
+    bindsym $right resize grow width 10px
+
+    # Ditto, with arrow keys
+    bindsym Left resize shrink width 10px
+    bindsym Down resize grow height 10px
+    bindsym Up resize shrink height 10px
+    bindsym Right resize grow width 10px
+
+    # Return to default mode
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+r mode "resize"
+
+#
+# Brightness control
+#
+    bindsym XF86MonBrightnessDown exec brightnessctl set 10-
+    bindsym XF86MonBrightnessUp exec brightnessctl set +10
+
+#
+# Status Bar:
+#
+# Read `man 5 sway-bar` for more information about this section.
+# bar {
+#     position top
+
+#     # When the status_command prints a new line to stdout, swaybar updates.
+#     # The default just shows the current date and time.
+#     status_command while date +'%Y-%m-%d %l:%M:%S %p'; do sleep 1; done
+
+#     colors {
+#         statusline #ffffff
+#         background #323232
+#         inactive_workspace #32323200 #32323200 #5c5c5c
+#     }
+# }
+
+bar {
+    swaybar_command waybar
+}
+
+# 10-pixel border around every window
+#gaps inner 10
+
+# Remove title bar of each window
+default_border pixel 3
+
+#
+# Load Daemons on Startup
+#
+# IME for CJK
+exec --no-startup-id fcitx5 -d -r # fcitx5 IME works with Wayland
+# Keybase KBFS mount
+exec --no-startup-id mkdir /run/user/1000/keybase/kbfs
+# Start kbfsfuse
+exec --no-startup-id kbfsfuse
+# Keybase GUI launch in Wayland mode
+exec --no-startup-id /opt/keybase/Keybase --ozone-platform=wayland
+# Audio applet in systray (not needed; provided in my waybar config)
+#exec --no-startup-id pasystray
+# Clipboard for SwayWM
+exec wl-paste -t text --watch clipman store --no-persist --max-items=1024
+# Set XDG_CURRENT_DESKTOP for dbus; needed for 'xdg-desktop-portal-wlr'
+exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
+# Start emacs (`(server-mode 1)` is set in .emacs)
+exec emacs
+
+#
+# Custom Keyboard shortcuts/keybindings
+#
+bindsym $mod+Shift+b exec MOZ_ENABLE_WAYLAND=1 firefox  # FF runs in native Wayland!
+bindsym $mod+Shift+m exec emacs
+bindsym $mod+Shift+f exec thunar
+bindsym $mod+Shift+p exec clipman pick -t wofi # view clipboard
+bindsym $mod+Shift+v exec code --ozone-platform=wayland
+# screenshot shortcut (select area)
+bindsym --release $mod+Shift+z exec grim -g "$(slurp)" \
+  ~/Pictures/grim-$(date +%F_%H.%M.%S).png
+# video capture shortcut (select area)
+bindsym Ctrl+Shift+F12 exec wf-recorder -g "$(slurp)" -f ~/Videos/recording.mp4
+# stop video capture
+bindsym Ctrl+Shift+Backspace exec killall -s SIGINT wf-recorder
+include /etc/sway/config.d/*
+# lock screen
+bindsym --release $mod+Shift+l exec 'swaylock -f -c 000000'

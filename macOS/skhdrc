@@ -43,4 +43,5 @@ ctrl + alt + cmd - r: yabai --restart-service
 # prevents skhd from monitoring events for listed processes
 .blacklist [
     "TigerVNC Viewer"
+    "vncviewer"
 ]

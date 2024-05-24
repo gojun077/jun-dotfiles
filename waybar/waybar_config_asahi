@@ -1,9 +1,8 @@
-// Waybar config - original path to config: ~/.config/waybar/config
+// original path: ~/.config/waybar/config
+// Waybar config file for Asahi Linux
+// Created on: May 16 2024
+// Created by: gopeterjun@naver.com
 // Last Updated: May 16 2024
-// Fonts needed to render all the emojis, symbols, and braille:
-// google-noto-color-emoji-fonts
-// google-noto-sans-egyptian-hieroglyphs-fonts
-// gdouros-symbola-fonts
 
 {
     // "Layer": "top", // Waybar at top layer
@@ -13,30 +12,25 @@
     // Choose the order of the modules
     "modules-left": ["sway/workspaces"],
     "modules-center": ["sway/window"],
-    "modules-right": ["pulseaudio", "network", "cpu", "memory", "disk", "temperature", "custom/clock", "tray"],
+    "modules-right": ["pulseaudio", "network", "cpu", "memory", "disk", "temperature", "backlight", "battery", "custom/clock", "tray",],
     // Modules configuration
 
-    // "sway/workspaces": {
-    //      "disable-scroll": true,
-    //      "all-outputs": false,
-    //      "format": "{name} {icon}",
-    //      "format-icons": {
-    //          "1": "⠁",
-    //          "2": "⠃",
-    //          "3": "⠇",
-    //          "4": "⠞",
-    //          "5": "⠟",
-    //          "6": "⠿",
-    //          "7": "七",
-    //          "8": "八",
-    //          "9": "九",
-    //          "10": "十",
-    //          "urgent": "",
-    //          "focused": "",
-    //          "default": "",
-    //          "active": "*",
-    //      }
-    //  },
+    //"sway/workspaces": {
+    //     "disable-scroll": true,
+    //     "all-outputs": true,
+    //     "format": "{name}: {icon}",
+    //     "format-icons": {
+    //         "1": "⠁",
+    //         "2": "⠃",
+    //         "3": "⠇",
+    //         "4": "⠞",
+    //         "5": "⠟",
+    //         "6": "⠿",
+    //         "urgent": "",
+    //         "focused": "",
+    //         "default": ""
+    //     }
+    // },
     //"keyboard-state": {
     //    "numlock": true,
     //    "capslock": true,
@@ -91,11 +85,11 @@
         "interval": 5,
     },
     "cpu": {
-        "format": "{usage}% 🤖",
+        "format": "{usage}% ",
         "tooltip": false
     },
     "memory": {
-        "format": "{}% 𓀨"
+        "format": "{}% "
     },
     "disk": {
         "interval": 30,
@@ -111,7 +105,7 @@
         "format-icons": ["🌡"]
     },
     "backlight": {
-        // "device": "acpi_video1",
+        "device": "apple-panel-b1",
         "format": "{percent}% {icon}",
         "format-icons": ["🔅", "🔆"]
     },
@@ -128,33 +122,33 @@
         //"format-alt": "{time} {icon}",
         // "format-good": "", // An empty format will hide the module
         // "format-full": "",
-        "format-icons": ["<U+F244>", "<U+F243>", "<U+F242>", "<U+F241>", "<U+F240>"]
+        "format-icons": ["", "", "", "", ""],
     },
     "network": {
-        //"interface": "br0", // (Optional) To force the use of this interface
+        //"interface": "wlp1s0f0", // (Optional) To force the use of this interface
         "format-wifi": "{essid} ({signalStrength}%) 📶",
         "format-ethernet": "{ipaddr}/{cidr} 🖧",
-        //"tooltip-format": "{ifname} via {gwaddr}",
+        "tooltip-format": "{ifname} via {gwaddr}",
         "format-linked": "{ifname} (No IP) ﹦",
         "format-disconnected": "Disconnected ≠",
         //"format-alt": "{ifname}: {ipaddr}/{cidr}"
     },
     "pulseaudio": {
-        // "scroll-step": 1, // %, can be a float
-        "format": "{volume}% {icon}",
+        "scroll-step": 1, // %, can be a float
+        "format": "{volume}% {icon} {format_source}",
         "format-bluetooth": "{volume}% {icon} {format_source}",
-        "format-bluetooth-muted": "🔇 {format_source}",
-        "format-muted": "🔇 {format_source}",
-        //"format-source": "{volume}% ",
-        //"format-source-muted": "",
+        "format-bluetooth-muted": " {icon} {format_source}",
+        "format-muted": " {format_source}",
+        "format-source": "{volume}% ",
+        "format-source-muted": "",
         "format-icons": {
-            "headphone": "🎧",
-            "hands-free": "👐",
-            "headset": "🎧🎙",
-            "phone": "📞",
-            "portable": "📻",
-            "car": "🚗",
-            "default": ["🔈", "🔉", "🔊"]
+            "headphone": "",
+            "hands-free": "",
+            "headset": "",
+            "phone": "",
+            "portable": "",
+            "car": "",
+            "default": ["", "", ""],
         },
         "on-click": "pavucontrol"
     },

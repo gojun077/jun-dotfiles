@@ -1,9 +1,9 @@
 ; -*- mode: emacs-lisp -*-
 
-;; My .emacs for Fedora Linux
-;; Created on: Sometime in 2011
+;; My .emacs for Asahilinux Fedora Remix
+;; Created on: May 2 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: May 2 2024
+;; Last Updated: May 7 2024
 ;;
 ;; These configs are for Emacs 29.1 and higher.
 
@@ -62,8 +62,9 @@
   :straight t)
 (use-package solarized-theme
   :straight t)
-(use-package tex
-  :straight auctex)
+; I cannot install 'auctex' using straight.el on Linux...
+;(use-package tex
+;  :straight auctex)
 (use-package unicode-whitespace
   :straight t)
 (use-package visual-fill-column
@@ -75,8 +76,9 @@
 
 (require 'browse-kill-ring)
 (require 'flymake-ruff)
-(require 'unicode-whitespace)
+(require 'ox-md)
 (require 'smartparens-config)
+(require 'unicode-whitespace)
 (require 'whitespace)
 
 ;; map M-y yank-pop to browse-kill-ring
@@ -85,8 +87,6 @@
 (add-hook 'python-base-mode-hook (lambda ()
                                    (flymake-mode 1)
                                    (blacken-mode 1)))
-
-(add-hook 'visual-line-mode-hook #'visual-fill-column-mode)
 
 ;; hooks for racket-mode
 (add-hook 'racket-mode-hook #'rainbow-delimiters-mode)
@@ -111,7 +111,7 @@
   ;; customize compile command to run go build
   (if (not (string-match "go" compile-command))
       (set (make-local-variable 'compile-command)
-           "env GOOS=linux GOARCH=amd64 go build -v -o bin/$(basename $(pwd)) && go test -v && go vet"))
+           "env GOOS=linux GOARCH=arm64 go build -v -o bin/$(basename $(pwd)) && go test -v && go vet"))
 )
 (add-hook 'go-mode-hook 'go-mode-setup)
 
@@ -120,11 +120,12 @@
 (column-number-mode 1)
 ; don't show menu bar
 (menu-bar-mode 0)
+; don't show scrollbar
+(scroll-bar-mode 0)
 ; highlight parens
 (show-paren-mode t)
 ; Enable ido-mode
 (ido-mode 1)
-
 
 ;; Font settings
 (let ((fontset "fontset-default"))
@@ -152,15 +153,12 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(org-agenda-files
-   '("/tier2/encrypted_repos/gpj-org-mode-files/next_actions.org"))
+   '("~/Documents/repos/encrypted/gpj-org-mode-files/next_actions.org"))
  '(org-trello-current-prefix-keybinding "C-c o" nil (org-trello))
  '(package-selected-packages
-   '(flymake-go flymake-hadolint flymake-ruff go-mode org-trello
-                yaml-mode web-mode visual-fill-column go-playground
-                use-package unicode-whitespace smartparens ansible
-                rainbow-delimiters racket-mode markdown-mode magit
-                exec-path-from-shell))
+   '(flymake-ruff go-mode org-trello yaml-mode web-mode go-playground unicode-whitespace smartparens ansible rainbow-delimiters racket-mode markdown-mode magit exec-path-from-shell))
  '(python-shell-completion-native-disabled-interpreters '("pypy ipython3"))
+ '(pdf-latex-command "xetex")
  '(warning-suppress-types '((comp))))
 
 
@@ -172,6 +170,7 @@
 (server-mode 1)
 ; ensure GPG password input is handled by emacs during emacs session
 ;(setenv "GPG_AGENT_INFO" nil)
+
 ; Use spaces instead of tabs
 (setq-default indent-tabs-mode nil)
 ; But when I must use TAB, set width to 2 chars
@@ -193,7 +192,7 @@
 (setq python-shell-interpreter "ipython3"
       python-shell-interpreter-args "--simple-prompt -i --InteractiveShell.display_page=True")
 (setq ansi-color-for-comint-mode t)
-(setq python-check-command "/home/jundora/.local/bin/ruff")
+(setq python-check-command "/usr/bin/ruff")
 (setq python-flymake-command '("ruff"
                                "--quiet"
                                "--stdin-filename=stdin"
@@ -253,6 +252,7 @@
                       (format-time-string (org-time-stamp-format t)
                                           (current-time))
                       "\n")))))))
+
 (setq org-refile-targets
       '(("~/Documents/repos/encrypted/gpj-org-mode-files/next_actions.org" :maxlevel . 1)
         ("~/Documents/repos/encrypted/gpj-org-mode-files/projects.org" :level . 1)
@@ -270,9 +270,25 @@
 ; org-roam minor mode settings
 (setq org-roam-directory (file-truename
                           "~/Documents/repos/personal/pj-org-roam"))
-
-; the following line causes an error in Emacs on Linux, but works on MacOS
-;(org-roam-db-autosync-mode)
+(org-roam-db-autosync-mode)
+; Note: You are prompted for a node name when you open the
+; org-roam capture template - this name will be the filename
+(setq org-roam-capture-templates
+ '(("p" "permanent" plain
+    "%?"
+    :target (file+head "permanent/${slug}.org"
+                       "#+title: ${title}\n")
+    :immediate-finish t
+    :unnarrowed t)
+   ("l" "literature" plain
+    "\n* Source\n\nAuthor: %^{Author}\nTitle: %^{title}\nOoK Index: \nYear: %^{Year}\nPages: \nPublisher: \n\n* Summary\n\n%?"
+    :target (file+head "literature/${slug}.org"
+                       "#+title: ${title}\n")
+    :immediate-finish t
+    :unnarrowed t)))
+(global-set-key (kbd "C-c n c") #'org-roam-capture)
+; the following shortcut only works in org-mode
+(define-key org-mode-map (kbd "C-c n i") #'org-roam-node-insert)
 
 
 ; AUCTeX settings
@@ -282,7 +298,6 @@
 (add-hook 'LaTeX-mode-hook #'flymake-mode)
 ; AUCTEX preview-latex font
 (set-default 'preview-scale-function 1.2)
-
 
 ; bind 'M-x magit-status' to 'C-x g'
 (global-set-key (kbd "C-x g") 'magit-status)
@@ -319,7 +334,7 @@
   ; limit line length
   (setq whitespace-line-column 80)
   ; set fill column to 75
-  (setq fill-column 75)
+  (setq-default fill-column 75)
   ; enable native fill column indicator (emacs 27+)
   (global-display-fill-column-indicator-mode 1)
   ; enable whitespace-mode for all files

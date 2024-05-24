@@ -1,0 +1,29 @@
+# alacritty.toml for Linux machines
+#
+# original path: ~/.config/alacritty/alacritty.toml
+#
+# Created on: May 20 2024
+# Last Updated: May 24 2024
+#
+# Starting from Alacritty v0.13, the config file format is TOML
+# (Tom's Obvious Minimal Language). Previous versions used YAML.
+# This file was auto-generated from `alacritty.yaml` using the
+# `alacritty migrate` command
+
+[font]
+size = 15.0
+
+[window]
+
+# Option as Alt (macOS keyboards)
+option_as_alt = "OnlyLeft"
+
+[font.normal]
+family = "Monofur Nerd Font Mono"
+[scrolling]
+
+history = 10000
+
+[shell]
+args = ["--login"]
+program = "/usr/bin/bash"

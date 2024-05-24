@@ -3,7 +3,7 @@
 ;; .emacs for MacOS --- Summary
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated Jan 18 2024
+;; Last Updated May 6 2024
 ;;
 ;; This config file is for Emacs 29.1 and above and contains extra
 ;; keyconfigs for skhd keyboard shortcut manager and Yabai WM on MacOS
@@ -25,12 +25,16 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+;; ensure latest org version is loaded by straight.el
+(straight-use-package 'org)
 ;; Install use-package
 (straight-use-package 'use-package)
 
 (use-package ansible
   :straight t)
 (use-package blacken
+  :straight t)
+(use-package browse-kill-ring
   :straight t)
 (use-package color-theme-sanityinc-tomorrow
   :straight t)
@@ -44,9 +48,13 @@
   :straight t)
 (use-package go-playground
   :straight t)
+(use-package leuven-theme
+  :straight t)
 (use-package magit
   :straight t)
 (use-package markdown-mode
+  :straight t)
+(use-package org-roam
   :straight t)
 (use-package org-trello
   :straight (:build (:not compile)) t)
@@ -69,11 +77,14 @@
 (use-package yaml-mode
   :straight t)
 
+(require 'browse-kill-ring)
 (require 'flymake-ruff)
 (require 'unicode-whitespace)
 (require 'smartparens-config)
 (require 'whitespace)
 
+;; map M-y yank-pop to browse-kill-ring
+(browse-kill-ring-default-keybindings)
 (add-hook 'elisp-lisp-mode-hook #'flymake-mode)
 (add-hook 'python-base-mode-hook (lambda ()
                                    (flymake-mode 1)
@@ -101,9 +112,8 @@
 ;; mode settings
 ; show col and line numbers
 (column-number-mode 1)
-; don't show menu bar
+; don't show menu bar - doesn't work on MacOS
 ;(menu-bar-mode 0)
-
 ; don't show scrollbar
 (scroll-bar-mode 0)
 ; highlight parens
@@ -120,13 +130,12 @@
                     '("Monofur Nerd Font Mono" . "unicode-bmp"))
   (set-fontset-font fontset 'hangul
                     '("NanumGothic" . "unicode-bmp"))
-  (set-face-attribute 'default nil
-                      :font fontset
-                      :height 170)
   (set-face-attribute 'mode-line nil
                       :font fontset
-                      :height 90))
-
+                      :height 90)
+  (set-face-attribute 'default nil
+                      :font fontset
+                      :height 170))
 
 
 ;;=========================
@@ -138,14 +147,14 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   '(default))
+ '(custom-safe-themes '(default))
  '(epg-gpg-program "/usr/local/MacGPG2/bin/gpg2")
+ '(menu-bar-mode nil)
  '(org-agenda-files
-   '("~/Documents/repos/encrypted-repos/gpj-org-mode-files/next_actions.org"))
+   '("~/Documents/repos/encrypted/gpj-org-mode-files/next_actions.org"))
  '(org-trello-current-prefix-keybinding "C-c o" nil (org-trello))
  '(package-selected-packages
-   '(org-trello flymake-ruff exec-path-from-shell solarized-theme blacken go-mode go-playground rainbow-delimiters magit smartparens web-mode ein yaml-mode rw-language-and-country-codes racket-mode paredit markdown-mode fill-column-indicator ansible))
+   '(org-trello flymake-ruff exec-path-from-shell solarized-theme blacken go-mode go-playground rainbow-delimiters magit smartparens web-mode ein yaml-mode rw-language-and-country-codes racket-mode paredit markdown-mode ansible))
  '(pdf-latex-command "xetex")
  '(python-shell-completion-native-disabled-interpreters '("pypy ipython")))
 
@@ -209,15 +218,76 @@
 ; set exec-path for emacs to include GOLANG binaries
 (setq exec-path (append exec-path '("/usr/local/go/bin" "$HOME/go/bin")))
 
+;------------------------------------------------------------
 ; org-mode settings
+;------------------------------------------------------------
+(setq org-directory "~/Documents/repos/personal/org")
 (setq org-timer-default-timer 25)
 ; play sound when org-timer completes
 (add-hook 'org-timer-done-hook (lambda () (interactive)
-                                 (shell-command "afplay $HOME/Downloads/ShipsBell.wav")))
+                                 (shell-command "/usr/bin/afplay $HOME/Downloads/media/ShipsBell.wav")))
 (setq org-todo-keywords
-      '((sequence "TODO" "Inbox" "Anywhere" "Read/Review" "Calls"
-                  "Computer" "Errands" "Home" "Office" "Waiting For" "|"
-                  "DONE" "Completed" "Canceled")))
+      '((sequence "TODO(t!)" "Anywhere(!)" "Read/Review(!)" "Calls(!)"
+                  "Computer(!)" "Errands(!)" "Home(!)" "Office(!)" "|"
+                  "DONE(d!)")
+        (sequence "|" "Canceled(c@)")))
+
+(setq org-log-done 'time)  ; add timestamps on DONE status
+; add 'CREATED: <timestamp>' when new TODO state is changed
+(add-hook 'org-after-todo-state-change-hook
+          (lambda ()
+            (save-excursion
+              (org-back-to-heading)
+              (let ((text (buffer-substring (point) (progn (outline-next-heading) (point)))))
+                (if (string-match "CREATED: " text)
+                    ;; if string was found, noop
+                    nil
+                  ;; else, (1) move cursor back to current heading
+                  (outline-previous-heading)
+                  ;;(end-of-line)
+                  ;; (2) insert timestamp on next line
+                  (forward-line 1)
+                  (insert (concat "CREATED: "
+                      (format-time-string (org-time-stamp-format t)
+                                          (current-time))
+                      "\n")))))))
+
+(setq org-refile-targets
+      '(("~/Documents/repos/encrypted/gpj-org-mode-files/next_actions.org" :maxlevel . 1)
+        ("~/Documents/repos/encrypted/gpj-org-mode-files/projects.org" :level . 1)
+        ("~/Documents/repos/encrypted/gpj-org-mode-files/waiting_for.org" :level . 1)
+        ("~/Documents/repos/encrypted/gpj-org-mode-files/someday_maybe.org" :level . 1)
+        ("~/Documents/repos/encrypted/gpj-org-mode-files/closed_cards.org" :level . 1)))
+(setq org-default-notes-file (concat org-directory "/capture.org"))
+(setq org-agenda-skip-scheduled-if-done t)
+(setq org-agenda-skip-deadline-if-done t)
+(setq org-agenda-skip-timestamp-if-done t)
+(global-set-key (kbd "C-c l") #'org-store-link)
+(global-set-key (kbd "C-c a") #'org-agenda)
+(global-set-key (kbd "C-c c") #'org-capture)
+
+; org-roam minor mode settings
+(setq org-roam-directory (file-truename
+                          "~/Documents/repos/personal/pj-org-roam"))
+(org-roam-db-autosync-mode)
+; Note: You are prompted for a node name when you open the
+; org-roam capture template - this name will be the filename
+(setq org-roam-capture-templates
+ '(("p" "permanent" plain
+    "%?"
+    :target (file+head "permanent/${slug}.org"
+                       "#+title: ${title}\n")
+    :immediate-finish t
+    :unnarrowed t)
+   ("l" "literature" plain
+    "\n* Source\n\nAuthor: %^{Author}\nTitle: %^{title}\nOoK Index: \nYear: %^{Year}\nPages: \nPublisher: \n\n* Summary\n\n%?"
+    :target (file+head "literature/${slug}.org"
+                       "#+title: ${title}\n")
+    :immediate-finish t
+    :unnarrowed t)))
+(global-set-key (kbd "C-c n c") #'org-roam-capture)
+; the following shortcut only works in org-mode
+(define-key org-mode-map (kbd "C-c n i") #'org-roam-node-insert)
 
 ; AUCTeX settings
 (setq TeX-auto-save t)
@@ -235,6 +305,13 @@
   ns-option-modifier 'meta
   mac-right-option-modifier 'meta
   ns-right-option-modifier 'meta)
+
+;; leuven-theme specific settings
+;; https://github.com/fniessen/emacs-leuven-theme
+(setq leuven-scale-outline-headlines 1.2)
+(setq leuven-scale-org-agenda-structure 1.2)
+(setq leuven-scale-org-document-title 1.5)
+(setq leuven-scale-volatile-highlight 1.2)
 
 
 (custom-set-faces
@@ -271,15 +348,20 @@
   (scroll-bar-mode -1)
   ; disable toolbar
   (tool-bar-mode -1)
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ; Emacs color themes
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;(load-theme 'cyberpunk t)
+  ;; leuven theme is great for markup files like .md and esp .org!
+  (load-theme 'leuven t)
   ;(load-theme 'sanityinc-tomorrow-blue)
   ;(load-theme 'sanityinc-tomorrow-bright)
-  (load-theme 'sanityinc-tomorrow-day)
+  ;(load-theme 'sanityinc-tomorrow-day)
   ;(load-theme 'sanityinc-tomorrow-night)
   ;(load-theme 'sanityinc-solarized-light)
   ;(load-theme 'sanityinc-solarized-light-high-contrast)
   ;(load-theme 'solarized-light-high-contrast)
-  )
+)
 
 ;; Commands to run when Emacs launched in terminal mode
 (unless (display-graphic-p)
