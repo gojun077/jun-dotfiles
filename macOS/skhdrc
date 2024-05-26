@@ -2,13 +2,13 @@
 #
 # Created on: Oct 25 2023
 # Created by: gopeterjun@naver.com
-# Last Updated: Jan 18 2024
+# Last Updated: May 26 2024
 #
 # PJ's config file for skhd keyboard shortcut manager for macOS
 
 # open terminal
-cmd - return : /Applications/Alacritty.app/Contents/MacOS/alacritty
-
+#cmd - return : /Applications/Alacritty.app/Contents/MacOS/alacritty
+cmd - return : /opt/homebrew/bin/wezterm
 # open Emacs
 cmd - m : /Applications/Emacs.app/Contents/MacOS/emacs
 
