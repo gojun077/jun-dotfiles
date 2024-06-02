@@ -37,9 +37,9 @@ defflow auto
 #
 # term setting
 #
-<<<<<<< HEAD
-term xterm
-#term screen-256color
+
+#term xterm
+term screen-256color
 #term xterm-256color
 
 ###################
@@ -47,7 +47,7 @@ term xterm
 # Back Color Erase
 #
 # Required for ncurses in GNU Screen
-#defbce on
+defbce on
 
 #################
 #
