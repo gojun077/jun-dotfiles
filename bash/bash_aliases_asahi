@@ -13,6 +13,7 @@ alias hazip='curl https://icanhazip.com'
 alias ls='ls --color=auto'
 alias chromium-browser='chromium-browser --ozone-platform=wayland'
 alias code='code --ozone-platform=wayland'
+alias enox='emacsclient -nw'
 
 ansicat() {
   if [ -f "$1" ]; then
