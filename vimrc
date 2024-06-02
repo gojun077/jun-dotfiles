@@ -3,7 +3,7 @@
 " Maintainer:   Bram Moolenaar <Bram@vim.org>
 " Last Updated:  2016-12-28
 " Customized by: Jun Go
-" Last change:  2017-02-27
+" Last change:  2024-06-02
 "
 " To use it, copy it to
 "     for Unix and OS/2:  ~/.vimrc
@@ -58,8 +58,9 @@ endif
 if &t_Co > 2 || has("gui_running")
   syntax on
   set hlsearch
-  colo elflord
-  "colorscheme shine
+  "default colors defined in '/usr/share/vim/vimXX/colors/'
+  "colo elflord
+  colorscheme shine
   "colo evening
 endif
 
@@ -76,8 +77,9 @@ set expandtab
 " On Fedora, you must install language-specific plugins for syntastic
 " i.e., 'vim-syntastic-python', 'vim-syntastic-sh', etc. to get
 " linter output for .py, .sh, and others files, respectively
-"set rtp+=/usr/share/vim/vimfiles/plugin/
-set rtp+=/usr/share/vim/addons/plugin
+
+set rtp+=/usr/share/vim/vimfiles/plugin/  "runtime path for Fedora
+"set rtp+=/usr/share/vim/addons/plugin    "runtime path for ?
 
 " Settings for Syntastic syntax checker plugin
 set statusline+=%#warningmsg#

@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: May 2 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: May 31 2024
+;; Last Updated: Jun 2 2024
 ;;
 ;; These configs are for Emacs 29.1 and higher.
 
@@ -208,6 +208,8 @@
 (setq backup-directory-alist '(("" . "~/tmp")))
 ; Enable temp files and autosaving
 (setq make-backup-files t)
+; use Pandoc as default renderer for markdown
+(setq markdown-command "/usr/bin/pandoc")
 (setq auto-save-default t)
 ; Enable C-l, C-u change region to lower/upper case
 (put 'upcase-region 'disabled nil)
@@ -321,7 +323,14 @@
  )
 
 ;; https://github.com/purcell/exec-path-from-shell/blob/master/README.md
-(when (memq window-system '(mac ns x))
+(dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO" "LANG"
+               "LC_CTYPE" "LC_TYPE" "GOPATH" "GOROOT" "SHELL"))
+  (add-to-list 'exec-path-from-shell-variables var))
+; don't invoke an interactive shell; default args are ("-l" "-i")
+(setq exec-path-from-shell-arguments nil)
+
+; Commands to run when Emacs launched in graphical mode
+(when (or (display-graphic-p) (daemonp))
   ; only run whitespace mode in graphical session
   (global-whitespace-mode 1)
   ; limit line length
@@ -350,47 +359,13 @@
   ;(load-theme 'sanityinc-solarized-light)
   ;(load-theme 'sanityinc-solarized-light-high-contrast)
   ;(load-theme 'solarized-light-high-contrast)
-  (exec-path-from-shell-initialize))
-(when (daemonp)
-  (exec-path-from-shell-initialize))
-(dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO" "LANG"
-               "LC_CTYPE" "LC_TYPE" "GOPATH" "GOROOT" "SHELL"))
-  (add-to-list 'exec-path-from-shell-variables var))
-;; Commands to run when Emacs launched in graphical mode
-;; (when (display-graphic-p)
-;;   ; only run whitespace mode in graphical session
-;;   (global-whitespace-mode 1)
-;;   ; limit line length
-;;   (setq whitespace-line-column 80)
-;;   ; set fill column to 75
-;;   (setq-default fill-column 75)
-;;   ; enable native fill column indicator (emacs 27+)
-;;   (global-display-fill-column-indicator-mode 1)
-;;   ; enable whitespace-mode for all files
-;;   (add-hook 'after-change-major-mode-hook 'whitespace-mode)
-;;   ; unicode-whitespace face settings
-;;   (unicode-whitespace-setup 'subdued-faces)
-;;   ; don't show scrollbar
-;;   (scroll-bar-mode -1)
-;;   ; don't show toolbar
-;;   (tool-bar-mode -1)
-;;   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;   ; Emacs color themes
-;;   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;   ;(load-theme 'cyberpunk t)
-;;   (load-theme 'leuven t)
-;;   ;(load-theme 'sanityinc-tomorrow-blue)
-;;   ;(load-theme 'sanityinc-tomorrow-bright)
-;;   ;(load-theme 'sanityinc-tomorrow-day)
-;;   ;(load-theme 'sanityinc-tomorrow-night)
-;;   ;(load-theme 'sanityinc-solarized-light)
-;;   ;(load-theme 'sanityinc-solarized-light-high-contrast)
-;;   ;(load-theme 'solarized-light-high-contrast)
-;; )
+  (exec-path-from-shell-initialize)
+)
 
 ;; Commands to run when Emacs launched in terminal mode
 (unless (display-graphic-p)
-  (load-theme 'adwaita t))
+  (load-theme 'adwaita t)
+  (exec-path-from-shell-initialize))
 
 (provide 'emacs)
 ;;; emacs ends here
