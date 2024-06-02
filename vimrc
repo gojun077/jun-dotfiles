@@ -155,3 +155,9 @@ autocmd BufWritePre *.py :%s/\s\+$//e
 
 " Toggle between paste and non-paste mode with <F2>
 set pastetoggle=<F2>
+
+if &term =~ '256color'
+  " disable Background Color Erase (BCE) so that color schemes
+  " render properly when inside 256-color term multiplexers
+  set t_ut=
+endif
