@@ -1,7 +1,8 @@
+#!/usr/bin/env bash
 # bash_aliases_asahi
 # Created on: Apr 30 2024
 # Created by: gopeterjun@naver.com
-# Last Updated: May 28 2024
+# Last Updated: Jun 2 2024
 #
 # .bash_aliases for Asahi Linux intended to be sourced by .bashrc
 
@@ -14,18 +15,20 @@ alias chromium-browser='chromium-browser --ozone-platform=wayland'
 alias code='code --ozone-platform=wayland'
 
 ansicat() {
-    if [ -f "$1" ]; then
-        infile="$1"
-        if [ -n "$2" ]; then
-            ansifilter -i "$infile" -o "$2"
-	else
-            cat "$infile" | ansifilter | less -R
-        fi	
+  if [ -f "$1" ]; then
+    infile="$1"
+    if [ -n "$2" ]; then
+      ansifilter -i "$infile" -o "$2"
     else
-        printf "%s\\n" "File not found: $infile"
-	printf "%s\\n" "## USAGE: ansicat <inputfile> (outputfile) ##"
-	printf "%s\\n" "(outputfile) is optional argument"
+      ansifilter -i "$infile"| less -R
     fi
+  else
+    printf "%s\\n" "File not found: $infile"
+    printf "%s\\n" "## USAGE: ansicat <inputfile> (outputfile) ##"
+    printf "%s\\n" "(outputfile) is optional argument"
+  fi
 }
 
+# disable warning about non-constant path
+# shellcheck disable=SC1090
 source ~/.bash_aliases_secure  # this file is not stored in version control
