@@ -236,7 +236,9 @@
                   "DONE(d!)")
         (sequence "|" "Canceled(c@)")))
 
-(setq org-log-done 'time)  ; timestamps for DONE status
+; add timestamp CLOSED: '<YYYY-MM-DD DoW HH:MM>' for DONE status
+(setq org-log-done 'time)
+
 ; add 'CREATED: <timestamp>' when new TODO state is changed
 (add-hook 'org-after-todo-state-change-hook
           (lambda ()
