@@ -1,8 +1,9 @@
+#!/usr/bin/env bash
 # Per-user `~/.bash_profile` for Asahilinux Fedora
 #
 # Created on: Apr 28 2024
 # Created by gojun077
-# Last Updated: Apr 28 2024
+# Last Updated: Jun 2 2024
 #
 # These settings are sourced by the login shell
 
