@@ -13,4 +13,4 @@ alias screen="/usr/local/bin/screen"
 alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
 alias enox="/usr/local/bin/emacsclient -nw"
 
-source ~/.bash_aliases_secure
+source "$HOME/.bash_aliases_secure"
