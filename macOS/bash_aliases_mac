@@ -9,5 +9,8 @@ alias scpa='scp -o "IdentitiesOnly yes"'
 alias vi='vim'
 alias ㅊㅇ='cd'
 alias 니='ls'
-alias screen='/usr/local/bin/screen'
+alias screen="/usr/local/bin/screen"
+alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
+alias enox="/usr/local/bin/emacsclient -nw"
+
 source ~/.bash_aliases_secure
