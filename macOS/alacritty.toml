@@ -42,7 +42,7 @@ key = "D"
 mods = "Alt"
 
 [[keyboard.bindings]]
-cyhars = "\u001Be"
+chars = "\u001Be"
 key = "E"
 mods = "Alt"
 
