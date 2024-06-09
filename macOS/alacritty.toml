@@ -3,7 +3,7 @@
 # original path: ~/.config/alacritty/alacritty.toml
 #
 # Created on: Dec 31 2023
-# Last Updated: Dec 31 2023
+# Last Updated: May 20 2024
 #
 # Starting from Alacritty v0.13, the config file format is TOML
 # (Tom's Obvious Minimal Language). Previous versions used YAML.
@@ -15,7 +15,7 @@ size = 17.0
 
 [window]
 
-# Option as Alt (macOS only)
+# Option as Alt (macOS keyboards)
 option_as_alt = "OnlyLeft"
 
 [font.normal]

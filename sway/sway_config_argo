@@ -5,13 +5,16 @@
 # Read `man 5 sway` for a complete reference.
 # Created on: Sep 21 2021
 # Created by: gojun077@gmail.com
-# Last Updated: Oct 26 2023
+# Last Updated: May 24 2024
 
 
 ### Variables
 #
 # Logo/Super/Hyper key. Use Mod1 for Alt.
-set $mod Mod4
+#set $mod Mod4
+# Change '$mod' from 'Super' to enable nested Sway sessions
+# i.e. local Sway using Super as $mod, remote Sway via wayvnc uses ESC
+set $mod Escape
 # Home row direction keys, like vim
 set $left h
 set $down j
@@ -44,7 +47,11 @@ output HEADLESS-1 bg /usr/share/backgrounds/default.png fill
 #   output HDMI-A-1 resolution 1920x1080 position 1920,0
 #
 # You can get the names of your outputs by running: swaymsg -t get_outputs
+
 output HEADLESS-1 resolution 1920x960 position 1920,0
+
+# macbook air m2 w/o external monitor - doesn't work; still appears too small
+#output HEADLESS-1 resolution 1470x956 position 1470,0
 
 ### Idle configuration
 
@@ -89,7 +96,7 @@ output HEADLESS-1 resolution 1920x960 position 1920,0
     # Despite the name, also works for non-floating windows.
     # Change normal to inverse to use left mouse button for resizing and right
     # mouse button for dragging.
-    floating_modifier $mod normal
+    #floating_modifier $mod normal
 
     # Reload the configuration file
     bindsym $mod+Shift+c reload
@@ -256,12 +263,18 @@ default_border pixel 3
 #
 # IME for CJK
 exec --no-startup-id fcitx5 -d -r # fcitx5 IME works with Wayland
-# Keybase app
-exec --no-startup-id run_keybase
+# Keybase KBFS mount
+exec --no-startup-id mkdir /run/user/1000/keybase/kbfs
+# Start kbfsfuse
+exec --no-startup-id kbfsfuse
+# Keybase GUI launch in Wayland mode
+exec --no-startup-id /opt/keybase/Keybase --ozone-platform=wayland
 # Clipboard for SwayWM
 exec wl-paste -t text --watch clipman store --no-persist --max-items=1024
 # Start emacs (`(server-mode 1)` is set in .emacs)
 exec emacs
+# Start thunderbird-wayland
+exec thunderbird-wayland
 
 #
 # Custom Keyboard shortcuts/keybindings

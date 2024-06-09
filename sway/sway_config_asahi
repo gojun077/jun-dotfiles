@@ -5,7 +5,7 @@
 # Read `man 5 sway` for a complete reference.
 # Created on: Apr 28 2024
 # Created by: gojun077@gmail.com
-# Last Updated: May 12 2024
+# Last Updated: Jun 7 2024
 
 
 ### Variables
@@ -41,9 +41,9 @@ include /etc/sway/config-vars.d/*
 # built-in MBP M1 panel on left
 output eDP-1 resolution 3456x2160 scale 2 position 0 0
 #output HDMI-A-1 resolution 1920x1080 position 3456 0
-# below monitor is for home office
+# below monitor is for home office (right)
 output HDMI-A-1 resolution 1920x1080@60Hz position 1728 0
-# below monitor is LG monitor at UJET office
+# below monitor is LG monitor at UJET office (right)
 #output HDMI-A-1 resolution 3840x2160@60Hz scale 1.5 position 1728 0
 #
 ### Output configuration
@@ -299,8 +299,10 @@ exec --no-startup-id mkdir /run/user/1000/keybase/kbfs
 exec --no-startup-id kbfsfuse
 # Keybase GUI launch in Wayland mode
 exec --no-startup-id /opt/keybase/Keybase --ozone-platform=wayland
-# Audio applet in systray (wayland friendly)
-exec --no-startup-id pasystray
+# Audio applet in systray (not needed; provided in my waybar config)
+#exec --no-startup-id pasystray
+# https://github.com/ErikReider/SwayNotificationCenter
+exec --no-startup-id swaync
 # Clipboard for SwayWM
 exec wl-paste -t text --watch clipman store --no-persist --max-items=1024
 # Set XDG_CURRENT_DESKTOP for dbus; needed for 'xdg-desktop-portal-wlr'
@@ -311,7 +313,8 @@ exec emacs
 #
 # Custom Keyboard shortcuts/keybindings
 #
-bindsym $mod+Shift+b exec MOZ_ENABLE_WAYLAND=1 firefox  # FF runs in native Wayland!
+#bindsym $mod+Shift+b exec firefox-wayland
+bindsym $mod+Shift+b exec chromium-browser --enable-features=UseOzonePlatform --ozone-platform=wayland --gtk-version=4
 bindsym $mod+Shift+m exec emacs
 bindsym $mod+Shift+f exec thunar
 bindsym $mod+Shift+p exec clipman pick -t wofi # view clipboard
@@ -326,3 +329,5 @@ bindsym Ctrl+Shift+Backspace exec killall -s SIGINT wf-recorder
 include /etc/sway/config.d/*
 # lock screen
 bindsym --release $mod+Shift+l exec 'swaylock -f -c 000000'
+# toggle Sway Notification Center controls
+bindsym $mod+Shift+n exec swaync-client -t -sw

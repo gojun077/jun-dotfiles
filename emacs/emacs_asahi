@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: May 2 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: May 7 2024
+;; Last Updated: Jun 7 2024
 ;;
 ;; These configs are for Emacs 29.1 and higher.
 
@@ -71,9 +71,12 @@
   :straight t)
 (use-package web-mode
   :straight t)
+(use-package xclip
+  :straight t)
 (use-package yaml-mode
   :straight t)
 
+(require 'exec-path-from-shell)
 (require 'browse-kill-ring)
 (require 'flymake-ruff)
 (require 'ox-md)
@@ -207,6 +210,8 @@
 (setq backup-directory-alist '(("" . "~/tmp")))
 ; Enable temp files and autosaving
 (setq make-backup-files t)
+; use Pandoc as default renderer for markdown
+(setq markdown-command "/usr/bin/pandoc")
 (setq auto-save-default t)
 ; Enable C-l, C-u change region to lower/upper case
 (put 'upcase-region 'disabled nil)
@@ -218,6 +223,14 @@
 (setq ido-everywhere t)
 ; use xetex to render pdf from LaTeX
 (setq TeX-engine 'xetex)
+
+; enable copy-paste to and from system clipboard in emacs nw mode
+; https://discourse.doomemacs.org/t/how-to-copy-in-wayland/4041/16
+(setq xclip-program "wl-copy")
+(setq xclip-select-enable-clipboard t)
+(setq xclip-mode t)
+; copy from emacs -nw terminal session to system clipboard
+(setq xclip-method (quote wl-copy))
 
 ;------------------------------------------------------------
 ; org-mode settings
@@ -233,7 +246,9 @@
                   "DONE(d!)")
         (sequence "|" "Canceled(c@)")))
 
-(setq org-log-done 'time)  ; timestamps for DONE status
+; add timestamp CLOSED: '<YYYY-MM-DD DoW HH:MM>' for DONE status
+(setq org-log-done 'time)
+
 ; add 'CREATED: <timestamp>' when new TODO state is changed
 (add-hook 'org-after-todo-state-change-hook
           (lambda ()
@@ -266,6 +281,8 @@
 (global-set-key (kbd "C-c l") #'org-store-link)
 (global-set-key (kbd "C-c a") #'org-agenda)
 (global-set-key (kbd "C-c c") #'org-capture)
+(global-set-key (kbd "C-c i g c") #'org-id-get-create)
+(setq org-id-link-to-org-use-id 'create-if-interactive)
 
 ; org-roam minor mode settings
 (setq org-roam-directory (file-truename
@@ -317,18 +334,15 @@
  ;; If there is more than one, they won't work right.
  )
 
-;; Commands to run when Emacs launched in graphical mode
-(when (display-graphic-p)
-  (use-package exec-path-from-shell
-    :ensure t
-    :defer 2
-    :config
-    (dolist (var '("PATH" "MANPATH" "GOPATH" "GOROOT" "LC_TYPE"
-                 "LC_ALL" "LANG" "SSH_AGENT_PID" "SSH_AUTH_SOCK"
-                 "SHELL"))
-      (add-to-list 'exec-path-from-shell-variables var))
-    (exec-path-from-shell-initialize))
+;; https://github.com/purcell/exec-path-from-shell/blob/master/README.md
+(dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO" "LANG"
+               "LC_CTYPE" "LC_TYPE" "GOPATH" "GOROOT" "SHELL"))
+  (add-to-list 'exec-path-from-shell-variables var))
+; don't invoke an interactive shell; default args are ("-l" "-i")
+(setq exec-path-from-shell-arguments nil)
 
+; Commands to run when Emacs launched in graphical mode
+(when (or (display-graphic-p) (daemonp))
   ; only run whitespace mode in graphical session
   (global-whitespace-mode 1)
   ; limit line length
@@ -357,11 +371,13 @@
   ;(load-theme 'sanityinc-solarized-light)
   ;(load-theme 'sanityinc-solarized-light-high-contrast)
   ;(load-theme 'solarized-light-high-contrast)
+  (exec-path-from-shell-initialize)
 )
 
 ;; Commands to run when Emacs launched in terminal mode
 (unless (display-graphic-p)
-  (load-theme 'adwaita t))
+  (load-theme 'adwaita t)
+  (exec-path-from-shell-initialize))
 
 (provide 'emacs)
 ;;; emacs ends here

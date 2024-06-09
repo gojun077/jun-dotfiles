@@ -1,3 +1,10 @@
+// Waybar config - original path to config: ~/.config/waybar/config
+// Last Updated: May 16 2024
+// Fonts needed to render all the emojis, symbols, and braille:
+// google-noto-color-emoji-fonts
+// google-noto-sans-egyptian-hieroglyphs-fonts
+// gdouros-symbola-fonts
+
 {
     // "Layer": "top", // Waybar at top layer
     // "position": "bottom", // Waybar position (top|bottom|left|right)
@@ -9,22 +16,27 @@
     "modules-right": ["pulseaudio", "network", "cpu", "memory", "disk", "temperature", "custom/clock", "tray"],
     // Modules configuration
 
-    //"sway/workspaces": {
-    //     "disable-scroll": true,
-    //     "all-outputs": true,
-    //     "format": "{name}: {icon}",
-    //     "format-icons": {
-    //         "1": "⠁",
-    //         "2": "⠃",
-    //         "3": "⠇",
-    //         "4": "⠞",
-    //         "5": "⠟",
-    //         "6": "⠿",
-    //         "urgent": "",
-    //         "focused": "",
-    //         "default": ""
-    //     }
-    // },
+    // "sway/workspaces": {
+    //      "disable-scroll": true,
+    //      "all-outputs": false,
+    //      "format": "{name} {icon}",
+    //      "format-icons": {
+    //          "1": "⠁",
+    //          "2": "⠃",
+    //          "3": "⠇",
+    //          "4": "⠞",
+    //          "5": "⠟",
+    //          "6": "⠿",
+    //          "7": "七",
+    //          "8": "八",
+    //          "9": "九",
+    //          "10": "十",
+    //          "urgent": "",
+    //          "focused": "",
+    //          "default": "",
+    //          "active": "*",
+    //      }
+    //  },
     //"keyboard-state": {
     //    "numlock": true,
     //    "capslock": true,
@@ -83,7 +95,7 @@
         "tooltip": false
     },
     "memory": {
-        "format": "{}% 디램"
+        "format": "{}% 𓀨"
     },
     "disk": {
         "interval": 30,
@@ -104,8 +116,9 @@
         "format-icons": ["🔅", "🔆"]
     },
     "battery": {
+        "bat": "macsmc-battery",
         "states": {
-            // "good": 95,
+            //"good": 95,
             "warning": 30,
             "critical": 15
         },
@@ -115,11 +128,11 @@
         //"format-alt": "{time} {icon}",
         // "format-good": "", // An empty format will hide the module
         // "format-full": "",
-        "format-icons": ["🔋"]
+        "format-icons": ["<U+F244>", "<U+F243>", "<U+F242>", "<U+F241>", "<U+F240>"]
     },
     "network": {
-        "interface": "br0", // (Optional) To force the use of this interface
-        //"format-wifi": "{essid} ({signalStrength}%) 📶",
+        //"interface": "br0", // (Optional) To force the use of this interface
+        "format-wifi": "{essid} ({signalStrength}%) 📶",
         "format-ethernet": "{ipaddr}/{cidr} 🖧",
         //"tooltip-format": "{ifname} via {gwaddr}",
         "format-linked": "{ifname} (No IP) ﹦",
