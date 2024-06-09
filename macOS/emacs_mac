@@ -3,7 +3,7 @@
 ;; .emacs for MacOS --- Summary
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated Jun 6 2024
+;; Last Updated Jun 9 2024
 ;;
 ;; This config file is for Emacs 29.1 and above and contains extra
 ;; keyconfigs for skhd keyboard shortcut manager and Yabai WM on MacOS
@@ -36,10 +36,6 @@
   :straight t)
 (use-package browse-kill-ring
   :straight t)
-(use-package color-theme-sanityinc-tomorrow
-  :straight t)
-(use-package cyberpunk-theme
-  :straight t)
 (use-package exec-path-from-shell
   :straight t)
 (use-package flymake-ruff
@@ -64,8 +60,6 @@
   :straight t)
 (use-package smartparens
   :straight t)
-(use-package solarized-theme
-  :straight t)
 (use-package tex
   :straight auctex)
 (use-package unicode-whitespace
@@ -73,6 +67,8 @@
 (use-package visual-fill-column
   :straight t)
 (use-package web-mode
+  :straight t)
+(use-package xclip
   :straight t)
 (use-package yaml-mode
   :straight t)
@@ -213,10 +209,13 @@
 ; use xetex to render pdf from LaTeX
 (setq TeX-engine 'xetex)
 
-; set PATH for emacs shell
-;(setenv "PATH" (concat (getenv "PATH") ":/usr/local/go/bin:$HOME/go/bin"))
-; set exec-path for emacs to include GOLANG binaries
-;(setq exec-path (append exec-path '("/usr/local/go/bin" "$HOME/go/bin")))
+; enable copy-paste to and from system clipboard in emacs nw mode
+(setq xclip-program "pbcopy")
+(setq xclip-select-enable-clipboard t)
+(setq xclip-mode t)
+; copy from emacs -nw terminal session to system clipboard
+; https://github.com/emacsmirror/xclip/blob/ec064e6ea9b236e56c0966b2ce03870a12a5d78d/xclip.el#L33
+(setq xclip-method (quote pbcopy))
 
 ;------------------------------------------------------------
 ; org-mode settings
@@ -371,6 +370,5 @@
   (load-theme 'adwaita t)
   (exec-path-from-shell-initialize))
 
-;(server-start)  ; emacsclient will open files in emacs session
 (provide '.emacs)
 ;;; .emacs ends here
