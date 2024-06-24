@@ -3,7 +3,7 @@
 ;; .emacs for MacOS --- Summary
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated May 6 2024
+;; Last Updated Jun 9 2024
 ;;
 ;; This config file is for Emacs 29.1 and above and contains extra
 ;; keyconfigs for skhd keyboard shortcut manager and Yabai WM on MacOS
@@ -36,10 +36,6 @@
   :straight t)
 (use-package browse-kill-ring
   :straight t)
-(use-package color-theme-sanityinc-tomorrow
-  :straight t)
-(use-package cyberpunk-theme
-  :straight t)
 (use-package exec-path-from-shell
   :straight t)
 (use-package flymake-ruff
@@ -64,8 +60,6 @@
   :straight t)
 (use-package smartparens
   :straight t)
-(use-package solarized-theme
-  :straight t)
 (use-package tex
   :straight auctex)
 (use-package unicode-whitespace
@@ -74,10 +68,13 @@
   :straight t)
 (use-package web-mode
   :straight t)
+(use-package xclip
+  :straight t)
 (use-package yaml-mode
   :straight t)
 
 (require 'browse-kill-ring)
+(require 'exec-path-from-shell)
 (require 'flymake-ruff)
 (require 'unicode-whitespace)
 (require 'smartparens-config)
@@ -104,7 +101,7 @@
   ;; customize compile command to run go build
   (if (not (string-match "go" compile-command))
       (set (make-local-variable 'compile-command)
-           "env GOOS=darwin GOARCH=amd64 go build -v -o bin/$(basename $(pwd)) && go test -v && go vet"))
+           "env GOOS=darwin GOARCH=arm64 go build -v -o bin/$(basename $(pwd)) && go test -v && go vet"))
 )
 (add-hook 'go-mode-hook 'go-mode-setup)
 
@@ -118,8 +115,6 @@
 (scroll-bar-mode 0)
 ; highlight parens
 (show-paren-mode t)
-; don't show toolbar
-(tool-bar-mode 0)
 ; Enable ido-mode
 (ido-mode 1)
 
@@ -135,7 +130,7 @@
                       :height 90)
   (set-face-attribute 'default nil
                       :font fontset
-                      :height 170))
+                      :height 160))
 
 
 ;;=========================
@@ -168,8 +163,8 @@
 
 ; Use spaces instead of tabs
 (setq-default indent-tabs-mode nil)
-; But when I must use TAB, set width to 4 chars
-(setq-default tab-width 4)
+; But when I must use TAB, set width to 2 chars
+(setq-default tab-width 2)
 ; formatting for C code
 (setq c-default-style "linux" c-basic-offset 4)
 ; shell script mode formatting
@@ -201,7 +196,8 @@
 ; Enable temp files and autosaving
 (setq make-backup-files t)
 (setq auto-save-default t)
-
+; use Pandoc as default renderer for markdown
+(setq markdown-command "/opt/homebrew/bin/pandoc")
 ; Enable C-l, C-u change region to lower/upper case
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
@@ -213,10 +209,13 @@
 ; use xetex to render pdf from LaTeX
 (setq TeX-engine 'xetex)
 
-; set PATH for emacs shell
-(setenv "PATH" (concat (getenv "PATH") ":/usr/local/go/bin:$HOME/go/bin"))
-; set exec-path for emacs to include GOLANG binaries
-(setq exec-path (append exec-path '("/usr/local/go/bin" "$HOME/go/bin")))
+; enable copy-paste to and from system clipboard in emacs nw mode
+(setq xclip-program "pbcopy")
+(setq xclip-select-enable-clipboard t)
+(setq xclip-mode t)
+; copy from emacs -nw terminal session to system clipboard
+; https://github.com/emacsmirror/xclip/blob/ec064e6ea9b236e56c0966b2ce03870a12a5d78d/xclip.el#L33
+(setq xclip-method (quote pbcopy))
 
 ;------------------------------------------------------------
 ; org-mode settings
@@ -331,7 +330,7 @@
 (global-set-key (kbd "s-<up>") (lambda () (interactive) (shell-command "yabai -m window --focus east")));
 
 ;; Commands to run when Emacs launched in graphical mode
-(when (display-graphic-p)
+(when (or (display-graphic-p) (daemonp))
   ; only run whitespace mode in graphical session
   (global-whitespace-mode 1)
   ; limit line length
@@ -344,6 +343,8 @@
   (unicode-whitespace-setup 'subdued-faces)
   ; enable whitespace-mode for all files
   (add-hook 'after-change-major-mode-hook 'whitespace-mode)
+  ; unicode-whitespace face settings
+  (unicode-whitespace-setup 'subdued-faces)
   ; disable scrollbar
   (scroll-bar-mode -1)
   ; disable toolbar
@@ -361,12 +362,13 @@
   ;(load-theme 'sanityinc-solarized-light)
   ;(load-theme 'sanityinc-solarized-light-high-contrast)
   ;(load-theme 'solarized-light-high-contrast)
+  (exec-path-from-shell-initialize)
 )
 
 ;; Commands to run when Emacs launched in terminal mode
 (unless (display-graphic-p)
-  (load-theme 'adwaita t))
+  (load-theme 'adwaita t)
+  (exec-path-from-shell-initialize))
 
-(server-start)  ; emacsclient will open files in emacs session
 (provide '.emacs)
 ;;; .emacs ends here

@@ -2,7 +2,7 @@
 #
 # Created on: Oct 25 2023
 # Created by: gopeterjun@naver.com
-# Last Updated: May 26 2024
+# Last Updated: Jun 6 2024
 #
 # PJ's config file for skhd keyboard shortcut manager for macOS
 
@@ -10,7 +10,7 @@
 #cmd - return : /Applications/Alacritty.app/Contents/MacOS/alacritty
 cmd - return : /opt/homebrew/bin/wezterm
 # open Emacs
-cmd - m : /Applications/Emacs.app/Contents/MacOS/emacs
+shift + cmd - m : /Applications/Emacs.app/Contents/MacOS/emacs
 
 # open Finder (file manager)
 shift + cmd - f : open -a Finder

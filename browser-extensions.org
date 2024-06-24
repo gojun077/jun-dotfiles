@@ -1,0 +1,54 @@
+#+TITLE: Browser extensions list
+#+SUBTITLE: extensions for Chrome and Firefox
+#+AUTHOR: Peter Jun Koh
+#+EMAIL: gopeterjun@naver.com
+#+DESCRIPTION: 
+#+KEYWORDS: web, extensions, productivity
+#+LANGUAGE:  en
+
+* Summary
+
+- Created on: <2024-06-18 Tue>
+- Last Updated: <2024-06-18 Tue 13:30>
+
+I wish that browsers supported dotfile-like config files to keep track of
+user configs including a list of 3rd party plugins and extensions. Since
+this doesn't seem to exist for Chrome and Firefox, In this file I have
+listed the extensions I am using to help me when setting up my browsers on
+a new machine.
+
+* Topics
+
+** Chrome extensions
+
+You can view a list of installed extensions from [[chrome://extensions/][chrome://extensions]] in
+Chrome or Chromium.
+
+- [[https://chromewebstore.google.com/detail/better-history/egehpkpgpgooebopjihjmnpejnjafefi?hl=en][Better History]]
+- [[https://chromewebstore.google.com/detail/markdown-viewer/ckkdlimhmcjmikdlpkmbgfkaikojcbjk?hl=en][Markdown Viewer]]
+- [[https://chromewebstore.google.com/detail/okta-browser-plugin/glnpjglilkicbckjpbgcfkogebgllemb?hl=en][Okta Browser Plugin]] (required by work)
+- [[https://chromewebstore.google.com/detail/save-to-pocket/niloccemoadcdkdjlinkgdfekeahmflj?hl=en][Save to Pocket]]
+
+** Firefox extensions
+
+You can view a list of installed firefox extensions from [[about:addons][about:addons]]
+
+- [[https://addons.mozilla.org/en-US/firefox/addon/better-history-ng][better-history-ng]]
+- [[https://addons.mozilla.org/en-US/firefox/addon/markdown-viewer-chrome][Markdown Viewer]]
+
+The original better-history plugin was deprecated and the Github repo
+archived in 2023; [[https://github.com/Christoph-Wagner/firefox-better-history-ng][better-history-ng]] is a fork of the original project.
+/Markdown Viewer/ for Firefox appears to use the same codebase as the
+plugin for Chrome...
+
+Note that ~file:///~ access on Firefox for Linux [[https://github.com/simov/markdown-viewer/blob/main/firefox.md][doesn't work by default]]:
+
+#+begin_quote
+...files served with ~text/markdown~ content type will prompt you to
+download or open the file with an external app. For that reason markdown
+files have to be served with the ~text/plain~ content type instead.
+#+end_quote
+
+Refer to [[https://github.com/simov/markdown-viewer/blob/main/firefox.md][firefox.md]] from the ~markdown-viewer~ Github repo for details on
+workarounds. In practice, however, I just use Chrome to render markdown
+files on my local disk.

@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # login_settings_source_me.sh
 #
-# Last Updated: Mar 4 2024
+# Last Updated: Jun 5 2024
 #
 # This file is for MacOS ONLY, and is intended to be `source`d, not
 # executed!
 #
 # Source this file in a new shell after booting.
-# `login_settings_source_me.sh` plays the role of `.bash_profile` in Linux 
+# `login_settings_source_me.sh` plays the role of `.bash_profile` in Linux
 # and other non-macOS POSIX environments.
 #
 # On MacOS, however, `.bash_profile` acts differently because every shell
@@ -31,15 +31,6 @@ if [ -f ~/.bashrc ]; then
   source ~/.bashrc
 fi
 
-# set PATH so it includes user's private bin if it exists
-if [ -d "$HOME/bin" ] ; then
-    PATH="$HOME/bin:$PATH"
-fi
-
-if [ -d "$HOME/.local/bin" ] ; then
-    PATH="$HOME/.local/bin:$PATH"
-fi
-
 # Nix
 if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
   . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
@@ -51,8 +42,10 @@ fi
 export GOROOT=/usr/local/go
 export GOPATH="/Users/$USER/go"
 export PYENV_ROOT="$HOME/.pyenv"
-export PATH="/opt/homebrew/bin:$PYENV_ROOT:$GOROOT/bin:$GOPATH/bin:$PATH"
 #export NIX_PATH="$HOME/.nix-defexpr"
+export RVMPATH="$HOME/.rvm/bin"
+
+export PATH="$HOME/bin:$HOME/google-cloud-sdk/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/user/local/MacGPG2/bin:/Library/TeX/texbin:/opt/homebrew/bin:$PYENV_ROOT:$GOROOT/bin:$GOPATH/bin"
 
 # Set PATH variable to enable shims, no shell integration
 #eval "$(pyenv init --path)"
@@ -60,3 +53,4 @@ export PATH="/opt/homebrew/bin:$PYENV_ROOT:$GOROOT/bin:$GOPATH/bin:$PATH"
 # enable autocomplete
 eval "$(pyenv init -)"
 ssh-add --apple-load-keychain
+

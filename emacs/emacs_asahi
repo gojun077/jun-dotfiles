@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: May 2 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Jun 2 2024
+;; Last Updated: Jun 7 2024
 ;;
 ;; These configs are for Emacs 29.1 and higher.
 
@@ -70,6 +70,8 @@
 (use-package visual-fill-column
   :straight t)
 (use-package web-mode
+  :straight t)
+(use-package xclip
   :straight t)
 (use-package yaml-mode
   :straight t)
@@ -221,6 +223,14 @@
 (setq ido-everywhere t)
 ; use xetex to render pdf from LaTeX
 (setq TeX-engine 'xetex)
+
+; enable copy-paste to and from system clipboard in emacs nw mode
+; https://discourse.doomemacs.org/t/how-to-copy-in-wayland/4041/16
+(setq xclip-program "wl-copy")
+(setq xclip-select-enable-clipboard t)
+(setq xclip-mode t)
+; copy from emacs -nw terminal session to system clipboard
+(setq xclip-method (quote wl-copy))
 
 ;------------------------------------------------------------
 ; org-mode settings

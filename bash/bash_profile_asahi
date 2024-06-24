@@ -3,7 +3,7 @@
 #
 # Created on: Apr 28 2024
 # Created by gojun077
-# Last Updated: Jun 2 2024
+# Last Updated: Jun 4 2024
 #
 # These settings are sourced by the login shell
 
@@ -13,27 +13,12 @@ if [ -f ~/.bashrc ]; then
   source "$HOME"/.bashrc
 fi
 
-# set PATH so it includes user's private bin if it exists
-if [ -d "$HOME/bin" ] ; then
-    PATH="$HOME/bin:$PATH"
-fi
-
-if [ -d "$HOME/.local/bin" ] ; then
-    PATH="$HOME/.local/bin:$PATH"
-fi
-
-if [ -d ~/.cargo ]; then
-  # shellcheck disable=SC1091
-  source "$HOME/.cargo/env"
-fi
-
-
 GPG_TTY=$(tty)
 export GPG_TTY
 export GOROOT=/usr/local/go  # consider moving this to the system `bash_profile`
 export GOPATH=$HOME/go
 export PYTHONBREAKPOINT=ipdb.set_trace
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$GOPATH/bin:$GOROOT/bin:$PATH"
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$GOPATH/bin:$GOROOT/bin:$HOME/.local/bin:$HOME/bin:$HOME/.tfenv/bin"
 export SSH_AUTH_SOCK="/run/user/1000/ssh-agent.socket"
 # NOTE: if GNOME keyring is installed, you must deactivate its ssh component
 # otw it will overwrite SSH_AUTH_SOCK above
