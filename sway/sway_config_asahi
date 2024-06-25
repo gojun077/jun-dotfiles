@@ -5,7 +5,7 @@
 # Read `man 5 sway` for a complete reference.
 # Created on: Apr 28 2024
 # Created by: gojun077@gmail.com
-# Last Updated: Jun 13 2024
+# Last Updated: Jun 24 2024
 
 
 ### Variables
@@ -100,6 +100,14 @@ input "76:617:peter.koh___s_Mouse" {
     middle_emulation disabled
     click_method clickfinger
     tap_button_map lrm
+}
+
+# Xiaomi Silent Mouse settings, Asahi Linux
+input "14:13330:Mi_Silent_Mouse_5.0" {
+  accel_profile adaptive
+  pointer_accel 0
+  natural_scroll enabled  # scroll up moves screen down
+  scroll_factor 1.0
 }
 
 input "1133:45111:MX_Anywhere_3S_Mouse" {
