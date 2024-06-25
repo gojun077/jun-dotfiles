@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: May 2 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Jun 7 2024
+;; Last Updated: Jun 25 2024
 ;;
 ;; These configs are for Emacs 29.1 and higher.
 
@@ -340,6 +340,16 @@
   (add-to-list 'exec-path-from-shell-variables var))
 ; don't invoke an interactive shell; default args are ("-l" "-i")
 (setq exec-path-from-shell-arguments nil)
+(setq zoneinfo-style-world-list
+      '(("Pacific/Honolulu" "Honolulu")
+        ("America/Los_Angeles" "Seattle")
+        ("America/New_York" "New York")
+        ("Europe/London" "London")
+        ("Europe/Paris" "Paris")
+        ("Europe/Sofia" "Sofia")
+        ("Asia/Ho_Chi_Minh" "Ho_Chi_Minh")
+        ("Asia/Dhaka" "Dhaka")
+        ("Asia/Seoul" "Seoul")))
 
 ; Commands to run when Emacs launched in graphical mode
 (when (or (display-graphic-p) (daemonp))
