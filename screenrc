@@ -39,8 +39,10 @@ defflow auto
 #
 
 #term xterm
-term screen-256color
-#term xterm-256color
+#term screen-256color
+# xterm-256color has the best compatibility with a variety of TUI
+# apps like Midnight Commander
+term xterm-256color
 
 ###################
 #
