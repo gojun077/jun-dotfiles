@@ -1,11 +1,11 @@
-# sway tiling WM config for Macbook Pro M1 running Asahi Linux
+# sway tiling WM config for Macbook Air M2 running Asahi Linux
 # Default config '/etc/sway/config' copied to ~/.config/sway/config
 # and customized.
 #
 # Read `man 5 sway` for a complete reference.
-# Created on: Apr 28 2024
+# Created on: Jun 29 2024
 # Created by: gojun077@gmail.com
-# Last Updated: Jun 24 2024
+# Last Updated: Jun 30 2024
 
 
 ### Variables
@@ -38,13 +38,10 @@ include /etc/sway/config-vars.d/*
 #
 # You can get the names of your outputs by running: swaymsg -t get_outputs
 #
-# built-in MBP M1 panel on left
-output eDP-1 resolution 3456x2160 scale 2 position 0 0
-#output HDMI-A-1 resolution 1920x1080 position 3456 0
+# built-in MBA M2 14-inch panel on left
+output eDP-1 resolution 2560x1600 scale 1.5 position 0 0
 # below monitor is for home office (right)
-#output HDMI-A-1 resolution 1920x1080@60Hz position 1728 0
-# below monitor is LG monitor at UJET office (right)
-output HDMI-A-1 resolution 3840x2160@60Hz scale 1.5 position 1728 0
+output HDMI-A-1 resolution 1920x1080@60Hz position 1706 0
 #
 ### Output configuration
 #
@@ -301,12 +298,6 @@ default_border pixel 3
 #
 # IME for CJK
 exec --no-startup-id fcitx5 -d -r # fcitx5 IME works with Wayland
-# Keybase KBFS mount
-exec --no-startup-id mkdir /run/user/1000/keybase/kbfs
-# Start kbfsfuse
-exec --no-startup-id kbfsfuse
-# Keybase GUI launch in Wayland mode
-exec --no-startup-id /opt/keybase/Keybase --ozone-platform=wayland
 # Audio applet in systray (not needed; provided in my waybar config)
 #exec --no-startup-id pasystray
 # https://github.com/ErikReider/SwayNotificationCenter

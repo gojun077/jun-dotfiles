@@ -3,7 +3,7 @@
 ;; .emacs for MacOS --- Summary
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated Jun 9 2024
+;; Last Updated 04 Jul 2024
 ;;
 ;; This config file is for Emacs 29.1 and above and contains extra
 ;; keyconfigs for skhd keyboard shortcut manager and Yabai WM on MacOS
@@ -264,7 +264,8 @@
 (global-set-key (kbd "C-c l") #'org-store-link)
 (global-set-key (kbd "C-c a") #'org-agenda)
 (global-set-key (kbd "C-c c") #'org-capture)
-
+(global-set-key (kbd "C-c i g c") #'org-id-get-create)
+(setq org-id-link-to-org-use-id 'create-if-interactive)
 ; org-roam minor mode settings
 (setq org-roam-directory (file-truename
                           "~/Documents/repos/personal/pj-org-roam"))
