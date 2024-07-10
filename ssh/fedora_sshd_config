@@ -85,7 +85,9 @@ Include /etc/ssh/sshd_config.d/*.conf
 Subsystem      sftp    internal-sftp
 # The above setting will avoid user shell for launching stfp-server
 # .bashrc, .bash_profile etc can produce output that sftp clients
-# will try to parse
+# will try to parse. Commonly caused by having a special banner or
+# bling from 'neofetch' in your .bashrc
+#
 # See https://stackoverflow.com/questions/8250379/sftp-on-linux-server-gives-error-received-message-too-long
 
 # Example of overriding settings on a per-user basis
