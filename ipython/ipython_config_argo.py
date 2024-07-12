@@ -4,7 +4,7 @@
 # Created on: 12 Jul 2024
 # Last Update: 12 Jul 2024
 
-from powerline.bindings.ipython.since_5 import PowerlinePrompts
+from powerline.bindings.ipython.since_7 import PowerlinePrompts
 
 c = get_config()  #noqa
 
