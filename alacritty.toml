@@ -2,13 +2,36 @@
 #
 # original path: ~/.config/alacritty/alacritty.toml
 #
-# Created on: May 20 2024
-# Last Updated: Jun 5 2024
+# Created on: 20 May 2024
+# Last Updated: 12 Jul 2024
 #
 # Starting from Alacritty v0.13, the config file format is TOML
 # (Tom's Obvious Minimal Language). Previous versions used YAML.
 # This file was auto-generated from `alacritty.yaml` using the
 # `alacritty migrate` command
+
+import = ["~/.config/alacritty/themes/themes/nord.toml"]
+# You must have installed 'alacritty-theme' for this above import
+# to work! See https://github.com/alacritty/alacritty-theme
+#
+# List of interesting themes:
+# - argonaut : a high contrast dark theme
+# - baitong : a Green CRT-like theme with color
+# - bluish : kind of like midnight commander
+# - chicago95 : reminiscent of DOS fonts
+# - cyber_punk_neon : 80's cyberpunk
+# - deep_space : futuristic dark theme
+# - dracula : a popular dark theme
+# - everforest_dark : looks like zenburn but easier on the eyes
+# - gotham : dark, high-contrast
+# - inferno : lots of orange and brown tones
+# - iris : a purple-tinted dark theme
+# - material_theme : popular dark theme
+# - monokai : popular dark brown theme
+# - nord : popular dark with blue tint theme
+# - solarized_dark : popular dark solarized theme
+
+
 
 [font]
 size = 13.0
@@ -20,8 +43,8 @@ option_as_alt = "OnlyLeft"
 
 [font.normal]
 family = "Monofur Nerd Font Mono"
-[scrolling]
 
+[scrolling]
 history = 10000
 
 [shell]
