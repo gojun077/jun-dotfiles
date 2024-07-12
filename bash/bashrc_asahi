@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # ~/.bashrc for Asahi Linux (Apple Silicon Macs)
 #
-# Created On: Apr 30 2024
+# Created On: 30 Apr 2024
 # Created by: gopeterjun@naver.com
-# Last Updated: Apr 30 2024
+# Last Updated: 12 Jul 2024
 
 # If not running interactively, don't do anything
 #[[ $- != *i* ]] && return
@@ -25,11 +25,28 @@ shopt -s checkwinsize
 # Prompt: "user@hostname CurrentWorkingDirectory $ " no color
 #PS1='[\u@\h \W]\$ '
 
-# Same as above, but user@host in green, CWD in blue
-PS1="\[\033[01;32m\]\u@\h\[\033[00m\] \[\033[01;34m\]\W\[\033[00m\]\$ "
+function _update_ps1() {
+  PS1="$(/usr/bin/powerline-go \
+    -error $? \
+    -cwd-max-depth 3 \
+    -hostname-only-if-ssh \
+    -max-width 95 \
+    -jobs $(jobs -p | wc -l))"
 
-# Prompt: "user@host:" in green, "full path to CWD" in blue
-#PS1="\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ "
+    # Uncomment the following line to automatically clear errors after showing
+    # them once. This not only clears the error for powerline-go, but also for
+    # everything else you run in that shell. Don't enable this if you're not
+    # sure this is what you want.
+
+    #set "?"
+}
+
+# Same as above, but user@host in green, CWD in blue
+#PS1="\[\033[01;32m\]\u@\h\[\033[00m\] \[\033[01;34m\]\W\[\033[00m\]\$ "
+
+if [ "$TERM" != "linux" ] && [ -f "/usr/bin/powerline-go" ]; then
+    PROMPT_COMMAND="_update_ps1; $PROMPT_COMMAND"
+fi
 
 source ~/.bash_aliases
 # vim: ts=2 sw=2 et :
