@@ -1,9 +1,9 @@
 ; -*- mode: emacs-lisp -*-
 
 ;; My .emacs for Asahilinux Fedora Remix
-;; Created on: May 2 2024
+;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Jun 25 2024
+;; Last Updated: 14 Jul 2024
 ;;
 ;; These configs are for Emacs 29.1 and higher.
 
@@ -118,6 +118,11 @@
 )
 (add-hook 'go-mode-hook 'go-mode-setup)
 
+; c-mode settings
+(setq c-default-style "linux" c-basic-offset 4)
+(add-hook 'c-mode-hook #'flymake-mode)
+
+
 ;; mode settings
 ; show col and line numbers
 (column-number-mode 1)
@@ -178,8 +183,6 @@
 (setq-default indent-tabs-mode nil)
 ; But when I must use TAB, set width to 2 chars
 (setq-default tab-width 2)
-; formatting for C code
-(setq c-default-style "linux" c-basic-offset 4)
 ; shell script mode formatting
 (setq sh-basic-offset 2)
 (setq sh-indentation 2)
