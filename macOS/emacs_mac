@@ -3,10 +3,12 @@
 ;; .emacs for MacOS --- Summary
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated 04 Jul 2024
+;; Last Updated 13 Jul 2024
 ;;
 ;; This config file is for Emacs 29.1 and above and contains extra
 ;; keyconfigs for skhd keyboard shortcut manager and Yabai WM on MacOS
+;; Also this config assumes you are using an Apple Silicon Macbook
+;; Darwin aarch64
 
 
 ;;; Code:
@@ -105,6 +107,8 @@
 )
 (add-hook 'go-mode-hook 'go-mode-setup)
 
+; Settings for C mode
+(add-hook 'c-mode-hook (lambda () (flymake-mode t)))
 
 ;; mode settings
 ; show col and line numbers
@@ -165,7 +169,7 @@
 (setq-default indent-tabs-mode nil)
 ; But when I must use TAB, set width to 2 chars
 (setq-default tab-width 2)
-; formatting for C code
+; C formatting (does NOT use Kernel style with 8-char tabs)
 (setq c-default-style "linux" c-basic-offset 4)
 ; shell script mode formatting
 (setq sh-basic-offset 2)

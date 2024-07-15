@@ -2,7 +2,7 @@
 # login_settings_source_me.sh
 #
 # Created on: Sometime in 2024
-# Last Updated: 12 Jul 2024
+# Last Updated: 15 Jul 2024
 #
 # This file is for MacOS ONLY, and is intended to be `source`d, not
 # executed!
@@ -51,7 +51,7 @@ export PYENV_ROOT="$HOME/.pyenv"
 #export NIX_PATH="$HOME/.nix-defexpr"
 export RVMPATH="$HOME/.rvm/bin"
 
-export PATH="$HOME/bin:$HOME/.nix-profile/bin:/nix/var/nix/profiles/default/bin:$HOME/google-cloud-sdk/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/user/local/MacGPG2/bin:/Library/TeX/texbin:/opt/homebrew/bin:$PYENV_ROOT:$GOROOT/bin:$GOPATH/bin"
+export PATH="$HOME/bin:$HOME/.nix-profile/bin:/nix/var/nix/profiles/default/bin:$HOME/google-cloud-sdk/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/user/local/MacGPG2/bin:/Library/TeX/texbin:/opt/homebrew/bin:$PYENV_ROOT:$GOROOT/bin:$GOPATH/bin:$HOME/.krew/bin"
 
 # Set PATH variable to enable shims, no shell integration
 #eval "$(pyenv init --path)"
