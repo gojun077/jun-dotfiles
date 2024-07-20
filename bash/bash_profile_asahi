@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Per-user `~/.bash_profile` for Asahilinux Fedora
 #
-# Created on: Apr 28 2024
+# Created on: 28 Apr 2024
 # Created by gojun077
-# Last Updated: Jun 4 2024
+# Last Updated: 14 Jul 2024
 #
 # These settings are sourced by the login shell
 
@@ -18,7 +18,7 @@ export GPG_TTY
 export GOROOT=/usr/local/go  # consider moving this to the system `bash_profile`
 export GOPATH=$HOME/go
 export PYTHONBREAKPOINT=ipdb.set_trace
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$GOPATH/bin:$GOROOT/bin:$HOME/.local/bin:$HOME/bin:$HOME/.tfenv/bin"
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$GOPATH/bin:$GOROOT/bin:$HOME/.local/bin:$HOME/bin:$HOME/.tfenv/bin:$HOME/.krew/bin"
 export SSH_AUTH_SOCK="/run/user/1000/ssh-agent.socket"
 # NOTE: if GNOME keyring is installed, you must deactivate its ssh component
 # otw it will overwrite SSH_AUTH_SOCK above
