@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: 14 Jul 2024
+;; Last Updated: 21 Jul 2024
 ;;
 ;; These configs are for Emacs 29.1 and higher.
 
@@ -118,8 +118,10 @@
 )
 (add-hook 'go-mode-hook 'go-mode-setup)
 
-; c-mode settings
-(setq c-default-style "linux" c-basic-offset 4)
+;; cc-mode settings
+; Note K&R style uses spaces for indentation
+(setq c-default-style "k&r"
+      c-basic-offset 4)
 (add-hook 'c-mode-hook #'flymake-mode)
 
 
