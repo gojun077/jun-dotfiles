@@ -3,7 +3,7 @@
 ;; .emacs for MacOS --- Summary
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated 13 Jul 2024
+;; Last Updated 22 Jul 2024
 ;;
 ;; This config file is for Emacs 29.1 and above and contains extra
 ;; keyconfigs for skhd keyboard shortcut manager and Yabai WM on MacOS
@@ -107,7 +107,10 @@
 )
 (add-hook 'go-mode-hook 'go-mode-setup)
 
-; Settings for C mode
+;; cc-mode settings
+; Note K&R style uses spaces for indentation
+(setq c-default-style "k&r"
+      c-basic-offset 4)
 (add-hook 'c-mode-hook (lambda () (flymake-mode t)))
 
 ;; mode settings
