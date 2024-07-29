@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: 22 Jul 2024
+;; Last Updated: 30 Jul 2024
 ;;
 ;; These configs are for Emacs 29.1 and higher.
 
@@ -59,6 +59,8 @@
 (use-package racket-mode
   :straight t)
 (use-package rainbow-delimiters
+  :straight t)
+(use-package sicp
   :straight t)
 (use-package smartparens
   :straight t)
