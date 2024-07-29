@@ -22,24 +22,7 @@ HISTFILESIZE=15000
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
 
-function _update_ps1() {
-  PS1="$(/usr/local/bin/powerline-go \
-    -error $? \
-    -cwd-max-depth 3 \
-    -hostname-only-if-ssh \
-    -max-width 95 \
-    -jobs $(jobs -p | wc -l))"
-
-    # Uncomment the following line to automatically clear errors after showing
-    # them once. This not only clears the error for powerline-go, but also for
-    # everything else you run in that shell. Don't enable this if you're not
-    # sure this is what you want.
-
-    #set "?"
-}
-
-if [ "$TERM" != "linux" ] && [ -f "/usr/bin/powerline-go" ]; then
-    PROMPT_COMMAND="_update_ps1; $PROMPT_COMMAND"
-fi
-
+# use starship customizable prompt
+# curl -sS https://starship.rs/install.sh | sh
+eval "$(starship init bash)"
 source ~/.bash_aliases
