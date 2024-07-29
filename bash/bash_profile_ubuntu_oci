@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Per-user `~/.bash_profile` for Ubuntu on Oracle Cloud
+#
+# Created on: 29 Jul 2024
+# Created by: gopeterjun@naver.com
+# Last Updated: 29 Jul 2024
+#
+# These settings are sourced by the login shell
+
+if [ -f ~/.bashrc ]; then
+  # SC override is to quiet the warning about following path to source
+  # shellcheck disable=SC1091
+  source "$HOME"/.bashrc
+fi
+
+export GOROOT=/usr/local/go  # consider moving this to the system `bash_profile`
+export GOPATH=$HOME/go
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$GOPATH/bin:$GOROOT/bin:$HOME/.local/bin:$HOME/bin"
+
+# This machine is a headless VPS so we don't want a separate 'ssh-agent'
+# running; When I ssh into the box, I will forward my local ssh-agent
+#export SSH_AUTH_SOCK="/run/user/1000/ssh-agent.socket"
+export TERM=xterm-256color
+export EDITOR="vim"
