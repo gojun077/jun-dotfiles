@@ -144,21 +144,6 @@
 ; Enable ido-mode
 (ido-mode 1)
 
-;; Font settings
-(let ((fontset "fontset-default"))
-  (set-fontset-font fontset 'latin
-                    '("MonofurNerdFontMono" . "unicode-bmp"))
-  (set-fontset-font fontset 'hangul
-                    '("NanumGothic" . "unicode-bmp"))
-  (set-face-attribute 'mode-line nil
-                      :font fontset
-                      :height 110)
-  (set-face-attribute 'default nil
-                      :font fontset
-                      :height 150))
-
-;; font names on Linux 'MonofurNerdFontMono', 'FiraMono'
-
 
 ;;=========================
 ;;   CUSTOM MENU OPTIONS
@@ -338,14 +323,6 @@
 (setq leuven-scale-org-document-title 1.5)
 (setq leuven-scale-volatile-highlight 1.2)
 
-
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
-
 ;; https://github.com/purcell/exec-path-from-shell/blob/master/README.md
 (dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO" "LANG"
                "LC_CTYPE" "LC_TYPE" "GOPATH" "GOROOT" "SHELL"))
@@ -400,6 +377,57 @@
 (unless (display-graphic-p)
   (load-theme 'adwaita t)
   (exec-path-from-shell-initialize))
+
+;; Font settings - note that this must be set *after* (load-theme)
+;; to avoid conflicts with the theme
+
+(let ((default-font "MonofurNerdFontMono")
+      (korean-font "NanumGothic"))
+
+  ;; Set default font
+  (set-face-attribute 'default nil
+                      :family default-font
+                      :height 150)
+
+  ;; Set Korean font
+  (set-fontset-font t 'hangul (font-spec :family korean-font))
+
+  ;; Set mode-line font
+  (if (facep 'mode-line-active)
+      (set-face-attribute 'mode-line-active nil
+                          :family default-font
+                          :height 110)
+      (set-face-attribute 'mode-line nil
+                          :family default-font
+                          :height 110))
+  (set-face-attribute 'mode-line-inactive nil
+                      :family default-font
+                      :height 110)
+
+  ;; Create a custom face for the minibuffer
+  (defface my-minibuffer-face
+    '((t :inherit default))
+    "Face for Minibuffer")
+
+  ;; Set the Minibuffer font size
+  (set-face-attribute 'my-minibuffer-face nil
+                      :family default-font
+                      :height 120))
+
+;; Apply the custom face to the minibuffer
+(add-hook 'minibuffer-setup-hook
+          (lambda ()
+            (face-remap-add-relative 'default 'my-minibuffer-face)))
+
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+
+;; font names on Linux 'MonofurNerdFontMono', 'FiraMono'
+
 
 (provide 'emacs)
 ;;; emacs ends here
