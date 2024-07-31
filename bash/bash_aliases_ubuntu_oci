@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# bash_aliases_ubuntu_oci
+# Created on: 29 Jul 2024
+# Created by: gopeterjun@naver.com
+# Last Updated: 29 Jul 2024
+#
+# .bash_aliases for Ubuntu ARM server on Oracle Cloud
+
+alias ㅊㅇ='cd'
+alias 니='ls'
+alias ㅣㄴ='ls'
+alias hazip='curl https://icanhazip.com'
+alias ls='ls --color=auto'
+
+ansicat() {
+  if [ -f "$1" ]; then
+    infile="$1"
+    if [ -n "$2" ]; then
+      ansifilter -i "$infile" -o "$2"
+    else
+      ansifilter -i "$infile"| less -R
+    fi
+  else
+    printf "%s\\n" "File not found: $infile"
+    printf "%s\\n" "## USAGE: ansicat <inputfile> (outputfile) ##"
+    printf "%s\\n" "(outputfile) is optional argument"
+  fi
+}
+
+# disable warning about non-constant path
+# shellcheck disable=SC1090
+source ~/.bash_aliases_secure  # this file is not stored in version control

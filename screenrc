@@ -2,6 +2,9 @@
 # Jun's GNU Screen config file
 # ~/.screenrc
 #
+# Created on: Sometime in 2014
+# Last Updated: 25 Jul 2024
+
 
 ################
 #
@@ -11,7 +14,7 @@
 # Change default encoding to UTF8; equivalent to
 # screen -U
 defutf8 on
-
+8;39M
 ################
 #
 # Logging
@@ -26,11 +29,15 @@ deflog on
 #
 # Flow Control
 #
-
+# https://www.gnu.org/software/screen/manual/html_node/Flow-Control-Summary.html
+#
 # set default flow control setting for new windows
 # this is helpful for Emacs, which needs C-s to be
 # passed along instead of captured by GNU Screen
-# where C-s is XOFF (C-q XON)
+# where C-a C-s is XOFF (C-a C-q XON)
+#
+# In flow control 'auto' mode, use 'C-a f' aka 'flow' to toggle
+# between 'on', 'off', and 'auto'
 defflow auto
 
 ################

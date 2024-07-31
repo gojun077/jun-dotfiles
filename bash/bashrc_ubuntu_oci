@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# ~/.bashrc for Ubuntu ARM on Oracle Cloud
+#
+# Created On: 29 Jul 2024
+# Created by: gopeterjun@naver.com
+# Last Updated: 29 Jul 2024
+
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
+
+# don't put duplicate lines or lines starting with space in the history.
+# See bash(1) for more options
+HISTCONTROL=ignoreboth
+
+# append to the history file, don't overwrite it
+shopt -s histappend
+
+HISTSIZE=10000
+HISTFILESIZE=15000
+
+# check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+shopt -s checkwinsize
+
+# use starship customizable prompt
+# curl -sS https://starship.rs/install.sh | sh
+eval "$(starship init bash)"
+source ~/.bash_aliases
