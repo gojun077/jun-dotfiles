@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# ~/.bashrc for Asahi Linux (Apple Silicon Macs)
+# ~/.bashrc for Argo Fedora 40 amd64
 #
 # Created On: 30 Apr 2024
 # Created by: gopeterjun@naver.com
@@ -33,5 +33,5 @@ shopt -s checkwinsize
 
 eval "$(starship init bash)"
 source ~/.bash_aliases
-#neofetch
+neofetch
 # vim: ts=2 sw=2 et :
