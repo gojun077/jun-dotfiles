@@ -1,0 +1,10 @@
+# starship.toml for Macbook Air M2 personal laptop
+#
+# Original path to file is ~/.config/starship.toml
+#
+# Created on: 01 Aug 2024
+# Created by: gopeterjun@naver.com
+# Last Updated: 01 Aug 2024
+
+# following line not really needed, because the default is '$all'
+format = '$all'
