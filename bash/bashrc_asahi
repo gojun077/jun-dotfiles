@@ -3,7 +3,7 @@
 #
 # Created On: 30 Apr 2024
 # Created by: gopeterjun@naver.com
-# Last Updated: 01 Aug 2024
+# Last Updated: 03 Aug 2024
 
 # If not running interactively, don't do anything
 #[[ $- != *i* ]] && return
@@ -33,5 +33,7 @@ shopt -s checkwinsize
 
 eval "$(starship init bash)"
 source ~/.bash_aliases
-#neofetch
+neofetch
+mbcputemp="$(cat /sys/class/thermal/thermal_zone0/temp)"
+printf "%s\\n" "CPU temp: $((mbcputemp/1000)) C"
 # vim: ts=2 sw=2 et :
