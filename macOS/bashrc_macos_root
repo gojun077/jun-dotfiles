@@ -3,7 +3,7 @@
 #
 # Created On: 2021(?)
 # Created by: gopeterjun@naver.com
-# Last Updated: Jan 29 2024
+# Last Updated: 03 Aug 2024
 
 # If not running interactively, don't do anything
 #[[ $- != *i* ]] && return
@@ -30,5 +30,6 @@ PS1="\[\033[31m\]\h:\W \u\$\[\033[0m\] "
 
 alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
 alias enox="/usr/local/bin/emacsclient -nw"
+eval "$(starship init bash)"
 source ~/.bash_aliases
 # vim: ts=2 sw=2 et :

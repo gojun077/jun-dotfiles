@@ -3,13 +3,10 @@
 ;; .emacs for MacOS --- Summary
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated 22 Jul 2024
+;; Last Updated 03 Aug 2024
 ;;
-;; This config file is for Emacs 29.1 and above and contains extra
-;; keyconfigs for skhd keyboard shortcut manager and Yabai WM on MacOS
-;; Also this config assumes you are using an Apple Silicon Macbook
-;; Darwin aarch64
-
+;; This config file is for Emacs 29.1 and above on Apple Silicon
+;; it contains extra keyconfigs for skhd keyboard shortcut manager
 
 ;;; Code:
 
@@ -42,9 +39,13 @@
   :straight t)
 (use-package flymake-ruff
   :straight t)
+(use-package flymake-yamllint
+  :straight t)
 (use-package go-mode
   :straight t)
 (use-package go-playground
+  :straight t)
+(use-package kubernetes
   :straight t)
 (use-package leuven-theme
   :straight t)
@@ -57,6 +58,8 @@
 (use-package org-trello
   :straight (:build (:not compile)) t)
 (use-package racket-mode
+  :straight t)
+(use-package sicp
   :straight t)
 (use-package rainbow-delimiters
   :straight t)
@@ -78,6 +81,7 @@
 (require 'browse-kill-ring)
 (require 'exec-path-from-shell)
 (require 'flymake-ruff)
+(require 'ox-md)
 (require 'unicode-whitespace)
 (require 'smartparens-config)
 (require 'whitespace)
@@ -113,6 +117,10 @@
       c-basic-offset 4)
 (add-hook 'c-mode-hook (lambda () (flymake-mode t)))
 
+; yaml-mode settings
+(add-hook 'yaml-mode-hook 'flymake-yamllint-setup)
+(add-hook 'yaml-mode-hook #'flymake-mode)
+
 ;; mode settings
 ; show col and line numbers
 (column-number-mode 1)
@@ -124,20 +132,6 @@
 (show-paren-mode t)
 ; Enable ido-mode
 (ido-mode 1)
-
-;; Font settings
-;; monofur on MacOS requires cask 'font-monofur-nerd-font-mono'
-(let ((fontset "fontset-default"))
-  (set-fontset-font fontset 'latin
-                    '("Monofur Nerd Font Mono" . "unicode-bmp"))
-  (set-fontset-font fontset 'hangul
-                    '("NanumGothic" . "unicode-bmp"))
-  (set-face-attribute 'mode-line nil
-                      :font fontset
-                      :height 90)
-  (set-face-attribute 'default nil
-                      :font fontset
-                      :height 160))
 
 
 ;;=========================
@@ -172,8 +166,6 @@
 (setq-default indent-tabs-mode nil)
 ; But when I must use TAB, set width to 2 chars
 (setq-default tab-width 2)
-; C formatting (does NOT use Kernel style with 8-char tabs)
-(setq c-default-style "linux" c-basic-offset 4)
 ; shell script mode formatting
 (setq sh-basic-offset 2)
 (setq sh-indentation 2)
@@ -320,22 +312,23 @@
 (setq leuven-scale-org-document-title 1.5)
 (setq leuven-scale-volatile-highlight 1.2)
 
+;; https://github.com/purcell/exec-path-from-shell/blob/master/README.md
+(dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO" "LANG"
+               "LC_CTYPE" "LC_TYPE" "GOPATH" "GOROOT" "SHELL"))
+  (add-to-list 'exec-path-from-shell-variables var))
+; don't invoke an interactive shell; default args are ("-l" "-i")
+(setq exec-path-from-shell-arguments nil)
+(setq zoneinfo-style-world-list
+      '(("Pacific/Honolulu" "Honolulu")
+        ("America/Los_Angeles" "Seattle")
+        ("America/New_York" "New York")
+        ("Europe/London" "London")
+        ("Europe/Paris" "Paris")
+        ("Europe/Sofia" "Sofia")
+        ("Asia/Ho_Chi_Minh" "Ho_Chi_Minh")
+        ("Asia/Dhaka" "Dhaka")
+        ("Asia/Seoul" "Seoul")))
 
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
-
-;;=============================
-;;   Emacs Yabai WM functions
-;;=============================
-
-(global-set-key (kbd "s-<up>") (lambda () (interactive) (shell-command "yabai -m window --focus north")));
-(global-set-key (kbd "s-<down>") (lambda () (interactive) (shell-command "yabai -m window --focus south")));
-(global-set-key (kbd "s-<left>") (lambda () (interactive) (shell-command "yabai -m window --focus west")));
-(global-set-key (kbd "s-<up>") (lambda () (interactive) (shell-command "yabai -m window --focus east")));
 
 ;; Commands to run when Emacs launched in graphical mode
 (when (or (display-graphic-p) (daemonp))
@@ -377,6 +370,56 @@
 (unless (display-graphic-p)
   (load-theme 'adwaita t)
   (exec-path-from-shell-initialize))
+
+;; Font settings - note that this must be set *after* (load-theme)
+;; to avoid conflicts with the theme
+(let ((default-font "Monofur Nerd Font Mono")
+      (korean-font "NanumGothic"))
+
+  ;; Set default font
+  (set-face-attribute 'default nil
+                      :family default-font
+                      :height 150)
+
+  ;; Set Korean font
+  (set-fontset-font t 'hangul (font-spec :family korean-font))
+
+  ;; Set mode-line font
+  (if (facep 'mode-line-active)
+      (set-face-attribute 'mode-line-active nil
+                          :family default-font
+                          :height 110)
+      (set-face-attribute 'mode-line nil
+                          :family default-font
+                          :height 110))
+  (set-face-attribute 'mode-line-inactive nil
+                      :family default-font
+                      :height 110)
+
+  ;; Create a custom face for the minibuffer
+  (defface my-minibuffer-face
+    '((t :inherit default))
+    "Face for Minibuffer")
+
+  ;; Set the Minibuffer font size
+  (set-face-attribute 'my-minibuffer-face nil
+                      :family default-font
+                      :height 120))
+
+;; Apply the custom face to the minibuffer
+(add-hook 'minibuffer-setup-hook
+          (lambda ()
+            (face-remap-add-relative 'default 'my-minibuffer-face)))
+
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+)
+
+;; font names on MacOS 'Monofur Nerd Font Mono' is different from that
+;; on Linux, where the font is called 'MonofurNerdFontMono'
 
 (provide '.emacs)
 ;;; .emacs ends here
