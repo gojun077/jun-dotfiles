@@ -26,3 +26,7 @@ fi
 
 unset rc
 
+eval "$(starship init bash)"
+neofetch
+rpicputemp="$(cat /sys/class/thermal/thermal_zone0/temp)"
+printf "%s\\n" "CPU temp: $((rpicputemp/1000)) C"
