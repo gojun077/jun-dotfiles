@@ -6,7 +6,6 @@
 ;; Last Updated: 19 Aug 2024
 ;;
 ;; These configs are for Emacs 29.1 and higher.
-
 ;;; Code:
 
 ;; use straight.el instead of package.el
@@ -336,8 +335,9 @@
         ("Europe/London" "London")
         ("Europe/Paris" "Paris")
         ("Europe/Sofia" "Sofia")
-        ("Asia/Ho_Chi_Minh" "Ho_Chi_Minh")
         ("Asia/Dhaka" "Dhaka")
+        ("Asia/Ho_Chi_Minh" "Ho_Chi_Minh")
+        ("Asia/Manila" "Manila")
         ("Asia/Seoul" "Seoul")))
 
 ; Commands to run when Emacs launched in graphical mode
