@@ -331,6 +331,7 @@ bindsym $mod+Shift+p exec clipman pick -t wofi # view clipboard
 bindsym $mod+Shift+v exec code --ozone-platform=wayland
 # screenshot shortcut (select area)
 bindsym --release $mod+Shift+z exec 'grim -g "$(slurp)" - | swappy -f -'
+# refer to https://github.com/jtheoof/swappy for kbd shortcuts
 # video capture shortcut (select area)
 bindsym Ctrl+Shift+F12 exec wf-recorder -g "$(slurp)" -f ~/Videos/recording.mp4
 # stop video capture
