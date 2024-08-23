@@ -35,3 +35,5 @@ export EDITOR="emacsclient -nw"
 
 # add ssh privkeys to ssh-agent
 ssh-add ~/.ssh/archjun-newgen
+
+if [ -e /home/jundora/.nix-profile/etc/profile.d/nix.sh ]; then . /home/jundora/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
