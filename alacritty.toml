@@ -3,7 +3,7 @@
 # original path: ~/.config/alacritty/alacritty.toml
 #
 # Created on: 20 May 2024
-# Last Updated: 12 Jul 2024
+# Last Updated: 25 Aug 2024
 #
 # Starting from Alacritty v0.13, the config file format is TOML
 # (Tom's Obvious Minimal Language). Previous versions used YAML.
@@ -48,5 +48,5 @@ family = "Monofur Nerd Font Mono"
 history = 10000
 
 [shell]
-args = ["--login"]
+args = ["-i"]
 program = "/usr/bin/bash"
