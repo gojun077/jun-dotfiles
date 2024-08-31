@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: 19 Aug 2024
+;; Last Updated: 31 Aug 2024
 ;;
 ;; These configs are for Emacs 29.1 and higher.
 ;;; Code:
@@ -244,6 +244,10 @@
 
 ; add timestamp CLOSED: '<YYYY-MM-DD DoW HH:MM>' for DONE status
 (setq org-log-done 'time)
+
+;; org-export settings
+; see https://orgmode.org/manual/Export-Settings.html
+(setq org-export-with-clocks t)
 
 ; add 'CREATED: <timestamp>' when new TODO state is changed
 (add-hook 'org-after-todo-state-change-hook
