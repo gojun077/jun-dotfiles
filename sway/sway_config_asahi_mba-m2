@@ -3,9 +3,9 @@
 # and customized.
 #
 # Read `man 5 sway` for a complete reference.
-# Created on: Jun 29 2024
+# Created on: 29 Jun 2024
 # Created by: gojun077@gmail.com
-# Last Updated: Jun 30 2024
+# Last Updated: 29 Aug 2024
 
 
 ### Variables
@@ -321,8 +321,9 @@ bindsym $mod+Shift+f exec thunar
 bindsym $mod+Shift+p exec clipman pick -t wofi # view clipboard
 bindsym $mod+Shift+v exec code --ozone-platform=wayland
 # screenshot shortcut (select area)
-bindsym --release $mod+Shift+z exec grim -g "$(slurp)" \
-  ~/Pictures/grim-$(date +%F_%H.%M.%S).png
+bindsym --release $mod+Shift+z exec 'grim -g "$(slurp)" - | swappy -f -'
+# refer to https://github.com/jtheoof/swappy for kbd shortcuts
+
 # video capture shortcut (select area)
 bindsym Ctrl+Shift+F12 exec wf-recorder -g "$(slurp)" -f ~/Videos/recording.mp4
 # stop video capture
