@@ -1,9 +1,10 @@
 # alacritty.toml
 #
+# Alacritty TOML Config for MacOS
 # original path: ~/.config/alacritty/alacritty.toml
 #
-# Created on: Dec 31 2023
-# Last Updated: May 20 2024
+# Created on: 31 Dec 2023
+# Last Updated: 06 Sep 2024
 #
 # Starting from Alacritty v0.13, the config file format is TOML
 # (Tom's Obvious Minimal Language). Previous versions used YAML.
@@ -161,5 +162,5 @@ mods = "Alt"
 history = 10000
 
 [shell]
-args = ["--login"]
+args = ["=i"]
 program = "/usr/local/bin/bash"
