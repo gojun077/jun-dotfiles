@@ -2,7 +2,7 @@
 # login_settings_source_me.sh
 #
 # Created on: Sometime in 2024
-# Last Updated: 15 Jul 2024
+# Last Updated: 09 Sep 2024
 #
 # This file is for MacOS ONLY, and is intended to be `source`d, not
 # executed!
@@ -47,6 +47,8 @@ fi
 
 export GOROOT=/usr/local/go
 export GOPATH="/Users/$USER/go"
+export HOMEBREW_PREFIX=/opt/homebrew
+export HOMEBREW_CELLAR=/opt/homebrew/Cellar
 export PYENV_ROOT="$HOME/.pyenv"
 #export NIX_PATH="$HOME/.nix-defexpr"
 export RVMPATH="$HOME/.rvm/bin"
