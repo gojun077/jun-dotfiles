@@ -5,7 +5,7 @@
 # Read `man 5 sway` for a complete reference.
 # Created on: 28 Apr 2024
 # Created by: gojun077@gmail.com
-# Last Updated: 22 Aug 2024
+# Last Updated: 12 Sep 2024
 
 
 ### Variables
@@ -267,6 +267,13 @@ bindsym $mod+r mode "resize"
 #
     bindsym XF86MonBrightnessDown exec brightnessctl set 10-
     bindsym XF86MonBrightnessUp exec brightnessctl set +10
+
+#
+# Volume control
+#
+    bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
+    bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
+    bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
 
 #
 # Status Bar:
