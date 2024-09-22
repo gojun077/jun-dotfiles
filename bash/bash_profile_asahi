@@ -3,7 +3,7 @@
 #
 # Created on: 28 Apr 2024
 # Created by gojun077
-# Last Updated: 20 Aug 2024
+# Last Updated: 16 Sep 2024
 #
 # These settings are sourced by the login shell
 
@@ -36,6 +36,6 @@ export EDITOR="emacsclient -nw"
 # add ssh privkeys to ssh-agent
 # if you use a graphical session manager, the screen may go dark
 # while the shell waits for you to enter your ssh privkey password
-ssh-add ~/.ssh/archjun-newgen
+#ssh-add ~/.ssh/archjun-newgen
 
 if [ -e /home/jundora/.nix-profile/etc/profile.d/nix.sh ]; then . /home/jundora/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
