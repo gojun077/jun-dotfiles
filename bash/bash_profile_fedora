@@ -1,8 +1,8 @@
 # Per-user `~/.bash_profile` for Fedora
 #
-# Created on: Jul 31 2022
+# Created on: 31 Jul 2022
 # Created by gojun077
-# Last Updated: Apr 27 2024
+# Last Updated: 25 Sep 2024
 #
 # These settings are sourced by the login shell
 
@@ -24,8 +24,6 @@ if [ -d ~/.cargo ]; then
 fi
 
 
-GPG_TTY=$(tty)
-export GPG_TTY
 export GOROOT=/usr/local/go  # consider moving this to the system `bash_profile`
 export GOPATH=$HOME/go
 export PYTHONBREAKPOINT=ipdb.set_trace
