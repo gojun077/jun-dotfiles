@@ -3,7 +3,7 @@
 #
 # Created On: 30 Apr 2024
 # Created by: gopeterjun@naver.com
-# Last Updated: 01 Aug 2024
+# Last Updated: 25 Sep 2024
 
 # If not running interactively, don't do anything
 #[[ $- != *i* ]] && return
@@ -31,6 +31,8 @@ shopt -s checkwinsize
 # Same as above, but user@host in green, CWD in blue
 #PS1="\[\033[01;32m\]\u@\h\[\033[00m\] \[\033[01;34m\]\W\[\033[00m\]\$ "
 
+# https://unix.stackexchange.com/questions/470860/how-to-make-tty-work-in-bash-profile
+export GPG_TTY="$(tty)"
 eval "$(starship init bash)"
 source ~/.bash_aliases
 neofetch
