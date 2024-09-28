@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: 19 Sep 2024
+;; Last Updated: 27 Sep 2024
 ;;
 ;; These configs are for Emacs 29.1 and higher.
 ;;; Code:
@@ -32,6 +32,8 @@
 (use-package blacken
   :straight t)
 (use-package browse-kill-ring
+  :straight t)
+(use-package emojify
   :straight t)
 (use-package exec-path-from-shell
   :straight t)
@@ -172,6 +174,8 @@
 ; ensure GPG password input is handled by emacs during emacs session
 ;(setenv "GPG_AGENT_INFO" nil)
 
+; specify UTF-8 encoding for all buffers
+(setq set-language-environment "UTF-8")
 ; Use spaces instead of tabs
 (setq-default indent-tabs-mode nil)
 ; But when I must use TAB, set width to 2 chars
@@ -357,6 +361,7 @@
   (global-display-fill-column-indicator-mode 1)
   ; enable whitespace-mode for all files
   (add-hook 'after-change-major-mode-hook 'whitespace-mode)
+  (add-hook 'markdown-mode-hook 'emojify-mode)
   ; unicode-whitespace face settings
   (unicode-whitespace-setup 'subdued-faces)
   ; don't show scrollbar
