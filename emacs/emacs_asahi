@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: 03 Oct 2024
+;; Last Updated: 04 Oct 2024
 ;;
 ;; These configs are for Emacs 29.1 and higher.
 ;;; Code:
@@ -175,6 +175,13 @@
 
 ; specify UTF-8 encoding for all buffers
 (setq set-language-environment "UTF-8")
+(set-language-environment "UTF-8")
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(prefer-coding-system 'utf-8)
+(setq default-buffer-file-coding-system 'utf-8)
+
 ; Use spaces instead of tabs
 (setq-default indent-tabs-mode nil)
 ; But when I must use TAB, set width to 2 chars
