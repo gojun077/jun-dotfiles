@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: 27 Sep 2024
+;; Last Updated: 03 Oct 2024
 ;;
 ;; These configs are for Emacs 29.1 and higher.
 ;;; Code:
@@ -67,9 +67,8 @@
   :straight t)
 (use-package solarized-theme
   :straight t)
-; I cannot install 'auctex' using straight.el on Linux...
-;(use-package tex
-;  :straight auctex)
+(use-package tex
+  :straight auctex)
 (use-package unicode-whitespace
   :straight t)
 (use-package visual-fill-column
@@ -314,6 +313,7 @@
 
 
 ; AUCTeX settings
+;(load "auctex.el" nil t t)
 (setq TeX-auto-save t)
 (setq TeX-parse-self t)
 (setq-default TeX-master nil)
