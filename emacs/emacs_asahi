@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: 04 Oct 2024
+;; Last Updated: 07 Oct 2024
 ;;
 ;; These configs are for Emacs 29.1 and higher.
 ;;; Code:
@@ -68,7 +68,8 @@
 (use-package solarized-theme
   :straight t)
 (use-package tex
-  :straight auctex)
+  :straight auctex
+  :defer t)
 (use-package unicode-whitespace
   :straight t)
 (use-package visual-fill-column
