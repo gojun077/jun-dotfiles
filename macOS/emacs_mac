@@ -3,7 +3,7 @@
 ;; .emacs for MacOS --- Summary
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated 03 Aug 2024
+;; Last Updated 08 Aug 2024
 ;;
 ;; This config file is for Emacs 29.1 and above on Apple Silicon
 ;; it contains extra keyconfigs for skhd keyboard shortcut manager
@@ -418,8 +418,9 @@
  ;; If there is more than one, they won't work right.
 )
 
-;; font names on MacOS 'Monofur Nerd Font Mono' is different from that
-;; on Linux, where the font is called 'MonofurNerdFontMono'
+;; Nerd Font ttf names on MacOS are slightly different from those on
+;; on Linux: 'Monofur Nerd Font Mono' (MacOS), 'MonofurNerdFontMono'
+;; (Linux)
 
 (provide '.emacs)
 ;;; .emacs ends here
