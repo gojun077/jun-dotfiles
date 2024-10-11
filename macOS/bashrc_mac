@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# ~/.bashrc for MAC OS
+# ~/.bashrc for MacOS
 #
 # Created On: Sometime during Nov 2019
 # Created by: gopeterjun@naver.com
-# Last Updated: 20 Sep 2024
+# Last Updated: 11 Oct 2024
 
 # If not running interactively, don't do anything
 #[[ $- != *i* ]] && return
