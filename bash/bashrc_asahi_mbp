@@ -1,9 +1,9 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 # ~/.bashrc for Asahi Linux (Apple Silicon Macbook Pro M1)
 #
 # Created On: 30 Apr 2024
 # Created by: gopeterjun@naver.com
-# Last Updated: 19 Sep 2024
+# Last Updated: 08 Oct 2024
 
 # If not running interactively, don't do anything
 #[[ $- != *i* ]] && return
@@ -33,7 +33,10 @@ shopt -s checkwinsize
 
 eval "$(starship init bash)"
 eval "$(fzf --bash)"  # enable 'fzf' shell integration
-source ~/.bash_aliases
+
+# the following is to quiet error for SC1091, SC1090 'cannot follow dynamic paths'
+# shellcheck source=/dev/null
+source "$HOME/.bash_aliases"
 # comment out neofetch to prevent banner from running twice
 #neofetch
 mbcputemp="$(cat /sys/class/thermal/thermal_zone0/temp)"

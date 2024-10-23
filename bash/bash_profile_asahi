@@ -1,9 +1,9 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 # Per-user `~/.bash_profile` for Asahilinux Fedora
 #
 # Created on: 28 Apr 2024
 # Created by gojun077
-# Last Updated: 16 Sep 2024
+# Last Updated: 08 Oct 2024
 #
 # These settings are sourced by the login shell
 
@@ -17,8 +17,9 @@ GPG_TTY=$(tty)
 export GPG_TTY
 export GOROOT=/usr/local/go  # consider moving this to the system `bash_profile`
 export GOPATH=$HOME/go
+export PYENV_ROOT="$HOME/.pyenv"
 export PYTHONBREAKPOINT=ipdb.set_trace
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$GOPATH/bin:$GOROOT/bin:$HOME/.local/bin:$HOME/bin:$HOME/.tfenv/bin:$HOME/.krew/bin"
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$GOPATH/bin:$GOROOT/bin:$HOME/.local/bin:$HOME/bin:$PYENV_ROOT/bin:$HOME/.tfenv/bin:$HOME/.krew/bin"
 export SSH_AUTH_SOCK=/run/user/1000/ssh-agent.socket
 # NOTE: if GNOME keyring is installed, you must deactivate its ssh component
 # otw it will overwrite SSH_AUTH_SOCK above
@@ -38,4 +39,6 @@ export EDITOR="emacsclient -nw"
 # while the shell waits for you to enter your ssh privkey password
 #ssh-add ~/.ssh/archjun-newgen
 
-if [ -e /home/jundora/.nix-profile/etc/profile.d/nix.sh ]; then . /home/jundora/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
+# shellcheck source=/dev/null
+if [ -e "$HOME"/.nix-profile/etc/profile.d/nix.sh ]; then . "$HOME"/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
+eval "$(pyenv init --path)"
