@@ -1,11 +1,11 @@
-# sway tiling WM config for MSI DP20ZA 5600G with Radeon 7 iGPU
+# sway tiling WM config for MSI DP20ZA 5600G with Radeon 7 iGPU headless server
 # Default config '/etc/sway/config' copied to ~/.config/sway/config
 # and customized.
 #
 # Read `man 5 sway` for a complete reference.
 # Created on: 21 Sep 2021
 # Created by: gojun077@gmail.com
-# Last Updated: 25 Jun 2024
+# Last Updated: 25 Oct 2024
 
 
 ### Variables
@@ -13,9 +13,11 @@
 # Logo/Super/Hyper key. Use Mod1 for Alt.
 #set $mod Mod4
 # Change '$mod' from 'Super' to enable nested Sway sessions
-# i.e. local Sway using Super as $mod, remote Sway via wayvnc uses ESC
+# i.e. local Sway using Super as $mod, remote Sway via wayvnc uses alternate key like ESC/PrtSc/Ins
 #set $mod Escape
-set $mod Print
+#set $mod Print
+# Use 'Insert' as $mod key
+set $mod Insert
 # Home row direction keys, like vim
 set $left h
 set $down j
@@ -99,7 +101,7 @@ output HEADLESS-1 resolution 1920x960 position 1920,0
     # mouse button for dragging.
     #floating_modifier $mod normal
 
-    # Reload the configuration file
+    # Reload the configuration file (also 'sway reload' will work)
     bindsym $mod+Shift+c reload
 
     # Exit sway (logs you out of your Wayland session)
@@ -144,9 +146,10 @@ output HEADLESS-1 resolution 1920x960 position 1920,0
     bindsym $mod+0 workspace number 10
 
     # Move focused container to workspace
-    # 'mod+Shift+n' conflicts with screenshot shortcut on MacOS
+    # 'Super+Shift+n' conflicts with screenshot shortcut on MacOS
     # and I often access SwayWM via TigerVNC on MacOS
     # so I am using Ctrl+n below
+
     bindsym Ctrl+1 move container to workspace number 1
     bindsym Ctrl+2 move container to workspace number 2
     bindsym Ctrl+3 move container to workspace number 3
