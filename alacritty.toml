@@ -3,14 +3,14 @@
 # original path: ~/.config/alacritty/alacritty.toml
 #
 # Created on: 20 May 2024
-# Last Updated: 25 Aug 2024
+# Last Updated: 06 Nov 2024
 #
 # Starting from Alacritty v0.13, the config file format is TOML
 # (Tom's Obvious Minimal Language). Previous versions used YAML.
 # This file was auto-generated from `alacritty.yaml` using the
 # `alacritty migrate` command
 
-import = ["~/.config/alacritty/themes/themes/nord.toml"]
+general.import = ["~/.config/alacritty/themes/themes/nord.toml"]
 # You must have installed 'alacritty-theme' for this above import
 # to work! See https://github.com/alacritty/alacritty-theme
 #
