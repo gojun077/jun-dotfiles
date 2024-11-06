@@ -47,6 +47,6 @@ family = "Monofur Nerd Font Mono"
 [scrolling]
 history = 10000
 
-[shell]
+[terminal.shell]
 args = ["-i"]
 program = "/usr/bin/bash"
