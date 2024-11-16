@@ -3,11 +3,9 @@
 ;; .emacs for MacOS --- Summary
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated 08 Aug 2024
+;; Last Updated 16 Nov 2024
 ;;
 ;; This config file is for Emacs 29.1 and above on Apple Silicon
-;; it contains extra keyconfigs for skhd keyboard shortcut manager
-
 ;;; Code:
 
 ;; use straight.el instead of package.el
@@ -231,7 +229,7 @@
         (sequence "|" "Canceled(c@)")))
 
 (setq org-log-done 'time)  ; add timestamps on DONE status
-; add 'CREATED: <timestamp>' when new TODO state is changed
+; add 'CREATED: [inactive timestamp]' when new TODO state is changed
 (add-hook 'org-after-todo-state-change-hook
           (lambda ()
             (save-excursion
@@ -246,7 +244,7 @@
                   ;; (2) insert timestamp on next line
                   (forward-line 1)
                   (insert (concat "CREATED: "
-                      (format-time-string (org-time-stamp-format t)
+                      (format-time-string "[%Y-%m-%d %a %H:%M]"
                                           (current-time))
                       "\n")))))))
 
