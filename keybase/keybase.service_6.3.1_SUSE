@@ -1,5 +1,6 @@
 [Unit]
 Description=Keybase core service release 6.3.1 - SUSE Tumbleweed
+# https://github.com/keybase/client/blob/v6.3.1/packaging/linux/systemd/keybase.service
 
 [Service]
 # "notify" means we promise to call SdNotify() at the end of startup.

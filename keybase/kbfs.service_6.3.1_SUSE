@@ -3,6 +3,7 @@ Description=Keybase Filesystem service release 6.3.1 - SUSE Tumbleweed
 # Note that the "Requires" directive will cause a unit to be restarted whenever its dependency is restarted.
 # Do not issue a hard dependency on service, because kbfs can reconnect to a restarted service.
 # Do not issue a hard dependency on redirector, because it's ok if it fails (e.g., if it is disabled).
+# https://github.com/keybase/client/blob/v6.3.1/packaging/linux/systemd/kbfs.service
 Wants=keybase.service keybase-redirector.service
 
 [Service]
