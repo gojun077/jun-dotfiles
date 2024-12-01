@@ -1,0 +1,454 @@
+; -*- mode: emacs-lisp -*-
+
+;; My .emacs for Asahilinux Fedora Remix
+;; Created on: 02 Dec 2024
+;; Created by: gopeterjun@naver.com
+;; Last Updated: 02 Dec 2024
+;;
+;; These configs are for Emacs 29.1 and higher.
+;;; Code:
+
+;; use straight.el instead of package.el
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 6))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
+;; ensure latest org version is loaded by straight.el
+(straight-use-package 'org)
+;; Install use-package
+(straight-use-package 'use-package)
+
+(use-package ansible
+  :straight t)
+(use-package blacken
+  :straight t)
+(use-package browse-kill-ring
+  :straight t)
+(use-package emojify
+  :straight t)
+(use-package exec-path-from-shell
+  :straight t)
+(use-package flymake-hadolint
+  :straight t)
+(use-package flymake-ruff
+  :straight t)
+(use-package flymake-yamllint
+  :straight t)
+(use-package go-mode
+  :straight t)
+(use-package go-playground
+  :straight t)
+(use-package jenkinsfile-mode
+  :straight t)
+(use-package leuven-theme
+  :straight t)
+(use-package magit
+  :straight t)
+(use-package markdown-mode
+  :straight t)
+(use-package org-roam
+  :straight t)
+(use-package org-trello
+  :straight (:build (:not compile)) t)
+(use-package racket-mode
+  :straight t)
+(use-package rainbow-delimiters
+  :straight t)
+(use-package sicp
+  :straight t)
+(use-package smartparens
+  :straight t)
+(use-package solarized-theme
+  :straight t)
+(use-package tex
+  :straight auctex
+  :defer t)
+(use-package unicode-whitespace
+  :straight t)
+(use-package visual-fill-column
+  :straight t)
+(use-package web-mode
+  :straight t)
+(use-package xclip
+  :straight t)
+(use-package yaml-mode
+  :straight t)
+
+(require 'exec-path-from-shell)
+(require 'browse-kill-ring)
+(require 'flymake-ruff)
+(require 'ox-md)
+(require 'smartparens-config)
+(require 'unicode-whitespace)
+(require 'whitespace)
+
+;; map M-y yank-pop to browse-kill-ring
+(browse-kill-ring-default-keybindings)
+(add-hook 'elisp-lisp-mode-hook #'flymake-mode)
+(add-hook 'python-base-mode-hook (lambda ()
+                                   (flymake-mode 1)
+                                   (blacken-mode 1)))
+
+;; hooks for racket-mode
+(add-hook 'racket-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'racket-mode-hook #'smartparens-mode)
+
+;; make #! script files executable on save (chmod +x)
+(add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
+(add-hook 'sh-mode-hook #'flymake-mode)
+
+;; Capitalize keywords in SQL mode
+(add-hook 'sql-mode-hook 'sqlup-mode)
+;; Capitalize keywords in an interactive session (e.g. psql)
+(add-hook 'sql-interactive-mode-hook 'sqlup-mode)
+;; truncate long lines in sqli mode
+(add-hook 'sql-interactive-mode-hook
+          (lambda ()
+            (toggle-truncate-lines t)))
+
+(defun go-mode-setup ()
+  ;; run 'go fmt' on .go source files before save
+  (add-hook 'before-save-hook 'gofmt-before-save)
+  ;; customize compile command to run go build
+  (if (not (string-match "go" compile-command))
+      (set (make-local-variable 'compile-command)
+           "env GOOS=linux GOARCH=arm64 go build -v -o bin/$(basename $(pwd)) && go test -v && go vet"))
+)
+(add-hook 'go-mode-hook 'go-mode-setup)
+
+;; cc-mode settings
+; Note K&R style uses spaces for indentation
+(setq c-default-style "k&r"
+      c-basic-offset 4)
+(add-hook 'c-mode-hook #'flymake-mode)
+
+; yaml-mode settings
+(add-hook 'yaml-mode-hook 'flymake-yamllint-setup)
+(add-hook 'yaml-mode-hook #'flymake-mode)
+
+;; mode settings
+; show col and line numbers
+(column-number-mode 1)
+; don't show menu bar
+(menu-bar-mode 0)
+; don't show scrollbar
+;(scroll-bar-mode 0)
+; highlight parens
+(show-paren-mode t)
+; Enable ido-mode
+(ido-mode 1)
+
+
+;;=========================
+;;   CUSTOM MENU OPTIONS
+;;=========================
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(org-agenda-files
+   '("~/Documents/repos/encrypted/gpj-org-mode-files/next_actions.org"))
+ '(org-trello-current-prefix-keybinding "C-c o" nil (org-trello))
+ '(package-selected-packages
+   '(flymake-ruff go-mode org-trello yaml-mode web-mode go-playground unicode-whitespace smartparens ansible rainbow-delimiters racket-mode markdown-mode magit exec-path-from-shell))
+ '(python-shell-completion-native-disabled-interpreters '("pypy ipython3"))
+ '(pdf-latex-command "xetex")
+ '(warning-suppress-types '((comp))))
+
+
+;;======================
+;;   GLOBAL VARIABLES
+;;======================
+
+; start emacs in server mode
+(server-mode 1)
+; ensure GPG password input is handled by emacs during emacs session
+;(setenv "GPG_AGENT_INFO" nil)
+
+; specify UTF-8 encoding for all buffers
+(setq set-language-environment "UTF-8")
+(set-language-environment "UTF-8")
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(prefer-coding-system 'utf-8)
+(setq default-buffer-file-coding-system 'utf-8)
+
+; Use spaces instead of tabs
+(setq-default indent-tabs-mode nil)
+; But when I must use TAB, set width to 2 chars
+(setq-default tab-width 2)
+; shell script mode formatting
+(setq sh-basic-offset 2)
+(setq sh-indentation 2)
+; Python settings
+; Note: recent versions of ipython and python interpreters
+; don't support readline() and doctests do not show up
+; in the emacs inferior process running python/ipython.
+; For the time being, run python from CLI as follows:
+;
+; python -m doctest myprog.py -v
+;
+(setq python-shell-completion-native nil)
+(setq python-shell-interpreter "ipython3"
+      python-shell-interpreter-args "--simple-prompt -i --InteractiveShell.display_page=True")
+(setq ansi-color-for-comint-mode t)
+(setq python-check-command "/usr/bin/ruff")
+(setq python-flymake-command '("ruff"
+                               "--quiet"
+                               "--stdin-filename=stdin"
+                               "-"))
+
+; C-\ language toggle
+(setq default-input-method "korean-hangul")
+; Start emacs maximized
+(setq initial-frame-alist (quote ((fullscreen . maximized))))
+; create backups in $HOME/tmp
+; bkup files will have '!' in place of directory separator '/'
+(setq backup-directory-alist '(("" . "~/tmp")))
+; Enable temp files and autosaving
+(setq make-backup-files t)
+; use Pandoc as default renderer for markdown
+(setq markdown-command "/usr/bin/pandoc")
+(setq auto-save-default t)
+; Enable C-l, C-u change region to lower/upper case
+(put 'upcase-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
+
+; enable ido flex matching
+(setq ido-enable-flex-matching t)
+; enable ido everywhere
+(setq ido-everywhere t)
+; use xetex to render pdf from LaTeX
+(setq TeX-engine 'xetex)
+
+; enable copy-paste to and from system clipboard in emacs nw mode
+; https://discourse.doomemacs.org/t/how-to-copy-in-wayland/4041/16
+(setq xclip-program "wl-copy")
+(setq xclip-select-enable-clipboard t)
+(setq xclip-mode t)
+; copy from emacs -nw terminal session to system clipboard
+(setq xclip-method (quote wl-copy))
+
+;------------------------------------------------------------
+; org-mode settings
+;------------------------------------------------------------
+(setq org-directory "~/Documents/repos/personal/org")
+(setq org-timer-default-timer 25)
+; play sound when org-timer completes
+(add-hook 'org-timer-done-hook (lambda () (interactive)
+                                 (shell-command "/usr/bin/aplay $HOME/Downloads/media/ShipsBell.wav")))
+(setq org-todo-keywords
+      '((sequence "TODO(t!)" "Anywhere(!)" "Read/Review(!)" "Calls(!)"
+                  "Computer(!)" "Errands(!)" "Home(!)" "Office(!)" "|"
+                  "DONE(d!)")
+        (sequence "|" "Canceled(c@)")))
+
+; add timestamp CLOSED: '<YYYY-MM-DD DoW HH:MM>' for DONE status
+(setq org-log-done 'time)
+
+;; org-export settings
+; see https://orgmode.org/manual/Export-Settings.html
+(setq org-export-with-clocks t)
+(setq org-export-with-drawers t)
+
+; add 'CREATED: <timestamp>' when new TODO state is changed
+(add-hook 'org-after-todo-state-change-hook
+          (lambda ()
+            (save-excursion
+              (org-back-to-heading)
+              (let ((text (buffer-substring (point) (progn (outline-next-heading) (point)))))
+                (if (string-match "CREATED: " text)
+                    ;; if string was found, noop
+                    nil
+                  ;; else, (1) move cursor back to current heading
+                  (outline-previous-heading)
+                  ;;(end-of-line)
+                  ;; (2) insert timestamp on next line
+                  (forward-line 1)
+                  (insert (concat "CREATED: "
+                      (format-time-string "[%Y-%m-%d %a %H:%M]"
+                                          (current-time))
+                      "\n")))))))
+
+(setq org-refile-targets
+      '(("~/Documents/repos/encrypted/gpj-org-mode-files/next_actions.org" :maxlevel . 1)
+        ("~/Documents/repos/encrypted/gpj-org-mode-files/projects.org" :level . 1)
+        ("~/Documents/repos/encrypted/gpj-org-mode-files/waiting_for.org" :level . 1)
+        ("~/Documents/repos/encrypted/gpj-org-mode-files/someday_maybe.org" :level . 1)
+        ("~/Documents/repos/encrypted/gpj-org-mode-files/closed_cards.org" :level . 1)))
+(setq org-default-notes-file (concat org-directory "/capture.org"))
+(setq org-agenda-skip-scheduled-if-done t)
+(setq org-agenda-skip-deadline-if-done t)
+(setq org-agenda-skip-timestamp-if-done t)
+(global-set-key (kbd "C-c l") #'org-store-link)
+(global-set-key (kbd "C-c a") #'org-agenda)
+(global-set-key (kbd "C-c c") #'org-capture)
+(global-set-key (kbd "C-c i g c") #'org-id-get-create)
+(setq org-id-link-to-org-use-id 'create-if-interactive)
+
+; org-roam minor mode settings
+(setq org-roam-directory (file-truename
+                          "~/Documents/repos/personal/pj-org-roam"))
+(org-roam-db-autosync-mode)
+; Note: You are prompted for a node name when you open the
+; org-roam capture template - this name will be the filename
+(setq org-roam-capture-templates
+ '(("p" "permanent" plain
+    "%?"
+    :target (file+head "permanent/${slug}.org"
+                       "#+title: ${title}\n")
+    :immediate-finish t
+    :unnarrowed t)
+   ("l" "literature" plain
+    "\n* Source\n\nAuthor: %^{Author}\nTitle: %^{title}\nOoK Index: \nYear: %^{Year}\nPages: \nPublisher: \n\n* Summary\n\n%?"
+    :target (file+head "literature/${slug}.org"
+                       "#+title: ${title}\n")
+    :immediate-finish t
+    :unnarrowed t)))
+(global-set-key (kbd "C-c n c") #'org-roam-capture)
+; the following shortcut only works in org-mode
+(define-key org-mode-map (kbd "C-c n i") #'org-roam-node-insert)
+
+
+; AUCTeX settings
+;(load "auctex.el" nil t t)
+(setq TeX-auto-save t)
+(setq TeX-parse-self t)
+(setq-default TeX-master nil)
+(add-hook 'LaTeX-mode-hook #'flymake-mode)
+; AUCTEX preview-latex font
+(set-default 'preview-scale-function 1.2)
+
+; bind 'M-x magit-status' to 'C-x g'
+(global-set-key (kbd "C-x g") 'magit-status)
+
+;; leuven-theme specific settings
+;; https://github.com/fniessen/emacs-leuven-theme
+(setq leuven-scale-outline-headlines 1.2)
+(setq leuven-scale-org-agenda-structure 1.2)
+(setq leuven-scale-org-document-title 1.5)
+(setq leuven-scale-volatile-highlight 1.2)
+
+;; https://github.com/purcell/exec-path-from-shell/blob/master/README.md
+(dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO" "LANG"
+               "LC_CTYPE" "LC_TYPE" "GOPATH" "GOROOT" "SHELL"))
+  (add-to-list 'exec-path-from-shell-variables var))
+; don't invoke an interactive shell; default args are ("-l" "-i")
+(setq exec-path-from-shell-arguments nil)
+(setq zoneinfo-style-world-list
+      '(("Pacific/Honolulu" "Honolulu")
+        ("America/Los_Angeles" "Seattle")
+        ("America/New_York" "New York")
+        ("Europe/London" "London")
+        ("Europe/Paris" "Paris")
+        ("Europe/Sofia" "Sofia")
+        ("Asia/Dhaka" "Dhaka")
+        ("Asia/Ho_Chi_Minh" "Ho_Chi_Minh")
+        ("Asia/Manila" "Manila")
+        ("Asia/Seoul" "Seoul")))
+
+; Commands to run when Emacs launched in graphical mode
+(when (or (display-graphic-p) (daemonp))
+  ; only run whitespace mode in graphical session
+  (global-whitespace-mode 1)
+  ; limit line length
+  (setq whitespace-line-column 80)
+  ; set fill column to 75
+  (setq-default fill-column 75)
+  ; enable native fill column indicator (emacs 27+)
+  (global-display-fill-column-indicator-mode 1)
+  ; enable whitespace-mode for all files
+  (add-hook 'after-change-major-mode-hook 'whitespace-mode)
+  (add-hook 'markdown-mode-hook 'emojify-mode)
+  ; unicode-whitespace face settings
+  (unicode-whitespace-setup 'subdued-faces)
+  ; don't show scrollbar
+  (scroll-bar-mode -1)
+  ; don't show toolbar
+  (tool-bar-mode -1)
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ; Emacs color themes
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;(load-theme 'cyberpunk t)
+  (load-theme 'leuven t)
+  ;(load-theme 'sanityinc-tomorrow-blue)
+  ;(load-theme 'sanityinc-tomorrow-bright)
+  ;(load-theme 'sanityinc-tomorrow-day)
+  ;(load-theme 'sanityinc-tomorrow-night)
+  ;(load-theme 'sanityinc-solarized-light)
+  ;(load-theme 'sanityinc-solarized-light-high-contrast)
+  ;(load-theme 'solarized-light-high-contrast)
+  (exec-path-from-shell-initialize)
+)
+
+;; Commands to run when Emacs launched in terminal mode
+(unless (display-graphic-p)
+  (load-theme 'adwaita t)
+  (exec-path-from-shell-initialize))
+
+;; Font settings - note that this must be set *after* (load-theme)
+;; to avoid conflicts with the theme
+
+;; Ubuntu 24.04 LTS has the package 'font-monofur' from default repos
+(let ((default-font "monofur")
+      (korean-font "NanumGothic"))
+
+  ;; Set default font
+  (set-face-attribute 'default nil
+                      :family default-font
+                      :height 150)
+
+  ;; Set Korean font
+  ;(set-fontset-font t 'hangul (font-spec :family korean-font))
+
+  ;; Set mode-line font
+  (if (facep 'mode-line-active)
+      (set-face-attribute 'mode-line-active nil
+                          :family default-font
+                          :height 110)
+      (set-face-attribute 'mode-line nil
+                          :family default-font
+                          :height 110))
+  (set-face-attribute 'mode-line-inactive nil
+                      :family default-font
+                      :height 110)
+
+  ;; Create a custom face for the minibuffer
+  (defface my-minibuffer-face
+    '((t :inherit default))
+    "Face for Minibuffer")
+
+  ;; Set the Minibuffer font size
+  (set-face-attribute 'my-minibuffer-face nil
+                      :family default-font
+                      :height 120))
+
+;; Apply the custom face to the minibuffer
+(add-hook 'minibuffer-setup-hook
+          (lambda ()
+            (face-remap-add-relative 'default 'my-minibuffer-face)))
+
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+
+;; font names on Linux 'MonofurNerdFontMono', 'FiraMono'
+
+
+(provide 'emacs)
+;;; emacs ends here
