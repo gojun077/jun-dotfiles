@@ -88,6 +88,7 @@
 (require 'exec-path-from-shell)
 (require 'browse-kill-ring)
 (require 'flymake-ruff)
+(require 'nix-mode)
 (require 'ox-md)
 (require 'smartparens-config)
 (require 'unicode-whitespace)
