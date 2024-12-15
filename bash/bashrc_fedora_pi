@@ -2,7 +2,7 @@
 #
 # Created On: 28 Sep 2024
 # Created by: gopeterjun@naver.com
-# Last Updated: 28 Sep 2024
+# Last Updated: 15 Dec 2024
 
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
@@ -21,9 +21,22 @@ HISTFILESIZE=15000
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
 
+
+# User specific aliases and functions
+if [ -d ~/.bashrc.d ]; then
+  for rc in ~/.bashrc.d/*; do
+    if [ -f "$rc" ]; then
+      . "$rc"
+    fi
+  done
+fi
+
+unset rc
+
 # https://unix.stackexchange.com/questions/470860/how-to-make-tty-work-in-bash-profile
 export GPG_TTY="$(tty)"
 eval "$(starship init bash)"
+source ~/.bash_aliases
 neofetch
 rpicputemp="$(cat /sys/class/thermal/thermal_zone0/temp)"
 printf "%s\\n" "CPU temp: $((rpicputemp/1000)) C"
