@@ -1,0 +1,6 @@
+# bash_alias file for k3s node
+# Created on: 15 Dec 2024
+# Created by: gopeterjun@naver.com
+# Last Updated: 15 Dec 2024
+
+alias kubectl='k3s kubectl'
