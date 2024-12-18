@@ -327,6 +327,9 @@
 (define-key org-mode-map (kbd "C-c n i") #'org-roam-node-insert)
 
 
+; gptel (LLM plugin for Emacs)
+(setq gptel-default-mode 'org-mode)  ; default is 'markdown-mode
+
 ; AUCTeX settings
 (setq TeX-auto-save t)
 (setq TeX-parse-self t)
