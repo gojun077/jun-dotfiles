@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# bash_aliases_argo
+# Created on: 30 Apr 2024
+# Created by: gopeterjun@naver.com
+# Last Updated: 17 Dec 2024
+#
+# .bash_aliases for Fedora on argonaut to be sourced by .bashrc
+
+alias ㅊㅇ='cd'
+alias 니='ls'
+alias ㅣㄴ='ls'
+alias hazip='curl https://icanhazip.com'
+alias ls='ls --color=auto'
+#alias chromium-browser='chromium-browser --ozone-platform=wayland --enable-wayland-ime'
+alias chromium-browser='chromium-browser --enable-features=UseOzonePlatform --ozone-platform=wayland --gtk-version=4'
+alias code='code --ozone-platform=wayland'
+alias enox='emacsclient -nw'
+alias kubectl='k3s kubectl'
+
+ansicat() {
+  if [ -f "$1" ]; then
+    infile="$1"
+    if [ -n "$2" ]; then
+      ansifilter -i "$infile" -o "$2"
+    else
+      ansifilter -i "$infile"| less -R
+    fi
+  else
+    printf "%s\\n" "File not found: $infile"
+    printf "%s\\n" "## USAGE: ansicat <inputfile> (outputfile) ##"
+    printf "%s\\n" "(outputfile) is optional argument"
+  fi
+}
+
+# disable warning about non-constant path
+# shellcheck disable=SC1090
+source ~/.bash_aliases_secure  # this file is not stored in version control
