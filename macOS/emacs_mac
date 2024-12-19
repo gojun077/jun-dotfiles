@@ -3,7 +3,7 @@
 ;; .emacs for MacOS --- Summary
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated 16 Nov 2024
+;; Last Updated 19 Dec 2024
 ;;
 ;; This config file is for Emacs 29.1 and above on Apple Silicon
 ;;; Code:
@@ -42,6 +42,8 @@
 (use-package go-mode
   :straight t)
 (use-package go-playground
+  :straight t)
+(use-package gptel
   :straight t)
 (use-package kubernetes
   :straight t)
