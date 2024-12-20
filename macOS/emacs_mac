@@ -44,7 +44,9 @@
 (use-package go-playground
   :straight t)
 (use-package gptel
-  :straight t)
+  :straight t
+  :config
+  (setq gptel-default-mode 'org-mode))
 (use-package kubernetes
   :straight t)
 (use-package leuven-theme
@@ -58,10 +60,12 @@
 (use-package org-trello
   :straight (:build (:not compile)) t)
 (use-package racket-mode
+  :straight t
+  :hook ((racket-mode . rainbow-delimiters-mode)
+         (racket-mode . smartparens-mode))
+(use-package rainbow-delimiters
   :straight t)
 (use-package sicp
-  :straight t)
-(use-package rainbow-delimiters
   :straight t)
 (use-package smartparens
   :straight t)
@@ -92,10 +96,6 @@
 (add-hook 'python-base-mode-hook (lambda ()
                                    (flymake-mode 1)
                                    (blacken-mode 1)))
-
-;; hooks for racket-mode
-(add-hook 'racket-mode-hook #'rainbow-delimiters-mode)
-(add-hook 'racket-mode-hook #'smartparens-mode)
 
 ;; make #! script files executable on save (chmod +x)
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
