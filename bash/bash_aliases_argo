@@ -1,17 +1,21 @@
 #!/usr/bin/env bash
-# bash_aliases_ubuntu_oci
-# Created on: 29 Jul 2024
+# bash_aliases_argo
+# Created on: 30 Apr 2024
 # Created by: gopeterjun@naver.com
-# Last Updated: 18 Dec 2024
+# Last Updated: 17 Dec 2024
 #
-# .bash_aliases for Ubuntu ARM server on Oracle Cloud
+# .bash_aliases for Fedora on argonaut to be sourced by .bashrc
 
 alias ㅊㅇ='cd'
 alias 니='ls'
 alias ㅣㄴ='ls'
 alias hazip='curl https://icanhazip.com'
-alias kubectl='microk8s kubectl'
 alias ls='ls --color=auto'
+#alias chromium-browser='chromium-browser --ozone-platform=wayland --enable-wayland-ime'
+alias chromium-browser='chromium-browser --enable-features=UseOzonePlatform --ozone-platform=wayland --gtk-version=4'
+alias code='code --ozone-platform=wayland'
+alias enox='emacsclient -nw'
+alias kubectl='k3s kubectl'
 
 ansicat() {
   if [ -f "$1" ]; then

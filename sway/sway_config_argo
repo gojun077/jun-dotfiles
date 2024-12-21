@@ -5,7 +5,7 @@
 # Read `man 5 sway` for a complete reference.
 # Created on: 21 Sep 2021
 # Created by: gojun077@gmail.com
-# Last Updated: 25 Oct 2024
+# Last Updated: 05 Nov 2024
 
 
 ### Variables
@@ -182,16 +182,16 @@ input "1133:45938:Logi_K855_Keyboard" {
     # and I often access SwayWM via TigerVNC on MacOS
     # so I am using Ctrl+n below
 
-    bindsym Ctrl+1 move container to workspace number 1
-    bindsym Ctrl+2 move container to workspace number 2
-    bindsym Ctrl+3 move container to workspace number 3
-    bindsym Ctrl+4 move container to workspace number 4
-    bindsym Ctrl+5 move container to workspace number 5
-    bindsym Ctrl+6 move container to workspace number 6
-    bindsym Ctrl+7 move container to workspace number 7
-    bindsym Ctrl+8 move container to workspace number 8
-    bindsym Ctrl+9 move container to workspace number 9
-    bindsym Ctrl+0 move container to workspace number 10
+    bindsym Shift+$mod+1 move container to workspace number 1
+    bindsym Shift+$mod+2 move container to workspace number 2
+    bindsym Shift+$mod+3 move container to workspace number 3
+    bindsym Shift+$mod+4 move container to workspace number 4
+    bindsym Shift+$mod+5 move container to workspace number 5
+    bindsym Shift+$mod+6 move container to workspace number 6
+    bindsym Shift+$mod+7 move container to workspace number 7
+    bindsym Shift+$mod+8 move container to workspace number 8
+    bindsym Shift+$mod+9 move container to workspace number 9
+    bindsym Shift+$mod+0 move container to workspace number 10
     # Note: workspaces can have any name you want, not just numbers.
     # We just use 1-10 as the default.
 #

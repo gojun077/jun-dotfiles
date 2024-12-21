@@ -3,7 +3,7 @@
 #
 # Created On: Sometime during Nov 2019
 # Created by: gopeterjun@naver.com
-# Last Updated: 11 Oct 2024
+# Last Updated: 18 Dec 2024
 
 # If not running interactively, don't do anything
 #[[ $- != *i* ]] && return
@@ -36,5 +36,4 @@ export TERM=xterm-256color
 eval "$(starship init bash)"
 neofetch
 source ~/.bash_aliases
-eval "$(fzf --bash)"
 # vim: ts=2 sw=2 et :

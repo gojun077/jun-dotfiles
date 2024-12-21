@@ -3,7 +3,7 @@
 ;; .emacs for MacOS --- Summary
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated 16 Nov 2024
+;; Last Updated 19 Dec 2024
 ;;
 ;; This config file is for Emacs 29.1 and above on Apple Silicon
 ;;; Code:
@@ -43,6 +43,10 @@
   :straight t)
 (use-package go-playground
   :straight t)
+(use-package gptel
+  :straight t
+  :config
+  (setq gptel-default-mode 'org-mode))
 (use-package kubernetes
   :straight t)
 (use-package leuven-theme
@@ -56,10 +60,12 @@
 (use-package org-trello
   :straight (:build (:not compile)) t)
 (use-package racket-mode
+  :straight t
+  :hook ((racket-mode . rainbow-delimiters-mode)
+         (racket-mode . smartparens-mode))
+(use-package rainbow-delimiters
   :straight t)
 (use-package sicp
-  :straight t)
-(use-package rainbow-delimiters
   :straight t)
 (use-package smartparens
   :straight t)
@@ -90,10 +96,6 @@
 (add-hook 'python-base-mode-hook (lambda ()
                                    (flymake-mode 1)
                                    (blacken-mode 1)))
-
-;; hooks for racket-mode
-(add-hook 'racket-mode-hook #'rainbow-delimiters-mode)
-(add-hook 'racket-mode-hook #'smartparens-mode)
 
 ;; make #! script files executable on save (chmod +x)
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
@@ -285,6 +287,9 @@
 (global-set-key (kbd "C-c n c") #'org-roam-capture)
 ; the following shortcut only works in org-mode
 (define-key org-mode-map (kbd "C-c n i") #'org-roam-node-insert)
+
+; gptel (LLM plugin for Emacs)
+(setq gptel-default-mode 'org-mode)  ; default is 'markdown-mode
 
 ; AUCTeX settings
 (setq TeX-auto-save t)

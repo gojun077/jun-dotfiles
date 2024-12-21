@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: 23 Oct 2024
+;; Last Updated: Wed 18 Dec 2024
 ;;
 ;; These configs are for Emacs 29.1 and higher.
 ;;; Code:
@@ -45,6 +45,8 @@
   :straight t)
 (use-package go-mode
   :straight t)
+(use-package gptel
+  :straight t)
 (use-package go-playground
   :straight t)
 (use-package jenkinsfile-mode
@@ -54,6 +56,8 @@
 (use-package magit
   :straight t)
 (use-package markdown-mode
+  :straight t)
+(use-package nix-mode
   :straight t)
 (use-package org-roam
   :straight t)
@@ -86,6 +90,7 @@
 (require 'exec-path-from-shell)
 (require 'browse-kill-ring)
 (require 'flymake-ruff)
+(require 'nix-mode)
 (require 'ox-md)
 (require 'smartparens-config)
 (require 'unicode-whitespace)
@@ -322,8 +327,10 @@
 (define-key org-mode-map (kbd "C-c n i") #'org-roam-node-insert)
 
 
+; gptel (LLM plugin for Emacs)
+(setq gptel-default-mode 'org-mode)  ; default is 'markdown-mode
+
 ; AUCTeX settings
-(load "auctex.el" nil t t)
 (setq TeX-auto-save t)
 (setq TeX-parse-self t)
 (setq-default TeX-master nil)

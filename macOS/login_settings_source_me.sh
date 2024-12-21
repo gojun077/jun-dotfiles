@@ -60,4 +60,5 @@ export PATH="$HOME/bin:$HOME/.nix-profile/bin:/nix/var/nix/profiles/default/bin:
 # Install pyenv into your shell as shell function, enable shims,
 # enable autocomplete
 eval "$(pyenv init -)"
+eval "$(fzf --bash)"
 ssh-add --apple-load-keychain
