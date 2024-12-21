@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Wed 18 Dec 2024
+;; Last Updated: Sat 21 Dec 2024
 ;;
 ;; These configs are for Emacs 29.1 and higher.
 ;;; Code:
@@ -46,7 +46,12 @@
 (use-package go-mode
   :straight t)
 (use-package gptel
-  :straight t)
+  :straight t
+  :config
+  (setq gptel-default-mode 'org-mode)
+  (gptel-make-anthropic "Claude"
+                        :stream t
+                        :key gptel-api-key))
 (use-package go-playground
   :straight t)
 (use-package jenkinsfile-mode
