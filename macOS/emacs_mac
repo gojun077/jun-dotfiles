@@ -43,6 +43,7 @@
   :defer t)
 (use-package go-mode
   :straight t
+  :hook (go-mode . go-mode-setup)
   :defer t)
 (use-package go-playground
   :straight t
@@ -85,7 +86,10 @@
 (use-package xclip
   :straight t)
 (use-package yaml-mode
-  :straight t)
+  :straight t
+  :hook ((yaml-mode . flymake-yamllint-setup)
+         (yaml-mode . flymake-mode))
+  :defer t)
 
 (require 'browse-kill-ring)
 (require 'exec-path-from-shell)
@@ -114,7 +118,8 @@
       (set (make-local-variable 'compile-command)
            "env GOOS=darwin GOARCH=arm64 go build -v -o bin/$(basename $(pwd)) && go test -v && go vet"))
 )
-(add-hook 'go-mode-hook 'go-mode-setup)
+
+;(add-hook 'go-mode-hook 'go-mode-setup)
 
 ;; cc-mode settings
 ; Note K&R style uses spaces for indentation
@@ -122,9 +127,6 @@
       c-basic-offset 4)
 (add-hook 'c-mode-hook (lambda () (flymake-mode t)))
 
-; yaml-mode settings
-(add-hook 'yaml-mode-hook 'flymake-yamllint-setup)
-(add-hook 'yaml-mode-hook #'flymake-mode)
 
 ;; mode settings
 ; show col and line numbers
