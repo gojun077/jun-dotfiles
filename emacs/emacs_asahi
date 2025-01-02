@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Wed 19 Dec 2024
+;; Last Updated: Sun 22 Dec 2024
 ;;
 ;; These configs are for Emacs 29.1 and higher.
 ;;; Code:
@@ -28,53 +28,76 @@
 (straight-use-package 'use-package)
 
 (use-package ansible
-  :straight t)
+  :straight t
+  :defer t)
 (use-package blacken
-  :straight t)
+  :straight t
+  :defer t)
 (use-package browse-kill-ring
   :straight t)
 (use-package emojify
-  :straight t)
+  :straight t
+  :defer t)
 (use-package exec-path-from-shell
   :straight t)
 (use-package flymake-hadolint
-  :straight t)
+  :straight t
+  :defer t)
 (use-package flymake-ruff
   :straight t)
 (use-package flymake-yamllint
-  :straight t)
+  :straight t
+  :defer t)
 (use-package go-mode
-  :straight t)
+  :straight t
+  :hook (go-mode . go-mode-setup)
+  :defer t)
 (use-package gptel
   :straight t
   :config
-  (setq gptel-default-mode 'org-mode))
+  (setq gptel-default-mode 'org-mode)
+  (gptel-make-anthropic "Claude"
+                        :stream t
+                        :key gptel-api-key))
 (use-package go-playground
-  :straight t)
+  :straight t
+  :defer t)
 (use-package jenkinsfile-mode
-  :straight t)
+  :straight t
+  :defer t)
 (use-package leuven-theme
   :straight t)
 (use-package magit
-  :straight t)
+  :straight t
+  :defer t)
 (use-package markdown-mode
-  :straight t)
+  :straight t
+  :defer t)
 (use-package nix-mode
   :straight t)
+(use-package ob-mermaid
+  :straight t
+  :config
+  (setq ob-mermaid-cli-path "/home/jundora/.nix-profile/bin/mmdc"))
 (use-package org-roam
-  :straight t)
+  :straight t
+  :defer t)
 (use-package org-trello
   :straight (:build (:not compile)) t)
 (use-package racket-mode
-  :straight t)
+  :straight t
+  :hook ((racket-mode . rainbow-delimiters-mode)
+         (racket-mode . smartparens-mode)))
 (use-package rainbow-delimiters
   :straight t)
 (use-package sicp
-  :straight t)
+  :straight t
+  :defer t)
 (use-package smartparens
   :straight t)
 (use-package solarized-theme
-  :straight t)
+  :straight t
+  :defer t)
 (use-package tex
   :straight auctex
   :defer t)
@@ -83,11 +106,15 @@
 (use-package visual-fill-column
   :straight t)
 (use-package web-mode
-  :straight t)
+  :straight t
+  :defer t)
 (use-package xclip
   :straight t)
 (use-package yaml-mode
-  :straight t)
+  :straight t
+  :hook ((yaml-mode . flymake-yamllint-setup)
+         (yaml-mode . flymake-mode))
+  :defer t)
 
 (require 'exec-path-from-shell)
 (require 'browse-kill-ring)
@@ -104,10 +131,6 @@
 (add-hook 'python-base-mode-hook (lambda ()
                                    (flymake-mode 1)
                                    (blacken-mode 1)))
-
-;; hooks for racket-mode
-(add-hook 'racket-mode-hook #'rainbow-delimiters-mode)
-(add-hook 'racket-mode-hook #'smartparens-mode)
 
 ;; make #! script files executable on save (chmod +x)
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
@@ -130,17 +153,12 @@
       (set (make-local-variable 'compile-command)
            "env GOOS=linux GOARCH=arm64 go build -v -o bin/$(basename $(pwd)) && go test -v && go vet"))
 )
-(add-hook 'go-mode-hook 'go-mode-setup)
 
 ;; cc-mode settings
 ; Note K&R style uses spaces for indentation
 (setq c-default-style "k&r"
       c-basic-offset 4)
 (add-hook 'c-mode-hook #'flymake-mode)
-
-; yaml-mode settings
-(add-hook 'yaml-mode-hook 'flymake-yamllint-setup)
-(add-hook 'yaml-mode-hook #'flymake-mode)
 
 ;; mode settings
 ; show col and line numbers
@@ -270,7 +288,7 @@
 (setq org-export-with-clocks t)
 (setq org-export-with-drawers t)
 
-; add 'CREATED: <timestamp>' when new TODO state is changed
+; add 'CREATED: [timestamp]' when new TODO state is changed
 (add-hook 'org-after-todo-state-change-hook
           (lambda ()
             (save-excursion
@@ -304,6 +322,12 @@
 (global-set-key (kbd "C-c c") #'org-capture)
 (global-set-key (kbd "C-c i g c") #'org-id-get-create)
 (setq org-id-link-to-org-use-id 'create-if-interactive)
+
+
+(org-babel-do-load-languages
+    'org-babel-load-languages
+    '((mermaid . t)
+      (python . t)))
 
 ; org-roam minor mode settings
 (setq org-roam-directory (file-truename
@@ -384,6 +408,8 @@
   (scroll-bar-mode -1)
   ; don't show toolbar
   (tool-bar-mode -1)
+  ; focus follows mouse within emacs
+  (setq mouse-autoselect-window t)
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ; Emacs color themes
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
