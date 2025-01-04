@@ -5,7 +5,7 @@
 # Read `man 5 sway` for a complete reference.
 # Created on: 21 Sep 2021
 # Created by: gojun077@gmail.com
-# Last Updated: 05 Nov 2024
+# Last Updated: Sat 04 Jan 2025
 
 
 ### Variables
@@ -16,8 +16,9 @@
 # i.e. local Sway using Super as $mod, remote Sway via wayvnc uses alternate key like ESC/PrtSc/Ins
 #set $mod Escape
 #set $mod Print
-# Use 'Insert' as $mod key
-set $mod Insert
+#set $mod Insert
+#use 'Caps' as mod key
+set $mod Lock
 # Home row direction keys, like vim
 set $left h
 set $down j
