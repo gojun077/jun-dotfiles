@@ -3,7 +3,7 @@
 #
 # Created on: 08 Sep 2024
 # Created by gojun077
-# Last Updated: 08 Sep 2024
+# Last Updated: Sun 05 Jan 2025
 #
 # These settings are sourced by the login shell
 
@@ -39,3 +39,7 @@ export EDITOR="emacsclient -nw"
 #ssh-add ~/.ssh/archjun-newgen
 
 if [ -e /home/jundora/.nix-profile/etc/profile.d/nix.sh ]; then . /home/jundora/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
+
+export NVM_DIR="$HOME/.config/nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
