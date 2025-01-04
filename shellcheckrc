@@ -1,0 +1,8 @@
+# original path to file: ~/.shellcheckrc
+# Settings for shellcheck linter
+#
+# Created on: Sun 05 Jan 2025
+# Last Updated: Sun 05 Jan 2025
+
+# allow sourcing files
+external-sources=true
