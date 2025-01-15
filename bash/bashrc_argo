@@ -33,7 +33,7 @@ shopt -s checkwinsize
 
 # https://unix.stackexchange.com/questions/470860/how-to-make-tty-work-in-bash-profile
 export GPG_TTY="$(tty)"
-if pidof sway; then
+if pidof -q sway; then
   export SWAYSOCK=/run/user/$UID/sway-ipc.${UID}."$(pidof sway)".sock
 fi
 eval "$(starship init bash)"
