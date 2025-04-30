@@ -5,7 +5,7 @@
 # Read `man 5 sway` for a complete reference.
 # Created on: 28 Apr 2024
 # Created by: gojun077@gmail.com
-# Last Updated: Thu 03 Apr 2025
+# Last Updated: Wed 30 Apr 2025
 
 
 ### Variables
@@ -52,8 +52,8 @@ output HDMI-A-1 resolution 3840x2160@60Hz scale 1.5 position 1728 0
 # Fedora default wallpaper /usr/share/backgrounds/default.png
 #output HEADLESS-1 bg /usr/share/backgrounds/default.png fill
 #output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
-#output * bg /usr/share/backgrounds/f42/default/f42-01-day.jxl fill
-output * bg /usr/share/backgrounds/f42/default/f42-01-night.jxl fill
+output * bg /usr/share/backgrounds/f42/default/f42-01-day.jxl fill
+#output * bg /usr/share/backgrounds/f42/default/f42-01-night.jxl fill
 
 ### Idle configuration
 
@@ -61,9 +61,9 @@ output * bg /usr/share/backgrounds/f42/default/f42-01-night.jxl fill
 # your displays after another 600 seconds, and turn your screens back on when
 # resumed. It will also lock your screen before your computer goes to sleep.
 
-exec swayidle -w \
-          timeout 600 'swaylock -f -c 000000' \
-          before-sleep 'swaylock -f -c 000000'
+#exec swayidle -w \
+#          timeout 600 'swaylock -f -c 000000' \
+#          before-sleep 'swaylock -f -c 000000'
 
 ### Input configuration
 #
