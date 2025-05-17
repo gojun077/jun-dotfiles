@@ -16,7 +16,8 @@ fi
 GPG_TTY=$(tty)
 export GPG_TTY
 export GOROOT=/usr/local/go  # consider moving this to the system `bash_profile`
-export GOPATH=$HOME/go
+export GOPATH="$HOME/go"
+export KUBECONFIG="$HOME/.kube/config"
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:$GOPATH/bin:$GOROOT/bin:$HOME/.local/bin:$HOME/bin"
 
