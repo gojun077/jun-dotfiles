@@ -3,7 +3,7 @@
 #
 # Created On: 30 Apr 2024
 # Created by: gopeterjun@naver.com
-# Last Updated: 25 Sep 2024
+# Last Updated: Sun 18 May 2025
 
 # If not running interactively, don't do anything
 #[[ $- != *i* ]] && return
@@ -33,7 +33,14 @@ shopt -s checkwinsize
 
 # https://unix.stackexchange.com/questions/470860/how-to-make-tty-work-in-bash-profile
 export GPG_TTY="$(tty)"
+if pidof -q sway; then
+  export SWAYSOCK=/run/user/$UID/sway-ipc.${UID}."$(pidof sway)".sock
+fi
 eval "$(starship init bash)"
 source ~/.bash_aliases
-neofetch
+
+# Only execute neofetch if this is an interactive shell
+if [[ $- == *i* ]]; then
+  neofetch
+fi
 # vim: ts=2 sw=2 et :

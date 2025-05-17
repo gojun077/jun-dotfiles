@@ -3,7 +3,7 @@
 ;; .emacs for MacOS --- Summary
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated 16 Nov 2024
+;; Last Updated 22 Dec 2024
 ;;
 ;; This config file is for Emacs 29.1 and above on Apple Silicon
 ;;; Code:
@@ -28,7 +28,8 @@
 (straight-use-package 'use-package)
 
 (use-package ansible
-  :straight t)
+  :straight t
+  :defer t)
 (use-package blacken
   :straight t)
 (use-package browse-kill-ring
@@ -38,13 +39,22 @@
 (use-package flymake-ruff
   :straight t)
 (use-package flymake-yamllint
-  :straight t)
+  :straight t
+  :defer t)
 (use-package go-mode
-  :straight t)
+  :straight t
+  :hook (go-mode . go-mode-setup)
+  :defer t)
 (use-package go-playground
-  :straight t)
-(use-package kubernetes
-  :straight t)
+  :straight t
+  :defer t)
+(use-package gptel
+  :straight t
+  :config
+  (setq gptel-default-mode 'org-mode)
+  (gptel-make-anthropic "Claude"
+                        :stream t
+                        :key gptel-api-key))
 (use-package leuven-theme
   :straight t)
 (use-package magit
@@ -56,10 +66,12 @@
 (use-package org-trello
   :straight (:build (:not compile)) t)
 (use-package racket-mode
+  :straight t
+  :hook ((racket-mode . rainbow-delimiters-mode)
+         (racket-mode . smartparens-mode)))
+(use-package rainbow-delimiters
   :straight t)
 (use-package sicp
-  :straight t)
-(use-package rainbow-delimiters
   :straight t)
 (use-package smartparens
   :straight t)
@@ -74,7 +86,10 @@
 (use-package xclip
   :straight t)
 (use-package yaml-mode
-  :straight t)
+  :straight t
+  :hook ((yaml-mode . flymake-yamllint-setup)
+         (yaml-mode . flymake-mode))
+  :defer t)
 
 (require 'browse-kill-ring)
 (require 'exec-path-from-shell)
@@ -91,10 +106,6 @@
                                    (flymake-mode 1)
                                    (blacken-mode 1)))
 
-;; hooks for racket-mode
-(add-hook 'racket-mode-hook #'rainbow-delimiters-mode)
-(add-hook 'racket-mode-hook #'smartparens-mode)
-
 ;; make #! script files executable on save (chmod +x)
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
 (add-hook 'sh-mode-hook #'flymake-mode)
@@ -107,7 +118,8 @@
       (set (make-local-variable 'compile-command)
            "env GOOS=darwin GOARCH=arm64 go build -v -o bin/$(basename $(pwd)) && go test -v && go vet"))
 )
-(add-hook 'go-mode-hook 'go-mode-setup)
+
+;(add-hook 'go-mode-hook 'go-mode-setup)
 
 ;; cc-mode settings
 ; Note K&R style uses spaces for indentation
@@ -115,9 +127,6 @@
       c-basic-offset 4)
 (add-hook 'c-mode-hook (lambda () (flymake-mode t)))
 
-; yaml-mode settings
-(add-hook 'yaml-mode-hook 'flymake-yamllint-setup)
-(add-hook 'yaml-mode-hook #'flymake-mode)
 
 ;; mode settings
 ; show col and line numbers
@@ -285,6 +294,9 @@
 (global-set-key (kbd "C-c n c") #'org-roam-capture)
 ; the following shortcut only works in org-mode
 (define-key org-mode-map (kbd "C-c n i") #'org-roam-node-insert)
+
+; gptel (LLM plugin for Emacs)
+(setq gptel-default-mode 'org-mode)  ; default is 'markdown-mode
 
 ; AUCTeX settings
 (setq TeX-auto-save t)
