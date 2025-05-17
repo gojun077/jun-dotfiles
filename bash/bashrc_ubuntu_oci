@@ -26,3 +26,7 @@ shopt -s checkwinsize
 # curl -sS https://starship.rs/install.sh | sh
 eval "$(starship init bash)"
 source ~/.bash_aliases
+# Only show output if this is an interactive shell
+if [[ $- == *i* ]]; then
+  neofetch
+fi
