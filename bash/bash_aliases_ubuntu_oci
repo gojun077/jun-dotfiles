@@ -9,6 +9,7 @@
 alias ㅊㅇ='cd'
 alias 니='ls'
 alias ㅣㄴ='ls'
+alias enox='emacsclient -nw'
 alias hazip='curl https://icanhazip.com'
 alias kubectl='microk8s kubectl'
 alias ls='ls --color=auto'
