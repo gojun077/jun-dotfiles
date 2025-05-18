@@ -5,7 +5,7 @@
 # Read `man 5 sway` for a complete reference.
 # Created on: 21 Sep 2021
 # Created by: gojun077@gmail.com
-# Last Updated: Sat 04 Jan 2025
+# Last Updated: Sun 18 May 2025
 
 
 ### Variables
@@ -44,7 +44,7 @@ include /etc/sway/config-vars.d/*
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
 # Fedora default wallpaper /usr/share/backgrounds/default.png
-output HEADLESS-1 bg /usr/share/backgrounds/default.png fill
+output HEADLESS-1 bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
 #
 # Example configuration:
 #
