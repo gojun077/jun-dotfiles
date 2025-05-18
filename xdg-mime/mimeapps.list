@@ -1,0 +1,26 @@
+[Added Associations]
+application/json=emacs.desktop;
+application/x-docbook+xml=emacs.desktop;
+application/x-yaml=emacs.desktop;
+image/avif=imv.desktop;
+image/bmp=imv.desktop;
+image/heif=imv.desktop;
+image/jpeg=imv.desktop;
+image/png=imv.desktop;
+text/markdown=emacs.desktop;
+text/plain=emacs.desktop;
+text/x-cmake=emacs.desktop;
+
+[Default Applications]
+application/json=emacs.desktop;
+application/pdf=mupdf.desktop
+application/x-docbook+xml=emacs.desktop;
+application/x-yaml=emacs.desktop;
+image/avif=imv.desktop;
+image/bmp=imv.desktop;
+image/heif=imv.desktop;
+image/jpeg=imv.desktop;
+image/png=imv.desktop;
+text/markdown=emacs.desktop;
+text/plain=emacs.desktop;
+text/x-cmake=emacs.desktop;
