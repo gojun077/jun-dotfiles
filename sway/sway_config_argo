@@ -300,8 +300,6 @@ exec --no-startup-id /opt/keybase/Keybase --ozone-platform=wayland
 exec wl-paste -t text --watch clipman store --no-persist --max-items=1024
 # Start emacs (`(server-mode 1)` is set in .emacs)
 exec emacs
-# Start thunderbird (thunderbird-wayland no longer needed)
-exec thunderbird
 
 #
 # Custom Keyboard shortcuts/keybindings
