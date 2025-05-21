@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Wed 12 Feb 2025
+;; Last Updated: Wed 21 May 2025
 ;;
 ;; These configs are for Emacs 29.1 and higher.
 ;;; Code:
@@ -88,6 +88,15 @@
   :defer t)
 (use-package org-trello
   :straight (:build (:not compile)) t)
+;; Projectile for project management
+(use-package projectile
+  :straight t
+  :init
+  (projectile-mode +1)
+  :bind-keymap
+  ("C-c p" . projectile-command-map)
+  :config
+  (setq projectile-project-search-path '("~/Documents/repos")))
 (use-package racket-mode
   :straight t
   :defer t
@@ -120,6 +129,37 @@
   :hook ((yaml-mode . flymake-yamllint-setup)
          (yaml-mode . flymake-mode))
   :defer t)
+
+;;
+;; use-package block for Consult+Vertico ;;
+;;
+;; Setup Vertico for enhanced minibuffer completion
+(use-package vertico
+  :straight t
+  :init
+  (vertico-mode))
+;; Optional but recommended with Vertico
+(use-package orderless
+  :straight t
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles basic partial-completion)))))
+;; Marginalia for annotations in the minibuffer
+(use-package marginalia
+  :straight t
+  :init
+  (marginalia-mode))
+;; Consult for enhanced search commands
+(use-package consult
+  :straight t
+  :bind (("C-s" . consult-line)
+         ("C-c h" . consult-ripgrep)
+         ("C-c f" . consult-find)
+         ("C-c o" . consult-outline)
+         ;; Replace some projectile commands with consult equivalents
+         :map projectile-command-map
+         ("s r" . consult-ripgrep)
+         ("s s" . consult-git-grep)))
 
 (require 'exec-path-from-shell)
 (require 'browse-kill-ring)
@@ -174,8 +214,6 @@
 (scroll-bar-mode 0)
 ; highlight parens
 (show-paren-mode t)
-; Enable ido-mode
-(ido-mode 1)
 
 
 ;;=========================
@@ -256,10 +294,6 @@
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
 
-; enable ido flex matching
-(setq ido-enable-flex-matching t)
-; enable ido everywhere
-(setq ido-everywhere t)
 ; use xetex to render pdf from LaTeX
 (setq TeX-engine 'xetex)
 
