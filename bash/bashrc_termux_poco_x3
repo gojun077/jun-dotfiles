@@ -1,0 +1,13 @@
+# `bashrc_termux` for Termux shell on Android Poco X3 GT
+# original path to file: /data/data/com.termux/files/home/.bashrc
+
+# NOTE: on Termux, PREFIX=/data/data/com.termux/files/usr
+# HOME=/data/data/com.termux/files/home
+#export SSH_AUTH_SOCK="${PREFIX}/var/run/ssh-agent.socket"
+# In termux, a traditional 'ssh-agent' does not run; however, you
+# can use 'ssha' when connecting to ssh hosts and your privkey
+# password will be cached for subsequent ssh sessions.
+
+eval "$(starship init bash)"
+neofetch
+

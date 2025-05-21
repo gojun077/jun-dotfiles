@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# ~/.bashrc for MAC OS
+# ~/.bashrc for MacOS
 #
 # Created On: Sometime during Nov 2019
 # Created by: gopeterjun@naver.com
-# Last Updated: 03 Aug 2024
+# Last Updated: 18 Dec 2024
 
 # If not running interactively, don't do anything
 #[[ $- != *i* ]] && return
@@ -29,10 +29,15 @@ export TERM=xterm-256color
 # Prompt: "user@hostname CurrentWorkingDirectory $ " no color
 #PS1='[\u@\h \W]\$ '
 # Same as above, but user@host in green, CWD in blue
-PS1="\[\033[01;32m\]\u@\h\[\033[00m\] \[\033[01;34m\]\W\[\033[00m\]\$ "
+#PS1="\[\033[01;32m\]\u@\h\[\033[00m\] \[\033[01;34m\]\W\[\033[00m\]\$ "
 # Prompt: "user@host:" in green, "full path to CWD" in blue
 #PS1="\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ "
 
 eval "$(starship init bash)"
+neofetch
 source ~/.bash_aliases
 # vim: ts=2 sw=2 et :
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

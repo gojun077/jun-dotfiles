@@ -1,5 +1,5 @@
 # Jun's ssh config; original path: `~/.ssh/config`
-# Last Updated Feb 24 2023
+# Last Updated 29 Sep 2024
 
 # Global Defaults
 TCPKeepAlive=yes
@@ -12,7 +12,7 @@ AddKeysToAgent=yes
 UseRoaming no  # https://www.openssh.com/txt/release-7.1p2 CVE
 Ciphers aes256-ctr,aes192-ctr,aes128-ctr
 # Specify add'l ssh config files not in version control
-Include config_secure
+Include config_homelab
 
 # Per Host Options
 Host bitbucket.org

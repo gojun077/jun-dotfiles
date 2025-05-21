@@ -1,3 +1,6 @@
+# This is an old docker.service systemd file from 2015 that I used
+# to force the docker daemon to use block storage to increase I/O
+# performance.
 [Unit]
 Description=Docker Application Container Engine
 Documentation=https://docs.docker.com

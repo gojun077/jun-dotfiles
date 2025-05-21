@@ -1,0 +1,38 @@
+[Unit]
+Description=Keybase Filesystem service release 6.3.1 - SUSE Tumbleweed
+# Note that the "Requires" directive will cause a unit to be restarted whenever its dependency is restarted.
+# Do not issue a hard dependency on service, because kbfs can reconnect to a restarted service.
+# Do not issue a hard dependency on redirector, because it's ok if it fails (e.g., if it is disabled).
+# https://github.com/keybase/client/blob/v6.3.1/packaging/linux/systemd/kbfs.service
+Wants=keybase.service keybase-redirector.service
+
+[Service]
+# "notify" means we promise to call SdNotify() at the end of startup.
+Type=notify
+
+# Backwards compatibility
+EnvironmentFile=-%t/keybase/keybase.kbfs.env
+
+EnvironmentFile=-%h/.config/keybase/keybase.autogen.env
+EnvironmentFile=-%h/.config/keybase/keybase.env
+
+# Forcibly unmount /keybase in case there's anything there. The "-" prefix
+# means that error codes from this command are ignored. Without this line,
+# `systemctl --user restart kbfs.service` will hit mount failures if there
+# are any running shells cd'd into a Keybase folder.
+ExecStartPre=-/bin/sh -c 'SERVICE=$(keybase config get -d -b mountdir); fusermount -uz "${SERVICE:-%t/keybase/kbfs}"'
+
+ExecStart=/usr/bin/kbfsfuse -debug -log-to-file
+
+# This should have already occurred in the signal handler in kbfsfuse.
+ExecStop=/bin/sh -c 'SERVICE=$(keybase config get -d -b mountdir); fusermount -uz "${SERVICE:-%t/keybase/kbfs}"'
+
+Restart=on-failure
+# Ensure the default mountdir exists
+RuntimeDirectory=keybase/kbfs
+RuntimeDirectoryMode=0700
+# Work around Systemd on Leap 15.0 being to old for RuntimeDirectory with deep directories (requires Systemd 235)
+ExecStartPre=/bin/sh -c 'mkdir -p "${XDG_RUNTIME_DIR}/keybase/kbfs"'
+
+[Install]
+WantedBy=default.target

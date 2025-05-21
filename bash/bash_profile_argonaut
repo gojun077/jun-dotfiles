@@ -1,9 +1,9 @@
 #!/usr/bin/bash
-# Per-user `~/.bash_profile` for Asahilinux Fedora
+# Per-user `~/.bash_profile` for argonaut running Fedora
 #
-# Created on: 28 Apr 2024
-# Created by gojun077
-# Last Updated: 08 Oct 2024
+# Created on: Sun 05 Jan 2025
+# Created by gopeterjun
+# Last Updated: Thu 09 Jan 2025
 #
 # These settings are sourced by the login shell
 
@@ -23,6 +23,9 @@ export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$GOPAT
 export SSH_AUTH_SOCK=/run/user/1000/ssh-agent.socket
 # NOTE: if GNOME keyring is installed, you must deactivate its ssh component
 # otw it will overwrite SSH_AUTH_SOCK above
+if pidof sway; then
+  export SWAYSOCK=/run/user/$UID/sway-ipc.${UID}."$(pidof sway)".sock
+fi
 export TERM=xterm-256color
 # fcitx5 IME variables for Wayland Desktop
 export XDG_SESSION_TYPE=wayland

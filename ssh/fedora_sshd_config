@@ -82,6 +82,7 @@ Include /etc/ssh/sshd_config.d/*.conf
 
 # override default of no subsystems
 #Subsystem       sftp    /usr/libexec/openssh/sftp-server
+# Enable sftp to handle unexpected text on stdout before sftp start
 Subsystem      sftp    internal-sftp
 # The above setting will avoid user shell for launching stfp-server
 # .bashrc, .bash_profile etc can produce output that sftp clients

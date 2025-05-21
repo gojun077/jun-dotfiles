@@ -1,9 +1,9 @@
-#!/usr/bin/env bash
-# ~/.bashrc for Argo Fedora 40 amd64
+#!/usr/bin/bash
+# ~/.bashrc for Asahi Linux (Apple Silicon Macbook Pro M1)
 #
 # Created On: 30 Apr 2024
 # Created by: gopeterjun@naver.com
-# Last Updated: Sun 18 May 2025
+# Last Updated: 08 Oct 2024
 
 # If not running interactively, don't do anything
 #[[ $- != *i* ]] && return
@@ -31,16 +31,14 @@ shopt -s checkwinsize
 # Same as above, but user@host in green, CWD in blue
 #PS1="\[\033[01;32m\]\u@\h\[\033[00m\] \[\033[01;34m\]\W\[\033[00m\]\$ "
 
-# https://unix.stackexchange.com/questions/470860/how-to-make-tty-work-in-bash-profile
-export GPG_TTY="$(tty)"
-if pidof -q sway; then
-  export SWAYSOCK=/run/user/$UID/sway-ipc.${UID}."$(pidof sway)".sock
-fi
 eval "$(starship init bash)"
-source ~/.bash_aliases
+eval "$(fzf --bash)"  # enable 'fzf' shell integration
 
-# Only execute neofetch if this is an interactive shell
-if [[ $- == *i* ]]; then
-  neofetch
-fi
+# the following is to quiet error for SC1091, SC1090 'cannot follow dynamic paths'
+# shellcheck source=/dev/null
+source "$HOME/.bash_aliases"
+# comment out neofetch to prevent banner from running twice
+#neofetch
+mbcputemp="$(cat /sys/class/thermal/thermal_zone0/temp)"
+printf "%s\\n" "CPU temp: $((mbcputemp/1000)) C"
 # vim: ts=2 sw=2 et :

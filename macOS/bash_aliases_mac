@@ -1,3 +1,4 @@
+# Last Updated: Fri 27 Dec 2024
 # enable color support of ls and also add handy aliases
 alias ls='ls --color=auto'
 alias grep='grep --color=auto'
@@ -11,6 +12,6 @@ alias ㅊㅇ='cd'
 alias 니='ls'
 alias screen="/usr/local/bin/screen"
 alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
-alias enox="/usr/local/bin/emacsclient -nw"
+alias enox="/usr/local/bin/emacsclient"
 
-source "$HOME/.bash_aliases_secure"
+source ~/.bash_aliases_secure
