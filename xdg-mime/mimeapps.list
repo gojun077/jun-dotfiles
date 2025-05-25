@@ -24,3 +24,4 @@ image/png=imv.desktop;
 text/markdown=emacs.desktop;
 text/plain=emacs.desktop;
 text/x-cmake=emacs.desktop;
+x-scheme-handler/mailto=chromium-browser.desktop
