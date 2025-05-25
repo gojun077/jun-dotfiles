@@ -2,7 +2,7 @@
 #
 # Created On: 28 Sep 2024
 # Created by: gopeterjun@naver.com
-# Last Updated: 15 Dec 2024
+# Last Updated: Sun 25 May 2025
 
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
@@ -37,7 +37,10 @@ unset rc
 export GPG_TTY="$(tty)"
 eval "$(starship init bash)"
 source ~/.bash_aliases
-neofetch
-rpicputemp="$(cat /sys/class/thermal/thermal_zone0/temp)"
-printf "%s\\n" "CPU temp: $((rpicputemp/1000)) C"
-printf "%s\\n" "uptime and loadavg: $(uptime)"
+# Only execute neofetch if this is an interactive shell
+if [[ $- == *i* ]]; then
+  neofetch
+  rpicputemp="$(cat /sys/class/thermal/thermal_zone0/temp)"
+  printf "%s\\n" "CPU temp: $((rpicputemp/1000)) C"
+  printf "%s\\n" "uptime and loadavg: $(uptime)"
+fi
