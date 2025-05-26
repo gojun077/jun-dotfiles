@@ -20,21 +20,21 @@
     ],
     "chat.mcp.discovery.enabled": true,
     "mcp": {
-      "servers": {
-        "filesystem": {
-        // https://github.com/modelcontextprotocol/servers/blob/main/src/filesystem
-          "command": "npx",
-          "args": [
-            "-y",
-            "@modelcontextprotocol/server-filesystem",
-            "~/Documents/repos"
-          ]
+        "servers": {
+            "filesystem": {
+                // https://github.com/modelcontextprotocol/servers/blob/main/src/filesystem
+                "command": "npx",
+                "args": [
+                    "-y",
+                    "@modelcontextprotocol/server-filesystem",
+                    "~/Documents/repos"
+                ]
+            },
+            "git": {
+                // https://github.com/modelcontextprotocol/servers/tree/main/src/git
+                "command": "uvx",
+                "args": ["mcp-server-git"]
+            }
         }
-        "git": {
-        // https://github.com/modelcontextprotocol/servers/tree/main/src/git
-            "command": "uvx",
-            "args": ["mcp-server-git"]
-        }
-      }
     }
 }
