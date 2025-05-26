@@ -1,3 +1,7 @@
+// created on: Mon 26 May 2025
+// last updated: Mon 26 May 2025
+// gopeterjun@naver.com
+
 {
     "C_Cpp.default.compilerPath": "/usr/bin/gcc",
     "editor.inlineSuggest.suppressSuggestions": true,
@@ -13,5 +17,24 @@
     "amp.commands.allowlist": [
         "cd",
         "terraform"
-    ]
+    ],
+    "chat.mcp.discovery.enabled": true,
+    "mcp": {
+      "servers": {
+        "filesystem": {
+        // https://github.com/modelcontextprotocol/servers/blob/main/src/filesystem
+          "command": "npx",
+          "args": [
+            "-y",
+            "@modelcontextprotocol/server-filesystem",
+            "~/Documents/repos"
+          ]
+        }
+        "git": {
+        // https://github.com/modelcontextprotocol/servers/tree/main/src/git
+            "command": "uvx",
+            "args": ["mcp-server-git"]
+        }
+      }
+    }
 }
