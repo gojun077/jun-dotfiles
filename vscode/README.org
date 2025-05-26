@@ -1,0 +1,14 @@
+#+TITLE: VSCode dotfiles
+#+SUBTITLE: plaintext config / settings files for vscode and variants
+#+AUTHOR: Peter Jun Koh
+#+EMAIL: gopeterjun@naver.com
+#+DESCRIPTION: dotfiles for the popular MIT-licensed IDE vscode
+#+KEYWORDS: microsoft, vscode, code, ide
+#+LANGUAGE: en
+
+* Summary
+
+- Created on: [2025-05-26 Mon]
+- Last Updated: [2025-05-26 Mon 15:29]
+
+This subfolder contains config and settings files 

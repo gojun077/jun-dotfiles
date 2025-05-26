@@ -1,0 +1,17 @@
+{
+    "C_Cpp.default.compilerPath": "/usr/bin/gcc",
+    "editor.inlineSuggest.suppressSuggestions": true,
+    "cody.suggestions.mode": "auto-edit",
+    "amp.mcpServers": {
+        "playwright": {
+            "command": "npx",
+            "args": [
+                "@playwright/mcp@latest"
+            ]
+        }
+    },
+    "amp.commands.allowlist": [
+        "cd",
+        "terraform"
+    ]
+}
