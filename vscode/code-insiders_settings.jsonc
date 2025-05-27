@@ -1,6 +1,9 @@
 // created on: Mon 26 May 2025
 // last updated: Mon 26 May 2025
 // gopeterjun@naver.com
+//
+// original path to this file: ~/.config/'Code - Insiders'/User/settings.json
+// Note that settings.json is a JSONC file, which allows comments
 
 {
     "C_Cpp.default.compilerPath": "/usr/bin/gcc",
