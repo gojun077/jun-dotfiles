@@ -13,7 +13,8 @@
         "playwright": {
             "command": "npx",
             "args": [
-                "@playwright/mcp@latest"
+                "@playwright/mcp@latest",
+                "--browser=firefox"
             ]
         }
     },
@@ -41,7 +42,11 @@
             "playwright":{
                 // https://github.com/executeautomation/mcp-playwright
                 "command": "npx",
-                "args": ["-y", "@executeautomation/playwright-mcp-server"]
+                "args": [
+                    "-y", 
+                    "@executeautomation/playwright-mcp-server", 
+                    "--browser=firefox"
+                ]
             }
         }
     }
