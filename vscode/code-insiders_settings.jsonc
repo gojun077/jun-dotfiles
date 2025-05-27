@@ -37,6 +37,11 @@
                 // https://github.com/modelcontextprotocol/servers/tree/main/src/git
                 "command": "uvx",
                 "args": ["mcp-server-git"]
+            },
+            "playwright":{
+                // https://github.com/executeautomation/mcp-playwright
+                "command": "npx",
+                "args": ["-y", "@executeautomation/playwright-mcp-server"]
             }
         }
     }
