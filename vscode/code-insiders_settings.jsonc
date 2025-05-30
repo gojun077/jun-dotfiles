@@ -43,8 +43,8 @@
                 // https://github.com/executeautomation/mcp-playwright
                 "command": "npx",
                 "args": [
-                    "-y", 
-                    "@executeautomation/playwright-mcp-server", 
+                    "-y",
+                    "@executeautomation/playwright-mcp-server",
                     "--browser=firefox"
                 ]
             }
