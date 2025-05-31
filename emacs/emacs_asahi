@@ -357,7 +357,7 @@
 (setq org-default-notes-file (concat org-directory "/capture.org"))
 (setq org-capture-templates
       '(("t" "Todo" entry (file "")
-         "** %a %?\n  %i\n")
+         "** %a %?\n %i\n")
         ("w" "Web site" entry (file "")
          "** %a :website:\n\n%U %?\n\n%:initial")))
 (setq org-agenda-skip-scheduled-if-done t)
