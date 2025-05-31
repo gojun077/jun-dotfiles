@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Wed 21 May 2025
+;; Last Updated: Sat 31 May 2025
 ;;
 ;; These configs are for Emacs 29.1 and higher.
 ;;; Code:
@@ -165,6 +165,8 @@
 (require 'browse-kill-ring)
 (require 'flymake-ruff)
 (require 'nix-mode)
+(require 'org-protocol)
+(add-to-list 'load-path "~/.emacs.d/straight/repos/org/lisp/")
 (require 'ox-md)
 (require 'smartparens-config)
 (require 'unicode-whitespace)
@@ -353,6 +355,11 @@
         ("~/Documents/repos/encrypted/gpj-org-mode-files/someday_maybe.org" :level . 1)
         ("~/Documents/repos/encrypted/gpj-org-mode-files/closed_cards.org" :level . 1)))
 (setq org-default-notes-file (concat org-directory "/capture.org"))
+(setq org-capture-templates
+      '(("t" "Todo" entry (file "")
+         "** %a %?\n  %i\n")
+        ("w" "Web site" entry (file "")
+         "** %a :website:\n\n%U %?\n\n%:initial")))
 (setq org-agenda-skip-scheduled-if-done t)
 (setq org-agenda-skip-deadline-if-done t)
 (setq org-agenda-skip-timestamp-if-done t)
