@@ -3,9 +3,9 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Sat 31 May 2025
+;; Last Updated: Sun 01 Jun 2025
 ;;
-;; These configs are for Emacs 29.1 and higher.
+;; These configs are for Emacs 30.1 and higher.
 ;;; Code:
 
 ;; use straight.el instead of package.el
@@ -55,10 +55,8 @@
 (use-package gptel
   :straight t
   :config
-  (setq gptel-default-mode 'org-mode)
-  (gptel-make-anthropic "Claude"
-                        :stream t
-                        :key gptel-api-key))
+  ;; Load separate gptel configuration
+  (require 'gptel-config nil t))
 (use-package go-playground
   :straight t
   :defer t)
@@ -76,8 +74,16 @@
 (use-package markdown-mode
   :straight t
   :defer t)
+;; mcp.el
+(use-package mcp
+  :straight (:host github :repo "lizqwerscott/mcp.el")
+  :config
+  (require 'mcp-hub)
+  ;; Load separate mcp config
+  (require 'mcp-config nil t))
 (use-package nix-mode
-  :straight t)
+  :straight t
+  :defer t)
 (use-package ob-mermaid
   :straight t
   :defer t
@@ -166,11 +172,20 @@
 (require 'flymake-ruff)
 (require 'nix-mode)
 (require 'org-protocol)
-(add-to-list 'load-path "~/.emacs.d/straight/repos/org/lisp/")
 (require 'ox-md)
 (require 'smartparens-config)
 (require 'unicode-whitespace)
 (require 'whitespace)
+
+;; define 'load-path' required for packages
+; for org-protocol
+(add-to-list 'load-path "~/.emacs.d/straight/build/org")
+; for gptel configs
+(add-to-list 'load-path "~/.emacs.d/gptel-conf")
+; for mcp.el
+(add-to-list 'load-path "~/.emacs.d/straight/build/mcp")
+; for mcp configs
+(add-to-list 'load-path "~/.emacs.d/mcp-conf")
 
 ;; map M-y yank-pop to browse-kill-ring
 (browse-kill-ring-default-keybindings)
