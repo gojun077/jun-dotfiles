@@ -53,10 +53,7 @@
   :hook (go-mode . go-mode-setup)
   :defer t)
 (use-package gptel
-  :straight t
-  :config
-  ;; Load separate gptel configuration
-  (require 'gptel-config nil t))
+  :straight t)
 (use-package go-playground
   :straight t
   :defer t)
@@ -78,9 +75,7 @@
 (use-package mcp
   :straight (:host github :repo "lizqwerscott/mcp.el")
   :config
-  (require 'mcp-hub)
-  ;; Load separate mcp config
-  (require 'mcp-config nil t))
+  (require 'mcp-hub))
 (use-package nix-mode
   :straight t
   :defer t)
@@ -186,6 +181,84 @@
 (add-to-list 'load-path "~/.emacs.d/straight/build/mcp")
 ; for mcp configs
 (add-to-list 'load-path "~/.emacs.d/mcp-conf")
+
+;;; GPTel specific configurations ;;;
+;;
+(setq gptel-default-mode 'org-mode)
+
+;; Configure Anthropic Claude
+(gptel-make-anthropic "Claude"
+                      :stream t
+                      :key gptel-api-key)
+
+;; from https://github.com/karthink/gptel?tab=readme-ov-file#defining-gptel-tools
+(gptel-make-tool
+ :name "read_buffer"                    ; javascript-style snake_case name
+ :function (lambda (buffer)                  ; the function that will run
+             (unless (buffer-live-p (get-buffer buffer))
+               (error "error: buffer %s is not live." buffer))
+             (with-current-buffer  buffer
+               (buffer-substring-no-properties (point-min) (point-max))))
+ :description "return the contents of an emacs buffer"
+ :args (list '(:name "buffer"
+               :type string            ; :type value must be a symbol
+               :description "the name of the buffer whose contents are to be retrieved"))
+ :category "emacs")                     ; An arbitrary label for grouping
+
+(gptel-make-tool
+ :name "list_dir"
+ :function
+ (lambda (path &optional include-hidden)  ; the elisp that runs
+   "Open Dired on PATH and return a file list as a string."
+   (let* ((dir   (expand-file-name path))
+          (files (directory-files
+                  dir include-hidden
+                  (unless include-hidden directory-files-no-dot-files-regexp))))
+     (dired dir)                          ; side-effect: pop Dired buffer
+     (string-join files "\n")))           ; value returned to GPT
+ :description "List files in a directory and open it with Dired"
+ :args (list '(:name "path"
+              :type string
+              :description "Directory to list (e.g. ~/)")
+             '(:name "include_hidden"
+              :type boolean
+              :description "Whether to include dot-files (t/nil)"))
+ :category "filesystem")
+
+(gptel-make-tool
+ :name "create_file"                    ; javascript-style  snake_case name
+ :function (lambda (path filename content)   ; the function that runs
+             (let ((full-path (expand-file-name filename path)))
+               (with-temp-buffer
+                 (insert content)
+                 (write-file full-path))
+               (format "Created file %s in %s" filename path)))
+ :description "Create a new file with the specified content"
+ :args (list '(:name "path"             ; a list of argument specifications
+        :type string
+        :description "The directory where to create the file")
+             '(:name "filename"
+        :type string
+        :description "The name of the file to create")
+             '(:name "content"
+        :type string
+        :description "The content to write to the file"))
+ :category "filesystem")                ; An arbitrary label for grouping
+
+(require 'gptel-tools)
+;; GPTel config block end
+
+;;; mcp configs for mcp.el ;;;
+;;
+(setq mcp-hub-servers
+      ;; https://github.com/modelcontextprotocol/servers/blob/main/src/filesystem
+      '(("filesystem" . (:command "npx" :args ("-y" "@modelcontextprotocol/server-filesystem" "~/Documents/repos/")))
+      ;; https://github.com/modelcontextprotocol/servers/tree/main/src/git
+        ("git" . (:command "uvx" :args ("mcp-server-git")))
+        ("playwright" . (:command "npx" :args ("-y" "@executeautomation/playwright-mcp-server" "--browser=firefox")))))
+
+(require 'gptel-integrations)
+;; MCP config block end
 
 ;; map M-y yank-pop to browse-kill-ring
 (browse-kill-ring-default-keybindings)
