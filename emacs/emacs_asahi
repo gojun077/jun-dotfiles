@@ -175,12 +175,9 @@
 ;; define 'load-path' required for packages
 ; for org-protocol
 (add-to-list 'load-path "~/.emacs.d/straight/build/org")
-; for gptel configs
-(add-to-list 'load-path "~/.emacs.d/gptel-conf")
 ; for mcp.el
 (add-to-list 'load-path "~/.emacs.d/straight/build/mcp")
-; for mcp configs
-(add-to-list 'load-path "~/.emacs.d/mcp-conf")
+
 
 ;;; GPTel specific configurations ;;;
 ;;
@@ -191,8 +188,6 @@
 (gptel-make-anthropic "Claude"
                       :stream t
                       :key gptel-api-key)
-
-(require 'gptel-tools)
 
 ;; from https://github.com/karthink/gptel?tab=readme-ov-file#defining-gptel-tools
 (gptel-make-tool
