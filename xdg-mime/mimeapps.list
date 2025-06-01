@@ -1,7 +1,8 @@
-[Added Associations]
 # Created on: May 2025
 # Last Updated: Sun 01 Jun 2025
 # path to file: ~/.config/mimeapps.list
+
+[Added Associations]
 application/json=emacsclient.desktop;
 application/x-docbook+xml=emacsclient.desktop;
 application/x-yaml=emacsclient.desktop;
