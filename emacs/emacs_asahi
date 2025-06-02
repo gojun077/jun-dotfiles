@@ -262,6 +262,19 @@ Optional SWITCH non-nil opens files with `find-file-other-window'."
  :category "emacs")
 
 (gptel-make-tool
+ :name "execute_bash_simple"
+ :function (lambda (command)
+             (condition-case err
+                 (string-trim (shell-command-to-string command))
+               (error (format "Error executing command: %s" (error-message-string err)))))
+ :description "Execute a bash command and return stdout only"
+ :args (list '(:name "command"
+               :type string
+               :description "the bash command to execute"))
+ :category "system")
+
+
+(gptel-make-tool
  :name "list_dir"
  :function
  (lambda (path &optional include-hidden)  ; the elisp that runs
