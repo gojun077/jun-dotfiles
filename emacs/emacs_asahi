@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Sun 01 Jun 2025
+;; Last Updated: Sun 08 Jun 2025
 ;;
 ;; These configs are for Emacs 30.1 and higher.
 ;;; Code:
@@ -203,63 +203,27 @@
                :description "the name of the buffer whose contents are to be retrieved"))
  :category "emacs")                     ; An arbitrary label for grouping
 
+; https://www.vanrenterghem.biz/posts/providing_tools_to_AI.html
 (gptel-make-tool
- :name "modify_buffer"
- :function
- (lambda (buffer start end new_text &optional save)
-   "Replace text in BUFFER between START and END with NEW_TEXT.
-If SAVE is non-nil, save the buffer after editing."
-   (let ((buf (get-buffer buffer)))
-     (unless (buffer-live-p buf)
-       (error "modify_buffer: buffer %s is not live" buffer))
-     (with-current-buffer buf
-       (when buffer-read-only
-         (error "modify_buffer: buffer %s is read-only" buffer))
-       (save-excursion
-         (goto-char start)
-         (delete-region start end)
-         (insert new_text))
-       (when save
-         (save-buffer))
-       (format "Modified %s: [%d–%d] replaced with %d chars%s"
-               buffer start end (length new_text)
-               (if save " and saved" "")))))
- :description
- "Replace the text in BUFFER between START and END positions with NEW_TEXT.
-Optional SAVE=t will save the buffer after the edit."
- :args (list '(:name "buffer"   :type string  :description "Live, writable buffer name")
-             '(:name "start"    :type integer :description "Start position (point)")
-             '(:name "end"      :type integer :description "End position (point)")
-             '(:name "new_text" :type string  :description "Replacement text")
-             '(:name "save"     :type boolean :description "Save buffer after edit (t/nil)"))
- :category "emacs")
-
-(gptel-make-tool
- :name "open_file_or_dir"
- :function
- (lambda (path &optional switch)        ; SWITCH = 'other-window, etc.
-   "Open PATH.  If it is a directory, visit it with Dired.
-If it is a regular file, open it with `find-file'.
-Optional SWITCH: if non-nil, use `find-file-other-window'."
-   (let* ((full (expand-file-name path))
-          (open (if (file-directory-p full)
-                    (lambda () (dired full))
-                  (if switch
-                      (lambda () (find-file-other-window full))
-                    (lambda () (find-file full))))))
-     (funcall open)
-     (format "Opened %s (%s)"
-             full (if (file-directory-p full) "directory" "file"))))
- :description
- "Open a file in the current window (or other window) or open a directory in Dired.
-Optional SWITCH non-nil opens files with `find-file-other-window'."
- :args (list '(:name "path"
-              :type string
-              :description "Absolute or relative path to file or directory")
-             '(:name "switch"
-              :type boolean
-              :description "Open file in other window (ignored for directories)"))
- :category "emacs")
+ :name "append_to_buffer"
+:function (lambda (buffer text &optional orgmode)
+            (with-current-buffer (get-buffer-create buffer)
+              (save-excursion
+                 (goto-char (point-max))
+                (insert text)
+                 (if orgmode (org-mode))))
+            (format "Appended text to buffer %s" buffer))
+:description "Append text to the an Emacs buffer.  If the buffer does not exist, it will be created."
+:args (list '(:name "buffer"
+              :type "string"
+              :description "The name of the buffer to append text to.")
+            '(:name "text"
+              :type "string"
+              :description "The text to append to the buffer.")
+             '(:name "orgmode"
+              :type "boolean"
+              :description "(optional) enable (t) org-mode"))
+:category "emacs")
 
 (gptel-make-tool
  :name "execute_bash_simple"
@@ -272,27 +236,6 @@ Optional SWITCH non-nil opens files with `find-file-other-window'."
                :type string
                :description "the bash command to execute"))
  :category "system")
-
-
-(gptel-make-tool
- :name "list_dir"
- :function
- (lambda (path &optional include-hidden)  ; the elisp that runs
-   "Open Dired on PATH and return a file list as a string."
-   (let* ((dir   (expand-file-name path))
-          (files (directory-files
-                  dir include-hidden
-                  (unless include-hidden directory-files-no-dot-files-regexp))))
-     (dired dir)                          ; side-effect: pop Dired buffer
-     (string-join files "\n")))           ; value returned to GPT
- :description "List files in a directory and open it with Dired"
- :args (list '(:name "path"
-              :type string
-              :description "Directory to list (e.g. ~/)")
-             '(:name "include_hidden"
-              :type boolean
-              :description "Whether to include dot-files (t/nil)"))
- :category "filesystem")
 
 (gptel-make-tool
  :name "read_file"
@@ -310,63 +253,6 @@ Optional SWITCH non-nil opens files with `find-file-other-window'."
               :type string
               :description "Path to the file (e.g. ~/notes/todo.txt)"))
  :category "filesystem")
-
-(gptel-make-tool
- :name "create_file"                    ; javascript-style  snake_case name
- :function (lambda (path filename content)   ; the function that runs
-             (let ((full-path (expand-file-name filename path)))
-               (with-temp-buffer
-                 (insert content)
-                 (write-file full-path))
-               (format "Created file %s in %s" filename path)))
- :description "Create a new file with the specified content"
- :args (list '(:name "path"             ; a list of argument specifications
-        :type string
-        :description "The directory where to create the file")
-             '(:name "filename"
-        :type string
-        :description "The name of the file to create")
-             '(:name "content"
-        :type string
-        :description "The content to write to the file"))
- :category "filesystem")                ; An arbitrary label for grouping
-
-(gptel-make-tool
- :name "write_file"
- :function
- (lambda (path content)
-   "Create or overwrite the file at PATH with CONTENT, then return a summary."
-   (let ((file (expand-file-name path)))
-     (with-temp-buffer
-       (insert content)
-       (write-region (point-min) (point-max) file nil 'silent))
-     (format "Wrote %d characters to %s" (length content) file)))
- :description "Create or overwrite a file with the specified content"
- :args (list '(:name "path"
-              :type string
-              :description "Full file path (e.g. ~/notes/todo.txt)")
-             '(:name "content"
-              :type string
-              :description "Text to write into the file"))
- :category "filesystem")
-
-(gptel-make-tool
- :name "make_dir"
- :function
- (lambda (path &optional parents)
-   "Create directory PATH; if PARENTS is non-nil, create parent dirs too."
-   (let ((dir (expand-file-name path)))
-     (make-directory dir parents)
-     (format "Created directory: %s" dir)))
- :description "Create a new directory; with parents=t, create intermediate dirs"
- :args (list '(:name "path"
-              :type string
-              :description "Directory to create (e.g. ~/projects/new)")
-             '(:name "parents"
-              :type boolean
-              :description "Create parent directories as needed (t/nil)"))
- :category "filesystem")
-
 
 ;; GPTel config block end
 
