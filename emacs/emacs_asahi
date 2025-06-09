@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Sun 08 Jun 2025
+;; Last Updated: Mon 09 Jun 2025
 ;;
 ;; These configs are for Emacs 30.1 and higher.
 ;;; Code:
@@ -27,6 +27,8 @@
 ;; Install use-package
 (straight-use-package 'use-package)
 
+(use-package amp
+  :straight (:host github :repo "shaneikennedy/amp.el"))
 (use-package ansible
   :straight t
   :defer t)
