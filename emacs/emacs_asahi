@@ -27,8 +27,6 @@
 ;; Install use-package
 (straight-use-package 'use-package)
 
-(use-package amp
-  :straight (:host github :repo "shaneikennedy/amp.el"))
 (use-package ansible
   :straight t
   :defer t)
