@@ -19,7 +19,7 @@ export GOROOT=/usr/local/go  # consider moving this to the system `bash_profile`
 export GOPATH=$HOME/go
 export PYENV_ROOT="$HOME/.pyenv"
 export PYTHONBREAKPOINT=ipdb.set_trace
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$GOPATH/bin:$GOROOT/bin:$HOME/.local/bin:$HOME/bin:$PYENV_ROOT/bin:$HOME/.tfenv/bin:$HOME/.krew/bin"
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$GOPATH/bin:$GOROOT/bin:$HOME/.local/bin:$HOME/bin:$PYENV_ROOT/bin:$HOME/.tfenv/bin:$HOME/.krew/bin:/usr/libexec/docker/cli-plugins"
 export SSH_AUTH_SOCK=/run/user/1000/ssh-agent.socket
 # NOTE: if GNOME keyring is installed, you must deactivate its ssh component
 # otw it will overwrite SSH_AUTH_SOCK above
