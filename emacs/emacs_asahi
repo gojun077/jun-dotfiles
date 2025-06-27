@@ -303,6 +303,12 @@
       c-basic-offset 4)
 (add-hook 'c-mode-hook #'flymake-mode)
 
+;; java-mode settings
+;; use checkstyle linter offsets
+(add-hook 'java-mode-hook
+             (lambda ()
+               (setq c-basic-offset 2)))
+
 ;; mode settings
 ; show col and line numbers
 (column-number-mode 1)
