@@ -1,5 +1,5 @@
 // created on: Mon 26 May 2025
-// last updated: Sat 14 Jun 2025
+// last updated: Fri 27 Jun 2025
 // gopeterjun@naver.com
 //
 // original path to this file: ~/.config/'Code - Insiders'/User/settings.json
@@ -8,16 +8,6 @@
 {
     "C_Cpp.default.compilerPath": "/usr/bin/gcc",
     "editor.inlineSuggest.suppressSuggestions": true,
-    "cody.suggestions.mode": "auto-edit",
-    "amp.mcpServers": {
-        "playwright": {
-            "command": "npx",
-            "args": [
-                "@playwright/mcp@latest",
-                "--browser=firefox"
-            ]
-        }
-    },
     "amp.commands.allowlist": [
         "cd",
         "terraform"
@@ -50,33 +40,4 @@
             }
         }
     },
-    "cody.agentic.context.experimentalOptions": {
-        "shell": []
-    },
-    "cody.mcpServers": {
-
-        "filesystem": {
-            // https://github.com/modelcontextprotocol/servers/blob/main/src/filesystem
-            "command": "npx",
-            "args": [
-                "-y",
-                "@modelcontextprotocol/server-filesystem",
-                "~/Documents/repos"
-            ]
-        }, 
-        "git": {
-            // https://github.com/modelcontextprotocol/servers/tree/main/src/git
-                "command": "uvx",
-                "args": ["mcp-server-git"]
-            },
-        "playwright": {
-            // https://github.com/executeautomation/mcp-playwright
-                "command": "npx",
-                "args": [
-                    "-y",
-                    "@executeautomation/playwright-mcp-server",
-                    "--browser=firefox"
-                ]
-            }       
-    }
 }
