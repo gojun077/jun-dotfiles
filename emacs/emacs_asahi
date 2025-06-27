@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Fri 27 Jun 2025
+;; Last Updated: Sat 28 Jun 2025
 ;;
 ;; These configs are for Emacs 30.1 and higher.
 ;;; Code:
@@ -186,14 +186,20 @@
 ;; Configure Anthropic Claude
 ; by default, API key will be read from '~/.authinfo.gpg' if it exists
 (gptel-make-anthropic "Claude"
-                      :stream t
-                      :key gptel-api-key)
+  :stream t
+  :key gptel-api-key)
 
 ;; Configure Google Gemini
 ; API key will be read from '~/.authinfo.gpg'
 (gptel-make-gemini "Gemini"
-                   :stream t
-                   :key gptel-api-key)
+  :stream t
+  :key gptel-api-key)
+
+;; Configure Deepseek
+; API key will be read from '~/.authinfo.gpg'
+(gptel-make-deepseek "DeepSeek"
+  :stream t
+  :key gptel-api-key)
 
 ;; from https://github.com/karthink/gptel?tab=readme-ov-file#defining-gptel-tools
 (gptel-make-tool
