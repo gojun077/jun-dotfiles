@@ -189,6 +189,12 @@
                       :stream t
                       :key gptel-api-key)
 
+;; Configure Google Gemini
+; API key will be read from '~/.authinfo.gpg'
+(gptel-make-gemini "Gemini"
+                   :stream t
+                   :key gptel-api-key)
+
 ;; from https://github.com/karthink/gptel?tab=readme-ov-file#defining-gptel-tools
 (gptel-make-tool
  :name "read_buffer"                    ; javascript-style snake_case name
