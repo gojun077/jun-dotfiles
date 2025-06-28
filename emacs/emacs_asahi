@@ -8,22 +8,6 @@
 ;; These configs are for Emacs 30.1 and higher.
 ;;; Code:
 
-;; use straight.el instead of package.el
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name
-        "straight/repos/straight.el/bootstrap.el"
-        (or (bound-and-true-p straight-base-dir)
-            user-emacs-directory)))
-      (bootstrap-version 7))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
 
 ;; ensure latest org version is loaded by straight.el
 (straight-use-package 'org)
@@ -331,10 +315,6 @@
 ;; mode settings
 ; show col and line numbers
 (column-number-mode 1)
-; don't show menu bar
-(menu-bar-mode 0)
-; don't show scrollbar
-(scroll-bar-mode 0)
 ; highlight parens
 (show-paren-mode t)
 
