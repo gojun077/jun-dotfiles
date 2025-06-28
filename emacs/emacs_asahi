@@ -185,6 +185,10 @@
   :stream t
   :key gptel-api-key)
 
+;; Configure Github Copilot Chat
+; no API key; browser auth login required
+(gptel-make-gh-copilot "Copilot")
+
 ;; from https://github.com/karthink/gptel?tab=readme-ov-file#defining-gptel-tools
 (gptel-make-tool
  :name "read_buffer"                    ; javascript-style snake_case name
@@ -222,18 +226,6 @@
 :category "emacs")
 
 (gptel-make-tool
- :name "execute_bash_simple"
- :function (lambda (command)
-             (condition-case err
-                 (string-trim (shell-command-to-string command))
-               (error (format "Error executing command: %s" (error-message-string err)))))
- :description "Execute a bash command and return stdout only"
- :args (list '(:name "command"
-               :type string
-               :description "the bash command to execute"))
- :category "system")
-
-(gptel-make-tool
  :name "read_file"
  :function
  (lambda (path)
@@ -250,6 +242,16 @@
               :description "Path to the file (e.g. ~/notes/todo.txt)"))
  :category "filesystem")
 
+(gptel-make-tool
+ :name "execute_safe_command"
+ :function (lambda (command)
+             (string-trim (shell-command-to-string command)))
+ :description "Run a shell command safely and return its output."
+ :args (list '(:name "command"
+               :type "string"
+               :description "The shell command to execute"))
+ :category "shell")
+
 ;; GPTel config block end
 
 ;;; mcp configs for mcp.el ;;;
@@ -259,7 +261,6 @@
       '(("filesystem" . (:command "npx" :args ("-y" "@modelcontextprotocol/server-filesystem" "~/")))
       ;; https://github.com/modelcontextprotocol/servers/tree/main/src/git
         ("git" . (:command "uvx" :args ("mcp-server-git")))
-        ("playwright" . (:command "npx" :args ("-y" "@executeautomation/playwright-mcp-server" "--browser=firefox")))
         ("mcp-shell-server" . (
                                :command "mcp-shell-server"
                                :env (
