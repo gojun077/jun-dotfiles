@@ -272,10 +272,14 @@
 ;;
 (setq mcp-hub-servers
       ;; https://github.com/modelcontextprotocol/servers/blob/main/src/filesystem
-      '(("filesystem" . (:command "npx" :args ("-y" "@modelcontextprotocol/server-filesystem" "~/Documents/repos/")))
+      '(("filesystem" . (:command "npx" :args ("-y" "@modelcontextprotocol/server-filesystem" "~/")))
       ;; https://github.com/modelcontextprotocol/servers/tree/main/src/git
         ("git" . (:command "uvx" :args ("mcp-server-git")))
-        ("playwright" . (:command "npx" :args ("-y" "@executeautomation/playwright-mcp-server" "--browser=firefox")))))
+        ("playwright" . (:command "npx" :args ("-y" "@executeautomation/playwright-mcp-server" "--browser=firefox")))
+        ("mcp-shell-server" . (
+                               :command "mcp-shell-server"
+                               :env (
+                                     :ALLOW_COMMANDS "ls,cat,pwd,ripgrep,wc,touch,find,uname,lsblk,df,du,make")))))
 
 (require 'gptel-integrations)
 ;; MCP config block end
