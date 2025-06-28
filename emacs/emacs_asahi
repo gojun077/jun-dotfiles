@@ -203,27 +203,57 @@
                :description "the name of the buffer whose contents are to be retrieved"))
  :category "emacs")                     ; An arbitrary label for grouping
 
-; https://www.vanrenterghem.biz/posts/providing_tools_to_AI.html
 (gptel-make-tool
- :name "append_to_buffer"
-:function (lambda (buffer text &optional orgmode)
-            (with-current-buffer (get-buffer-create buffer)
-              (save-excursion
-                 (goto-char (point-max))
-                (insert text)
-                 (if orgmode (org-mode))))
-            (format "Appended text to buffer %s" buffer))
-:description "Append text to the an Emacs buffer.  If the buffer does not exist, it will be created."
-:args (list '(:name "buffer"
-              :type "string"
-              :description "The name of the buffer to append text to.")
-            '(:name "text"
-              :type "string"
-              :description "The text to append to the buffer.")
-             '(:name "orgmode"
-              :type "boolean"
-              :description "(optional) enable (t) org-mode"))
-:category "emacs")
+ :name "modify_buffer"
+ :function (lambda (buffer operation &optional text start-line end-line)
+             (with-current-buffer (get-buffer-create buffer)
+               (save-excursion
+                 (cond
+                  ((string= operation "insert")
+                   (if start-line
+                       (progn (goto-line start-line)
+                              (beginning-of-line)
+                              (insert text "\n"))
+                     (goto-char (point-max))
+                     (insert text))
+                   (format "Inserted text at line %s in buffer %s" (or start-line "end") buffer))
+                  ((string= operation "replace")
+                   (when (and start-line end-line text)
+                     (goto-line start-line)
+                     (beginning-of-line)
+                     (let ((start-pos (point)))
+                       (goto-line end-line)
+                       (end-of-line)
+                       (delete-region start-pos (point))
+                       (insert text))
+                     (format "Replaced lines %d-%d in buffer %s" start-line end-line buffer)))
+                  ((string= operation "delete")
+                   (when (and start-line end-line)
+                     (goto-line start-line)
+                     (beginning-of-line)
+                     (let ((start-pos (point)))
+                       (goto-line end-line)
+                       (end-of-line)
+                       (delete-region start-pos (point)))
+                     (format "Deleted lines %d-%d in buffer %s" start-line end-line buffer)))
+                  (t (format "Unknown operation: %s" operation))))))
+ :description "Modify an Emacs buffer by inserting, replacing, or deleting text at specific lines."
+ :args (list '(:name "buffer"
+               :type "string"
+               :description "The name of the buffer to modify.")
+             '(:name "operation"
+               :type "string"
+               :description "Operation to perform: 'insert', 'replace', or 'delete'.")
+             '(:name "text"
+               :type "string"
+               :description "Text to insert or replace with (not used for delete).")
+             '(:name "start-line"
+               :type "number"
+               :description "Starting line number (1-based). If not specified for insert, appends to end.")
+             '(:name "end-line"
+               :type "number"
+               :description "Ending line number (1-based). Required for replace and delete operations."))
+ :category "emacs")
 
 (gptel-make-tool
  :name "read_file"
