@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Sat 28 Jun 2025
+;; Last Updated: Sun 29 Jun 2025
 ;;
 ;; These configs are for Emacs 30.1 and higher.
 ;;; Code:
@@ -230,10 +230,10 @@
  :description "Open a file in Emacs and return its contents."
  :args (list '(:name "path" :type string :description "Path to the file (e.g. ~/notes/todo.txt)"))
  :handler (lambda (path)
-            ;; This function opens the file in an Emacs buffer
-            (find-file-path)
-            (with-current-buffer (get-file-buffer path)
-              (buffer-string)))
+            (condition-case err
+                (with-current-buffer (find-file-noselect path)
+                  (buffer-string))
+              (error (format "Error reading file '%s': %s" path (error-message-string err)))))
  :category "filesystem")
 
 (gptel-make-tool
