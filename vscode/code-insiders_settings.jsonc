@@ -29,7 +29,7 @@
                 "command": "uvx",
                 "args": ["mcp-server-git"]
             },
-            "playwright":{
+            "playwright": {
                 // https://github.com/executeautomation/mcp-playwright
                 "command": "npx",
                 "args": [
