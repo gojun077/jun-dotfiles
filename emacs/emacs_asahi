@@ -71,6 +71,11 @@
   :defer t
   :config
   (setq ob-mermaid-cli-path "/home/jundora/.nix-profile/bin/mmdc"))
+(use-package org
+  :straight t
+  :config
+  (require 'org-protocol)
+  (require 'ox-md))
 (use-package org-roam
   :straight t
   :defer t)
@@ -153,17 +158,9 @@
 (require 'browse-kill-ring)
 (require 'flymake-ruff)
 (require 'nix-mode)
-(require 'org-protocol)
-(require 'ox-md)
 (require 'smartparens-config)
 (require 'unicode-whitespace)
 (require 'whitespace)
-
-;; define 'load-path' required for packages
-; for org-protocol
-(add-to-list 'load-path "~/.emacs.d/straight/build/org")
-; for mcp.el
-(add-to-list 'load-path "~/.emacs.d/straight/build/mcp")
 
 
 ;;; GPTel specific configurations ;;;
