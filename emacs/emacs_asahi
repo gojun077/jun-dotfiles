@@ -227,14 +227,13 @@
 
 (gptel-make-tool
  :name "read_file"
- :doc "Open a file in Emacs and return its contents."
+ :description "Open a file in Emacs and return its contents."
  :args (list '(:name "path" :type string :description "Path to the file (e.g. ~/notes/todo.txt)"))
  :handler (lambda (path)
             ;; This function opens the file in an Emacs buffer
             (find-file-path)
-            ;; buffer containing the file becomes the current buffer
-            ;; return content, so LLM can still "read" it.
-            (buffer-string))
+            (with-current-buffer (get-file-buffer path)
+              (buffer-string)))
  :category "filesystem")
 
 (gptel-make-tool
