@@ -229,11 +229,11 @@
  :name "read_file"
  :description "Open a file in Emacs and return its contents."
  :args (list '(:name "path" :type string :description "Path to the file (e.g. ~/notes/todo.txt)"))
- :handler (lambda (path)
-            (condition-case err
-                (with-current-buffer (find-file-noselect path)
-                  (buffer-string))
-              (error (format "Error reading file '%s': %s" path (error-message-string err)))))
+ :function (lambda (path)
+             (condition-case err
+                 (with-current-buffer (find-file-noselect path)
+                   (buffer-string))
+               (error (format "Error reading file '%s': %s" path (error-message-string err)))))
  :category "filesystem")
 
 (gptel-make-tool
