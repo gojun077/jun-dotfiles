@@ -205,54 +205,85 @@
 
 (gptel-make-tool
  :name "modify_buffer"
- :function (lambda (buffer operation &optional text start-line end-line)
-             (with-current-buffer (get-buffer-create buffer)
-               (save-excursion
-                 (cond
-                  ((string= operation "insert")
-                   (if start-line
-                       (progn (goto-line start-line)
-                              (beginning-of-line)
-                              (insert text "\n"))
-                     (goto-char (point-max))
-                     (insert text))
-                   (format "Inserted text at line %s in buffer %s" (or start-line "end") buffer))
-                  ((string= operation "replace")
-                   (when (and start-line end-line text)
-                     (goto-line start-line)
-                     (beginning-of-line)
-                     (let ((start-pos (point)))
-                       (goto-line end-line)
-                       (end-of-line)
-                       (delete-region start-pos (point))
-                       (insert text))
-                     (format "Replaced lines %d-%d in buffer %s" start-line end-line buffer)))
-                  ((string= operation "delete")
-                   (when (and start-line end-line)
-                     (goto-line start-line)
-                     (beginning-of-line)
-                     (let ((start-pos (point)))
-                       (goto-line end-line)
-                       (end-of-line)
-                       (delete-region start-pos (point)))
-                     (format "Deleted lines %d-%d in buffer %s" start-line end-line buffer)))
-                  (t (format "Unknown operation: %s" operation))))))
- :description "Modify an Emacs buffer by inserting, replacing, or deleting text at specific lines."
+ :function (lambda (buffer operation &optional text start-line end-line position)
+             (condition-case err
+                 (with-current-buffer (get-buffer-create buffer)
+                   (save-excursion
+                     (let ((total-lines (count-lines (point-min) (point-max))))
+                       (cond
+                        ((string= operation "insert")
+                         (cond
+                          ;; Insert at end if no line specified
+                          ((not start-line)
+                           (goto-char (point-max))
+                           (unless (bolp) (insert "\n"))
+                           (insert text)
+                           (format "Inserted text at end of buffer %s" buffer))
+                          ;; Validate line number
+                          ((or (< start-line 1) (> start-line (1+ total-lines)))
+                           (format "Error: Line %d is out of range (1-%d) in buffer %s" start-line (1+ total-lines) buffer))
+                          ;; Insert before or after specified line
+                          (t
+                           (goto-char (point-min))
+                           (forward-line (1- start-line))
+                           (if (string= position "after")
+                               (progn (end-of-line) (insert "\n" text))
+                             (progn (beginning-of-line) (insert text "\n")))
+                           (format "Inserted text %s line %d in buffer %s" (or position "before") start-line buffer))))
+                        
+                        ((string= operation "replace")
+                         (cond
+                          ((not (and start-line end-line text))
+                           "Error: Replace operation requires start-line, end-line, and text parameters")
+                          ((or (< start-line 1) (> end-line total-lines) (> start-line end-line))
+                           (format "Error: Invalid line range %d-%d (total lines: %d)" start-line end-line total-lines))
+                          (t
+                           (goto-char (point-min))
+                           (forward-line (1- start-line))
+                           (let ((start-pos (point)))
+                             (forward-line (- end-line start-line))
+                             (end-of-line)
+                             (delete-region start-pos (point))
+                             (insert text))
+                           (format "Replaced lines %d-%d in buffer %s" start-line end-line buffer))))
+                        
+                        ((string= operation "delete")
+                         (cond
+                          ((not (and start-line end-line))
+                           "Error: Delete operation requires start-line and end-line parameters")
+                          ((or (< start-line 1) (> end-line total-lines) (> start-line end-line))
+                           (format "Error: Invalid line range %d-%d (total lines: %d)" start-line end-line total-lines))
+                          (t
+                           (goto-char (point-min))
+                           (forward-line (1- start-line))
+                           (let ((start-pos (point)))
+                             (forward-line (- end-line start-line))
+                             (end-of-line)
+                             (when (< (point) (point-max)) (forward-char 1))
+                             (delete-region start-pos (point)))
+                           (format "Deleted lines %d-%d in buffer %s" start-line end-line buffer))))
+                        
+                        (t (format "Error: Unknown operation '%s'. Use 'insert', 'replace', or 'delete'" operation))))))
+               (error (format "Error in modify_buffer: %s" (error-message-string err)))))
+ :description "Modify an Emacs buffer by inserting, replacing, or deleting text at specific lines with validation."
  :args (list '(:name "buffer"
                :type "string"
                :description "The name of the buffer to modify.")
              '(:name "operation"
                :type "string"
-               :description "Operation to perform: 'insert', 'replace', or 'delete'.")
+               :description "Operation: 'insert', 'replace', or 'delete'.")
              '(:name "text"
                :type "string"
-               :description "Text to insert or replace with (not used for delete).")
+               :description "Text to insert/replace (not used for delete).")
              '(:name "start-line"
                :type "number"
-               :description "Starting line number (1-based). If not specified for insert, appends to end.")
+               :description "Line number (1-based). For insert: target line. For replace/delete: start of range.")
              '(:name "end-line"
                :type "number"
-               :description "Ending line number (1-based). Required for replace and delete operations."))
+               :description "End line number (1-based). Required for replace/delete operations.")
+             '(:name "position"
+               :type "string"
+               :description "For insert only: 'before' (default) or 'after' the specified line."))
  :category "emacs")
 
 (gptel-make-tool
