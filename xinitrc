@@ -18,6 +18,9 @@ case $1 in
   openbox)
     exec ssh-agent openbox-session
     ;;
+  kde)
+    exec ssh-agent startplasma-x11
+    ;;
   xfce4)
     exec ssh-agent startxfce4
     ;;
