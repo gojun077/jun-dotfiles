@@ -34,7 +34,7 @@ shopt -s checkwinsize
 eval "$(starship init bash)"
 source ~/.bash_aliases
 # Only show output if this is an interactive shell AND not being used by automation
-if [[ $- == *i* ]] && [[ -z "$WCGW_SHELL" ]] && [[ -z "$PEXPECT_SPAWN" ]]; then
+if [[ $- == *i* ]]; then
   neofetch
   mbcputemp="$(cat /sys/class/thermal/thermal_zone0/temp)"
   printf "%s\\n" "CPU temp: $((mbcputemp/1000)) C"
