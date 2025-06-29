@@ -226,15 +226,15 @@
                           (t
                           (goto-char (point-min))
                           (forward-line (1- start-line))
-                          
+
                           ;; Check for incomplete code blocks before inserting
                           (let ((current-line (string-trim (thing-at-point 'line t)))
-                                (prev-line (save-excursion 
+                                (prev-line (save-excursion
                                                (forward-line -1)
                                                (string-trim (thing-at-point 'line t))))
                                   (insertion-safe t)
                                   (warning-msg ""))
-                              
+
                               ;; Check for shell script case statement patterns
                               (when (and current-line prev-line)
                                 (cond
@@ -248,16 +248,16 @@
                                  ((and (string-match "\\(if\\|while\\|for\\|case\\)\\s-" current-line)
                                        (not (string-match ";;\\s-*$" current-line)))
                                   (setq warning-msg (format "Warning: Line %d appears to be an incomplete statement: '%s'. " start-line (string-trim current-line))))))
-                              
+
                               ;; Perform insertion with warnings
                               (if (string= position "after")
                                   (progn (end-of-line) (insert "\n" text))
                                 (progn (beginning-of-line) (insert text "\n")))
-                              
-                              (format "%sInserted text %s line %d in buffer %s" 
-                                      warning-msg 
-                                      (or position "before") 
-                                      start-line 
+
+                              (format "%sInserted text %s line %d in buffer %s"
+                                      warning-msg
+                                      (or position "before")
+                                      start-line
                                       buffer)))))
 
                         ((string= operation "replace")
@@ -331,9 +331,9 @@
                        (dotimes (i (1+ (- end-line start-line)))
                          (let ((current-line-num (+ start-line i))
                                (line-content (string-trim (thing-at-point 'line t))))
-                           (push (format "%s%d: %s" 
+                           (push (format "%s%d: %s"
                                         (if (= current-line-num line-number) ">>> " "    ")
-                                        current-line-num 
+                                        current-line-num
                                         line-content) lines))
                          (forward-line 1))
                        (format "Context around line %d in buffer '%s' (lines %d-%d of %d):\n%s"
