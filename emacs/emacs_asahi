@@ -222,15 +222,44 @@
                           ;; Validate line number
                           ((or (< start-line 1) (> start-line (1+ total-lines)))
                            (format "Error: Line %d is out of range (1-%d) in buffer %s" start-line (1+ total-lines) buffer))
-                          ;; Insert before or after specified line
+                          ;; Smart insert with syntax checking
                           (t
-                           (goto-char (point-min))
-                           (forward-line (1- start-line))
-                           (if (string= position "after")
-                               (progn (end-of-line) (insert "\n" text))
-                             (progn (beginning-of-line) (insert text "\n")))
-                           (format "Inserted text %s line %d in buffer %s" (or position "before") start-line buffer))))
-                        
+                          (goto-char (point-min))
+                          (forward-line (1- start-line))
+                          
+                          ;; Check for incomplete code blocks before inserting
+                          (let ((current-line (string-trim (thing-at-point 'line t)))
+                                (prev-line (save-excursion 
+                                               (forward-line -1)
+                                               (string-trim (thing-at-point 'line t))))
+                                  (insertion-safe t)
+                                  (warning-msg ""))
+                              
+                              ;; Check for shell script case statement patterns
+                              (when (and current-line prev-line)
+                                (cond
+                                 ;; Warn if inserting between a case pattern and its ;;
+                                 ((and (string-match ")\\s-*$" prev-line)
+                                       (not (string-match ";;" prev-line))
+                                       (not (string-match ";;" current-line)))
+                                  (setq warning-msg (format "Warning: Inserting between case pattern '%s' and its closing ';;' may break syntax. " (string-trim prev-line)))
+                                  (setq insertion-safe nil))
+                                 ;; Warn if current line looks like incomplete statement
+                                 ((and (string-match "\\(if\\|while\\|for\\|case\\)\\s-" current-line)
+                                       (not (string-match ";;\\s-*$" current-line)))
+                                  (setq warning-msg (format "Warning: Line %d appears to be an incomplete statement: '%s'. " start-line (string-trim current-line))))))
+                              
+                              ;; Perform insertion with warnings
+                              (if (string= position "after")
+                                  (progn (end-of-line) (insert "\n" text))
+                                (progn (beginning-of-line) (insert text "\n")))
+                              
+                              (format "%sInserted text %s line %d in buffer %s" 
+                                      warning-msg 
+                                      (or position "before") 
+                                      start-line 
+                                      buffer)))))
+
                         ((string= operation "replace")
                          (cond
                           ((not (and start-line end-line text))
@@ -246,7 +275,7 @@
                              (delete-region start-pos (point))
                              (insert text))
                            (format "Replaced lines %d-%d in buffer %s" start-line end-line buffer))))
-                        
+
                         ((string= operation "delete")
                          (cond
                           ((not (and start-line end-line))
@@ -262,10 +291,10 @@
                              (when (< (point) (point-max)) (forward-char 1))
                              (delete-region start-pos (point)))
                            (format "Deleted lines %d-%d in buffer %s" start-line end-line buffer))))
-                        
+
                         (t (format "Error: Unknown operation '%s'. Use 'insert', 'replace', or 'delete'" operation))))))
                (error (format "Error in modify_buffer: %s" (error-message-string err)))))
- :description "Modify an Emacs buffer by inserting, replacing, or deleting text at specific lines with validation."
+ :description "Modify an Emacs buffer by inserting, replacing, or deleting text at specific lines. IMPORTANT: Before inserting code, analyze the surrounding context to avoid breaking syntax. For example, don't insert between a case pattern (ending with ')') and its closing ';;' in shell scripts, or between opening braces '{' and closing braces '}' in other languages. When in doubt, look for complete code blocks and insert at appropriate boundaries."
  :args (list '(:name "buffer"
                :type "string"
                :description "The name of the buffer to modify.")
@@ -284,6 +313,43 @@
              '(:name "position"
                :type "string"
                :description "For insert only: 'before' (default) or 'after' the specified line."))
+ :category "emacs")
+
+(gptel-make-tool
+ :name "show_buffer_context"
+ :function (lambda (buffer line-number &optional context-lines)
+             (condition-case err
+                 (with-current-buffer (get-buffer buffer)
+                   (save-excursion
+                     (let* ((context-size (or context-lines 5))
+                            (total-lines (count-lines (point-min) (point-max)))
+                            (start-line (max 1 (- line-number context-size)))
+                            (end-line (min total-lines (+ line-number context-size)))
+                            (lines '()))
+                       (goto-char (point-min))
+                       (forward-line (1- start-line))
+                       (dotimes (i (1+ (- end-line start-line)))
+                         (let ((current-line-num (+ start-line i))
+                               (line-content (string-trim (thing-at-point 'line t))))
+                           (push (format "%s%d: %s" 
+                                        (if (= current-line-num line-number) ">>> " "    ")
+                                        current-line-num 
+                                        line-content) lines))
+                         (forward-line 1))
+                       (format "Context around line %d in buffer '%s' (lines %d-%d of %d):\n%s"
+                               line-number buffer start-line end-line total-lines
+                               (mapconcat 'identity (nreverse lines) "\n")))))
+               (error (format "Error showing context: %s" (error-message-string err)))))
+ :description "Show the context around a specific line in a buffer to help analyze code structure before making modifications."
+ :args (list '(:name "buffer"
+               :type "string"
+               :description "The name of the buffer to examine.")
+             '(:name "line-number"
+               :type "number"
+               :description "The line number to show context around (1-based).")
+             '(:name "context-lines"
+               :type "number"
+               :description "Number of lines before and after to show (default: 5)."))
  :category "emacs")
 
 (gptel-make-tool
