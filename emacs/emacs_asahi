@@ -306,7 +306,7 @@
 
                         (t (format "Error: Unknown operation '%s'. Use 'insert', 'replace', or 'delete'" operation))))))
                (error (format "Error in modify_buffer: %s" (error-message-string err)))))
- :description "[STEP 3 of 3] Modify an Emacs buffer by inserting, replacing, or deleting text at specific lines. Use this AFTER search_buffer_text (step 1) and show_buffer_context (step 2). IMPORTANT: 1) Only add NEW content that doesn't already exist. 2) Indentation is automatically matched to surrounding code. 3) Don't break syntax - avoid inserting between incomplete code blocks. 4) Based on context analysis, choose safe insertion boundaries."
+ :description "[STEP 3 of 4] Modify an Emacs buffer by inserting, replacing, or deleting text at specific lines. Use this AFTER search_buffer_text (step 1) and show_buffer_context (step 2), then follow with save_buffer (step 4). IMPORTANT: 1) Only add NEW content that doesn't already exist. 2) Indentation is automatically matched to surrounding code. 3) Don't break syntax - avoid inserting between incomplete code blocks. 4) Based on context analysis, choose safe insertion boundaries."
  :args (list '(:name "buffer"
                :type "string"
                :description "The name of the buffer to modify.")
@@ -352,7 +352,7 @@
                                line-number buffer start-line end-line total-lines
                                (mapconcat 'identity (nreverse lines) "\n")))))
                (error (format "Error showing context: %s" (error-message-string err)))))
- :description "[STEP 2 of 3] Show the context around a specific line in a buffer to analyze code structure, indentation, and existing content. Use this AFTER search_buffer_text (step 1) and BEFORE modify_buffer (step 3) to choose the optimal insertion point and understand proper indentation."
+ :description "[STEP 2 of 4] Show the context around a specific line in a buffer to analyze code structure, indentation, and existing content. Use this AFTER search_buffer_text (step 1) and BEFORE modify_buffer (step 3) to choose the optimal insertion point and understand proper indentation."
  :args (list '(:name "buffer"
                :type "string"
                :description "The name of the buffer to examine.")
@@ -382,13 +382,30 @@
                                    (mapconcat 'identity (nreverse matches) "\n"))
                          (format "Text '%s' not found in buffer '%s'" search-text buffer)))))
                (error (format "Error searching buffer: %s" (error-message-string err)))))
- :description "[STEP 1 of 3] Search for existing text in a buffer to avoid creating duplicates. Use this FIRST before any modifications to check if similar code already exists. Follow with show_buffer_context (step 2) then modify_buffer (step 3)."
+ :description "[STEP 1 of 4] Search for existing text in a buffer to avoid creating duplicates. Use this FIRST before any modifications to check if similar code already exists. Follow with show_buffer_context (step 2), modify_buffer (step 3), then save_buffer (step 4)."
  :args (list '(:name "buffer"
                :type "string"
                :description "The name of the buffer to search in.")
              '(:name "search-text"
                :type "string"
                :description "The text to search for (e.g., a function name or key phrase)."))
+ :category "emacs")
+
+(gptel-make-tool
+ :name "save_buffer"
+ :function (lambda (buffer)
+             (condition-case err
+                 (with-current-buffer (get-buffer buffer)
+                   (if (buffer-file-name)
+                       (progn
+                         (save-buffer)
+                         (format "Saved buffer '%s' to file: %s" buffer (buffer-file-name)))
+                     (format "Buffer '%s' is not associated with a file. Use write-file to save it." buffer)))
+               (error (format "Error saving buffer: %s" (error-message-string err)))))
+ :description "[STEP 4 - SAVE] Save buffer changes to file. Use this AFTER modify_buffer (step 3) to persist your changes to disk. Always save after making modifications unless you plan to make multiple changes first."
+ :args (list '(:name "buffer"
+               :type "string"
+               :description "The name of the buffer to save."))
  :category "emacs")
 
 (gptel-make-tool
