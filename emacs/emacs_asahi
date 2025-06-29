@@ -197,7 +197,7 @@
                (error "error: buffer %s is not live." buffer))
              (with-current-buffer  buffer
                (buffer-substring-no-properties (point-min) (point-max))))
- :description "return the contents of an emacs buffer"
+ :description "[READ-ONLY] Return the contents of an emacs buffer. Use this to examine buffer content before making modifications. For targeted analysis, prefer show_buffer_context."
  :args (list '(:name "buffer"
                :type string            ; :type value must be a symbol
                :description "the name of the buffer whose contents are to be retrieved"))
@@ -249,10 +249,22 @@
                                        (not (string-match ";;\\s-*$" current-line)))
                                   (setq warning-msg (format "Warning: Line %d appears to be an incomplete statement: '%s'. " start-line (string-trim current-line))))))
 
-                              ;; Perform insertion with warnings
-                              (if (string= position "after")
-                                  (progn (end-of-line) (insert "\n" text))
-                                (progn (beginning-of-line) (insert text "\n")))
+                              ;; Perform insertion with automatic indentation
+                              (let ((target-indent (save-excursion
+                                                  (beginning-of-line)
+                                                    (skip-chars-forward " \t")
+                                                       (current-column)))
+                                     (formatted-text (if (string-match "^[ \t]" text)
+                                                         text  ; Text already has indentation
+                                                       (mapconcat (lambda (line)
+                                                                    (if (string-empty-p (string-trim line))
+                                                                        line  ; Keep empty lines as-is
+                                                                      (concat (make-string target-indent ?\s) line)))
+                                                                  (split-string text "\n")
+                                                                  "\n"))))
+                                 (if (string= position "after")
+                                     (progn (end-of-line) (insert "\n" formatted-text))
+                                   (progn (beginning-of-line) (insert formatted-text "\n"))))
 
                               (format "%sInserted text %s line %d in buffer %s"
                                       warning-msg
@@ -294,7 +306,7 @@
 
                         (t (format "Error: Unknown operation '%s'. Use 'insert', 'replace', or 'delete'" operation))))))
                (error (format "Error in modify_buffer: %s" (error-message-string err)))))
- :description "Modify an Emacs buffer by inserting, replacing, or deleting text at specific lines. IMPORTANT: Before inserting code, analyze the surrounding context to avoid breaking syntax. For example, don't insert between a case pattern (ending with ')') and its closing ';;' in shell scripts, or between opening braces '{' and closing braces '}' in other languages. When in doubt, look for complete code blocks and insert at appropriate boundaries."
+ :description "[STEP 3 of 3] Modify an Emacs buffer by inserting, replacing, or deleting text at specific lines. Use this AFTER search_buffer_text (step 1) and show_buffer_context (step 2). IMPORTANT: 1) Only add NEW content that doesn't already exist. 2) Indentation is automatically matched to surrounding code. 3) Don't break syntax - avoid inserting between incomplete code blocks. 4) Based on context analysis, choose safe insertion boundaries."
  :args (list '(:name "buffer"
                :type "string"
                :description "The name of the buffer to modify.")
@@ -340,7 +352,7 @@
                                line-number buffer start-line end-line total-lines
                                (mapconcat 'identity (nreverse lines) "\n")))))
                (error (format "Error showing context: %s" (error-message-string err)))))
- :description "Show the context around a specific line in a buffer to help analyze code structure before making modifications."
+ :description "[STEP 2 of 3] Show the context around a specific line in a buffer to analyze code structure, indentation, and existing content. Use this AFTER search_buffer_text (step 1) and BEFORE modify_buffer (step 3) to choose the optimal insertion point and understand proper indentation."
  :args (list '(:name "buffer"
                :type "string"
                :description "The name of the buffer to examine.")
@@ -353,8 +365,35 @@
  :category "emacs")
 
 (gptel-make-tool
+ :name "search_buffer_text"
+ :function (lambda (buffer search-text)
+             (condition-case err
+                 (with-current-buffer (get-buffer buffer)
+                   (save-excursion
+                     (goto-char (point-min))
+                     (let ((matches '()))
+                       (while (search-forward search-text nil t)
+                         (let ((line-num (line-number-at-pos))
+                               (line-content (string-trim (thing-at-point 'line t))))
+                           (push (format "Line %d: %s" line-num line-content) matches)))
+                       (if matches
+                           (format "Found %d occurrences of '%s' in buffer '%s':\n%s"
+                                   (length matches) search-text buffer
+                                   (mapconcat 'identity (nreverse matches) "\n"))
+                         (format "Text '%s' not found in buffer '%s'" search-text buffer)))))
+               (error (format "Error searching buffer: %s" (error-message-string err)))))
+ :description "[STEP 1 of 3] Search for existing text in a buffer to avoid creating duplicates. Use this FIRST before any modifications to check if similar code already exists. Follow with show_buffer_context (step 2) then modify_buffer (step 3)."
+ :args (list '(:name "buffer"
+               :type "string"
+               :description "The name of the buffer to search in.")
+             '(:name "search-text"
+               :type "string"
+               :description "The text to search for (e.g., a function name or key phrase)."))
+ :category "emacs")
+
+(gptel-make-tool
  :name "read_file"
- :description "Open a file in Emacs and return its contents."
+ :description "[READ-ONLY] Open a file in Emacs and return its contents. Use this to examine file content before making modifications."
  :args (list '(:name "path" :type string :description "Path to the file (e.g. ~/notes/todo.txt)"))
  :function (lambda (path)
              (condition-case err
