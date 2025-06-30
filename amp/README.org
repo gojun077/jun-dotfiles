@@ -1,0 +1,15 @@
+#+TITLE: ampcode settings dir
+#+SUBTITLE: for Sourcegraph ampcode agentic coding tool
+#+AUTHOR: Peter Jun Koh
+#+EMAIL: gopeterjun@naver.com
+#+DESCRIPTION: contains settings.json, etc
+#+KEYWORDS: llm, sourcegraph, amp, ampcode-cli
+#+LANG: en
+
+* Summary
+
+- Created on: [2025-06-29 Sun]
+- Last Updated: [2025-06-29 Sun 18:52]
+
+This directory contains ~settings.json~ and other settings for Sourcegraph
+=ampcode= agentic coding tool
