@@ -74,6 +74,16 @@
 (use-package org
   :straight t
   :config
+  (setq org-babel-load-languages
+        '((emacs-lisp . t)
+          (java . t)
+          (js . t)
+          (latex . t)
+          (python . t)
+          (ruby . t)
+          (shell . t)
+          (C . t))
+  (org-babel-do-load-languages 'org-babel-load-languages org-babel-load-languages)
   (require 'org-protocol)
   (require 'ox-md))
 (use-package org-roam
