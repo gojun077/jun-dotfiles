@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Sun 29 Jun 2025
+;; Last Updated: Mon 30 Jun 2025
 ;;
 ;; These configs are for Emacs 30.1 and higher.
 ;;; Code:
@@ -74,18 +74,19 @@
 (use-package org
   :straight t
   :config
-  (setq org-babel-load-languages
-        '((emacs-lisp . t)
-          (java . t)
-          (js . t)
-          (latex . t)
-          (python . t)
-          (ruby . t)
-          (shell . t)
-          (C . t))
-  (org-babel-do-load-languages 'org-babel-load-languages org-babel-load-languages)
   (require 'org-protocol)
-  (require 'ox-md))
+  (require 'ox-md)
+  (org-babel-do-load-languages
+    'org-babel-load-languages
+    '((emacs-lisp . t)
+      (java . t)
+      (js . t)
+      (latex . t)
+      (python . t)
+      (ruby . t)
+      (shell . t)
+      (C . t)
+      (mermaid . t))))
 (use-package org-roam
   :straight t
   :defer t)
@@ -656,10 +657,7 @@
 (setq org-id-link-to-org-use-id 'create-if-interactive)
 
 
-(org-babel-do-load-languages
-    'org-babel-load-languages
-    '((mermaid . t)
-      (python . t)))
+
 
 ; org-roam minor mode settings
 (setq org-roam-directory (file-truename
