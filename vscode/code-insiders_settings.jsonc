@@ -12,6 +12,7 @@
         "cd",
         "terraform"
     ],
+    "amp.experimental.connections": true,
     "chat.mcp.discovery.enabled": true,
     "mcp": {
         "servers": {
