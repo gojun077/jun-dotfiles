@@ -434,7 +434,7 @@
  :name "execute_safe_command"
  :function (lambda (command)
              (string-trim (shell-command-to-string command)))
- :description "Run a shell command safely and return its output."
+ :description "Run a shell command safely and return both the command you used and its output."
  :args (list '(:name "command"
                :type "string"
                :description "The shell command to execute"))
