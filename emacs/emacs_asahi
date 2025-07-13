@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Mon 30 Jun 2025
+;; Last Updated: Sun 13 Jul 2025
 ;;
 ;; These configs are for Emacs 30.1 and higher.
 ;;; Code:
@@ -446,13 +446,7 @@
 ;;
 (setq mcp-hub-servers
       ;; https://github.com/modelcontextprotocol/servers/blob/main/src/filesystem
-      '(("filesystem" . (:command "npx" :args ("-y" "@modelcontextprotocol/server-filesystem" "~/")))
-      ;; https://github.com/modelcontextprotocol/servers/tree/main/src/git
-        ("git" . (:command "uvx" :args ("mcp-server-git")))
-        ("mcp-shell-server" . (
-                               :command "mcp-shell-server"
-                               :env (
-                                     :ALLOW_COMMANDS "ls,cat,pwd,ripgrep,wc,touch,find,uname,lsblk,df,du,make")))))
+      '(("filesystem" . (:command "npx" :args ("-y" "@modelcontextprotocol/server-filesystem" "~/")))))
 
 (require 'gptel-integrations)
 ;; MCP config block end
