@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Sun 13 Jul 2025
+;; Last Updated: Tue 17 Jul 2025
 ;;
 ;; These configs are for Emacs 30.1 and higher.
 ;;; Code:
@@ -199,6 +199,13 @@
 ;; Configure Github Copilot Chat
 ; no API key; browser auth login required
 (gptel-make-gh-copilot "Copilot")
+
+;; Configure xAI Grok
+; API key will be read from '~/.authinfo.gpg'
+(gptel-make-xai "xAI"
+  :stream t
+  :key gptel-api-key
+  :models '(grok-4-0709))
 
 ;; from https://github.com/karthink/gptel?tab=readme-ov-file#defining-gptel-tools
 (gptel-make-tool
@@ -433,7 +440,18 @@
 (gptel-make-tool
  :name "execute_safe_command"
  :function (lambda (command)
-             (string-trim (shell-command-to-string command)))
+             (condition-case err
+                 (let* ((temp-buffer (generate-new-buffer " *shell-output*"))
+                        (exit-code (call-process-shell-command command nil temp-buffer t))
+                        (output (with-current-buffer temp-buffer (buffer-string))))
+                   (kill-buffer temp-buffer)
+                   (let ((trimmed-output (string-trim output)))
+                     (format "```bash\n%s\n```\n\n**Exit code:** %d\n\n**Output:**\n```\n%s\n```"
+                     command exit-code
+                     (if (string-empty-p trimmed-output)
+                     "(no output)"
+                     trimmed-output))))
+               (error (format "Command: %s\nError: %s" command (error-message-string err)))))
  :description "Run a shell command safely and return both the command you used and its output."
  :args (list '(:name "command"
                :type "string"
