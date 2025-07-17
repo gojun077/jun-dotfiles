@@ -178,8 +178,15 @@
 ;;
 (setq gptel-default-mode 'org-mode)
 
+;; Configure openai - default provider in gptel
+;; API key will be read from '~/.authinfo.gpg'
+(gptel-make-openai "ChatGPT"
+  :stream t
+  :key gptel-api-key
+  :models '(o3-pro))
+
 ;; Configure Anthropic Claude
-; by default, API key will be read from '~/.authinfo.gpg' if it exists
+; API key will be read from '~/.authinfo.gpg'
 (gptel-make-anthropic "Claude"
   :stream t
   :key gptel-api-key)
@@ -188,7 +195,8 @@
 ; API key will be read from '~/.authinfo.gpg'
 (gptel-make-gemini "Gemini"
   :stream t
-  :key gptel-api-key)
+  :key gptel-api-key
+  :models '(gemini-2.5-pro))
 
 ;; Configure Deepseek
 ; API key will be read from '~/.authinfo.gpg'
