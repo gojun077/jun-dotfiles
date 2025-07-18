@@ -49,7 +49,8 @@
             "url": "https://github.com/cli/cli/releases/tag/v2.76.0",
             "provider": "",
             "package_path": "gh_2.76.0_linux_arm64/bin/gh",
-            "pinned": false
+            "pinned": false,
+            "skip_path_check": true
         },
         "/home/jundora/.local/bin/k9s": {
             "path": "/home/jundora/.local/bin/k9s",
