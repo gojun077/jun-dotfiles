@@ -24,9 +24,9 @@
         "/home/jundora/.local/bin/codex": {
             "path": "/home/jundora/.local/bin/codex",
             "remote_name": "codex-aarch64-unknown-linux-gnu",
-            "version": "rust-v0.7.0",
-            "hash": "e3181c04c46a0aa38fed4c37278d7bf477d6244ed7aafada5fee124ca22f9ddc",
-            "url": "https://github.com/openai/codex/releases/tag/rust-v0.7.0",
+            "version": "rust-v0.8.0",
+            "hash": "40ad46d65570afe3296321e07b1ffde1e4eac2f3a84a95e34de028f4a4a821f9",
+            "url": "https://github.com/openai/codex/releases/tag/rust-v0.8.0",
             "provider": "",
             "package_path": "codex-aarch64-unknown-linux-gnu",
             "pinned": false
@@ -49,8 +49,7 @@
             "url": "https://github.com/cli/cli/releases",
             "provider": "github",
             "package_path": "gh_2.76.0_linux_arm64/bin/gh",
-            "pinned": false,
-            "skip_path_check": true
+            "pinned": false
         },
         "/home/jundora/.local/bin/k3s": {
             "path": "/home/jundora/.local/bin/k3s",
