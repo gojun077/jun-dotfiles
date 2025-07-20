@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+#
+# bash_aliases_macbookair
+#
+# bash_aliases file for Macbook Air M2
+# This file should be sourced by '~/.bash_aliases'
+#
+# Created on: Sun 20 Jul 2025
+# Created by: gopeterjun@naver.com
+# Last Updated: Sun 20 Jul 2025
+
+# I often use this Macbook Air for k3s cluster admin (homelab)
+alias kubectl='k3s kubectl'
