@@ -2,7 +2,7 @@
 # bash_aliases_asahi
 # Created on: Apr 30 2024
 # Created by: gopeterjun@naver.com
-# Last Updated: Jun 3 2024
+# Last Updated: Sun 20 Jul 2025
 #
 # .bash_aliases for Asahi Linux intended to be sourced by .bashrc
 
@@ -34,3 +34,8 @@ ansicat() {
 # disable warning about non-constant path
 # shellcheck disable=SC1090
 source ~/.bash_aliases_secure  # this file is not stored in version control
+
+if [ -f ~/.bash_aliases_macbookair ]; then
+  # shellcheck disable=SC1090
+  source ~/.bash_aliases_macbookair  # aliases for personal Macbook Air M2
+fi
