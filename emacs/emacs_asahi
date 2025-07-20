@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Fri 18 Jul 2025
+;; Last Updated: Mon 21 Jul 2025
 ;;
 ;; These configs are for Emacs 30.1 and higher.
 ;;; Code:
@@ -90,8 +90,12 @@
 (use-package org-roam
   :straight t
   :defer t)
+; use my fork of org-trello
 (use-package org-trello
-  :straight (:build (:not compile)) t)
+  :straight (:host github
+             :repo "gojun077/org-trello"
+             :branch "move-board-on-refile"
+             :build (:not compile)))
 ;; Projectile for project management
 (use-package projectile
   :straight t
@@ -459,6 +463,50 @@
                :description "The shell command to execute"))
  :category "shell")
 
+
+(gptel-make-tool
+ :name "check_parens"
+ :function (lambda (buffer)
+             (condition-case err
+                 (with-current-buffer (get-buffer buffer)
+                   (unless (buffer-live-p (get-buffer buffer))
+                     (error "Buffer '%s' is not live." buffer))
+                   (save-excursion
+                     (check-parens))
+                   ;; If check-parens succeeds, it returns nil.
+                   ;; A successful execution of the body means we can return a success message.
+                   (format "Parentheses and expressions are balanced in buffer '%s'." buffer))
+               (error (format "Unbalanced parentheses detected in buffer '%s': %s"
+                              buffer (error-message-string err)))))
+ :description "Checks the specified buffer for unbalanced parentheses. This function verifies that all parentheses, brackets, and quotes are correctly matched according to the buffer's syntax rules. It returns a success message if balanced, or an error if an imbalance is found."
+ :args (list '(:name "buffer"
+               :type "string"
+               :description "The name of the buffer to check."))
+ :category "emacs")
+
+
+(gptel-make-tool
+ :name "byte_compile_file"
+ :description "Byte-compile an Emacs Lisp file to check for syntax errors. Returns a success message or the compilation log on failure."
+ :args (list '(:name "filename" :type "string" :description "The path to the Emacs Lisp file to compile."))
+ :function (lambda (filename)
+             (condition-case err
+                 (progn
+                   (unless (file-exists-p filename)
+                     (error "File not found: %s" filename))
+                   ;; Ensure the compilation log is clear before starting
+                   (with-current-buffer (get-buffer-create "*Compile-Log*")
+                     (erase-buffer))
+                   (if (byte-compile-file filename)
+                       (format "Successfully compiled '%s' with no errors." filename)
+                     ;; If compilation fails, return the log
+                     (let ((log-output (with-current-buffer (get-buffer "*Compile-Log*")
+                                         (buffer-string))))
+                       (format "Compilation of '%s' failed. Errors:\n%s" filename log-output))))
+               (error (format "An error occurred while trying to compile '%s': %s"
+                              filename (error-message-string err)))))
+ :category "emacs")
+
 ;; GPTel config block end
 
 ;;; mcp configs for mcp.el ;;;
@@ -530,10 +578,13 @@
  '(org-agenda-files
    '("~/Documents/repos/encrypted/gpj-org-mode-files/next_actions.org"))
  '(org-trello-current-prefix-keybinding "C-c o" nil (org-trello))
+ '(orgtrello-log-level 4 nil (org-trello))
  '(package-selected-packages
-   '(flymake-ruff go-mode org-trello yaml-mode web-mode go-playground unicode-whitespace smartparens ansible rainbow-delimiters racket-mode markdown-mode magit exec-path-from-shell))
- '(python-shell-completion-native-disabled-interpreters '("pypy ipython3"))
+   '(flymake-ruff go-mode org-trello yaml-mode web-mode go-playground
+                  unicode-whitespace smartparens ansible rainbow-delimiters
+                  racket-mode markdown-mode magit exec-path-from-shell))
  '(pdf-latex-command "xetex")
+ '(python-shell-completion-native-disabled-interpreters '("pypy ipython3"))
  '(warning-suppress-types '((comp))))
 
 
