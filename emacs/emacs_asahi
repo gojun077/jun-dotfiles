@@ -212,6 +212,16 @@
   :key gptel-api-key
   :models '(grok-4-0709))
 
+;; Configure Alibaba Qwen3
+; API key will be read from '~/.authinfo.gpg'
+(gptel-make-openai "Alibaba"
+  :stream t
+  :key gptel-api-key
+  :protocol "https"
+  :host "dashscope-intl.aliyuncs.com"
+  :endpoint "/compatible-mode/v1/chat/completions"
+  :models '(qwen3-coder-plus))
+
 ;; from https://github.com/karthink/gptel?tab=readme-ov-file#defining-gptel-tools
 (gptel-make-tool
  :name "read_buffer"                    ; javascript-style snake_case name
