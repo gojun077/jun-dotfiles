@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Thu 31 Jul 2025
+;; Last Updated: Sun 10 Aug 2025
 ;;
 ;; These configs are for Emacs 30.1 and higher.
 ;;; Code:
@@ -27,6 +27,8 @@
   :mode ("Dockerfile\\'" . dockerfile-mode)
   :config (add-hook 'dockerfile-mode-hook #'flymake-hadolint-setup)
   :defer t)
+(use-package efrit
+  :straight (:host github :repo "steveyegge/efrit"))
 (use-package emojify
   :straight t
   :defer t)
@@ -100,6 +102,7 @@
   :straight (:host github
              :repo "gojun077/org-trello"
              :branch "move-board-on-refile"
+             :protocol ssh
              :build (:not compile)))
 ;; Projectile for project management
 (use-package projectile
@@ -174,9 +177,10 @@
          ("s r" . consult-ripgrep)
          ("s s" . consult-git-grep)))
 
-(require 'exec-path-from-shell)
 (require 'browse-kill-ring)
 (require 'dockerfile-mode)
+(require 'efrit)
+(require 'exec-path-from-shell)
 (require 'flymake-ruff)
 (require 'nix-mode)
 (require 'smartparens-config)
@@ -736,7 +740,7 @@
 (global-set-key (kbd "C-c i g c") #'org-id-get-create)
 (setq org-id-link-to-org-use-id 'create-if-interactive)
 
-
+(put 'dired-find-alternate-file 'disabled nil)
 
 
 ; org-roam minor mode settings
@@ -893,4 +897,3 @@
 
 (provide 'emacs)
 ;;; emacs ends here
-(put 'dired-find-alternate-file 'disabled nil)

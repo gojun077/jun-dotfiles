@@ -3,11 +3,11 @@
     "bins": {
         "/home/jundora/.local/bin/bin": {
             "path": "/home/jundora/.local/bin/bin",
-            "remote_name": "bin_0.21.2_linux_arm64",
-            "version": "v0.21.2",
-            "hash": "abaef019a13e3697d61414df659baeeacf64fe392abfc14cece1e6d4cbf849ca",
-            "url": "github.com/marcosnils/bin",
-            "provider": "github",
+            "remote_name": "bin_0.23.1_linux_arm64",
+            "version": "v0.23.1",
+            "hash": "545a04a0e76d7e2b6a8f5cb0140c1b87a8e27cb98cfbc13a9fd1857aacfd15cd",
+            "url": "https://github.com/marcosnils/bin/releases/tag/v0.23.1",
+            "provider": "",
             "package_path": "",
             "pinned": false
         },
@@ -24,9 +24,9 @@
         "/home/jundora/.local/bin/codex": {
             "path": "/home/jundora/.local/bin/codex",
             "remote_name": "codex-aarch64-unknown-linux-gnu",
-            "version": "rust-v0.8.0",
-            "hash": "40ad46d65570afe3296321e07b1ffde1e4eac2f3a84a95e34de028f4a4a821f9",
-            "url": "https://github.com/openai/codex/releases/tag/rust-v0.8.0",
+            "version": "rust-v0.20.0",
+            "hash": "c0da16b5a7eafedeee778e137b05c1aba20b77d48578bc79229a41486aeca2b0",
+            "url": "https://github.com/openai/codex/releases/tag/rust-v0.20.0",
             "provider": "",
             "package_path": "codex-aarch64-unknown-linux-gnu",
             "pinned": false
@@ -44,20 +44,20 @@
         "/home/jundora/.local/bin/gh": {
             "path": "/home/jundora/.local/bin/gh",
             "remote_name": "gh",
-            "version": "v2.76.0",
-            "hash": "1f47779248006c91b22e6a6f0d03f05cf6c82a30130683881c91228e1ab81a47",
-            "url": "https://github.com/cli/cli/releases",
-            "provider": "github",
-            "package_path": "gh_2.76.0_linux_arm64/bin/gh",
+            "version": "v2.76.2",
+            "hash": "24b717fc99e0faad28eff591c9c1aa8f97fc23b0854abcaadd4eb9dc40170fbc",
+            "url": "https://github.com/cli/cli/releases/tag/v2.76.2",
+            "provider": "",
+            "package_path": "gh_2.76.2_linux_arm64/bin/gh",
             "pinned": false
         },
         "/home/jundora/.local/bin/k3s": {
             "path": "/home/jundora/.local/bin/k3s",
             "remote_name": "k3s-arm64",
-            "version": "v1.33.1+k3s1",
-            "hash": "ae4d5208d786b7ae3d916133419728bfc676648bd996de609e5cd55327c6f30a",
-            "url": "https://github.com/k3s-io/k3s/releases",
-            "provider": "github",
+            "version": "v1.33.3+k3s1",
+            "hash": "152c961aae4aa7553865481c21902a3cc8e02550df97587379a409494c3626c4",
+            "url": "https://github.com/k3s-io/k3s/releases/tag/v1.33.3%2Bk3s1",
+            "provider": "",
             "package_path": "",
             "pinned": false
         },
