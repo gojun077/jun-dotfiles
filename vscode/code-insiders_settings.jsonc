@@ -13,32 +13,5 @@
         "terraform"
     ],
     "amp.experimental.connections": true,
-    "chat.mcp.discovery.enabled": true,
-    "mcp": {
-        "servers": {
-            "filesystem": {
-                // https://github.com/modelcontextprotocol/servers/blob/main/src/filesystem
-                "command": "npx",
-                "args": [
-                    "-y",
-                    "@modelcontextprotocol/server-filesystem",
-                    "~/Documents/repos"
-                ]
-            },
-            "git": {
-                // https://github.com/modelcontextprotocol/servers/tree/main/src/git
-                "command": "uvx",
-                "args": ["mcp-server-git"]
-            },
-            "playwright": {
-                // https://github.com/executeautomation/mcp-playwright
-                "command": "npx",
-                "args": [
-                    "-y",
-                    "@executeautomation/playwright-mcp-server",
-                    "--browser=firefox"
-                ]
-            }
-        }
-    }
+    "chat.mcp.discovery.enabled": true
 }
