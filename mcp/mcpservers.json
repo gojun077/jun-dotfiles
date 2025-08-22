@@ -1,8 +1,8 @@
 {
   "mcpServers": {
     "puppeteer": {
-      "command": "puppeteer-mcp-server",
-      "args": [],
+      "command": "node",
+      "args": ["/usr/local/lib/node_modules/puppeteer-mcp-server/dist/index.js"],
       "env": {}
     }
   }
