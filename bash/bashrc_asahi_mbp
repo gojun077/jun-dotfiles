@@ -63,4 +63,4 @@ esac
 
 # Set NODE_PATH to include global npm modules
 npm_root=$(npm root -g)
-export NODE_PATH=$npm_root:$NODE_PATH
+export NODE_PATH=$npm_root:/usr/local/lib/node_modules:/usr/lib/node_modules:$NODE_PATH
