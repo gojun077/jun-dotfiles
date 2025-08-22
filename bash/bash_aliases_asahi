@@ -2,7 +2,7 @@
 # bash_aliases_asahi
 # Created on: Apr 30 2024
 # Created by: gopeterjun@naver.com
-# Last Updated: Sun 20 Jul 2025
+# Last Updated: Fri 22 Aug 2025
 #
 # .bash_aliases for Asahi Linux intended to be sourced by .bashrc
 
@@ -12,6 +12,7 @@ alias ㅣㄴ='ls'
 alias hazip='curl https://icanhazip.com'
 alias ls='ls --color=auto'
 #alias chromium-browser='chromium-browser --ozone-platform=wayland --enable-wayland-ime'
+alias auggie='auggie --mcp-server ~/dotfiles/mcp/mcpservers.json'
 alias chromium-browser='chromium-browser --enable-features=UseOzonePlatform --ozone-platform=wayland --gtk-version=4'
 alias code='code --ozone-platform=wayland'
 alias codex='codex --sandbox workspace-write'
