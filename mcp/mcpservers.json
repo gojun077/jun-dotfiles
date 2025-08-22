@@ -3,7 +3,9 @@
     "puppeteer": {
       "command": "node",
       "args": ["/usr/local/lib/node_modules/puppeteer-mcp-server/dist/index.js"],
-      "env": {}
+      "env": {
+        "PUPPETEER_EXECUTABLE_PATH": "/usr/bin/chromium-browser"
+      }
     }
   }
 }
