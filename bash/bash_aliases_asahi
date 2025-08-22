@@ -14,6 +14,7 @@ alias ls='ls --color=auto'
 #alias chromium-browser='chromium-browser --ozone-platform=wayland --enable-wayland-ime'
 alias chromium-browser='chromium-browser --enable-features=UseOzonePlatform --ozone-platform=wayland --gtk-version=4'
 alias code='code --ozone-platform=wayland'
+alias codex='codex --sandbox workspace-write'
 alias enox='emacsclient -nw'
 
 ansicat() {
