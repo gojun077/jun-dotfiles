@@ -3,7 +3,7 @@
 #
 # Created On: 30 Apr 2024
 # Created by: gopeterjun@naver.com
-# Last Updated: Sun 25 May 2025
+# Last Updated: Fri 22 Aug 2025
 
 # If not running interactively, don't do anything
 #[[ $- != *i* ]] && return
@@ -48,7 +48,9 @@ fi
 # vim: ts=2 sw=2 et :
 
 export NVM_DIR="$HOME/.config/nvm"
+# shellcheck source=/home/jundora/.config/nvm/nvm.sh
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+# shellcheck source=/home/jundora/.config/nvm/bash_completion
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 # pnpm
@@ -58,3 +60,7 @@ case ":$PATH:" in
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 # pnpm end
+
+# Set NODE_PATH to include global npm modules
+npm_root=$(npm root -g)
+export NODE_PATH=$npm_root:$NODE_PATH
