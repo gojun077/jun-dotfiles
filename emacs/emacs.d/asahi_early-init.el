@@ -3,11 +3,17 @@
 ;; 'early-init.el' for Asahilinux Fedora Remix
 ;; Created on: Sat 28 Jun 2025
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Sat 28 Jun 2025
+;; Last Updated: Tue 26 Aug 2025
 ;;
 ;; Settings loaded before package system and GUI are initialized
 ;; These configs are for Emacs 30.1 and higher.
 ;;; Code:
+
+
+;; Completely disable package.el
+(setq package-enable-at-startup nil)
+(setq package--init-file-ensured t)
+(setq package-quickstart nil)
 
 ;; use straight.el instead of package.el
 (defvar bootstrap-version)
@@ -25,9 +31,6 @@
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
-
-;; prevent package.el loading packages prior to their init-file loading
-(setq package-enable-at-startup nil)
 
 ; don't show menu bar
 (menu-bar-mode 0)
