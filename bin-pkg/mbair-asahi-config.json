@@ -14,19 +14,19 @@
         "/home/jundora/.local/bin/bluetuith": {
             "path": "/home/jundora/.local/bin/bluetuith",
             "remote_name": "bluetuith",
-            "version": "v0.2.3",
-            "hash": "d52377d94fa8cf84b6cbbe2d994ec597c16fc34279acdb06ec419edaa0fd8320",
-            "url": "https://github.com/bluetuith-org/bluetuith/releases",
-            "provider": "github",
+            "version": "v0.2.5-rc1",
+            "hash": "729b6cf1df9d163fac373e8cf825c5004cc7818649a6b4d382a0764037fb0d74",
+            "url": "https://github.com/bluetuith-org/bluetuith/releases/tag/v0.2.5-rc1",
+            "provider": "",
             "package_path": "bluetuith",
             "pinned": false
         },
         "/home/jundora/.local/bin/codex": {
             "path": "/home/jundora/.local/bin/codex",
             "remote_name": "codex-aarch64-unknown-linux-gnu",
-            "version": "rust-v0.20.0",
-            "hash": "c0da16b5a7eafedeee778e137b05c1aba20b77d48578bc79229a41486aeca2b0",
-            "url": "https://github.com/openai/codex/releases/tag/rust-v0.20.0",
+            "version": "rust-v0.23.0",
+            "hash": "bf971c4e69594adfe85802bd3567b90a6a1e1b65925b1b9ee4c07d06e0579455",
+            "url": "https://github.com/openai/codex/releases/tag/rust-v0.23.0",
             "provider": "",
             "package_path": "codex-aarch64-unknown-linux-gnu",
             "pinned": false
@@ -44,11 +44,21 @@
         "/home/jundora/.local/bin/gh": {
             "path": "/home/jundora/.local/bin/gh",
             "remote_name": "gh",
-            "version": "v2.76.2",
-            "hash": "24b717fc99e0faad28eff591c9c1aa8f97fc23b0854abcaadd4eb9dc40170fbc",
-            "url": "https://github.com/cli/cli/releases/tag/v2.76.2",
+            "version": "v2.78.0",
+            "hash": "1b8e50c1efa124a20e4a60e100f3aedc20c41a1deb39a40caaad331464101a73",
+            "url": "https://github.com/cli/cli/releases/tag/v2.78.0",
             "provider": "",
-            "package_path": "gh_2.76.2_linux_arm64/bin/gh",
+            "package_path": "gh_2.78.0_linux_arm64/bin/gh",
+            "pinned": false
+        },
+        "/home/jundora/.local/bin/git-filter-repo": {
+            "path": "/home/jundora/.local/bin/git-filter-repo",
+            "remote_name": "git-filter-repo",
+            "version": "v2.47.0",
+            "hash": "67447413e273fc76809289111748870b6f6072f08b17efe94863a92d810b7d94",
+            "url": "https://github.com/newren/git-filter-repo/releases",
+            "provider": "github",
+            "package_path": "git-filter-repo-2.47.0/git-filter-repo",
             "pinned": false
         },
         "/home/jundora/.local/bin/k3s": {
