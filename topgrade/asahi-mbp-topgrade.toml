@@ -2,7 +2,7 @@
 #
 # Created on: Sun 13 Jul 2025
 # Created by: gopeterjun@naver.com
-# Last Updated: Sun 13 Jul 2025
+# Last Updated: Mon 25 Aug 2025
 #
 # TOML config for 'topgrade' binary manager
 # original path to file: ~/.config/topgrade.toml
@@ -25,6 +25,7 @@
 
 # Disable specific steps - same options as the command line flag
 # disable = ["system", "emacs"]
+disable = ["emacs"]
 
 # Ignore failures for these steps
 # ignore_failures = ["powershell"]
@@ -228,7 +229,7 @@
 
 # wsl_update_use_web_download = true
 
-# The default for winget_install_silently is true, 
+# The default for winget_install_silently is true,
 # this example turns off silent install.
 # winget_install_silently = false
 
