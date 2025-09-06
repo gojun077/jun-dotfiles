@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Sat 16 Aug 2025
+;; Last Updated: Sat 06 Sep 2025
 ;;
 ;; These configs are for Emacs 30.1 and higher.
 ;;; Code:
@@ -41,8 +41,6 @@
 (use-package flymake-hadolint
   :straight t
   :defer t)
-(use-package flymake-ruff
-  :straight t)
 (use-package flymake-yamllint
   :straight t
   :defer t)
@@ -108,6 +106,8 @@
              :branch "move-board-on-refile"
              :protocol ssh
              :build (:not compile)))
+;; disable project.el
+(straight-use-package '(project :type built-in :no-build t))
 ;; Projectile for project management
 (use-package projectile
   :straight t
@@ -123,6 +123,8 @@
   :hook ((racket-mode . rainbow-delimiters-mode)
          (racket-mode . smartparens-mode)))
 (use-package rainbow-delimiters
+  :straight t)
+(use-package ruff-format
   :straight t)
 (use-package sicp
   :straight t
@@ -181,16 +183,17 @@
          ("s r" . consult-ripgrep)
          ("s s" . consult-git-grep)))
 
+;; package 'require' declarations
 (require 'browse-kill-ring)
 (require 'dockerfile-mode)
 (require 'efrit)
 (require 'exec-path-from-shell)
-(require 'flymake-ruff)
 (require 'nix-mode)
+(require 'ruff-format)
+(add-hook 'python-mode-hook 'ruff-format-on-save-mode)
 (require 'smartparens-config)
 (require 'unicode-whitespace)
 (require 'whitespace)
-
 
 ;;; GPTel specific configurations ;;;
 ;;

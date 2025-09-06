@@ -24,9 +24,9 @@
         "/home/jundora/.local/bin/codex": {
             "path": "/home/jundora/.local/bin/codex",
             "remote_name": "codex-aarch64-unknown-linux-gnu",
-            "version": "rust-v0.23.0",
-            "hash": "bf971c4e69594adfe85802bd3567b90a6a1e1b65925b1b9ee4c07d06e0579455",
-            "url": "https://github.com/openai/codex/releases/tag/rust-v0.23.0",
+            "version": "rust-v0.30.0",
+            "hash": "a1be429bb87912879df2b820699a4c676e85c8a36e77394f46c16f01b449bf9c",
+            "url": "https://github.com/openai/codex/releases/tag/rust-v0.30.0",
             "provider": "",
             "package_path": "codex-aarch64-unknown-linux-gnu",
             "pinned": false
@@ -64,9 +64,9 @@
         "/home/jundora/.local/bin/k3s": {
             "path": "/home/jundora/.local/bin/k3s",
             "remote_name": "k3s-arm64",
-            "version": "v1.33.3+k3s1",
-            "hash": "152c961aae4aa7553865481c21902a3cc8e02550df97587379a409494c3626c4",
-            "url": "https://github.com/k3s-io/k3s/releases/tag/v1.33.3%2Bk3s1",
+            "version": "v1.33.4+k3s1",
+            "hash": "0ba95d3933c90f4c72a502e1a0b39f3d1af311cc9961d2e049e321dd6db88be6",
+            "url": "https://github.com/k3s-io/k3s/releases/tag/v1.33.4%2Bk3s1",
             "provider": "",
             "package_path": "",
             "pinned": false
