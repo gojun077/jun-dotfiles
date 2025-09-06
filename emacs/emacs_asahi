@@ -56,9 +56,6 @@
 (use-package hcl-mode
   :straight t
   :defer t)
-(use-package jenkinsfile-mode
-  :straight t
-  :defer t)
 (use-package leuven-theme
   :straight t)
 (use-package magit
@@ -72,9 +69,6 @@
   :straight (:host github :repo "lizqwerscott/mcp.el")
   :config
   (require 'mcp-hub))
-(use-package nix-mode
-  :straight t
-  :defer t)
 (use-package ob-mermaid
   :straight t
   :defer t
