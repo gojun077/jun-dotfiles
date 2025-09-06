@@ -233,20 +233,7 @@
   :endpoint "/compatible-mode/v1/chat/completions"
   :models '(qwen3-coder-plus))
 
-;; from https://github.com/karthink/gptel?tab=readme-ov-file#defining-gptel-tools
-(gptel-make-tool
- :name "read_buffer"                    ; javascript-style snake_case name
- :function (lambda (buffer)                  ; the function that will run
-             (unless (buffer-live-p (get-buffer buffer))
-               (error "error: buffer %s is not live." buffer))
-             (with-current-buffer  buffer
-               (buffer-substring-no-properties (point-min) (point-max))))
- :description "[READ-ONLY] Return the contents of an emacs buffer. Use this to examine buffer content before making modifications. For targeted analysis, prefer show_buffer_context."
- :args (list '(:name "buffer"
-               :type string            ; :type value must be a symbol
-               :description "the name of the buffer whose contents are to be retrieved"))
- :category "emacs")                     ; An arbitrary label for grouping
-
+;; custom tools for use in 'gptel' mode
 (gptel-make-tool
  :name "modify_buffer"
  :function (lambda (buffer operation &optional text start-line end-line position)
