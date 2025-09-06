@@ -57,9 +57,17 @@
   :straight t
   :defer t)
 (use-package leuven-theme
-  :straight t)
+  :straight t
+  ;; leuven-theme specific settings
+  ;; https://github.com/fniessen/emacs-leuven-theme
+  :config (setq leuven-scale-outline-headlines 1.2)
+          (setq leuven-scale-org-agenda-structure 1.2)
+          (setq leuven-scale-org-document-title 1.5)
+          (setq leuven-scale-volatile-highlight 1.2))
 (use-package magit
   :straight t
+  ; bind 'M-x magit-status' to 'C-x g'
+  :config (global-set-key (kbd "C-x g") 'magit-status)
   :defer t)
 (use-package markdown-mode
   :straight t
@@ -130,6 +138,14 @@
   :defer t)
 (use-package tex
   :straight auctex
+  :config (setq TeX-auto-save t)
+          (setq TeX-parse-self t)
+          (setq-default TeX-master nil)
+          ; use xetex to render pdf from LaTeX
+          (setq TeX-engine 'xetex)
+          ; AUCTEX preview-latex font
+          (set-default 'preview-scale-function 1.2)
+  :hook ((LaTeX-mode . flymake-mode))
   :defer t)
 (use-package unicode-whitespace
   :straight t)
@@ -139,7 +155,16 @@
   :straight t
   :defer t)
 (use-package xclip
-  :straight t)
+  :straight t
+  ; enable copy-paste to and from system clipboard in emacs nw mode
+  ; https://discourse.doomemacs.org/t/how-to-copy-in-wayland/4041/16
+  :config (setq xclip-program "wl-copy")
+          (setq xclip-select-enable-clipboard t)
+          (setq xclip-mode t)
+          ; copy from emacs -nw terminal session to system clipboard
+          (setq xclip-method (quote wl-copy))
+
+)
 (use-package yaml-mode
   :straight t
   :hook ((yaml-mode . flymake-yamllint-setup)
@@ -655,17 +680,6 @@
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
 
-; use xetex to render pdf from LaTeX
-(setq TeX-engine 'xetex)
-
-; enable copy-paste to and from system clipboard in emacs nw mode
-; https://discourse.doomemacs.org/t/how-to-copy-in-wayland/4041/16
-(setq xclip-program "wl-copy")
-(setq xclip-select-enable-clipboard t)
-(setq xclip-mode t)
-; copy from emacs -nw terminal session to system clipboard
-(setq xclip-method (quote wl-copy))
-
 ;------------------------------------------------------------
 ; org-mode settings
 ;------------------------------------------------------------
@@ -753,25 +767,6 @@
 (global-set-key (kbd "C-c n c") #'org-roam-capture)
 ; the following shortcut only works in org-mode
 (define-key org-mode-map (kbd "C-c n i") #'org-roam-node-insert)
-
-
-; AUCTeX settings
-(setq TeX-auto-save t)
-(setq TeX-parse-self t)
-(setq-default TeX-master nil)
-(add-hook 'LaTeX-mode-hook #'flymake-mode)
-; AUCTEX preview-latex font
-(set-default 'preview-scale-function 1.2)
-
-; bind 'M-x magit-status' to 'C-x g'
-(global-set-key (kbd "C-x g") 'magit-status)
-
-;; leuven-theme specific settings
-;; https://github.com/fniessen/emacs-leuven-theme
-(setq leuven-scale-outline-headlines 1.2)
-(setq leuven-scale-org-agenda-structure 1.2)
-(setq leuven-scale-org-document-title 1.5)
-(setq leuven-scale-volatile-highlight 1.2)
 
 ;; https://github.com/purcell/exec-path-from-shell/blob/master/README.md
 (dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO" "LANG"
