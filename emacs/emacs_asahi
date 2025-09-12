@@ -665,7 +665,7 @@
 
 ;; --- IME settings  ---
 ; C-\ language toggle
-(setq default-input-method "korean-hangul3")
+(setq default-input-method "korean-hangul")
 
 ; my preferred input methods in cycling order
 ; note that 'nil' is for no input mode, i.e. Unicode default
