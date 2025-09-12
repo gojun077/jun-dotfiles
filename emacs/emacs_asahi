@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Sat 06 Sep 2025
+;; Last Updated: Fri 12 Sep 2025
 ;;
 ;; These configs are for Emacs 30.1 and higher.
 ;;; Code:
@@ -207,7 +207,6 @@
 (require 'dockerfile-mode)
 (require 'efrit)
 (require 'exec-path-from-shell)
-(require 'nix-mode)
 (require 'ruff-format)
 (add-hook 'python-mode-hook 'ruff-format-on-save-mode)
 (require 'smartparens-config)
@@ -664,8 +663,29 @@
                                "--stdin-filename=stdin"
                                "-"))
 
+;; --- IME settings  ---
 ; C-\ language toggle
-(setq default-input-method "korean-hangul")
+(setq default-input-method "korean-hangul3")
+
+; my preferred input methods in cycling order
+; note that 'nil' is for no input mode, i.e. Unicode default
+(setq my-input-methods '(nil "korean-hangul" "sgml" "TeX"))
+
+(setq my-input-method-index 0)
+
+(defun cycle-input-method ()
+  "Cycle through predefined input methods."
+  (interactive)
+  (setq my-input-method-index
+        (mod (1+ my-input-method-index) (length my-input-methods)))
+  (let ((method (nth my-input-method-index my-input-methods)))
+    (set-input-method method)
+    (message "Input method: %s" method)))
+
+; bind to C-\
+(global-set-key (kbd "C-\\") 'cycle-input-method)
+;; --- end IME settings ---
+
 ; Start emacs maximized
 (setq initial-frame-alist (quote ((fullscreen . maximized))))
 ; create backups in $HOME/tmp
