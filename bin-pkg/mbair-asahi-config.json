@@ -24,9 +24,9 @@
         "/home/jundora/.local/bin/codex": {
             "path": "/home/jundora/.local/bin/codex",
             "remote_name": "codex-aarch64-unknown-linux-gnu",
-            "version": "rust-v0.30.0",
-            "hash": "a1be429bb87912879df2b820699a4c676e85c8a36e77394f46c16f01b449bf9c",
-            "url": "https://github.com/openai/codex/releases/tag/rust-v0.30.0",
+            "version": "rust-v0.34.0",
+            "hash": "2a5f5a80fdaf3a46dec189fcf42a9ad9bdeedfde508e89fdd11598d56b85c19e",
+            "url": "https://github.com/openai/codex/releases/tag/rust-v0.34.0",
             "provider": "",
             "package_path": "codex-aarch64-unknown-linux-gnu",
             "pinned": false
@@ -44,11 +44,11 @@
         "/home/jundora/.local/bin/gh": {
             "path": "/home/jundora/.local/bin/gh",
             "remote_name": "gh",
-            "version": "v2.78.0",
-            "hash": "1b8e50c1efa124a20e4a60e100f3aedc20c41a1deb39a40caaad331464101a73",
-            "url": "https://github.com/cli/cli/releases/tag/v2.78.0",
+            "version": "v2.79.0",
+            "hash": "ee4a9a73720c68152340de6a130ed3bf499d5817a7434bd3d52377acc32a8a67",
+            "url": "https://github.com/cli/cli/releases/tag/v2.79.0",
             "provider": "",
-            "package_path": "gh_2.78.0_linux_arm64/bin/gh",
+            "package_path": "gh_2.79.0_linux_arm64/bin/gh",
             "pinned": false
         },
         "/home/jundora/.local/bin/git-filter-repo": {
