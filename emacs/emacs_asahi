@@ -33,9 +33,6 @@
           (setq efrit-max-tokens 200000)
           (setq efrit-remote-queue-directory "~/.emacs.d/efrit-queue")
           (setq efrit-remote-queue-max-concurrent 10))
-(use-package emojify
-  :straight t
-  :defer t)
 (use-package exec-path-from-shell
   :straight t)
 (use-package flymake-hadolint
@@ -133,9 +130,6 @@
   :defer t)
 (use-package smartparens
   :straight t)
-(use-package solarized-theme
-  :straight t
-  :defer t)
 (use-package tex
   :straight auctex
   :config (setq TeX-auto-save t)
@@ -493,7 +487,6 @@
   (global-display-fill-column-indicator-mode 1)
   ; enable whitespace-mode for all files
   (add-hook 'after-change-major-mode-hook 'whitespace-mode)
-  (add-hook 'markdown-mode-hook 'emojify-mode)
   ; unicode-whitespace face settings
   (unicode-whitespace-setup 'subdued-faces)
   ; don't show scrollbar
@@ -505,15 +498,7 @@
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ; Emacs color themes
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;(load-theme 'cyberpunk t)
   (load-theme 'leuven t)
-  ;(load-theme 'sanityinc-tomorrow-blue)
-  ;(load-theme 'sanityinc-tomorrow-bright)
-  ;(load-theme 'sanityinc-tomorrow-day)
-  ;(load-theme 'sanityinc-tomorrow-night)
-  ;(load-theme 'sanityinc-solarized-light)
-  ;(load-theme 'sanityinc-solarized-light-high-contrast)
-  ;(load-theme 'solarized-light-high-contrast)
   (exec-path-from-shell-initialize)
 )
 

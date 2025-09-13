@@ -3,7 +3,7 @@
 ;; 'early-init.el' for Asahilinux Fedora Remix
 ;; Created on: Sat 28 Jun 2025
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Tue 26 Aug 2025
+;; Last Updated: Sat 13 Sep 2025
 ;;
 ;; Settings loaded before package system and GUI are initialized
 ;; These configs are for Emacs 30.1 and higher.
@@ -14,6 +14,39 @@
 (setq package-enable-at-startup nil)
 (setq package--init-file-ensured t)
 (setq package-quickstart nil)
+
+;; enable 'use-package-report'. Run with 'M-x use-package-report'
+(setq use-package-compute-statistics t)
+;; Optional noise control:
+(setq use-package-verbose t
+      use-package-minimum-reported-time 0.01)  ;; seconds
+
+;; reduce startup Garbage Collection for clearer, faster startup
+(setq gc-cons-threshold most-positive-fixnum
+      gc-cons-percentage 0.6)
+
+;; run emacs startup profiler with 'EMACS_PROFILE_STARTUP=1 emacs'
+(when (getenv "EMACS_PROFILE_STARTUP")
+  (require 'profiler)
+  (profiler-start 'cpu+mem)
+  (add-hook 'emacs-startup-hook
+            (lambda ()
+              (profiler-stop)
+              (unless (daemonp) (profiler-report)))))
+
+;; print how long it takes for emacs to start
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (setq gc-cons-threshold (* 64 1024 1024)
+                  gc-cons-percentage 0.1)
+            (message "Emacs ready in %s (%.3fs, %d GCs)"
+                     (emacs-init-time)
+                     (float-time
+                      (time-subtract
+                       after-init-time
+                       before-init-time))
+                     gcs-done))
+          t)  ;; append so it runs after the default startup message
 
 ;; use straight.el instead of package.el
 (defvar bootstrap-version)
