@@ -141,8 +141,6 @@
           (set-default 'preview-scale-function 1.2)
   :hook ((LaTeX-mode . flymake-mode))
   :defer t)
-(use-package unicode-whitespace
-  :straight t)
 (use-package visual-fill-column
   :straight t)
 (use-package web-mode
@@ -204,7 +202,6 @@
 (require 'ruff-format)
 (add-hook 'python-mode-hook 'ruff-format-on-save-mode)
 (require 'smartparens-config)
-(require 'unicode-whitespace)
 (require 'whitespace)
 
 ;; Load external GPTel configuration
@@ -282,7 +279,7 @@
  '(orgtrello-log-level 4 nil (org-trello))
  '(package-selected-packages
    '(flymake-ruff go-mode org-trello yaml-mode web-mode go-playground
-                  unicode-whitespace smartparens ansible rainbow-delimiters
+                  smartparens ansible rainbow-delimiters
                   racket-mode markdown-mode magit exec-path-from-shell))
  '(pdf-latex-command "xetex")
  '(python-shell-completion-native-disabled-interpreters '("pypy ipython3"))
@@ -477,18 +474,19 @@
 
 ; Commands to run when Emacs launched in graphical mode
 (when (or (display-graphic-p) (daemonp))
+  ;; --- whitespace-mode settings ---
   ; only run whitespace mode in graphical session
   (global-whitespace-mode 1)
+  ; enable whitespace-mode for all files
+  (add-hook 'after-change-major-mode-hook 'whitespace-mode)
+  ;; --- end whitespace-mode settings ---
+
   ; limit line length
   (setq whitespace-line-column 80)
   ; set fill column to 75
   (setq-default fill-column 75)
   ; enable native fill column indicator (emacs 27+)
   (global-display-fill-column-indicator-mode 1)
-  ; enable whitespace-mode for all files
-  (add-hook 'after-change-major-mode-hook 'whitespace-mode)
-  ; unicode-whitespace face settings
-  (unicode-whitespace-setup 'subdued-faces)
   ; don't show scrollbar
   (scroll-bar-mode -1)
   ; don't show toolbar
