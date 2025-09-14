@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Sat 13 Sep 2025
+;; Last Updated: Sun 14 Sep 2025
 ;;
 ;; These configs are for Emacs 30.1 and higher.
 ;;; Code:
@@ -30,7 +30,7 @@
 (use-package efrit
   :straight (:host github :repo "steveyegge/efrit")
   :config (setq efrit-model "claude-sonnet-4-20250514")
-          (setq efrit-max-tokens 200000)
+          (setq efrit-max-tokens 32768) ; max is 64000 for sonnet 4
           (setq efrit-remote-queue-directory "~/.emacs.d/efrit-queue")
           (setq efrit-remote-queue-max-concurrent 10))
 (use-package exec-path-from-shell
