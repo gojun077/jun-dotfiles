@@ -1,4 +1,6 @@
 ;;; init-gptel.el --- GPTel configuration (extracted from emacs_asahi)
+; Created on: Sat 13 Sep 2025
+; Last Updated: Sun 14 Sep 2025
 
 ;;; GPTel specific configurations ;;;
 ;;

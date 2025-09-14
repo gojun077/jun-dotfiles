@@ -21,20 +21,29 @@
   :straight t
   :defer t)
 (use-package browse-kill-ring
-  :straight t)
+  :straight t
+  :config
+  (require 'browse-kill-ring))
 (use-package dockerfile-mode
   :straight t
   :mode ("Dockerfile\\'" . dockerfile-mode)
-  :config (add-hook 'dockerfile-mode-hook #'flymake-hadolint-setup)
+  :config
+  (require 'dockerfile-mode)
+  :hook
+  (dockerfile-mode-hook . flymake-hadolint-setup)
   :defer t)
 (use-package efrit
   :straight (:host github :repo "steveyegge/efrit")
-  :config (setq efrit-model "claude-sonnet-4-20250514")
-          (setq efrit-max-tokens 32768) ; max is 64000 for sonnet 4
-          (setq efrit-remote-queue-directory "~/.emacs.d/efrit-queue")
-          (setq efrit-remote-queue-max-concurrent 10))
+  :config
+  (require 'efrit)
+  (setq efrit-model "claude-sonnet-4-20250514")
+  (setq efrit-max-tokens 32768) ; max is 64000 for sonnet 4
+  (setq efrit-remote-queue-directory "~/.emacs.d/efrit-queue")
+  (setq efrit-remote-queue-max-concurrent 10))
 (use-package exec-path-from-shell
-  :straight t)
+  :straight t
+  :config
+  (require 'exec-path-from-shell))
 (use-package flymake-hadolint
   :straight t
   :defer t)
@@ -86,15 +95,17 @@
   (require 'ox-md)
   (org-babel-do-load-languages
     'org-babel-load-languages
-    '((emacs-lisp . t)
+    '((C . t)  ; support for both 'C/cpp'
+      (emacs-lisp . t)
       (java . t)
       (js . t)
       (latex . t)
+      (mermaid . t)
+      (org . t)
       (python . t)
       (ruby . t)
       (shell . t)
-      (C . t)
-      (mermaid . t))))
+      (sql . t))))
 (use-package org-roam
   :straight t
   :defer t)
@@ -124,12 +135,17 @@
 (use-package rainbow-delimiters
   :straight t)
 (use-package ruff-format
-  :straight t)
+  :straight t
+  :config
+  (require 'ruff-format)
+  :hook (python-mode-hook . ruff-format-on-save-mode))
 (use-package sicp
   :straight t
   :defer t)
 (use-package smartparens
-  :straight t)
+  :straight t
+  :config
+  (require 'smartparens-config))
 (use-package tex
   :straight auctex
   :config (setq TeX-auto-save t)
@@ -154,9 +170,7 @@
           (setq xclip-select-enable-clipboard t)
           (setq xclip-mode t)
           ; copy from emacs -nw terminal session to system clipboard
-          (setq xclip-method (quote wl-copy))
-
-)
+          (setq xclip-method (quote wl-copy)))
 (use-package yaml-mode
   :straight t
   :hook ((yaml-mode . flymake-yamllint-setup)
@@ -194,14 +208,7 @@
          ("s r" . consult-ripgrep)
          ("s s" . consult-git-grep)))
 
-;; package 'require' declarations
-(require 'browse-kill-ring)
-(require 'dockerfile-mode)
-(require 'efrit)
-(require 'exec-path-from-shell)
-(require 'ruff-format)
-(add-hook 'python-mode-hook 'ruff-format-on-save-mode)
-(require 'smartparens-config)
+;; misc package 'require' declarations
 (require 'whitespace)
 
 ;; Load external GPTel configuration
