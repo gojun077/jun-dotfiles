@@ -225,6 +225,8 @@
 
 ;; map M-y yank-pop to browse-kill-ring
 (browse-kill-ring-default-keybindings)
+
+;; -- misc major-mode hooks --
 (add-hook 'elisp-lisp-mode-hook #'flymake-mode)
 (add-hook 'python-base-mode-hook (lambda ()
                                    (flymake-mode 1)
@@ -232,6 +234,8 @@
 
 ;; make #! script files executable on save (chmod +x)
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
+(add-hook 'c-mode-hook #'flymake-mode)
+
 (add-hook 'sh-mode-hook #'flymake-mode)
 
 ;; Capitalize keywords in SQL mode
@@ -242,6 +246,7 @@
 (add-hook 'sql-interactive-mode-hook
           (lambda ()
             (toggle-truncate-lines t)))
+;; -- END misc major-mode hooks --
 
 (defun go-mode-setup ()
   ;; run 'go fmt' on .go source files before save
@@ -251,24 +256,6 @@
       (set (make-local-variable 'compile-command)
            "env GOOS=linux GOARCH=arm64 go build -v -o bin/$(basename $(pwd)) && go test -v && go vet"))
 )
-
-;; cc-mode settings
-; Note K&R style uses spaces for indentation
-(setq c-default-style "k&r"
-      c-basic-offset 4)
-(add-hook 'c-mode-hook #'flymake-mode)
-
-;; java-mode settings
-;; use checkstyle linter offsets
-(add-hook 'java-mode-hook
-             (lambda ()
-               (setq c-basic-offset 2)))
-
-;; mode settings
-; show col and line numbers
-(column-number-mode 1)
-; highlight parens
-(show-paren-mode t)
 
 
 ;;=========================
@@ -299,8 +286,14 @@
 
 ; start emacs in server mode
 (server-mode 1)
+
 ; ensure GPG password input is handled by emacs during emacs session
 ;(setenv "GPG_AGENT_INFO" nil)
+
+; show col and line numbers
+(column-number-mode 1)
+; highlight parens
+(show-paren-mode t)
 
 ; specify UTF-8 encoding for all buffers
 (setq set-language-environment "UTF-8")
@@ -315,9 +308,25 @@
 (setq-default indent-tabs-mode nil)
 ; But when I must use TAB, set width to 2 chars
 (setq-default tab-width 2)
+
+; keep dired uncluttered (only one buffer at a time)
+(put 'dired-find-alternate-file 'disabled nil)
+
 ; shell script mode formatting
 (setq sh-basic-offset 2)
 (setq sh-indentation 2)
+
+;; cc-mode settings
+; Note K&R style uses spaces for indentation
+(setq c-default-style "k&r"
+      c-basic-offset 4)
+
+;; java-mode settings
+;; use checkstyle linter offsets
+(add-hook 'java-mode-hook
+             (lambda ()
+               (setq c-basic-offset 2)))
+
 ; Python settings
 ; Note: recent versions of ipython and python interpreters
 ; don't support readline() and doctests do not show up
@@ -436,7 +445,6 @@
 (global-set-key (kbd "C-c i g c") #'org-id-get-create)
 (setq org-id-link-to-org-use-id 'create-if-interactive)
 
-(put 'dired-find-alternate-file 'disabled nil)
 
 
 ; org-roam minor mode settings
