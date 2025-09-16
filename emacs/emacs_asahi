@@ -210,12 +210,15 @@
 (require 'whitespace)
 
 ;; Load external GPTel configuration
-(load (expand-file-name "init-gptel.el" user-emacs-directory) t t)
+(unless (load (expand-file-name "init-gptel.el" user-emacs-directory) t t)
+  (message "Warning: Could not load init-gptel.el - check if file exists in %s"
+           user-emacs-directory))
 
 ;; Load external org configuration
-(load (expand-file-name "init-org.el" user-emacs-directory) t t)
-
-;; 
+(unless (load (expand-file-name "init-org.el" user-emacs-directory) t t)
+  (message "Warning: Could not load init-org.el - check if file exists in %s"
+           user-emacs-directory))
+;;
 ;;; mcp configs for mcp.el ;;;
 ;;
 (setq mcp-hub-servers
