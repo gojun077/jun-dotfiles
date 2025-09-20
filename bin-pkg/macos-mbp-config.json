@@ -11,6 +11,16 @@
             "package_path": "",
             "pinned": false
         },
+        "/Users/peter/bin-pkg/codex": {
+            "path": "/Users/peter/bin-pkg/codex",
+            "remote_name": "codex-aarch64-apple-darwin",
+            "version": "rust-v0.39.0",
+            "hash": "a73436304af6a0293af2b73c070bf989a0d1a35531345452c002131d0784b5fe",
+            "url": "https://github.com/openai/codex",
+            "provider": "github",
+            "package_path": "codex-aarch64-apple-darwin",
+            "pinned": false
+        },
         "/Users/peter/bin-pkg/k9s": {
             "path": "/Users/peter/bin-pkg/k9s",
             "remote_name": "k9s",
