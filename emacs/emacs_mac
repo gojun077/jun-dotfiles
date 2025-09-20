@@ -5,7 +5,7 @@
 ;; Created by: gopeterjun@naver.com
 ;; Last Updated: Sun 21 Sep 2025
 ;;
-;; This config file is for Emacs 29.1 and above on Apple Silicon
+;; This config file is for Emacs 30 and above on Apple Silicon
 ;;; Code:
 
 
@@ -57,7 +57,8 @@
   :defer t)
 (use-package gptel
   :straight t
-  :defer t)
+  :config
+  (require 'gptel))
 (use-package go-playground
   :straight t
   :defer t)
@@ -107,14 +108,16 @@
       (python . t)
       (ruby . t)
       (shell . t)
-      (sql . t))))
+      (sql . t)))
+  :defer t)
 ; use my fork of org-trello
 (use-package org-trello
   :straight (:host github
              :repo "gojun077/org-trello"
              :branch "move-board-on-refile"
              :protocol ssh
-             :build (:not compile)))
+             :build (:not compile))
+  :defer t)
 ;; disable project.el
 (straight-use-package '(project :type built-in :no-build t))
 ;; Projectile for project management
@@ -481,6 +484,7 @@
 ;; Nerd Font ttf names on MacOS are slightly different from those on
 ;; on Linux: 'Monofur Nerd Font Mono' (MacOS), 'MonofurNerdFontMono'
 ;; (Linux)
+
 
 (provide '.emacs)
 ;;; .emacs ends here
