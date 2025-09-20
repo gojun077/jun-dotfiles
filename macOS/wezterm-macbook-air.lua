@@ -2,7 +2,7 @@
 -- PJ's Wezterm Config for MacOS on Macbook Air M2
 -- Created on: Jun 9 2024
 -- Created by: gopeterjun@naver.com
--- Last Updated: Jun 9 2024
+-- Last Updated: Sat 20 Sep 2025
 
 -- Pull in the wezterm API
 local wezterm = require 'wezterm'
