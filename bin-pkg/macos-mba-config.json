@@ -1,0 +1,35 @@
+{
+    "default_path": "/opt/homebrew/bin",
+    "bins": {
+        "/opt/homebrew/bin/bin": {
+            "path": "/opt/homebrew/bin/bin",
+            "remote_name": "bin_0.23.1_darwin_arm64",
+            "version": "v0.23.1",
+            "hash": "6316d2124e9dd6c3fb14ac001e113e3c53bfd65acaf71af45bf7354a03282636",
+            "url": "github.com/marcosnils/bin",
+            "provider": "github",
+            "package_path": "",
+            "pinned": false
+        },
+        "/opt/homebrew/bin/codex": {
+            "path": "/opt/homebrew/bin/codex",
+            "remote_name": "codex-aarch64-apple-darwin",
+            "version": "rust-v0.39.0",
+            "hash": "a73436304af6a0293af2b73c070bf989a0d1a35531345452c002131d0784b5fe",
+            "url": "github.com/openai/codex",
+            "provider": "github",
+            "package_path": "codex-aarch64-apple-darwin",
+            "pinned": false
+        },
+        "/opt/homebrew/bin/k9s": {
+            "path": "/opt/homebrew/bin/k9s",
+            "remote_name": "k9s",
+            "version": "v0.50.12",
+            "hash": "11f52aa8dceb4e441f073e4e728e893afedadd179bf51a59f9dcfebe02ef80ba",
+            "url": "github.com/derailed/k9s",
+            "provider": "github",
+            "package_path": "k9s",
+            "pinned": false
+        }
+    }
+}
