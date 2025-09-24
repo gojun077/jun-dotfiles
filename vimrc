@@ -1,7 +1,6 @@
 " An example for a vimrc file.
 "
-" Maintainer:   Bram Moolenaar <Bram@vim.org>
-" Last Updated:  2016-12-28
+" Original Maintainer:   Bram Moolenaar <Bram@vim.org> (RIP)
 " Customized by: gopeterjun@naver.com and OpenAI Codex
 " Last change:  Wed 24 Sep 2025
 "
@@ -61,7 +60,12 @@ if &t_Co > 2 || has("gui_running")
   set hlsearch
   "default colors defined in '/usr/share/vim/vimXX/colors/'
   "colo elflord
-  colorscheme shine
+  " Prefer Dracula if installed as a Vim package; fall back to Shine.
+  if isdirectory(expand('~/.vim/pack/themes/start/dracula'))
+    silent! colorscheme dracula
+  else
+    colorscheme shine
+  endif
   "colo evening
 endif
 
