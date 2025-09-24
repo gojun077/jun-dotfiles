@@ -3,7 +3,7 @@
 " Maintainer:   Bram Moolenaar <Bram@vim.org>
 " Last Updated:  2016-12-28
 " Customized by: gopeterjun@naver.com and OpenAI Codex
-" Last change:  Fri 18 Jul 2025
+" Last change:  Wed 24 Sep 2025
 "
 " To use it, copy it to
 "     for Unix and OS/2:  ~/.vimrc
@@ -36,6 +36,7 @@ set history=50          " keep 50 lines of command line history
 set ruler               " show the cursor position all the time
 set showcmd             " display incomplete commands
 set incsearch           " do incremental searching
+set cursorline          " highlight current line (for Ghostty)
 
 " For Win32 GUI: remove 't' flag from 'guioptions': no tearoff menu entries
 " let &guioptions = substitute(&guioptions, "t", "", "g")
