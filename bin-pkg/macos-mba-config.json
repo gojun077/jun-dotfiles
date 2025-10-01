@@ -14,9 +14,9 @@
         "/opt/homebrew/bin/codex": {
             "path": "/opt/homebrew/bin/codex",
             "remote_name": "codex-aarch64-apple-darwin",
-            "version": "rust-v0.41.0",
-            "hash": "72a5b756c29d32f859f4f149d03f1b9919bf28f926b5987d972c6f3dd1a94750",
-            "url": "https://github.com/openai/codex/releases/tag/rust-v0.41.0",
+            "version": "rust-v0.42.0",
+            "hash": "4359cd190d06b7cec6c98d274dd317e80a9339bdc6c02e748fb8297b28a4ceef",
+            "url": "https://github.com/openai/codex/releases/tag/rust-v0.42.0",
             "provider": "",
             "package_path": "codex-aarch64-apple-darwin",
             "pinned": false
@@ -24,10 +24,10 @@
         "/opt/homebrew/bin/k9s": {
             "path": "/opt/homebrew/bin/k9s",
             "remote_name": "k9s",
-            "version": "v0.50.12",
-            "hash": "11f52aa8dceb4e441f073e4e728e893afedadd179bf51a59f9dcfebe02ef80ba",
-            "url": "github.com/derailed/k9s",
-            "provider": "github",
+            "version": "v0.50.13",
+            "hash": "4c4adbca7afa339fb780aab3b34f3d941216d4b45b2e8740470163738e45d5bb",
+            "url": "https://github.com/derailed/k9s/releases/tag/v0.50.13",
+            "provider": "",
             "package_path": "k9s",
             "pinned": false
         }
