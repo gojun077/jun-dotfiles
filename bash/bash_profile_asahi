@@ -3,7 +3,7 @@
 #
 # Created on: 28 Apr 2024
 # Created by gojun077
-# Last Updated: 08 Oct 2024
+# Last Updated: 07 Oct 2025
 #
 # These settings are sourced by the login shell
 
@@ -41,4 +41,7 @@ export EDITOR="emacsclient -nw"
 
 # shellcheck source=/dev/null
 if [ -e "$HOME"/.nix-profile/etc/profile.d/nix.sh ]; then . "$HOME"/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
-eval "$(pyenv init --path)"
+# only run 'pyenv' in interactive session
+if [[ $- == *i* ]]; then
+  eval "$(pyenv init --path)"
+fi
