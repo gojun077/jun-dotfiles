@@ -24,9 +24,9 @@
         "/home/jundora/.local/bin/codex": {
             "path": "/home/jundora/.local/bin/codex",
             "remote_name": "codex-aarch64-unknown-linux-gnu",
-            "version": "rust-v0.44.0",
-            "hash": "561ff47f0f866006efaac24d6811195a889bfdb6cb443279de1bf7b79320aedd",
-            "url": "https://github.com/openai/codex/releases/tag/rust-v0.44.0",
+            "version": "rust-v0.45.0",
+            "hash": "4da5368122855a32495f8f075602e95420bb049825470aa8d9504d180ccc225f",
+            "url": "https://github.com/openai/codex/releases/tag/rust-v0.45.0",
             "provider": "",
             "package_path": "codex-aarch64-unknown-linux-gnu",
             "pinned": false
@@ -74,9 +74,9 @@
         "/home/jundora/.local/bin/k9s": {
             "path": "/home/jundora/.local/bin/k9s",
             "remote_name": "k9s",
-            "version": "v0.50.13",
-            "hash": "cfe6578d8fbcadd93ae7c8770fdab17a67f2e96db195d55849e439d445c80321",
-            "url": "https://github.com/derailed/k9s/releases/tag/v0.50.13",
+            "version": "v0.50.14",
+            "hash": "3125fb6693c69d231573247ea8acaf3fe2a261f7768dba7f55b44f05cc6f2fce",
+            "url": "https://github.com/derailed/k9s/releases/tag/v0.50.14",
             "provider": "",
             "package_path": "k9s",
             "pinned": false
