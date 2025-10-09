@@ -327,7 +327,6 @@ exec emacs
 #
 # Custom Keyboard shortcuts/keybindings
 #
-#bindsym $mod+Shift+b exec firefox-wayland
 #bindsym $mod+Shift+b exec chromium-browser --enable-features=UseOzonePlatform --ozone-platform=wayland --gtk-version=4
 # 'Version 141.0.7390.54 (Official Build) Fedora Project (64-bit)' supports Wayland OOTB
 bindsym $mod+Shift+b exec chromium-browser
