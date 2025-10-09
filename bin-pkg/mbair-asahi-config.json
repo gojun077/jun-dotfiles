@@ -24,9 +24,9 @@
         "/home/jundora/.local/bin/codex": {
             "path": "/home/jundora/.local/bin/codex",
             "remote_name": "codex-aarch64-unknown-linux-gnu",
-            "version": "rust-v0.45.0",
-            "hash": "4da5368122855a32495f8f075602e95420bb049825470aa8d9504d180ccc225f",
-            "url": "https://github.com/openai/codex/releases/tag/rust-v0.45.0",
+            "version": "rust-v0.46.0",
+            "hash": "1b8042f638593d4312dc8295a59d7ab0103425c76a0362be7ecdc8e00e74f720",
+            "url": "https://github.com/openai/codex/releases/tag/rust-v0.46.0",
             "provider": "",
             "package_path": "codex-aarch64-unknown-linux-gnu",
             "pinned": false
@@ -34,9 +34,9 @@
         "/home/jundora/.local/bin/duckdb": {
             "path": "/home/jundora/.local/bin/duckdb",
             "remote_name": "",
-            "version": "v1.4.0",
-            "hash": "084896a47175d36bbd5de9a0eabb36378f91b28e102522dd46f3dc1d876db584",
-            "url": "https://github.com/duckdb/duckdb/releases/tag/v1.4.0",
+            "version": "v1.4.1",
+            "hash": "611a55aef4cab81d6733abb7494751711f9257e3f7e0c740c27a5015f234a4dd",
+            "url": "https://github.com/duckdb/duckdb/releases/tag/v1.4.1",
             "provider": "",
             "package_path": "",
             "pinned": false
@@ -74,9 +74,9 @@
         "/home/jundora/.local/bin/k9s": {
             "path": "/home/jundora/.local/bin/k9s",
             "remote_name": "k9s",
-            "version": "v0.50.14",
-            "hash": "3125fb6693c69d231573247ea8acaf3fe2a261f7768dba7f55b44f05cc6f2fce",
-            "url": "https://github.com/derailed/k9s/releases/tag/v0.50.14",
+            "version": "v0.50.15",
+            "hash": "18a1974e1248305ea1c7871847f8b1ad7a54174cf3c9b92534264e8d09cc93d6",
+            "url": "https://github.com/derailed/k9s/releases/tag/v0.50.15",
             "provider": "",
             "package_path": "k9s",
             "pinned": false
