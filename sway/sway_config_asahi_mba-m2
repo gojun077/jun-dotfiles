@@ -323,6 +323,8 @@ exec wl-paste -t text --watch clipman store --no-persist --max-items=1024
 exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 # Start emacs (`(server-mode 1)` is set in .emacs)
 exec emacs
+# Start 'kwalletmanager5'
+exec kwalletmanager5
 
 #
 # Custom Keyboard shortcuts/keybindings
