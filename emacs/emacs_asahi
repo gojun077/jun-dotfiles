@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Sun 21 Sep 2025
+;; Last Updated: Wed 08 Oct 2025
 ;;
 ;; These configs are for Emacs 30.1 and higher.
 ;;; Code:
@@ -44,6 +44,12 @@
 (use-package exec-path-from-shell
   :straight t
   :config
+  ;; https://github.com/purcell/exec-path-from-shell/blob/master/README.md
+  (dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO" "LANG"
+               "LC_CTYPE" "LC_TYPE" "GOPATH" "GOROOT" "SHELL"))
+  (add-to-list 'exec-path-from-shell-variables var))
+; don't invoke an interactive shell; default args are ("-l" "-i")
+  (setq exec-path-from-shell-arguments nil)
   (require 'exec-path-from-shell))
 (use-package flymake-hadolint
   :straight t
@@ -241,7 +247,27 @@
 
 ;; make #! script files executable on save (chmod +x)
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
-(add-hook 'c-mode-hook #'flymake-mode)
+
+(defun gpj/flymake-cc-command ()
+  "Return the syntax-check command for Flymake based on the current mode."
+  (if (derived-mode-p 'c++-mode 'c++-ts-mode)
+      '("g++" "-fsyntax-only" "-Wall" "-Wextra" "-std=c++17" "-fdiagnostics-color=never" "-x" "c++" "-")
+    '("gcc" "-fsyntax-only" "-Wall" "-Wextra" "-std=c11" "-fdiagnostics-color=never" "-x" "c" "-")))
+
+(defun gpj/flymake-cc-setup ()
+  "Enable Flymake diagnostics using the GCC/Clang backend."
+  (require 'flymake-cc)
+  (setq-local flymake-cc-command #'gpj/flymake-cc-command)
+  (add-hook 'flymake-diagnostic-functions #'flymake-cc nil t)
+  (flymake-mode 1))
+
+(add-hook 'c-mode-hook #'gpj/flymake-cc-setup)
+(when (boundp 'c-ts-mode-hook)
+  (add-hook 'c-ts-mode-hook #'gpj/flymake-cc-setup))
+(when (boundp 'c++-mode-hook)
+  (add-hook 'c++-mode-hook #'gpj/flymake-cc-setup))
+(when (boundp 'c++-ts-mode-hook)
+  (add-hook 'c++-ts-mode-hook #'gpj/flymake-cc-setup))
 
 (add-hook 'sh-mode-hook #'flymake-mode)
 
@@ -389,12 +415,6 @@
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
 
-;; https://github.com/purcell/exec-path-from-shell/blob/master/README.md
-(dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO" "LANG"
-               "LC_CTYPE" "LC_TYPE" "GOPATH" "GOROOT" "SHELL"))
-  (add-to-list 'exec-path-from-shell-variables var))
-; don't invoke an interactive shell; default args are ("-l" "-i")
-(setq exec-path-from-shell-arguments nil)
 (setq zoneinfo-style-world-list
       '(("Pacific/Honolulu" "Honolulu")
         ("America/Los_Angeles" "Seattle")
