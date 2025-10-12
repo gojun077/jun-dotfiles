@@ -257,8 +257,10 @@
 (defun gpj/flymake-cc-command ()
   "Return the syntax-check command for Flymake based on the current mode."
   (if (derived-mode-p 'c++-mode 'c++-ts-mode)
-      '("g++" "-fsyntax-only" "-Wall" "-Wextra" "-std=c++17" "-fdiagnostics-color=never" "-x" "c++" "-")
-    '("gcc" "-fsyntax-only" "-Wall" "-Wextra" "-std=c11" "-fdiagnostics-color=never" "-x" "c" "-")))
+      '("g++" "-fsyntax-only" "-Wall" "-Wextra" "-std=c++17"
+        "-fdiagnostics-color=never" "-x" "c++" "-")
+    '("gcc" "-fsyntax-only" "-Wall" "-Wextra" "-std=c11"
+      "-fdiagnostics-color=never" "-x" "c" "-")))
 
 (defun gpj/flymake-cc-setup ()
   "Enable Flymake diagnostics using the GCC/Clang backend."
