@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Wed 08 Oct 2025
+;; Last Updated: Sun 12 Oct 2025
 ;;
 ;; These configs are for Emacs 30.1 and higher.
 ;;; Code:
@@ -113,6 +113,11 @@
       (ruby . t)
       (shell . t)
       (sql . t))))
+(use-package org-srs
+  :straight t
+  :ensure t
+  :defer t
+  :hook (org-mode . org-srs-embed-overlay-mode))
 ; use my fork of org-trello
 (use-package org-trello
   :straight (:host github
