@@ -48,8 +48,9 @@
   (dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO" "LANG"
                "LC_CTYPE" "LC_TYPE" "GOPATH" "GOROOT" "SHELL"))
   (add-to-list 'exec-path-from-shell-variables var))
-; don't invoke an interactive shell; default args are ("-l" "-i")
+  ; don't invoke an interactive shell; default args are ("-l" "-i")
   (setq exec-path-from-shell-arguments nil)
+  (exec-path-from-shell-initialize)
   (require 'exec-path-from-shell))
 (use-package flymake-hadolint
   :straight t
@@ -436,13 +437,16 @@
 (when (or (display-graphic-p) (daemonp))
   ;; --- whitespace-mode settings ---
   ; only run whitespace mode in graphical session
-  (global-whitespace-mode 1)
-  ; enable whitespace-mode for all files
-  (add-hook 'after-change-major-mode-hook 'whitespace-mode)
+  ; highlight long lines
+  (setq whitespace-line-column 80)
+  ; define whitespace-style variable
+  (setq whitespace-style '(face tabs spaces trailing lines-tail
+      space-before-tab newline indentation empty space-after-tab
+      space-mark tab-mark newline-mark missing-newline-at-eof))
+  ; enable whitespace-mode for programming buffers only
+  (add-hook 'prog-mode-hook #'whitespace-mode)
   ;; --- end whitespace-mode settings ---
 
-  ; limit line length
-  (setq whitespace-line-column 80)
   ; set fill column to 75
   (setq-default fill-column 75)
   ; enable native fill column indicator (emacs 27+)
@@ -457,13 +461,11 @@
   ; Emacs color themes
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (load-theme 'leuven t)
-  (exec-path-from-shell-initialize)
 )
 
 ;; Commands to run when Emacs launched in terminal mode
 (unless (display-graphic-p)
-  (load-theme 'adwaita t)
-  (exec-path-from-shell-initialize))
+  (load-theme 'adwaita t))
 
 ;; Font settings - note that this must be set *after* (load-theme)
 ;; to avoid conflicts with the theme
