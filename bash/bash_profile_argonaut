@@ -3,7 +3,7 @@
 #
 # Created on: Sun 05 Jan 2025
 # Created by gopeterjun
-# Last Updated: Thu 09 Jan 2025
+# Last Updated: Sun 19 Oct 2025
 #
 # These settings are sourced by the login shell
 
@@ -26,6 +26,8 @@ export SSH_AUTH_SOCK=/run/user/1000/ssh-agent.socket
 if pidof sway; then
   export SWAYSOCK=/run/user/$UID/sway-ipc.${UID}."$(pidof sway)".sock
 fi
+LANG=en_US.UTF-8
+LC_ALL=en_US.UTF-8
 export TERM=xterm-256color
 # fcitx5 IME variables for Wayland Desktop
 export XDG_SESSION_TYPE=wayland
