@@ -3,7 +3,7 @@
 #
 # Created on: 28 Apr 2024
 # Created by gojun077
-# Last Updated: 07 Oct 2025
+# Last Updated: Mon 20 Oct 2025
 #
 # These settings are sourced by the login shell
 
@@ -24,6 +24,7 @@ export SSH_AUTH_SOCK=/run/user/1000/ssh-agent.socket
 # NOTE: if GNOME keyring is installed, you must deactivate its ssh component
 # otw it will overwrite SSH_AUTH_SOCK above
 export TERM=xterm-256color
+export LC_ALL=en_US.UTF-8
 # fcitx5 IME variables for Wayland Desktop
 export XDG_SESSION_TYPE=wayland
 export XDG_CONFIG_HOME=$HOME/.config
