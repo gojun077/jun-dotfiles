@@ -1,0 +1,524 @@
+; -*- mode: emacs-lisp -*-
+
+;; My .emacs for Argonaut running Fedora server
+;; Created on: 02 May 2024
+;; Created by: gopeterjun@naver.com
+;; Last Updated: Wed 22 Oct 2025
+;;
+;; These configs are for Emacs 30.1 and higher.
+;;; Code:
+
+
+;; ensure latest org version is loaded by straight.el
+(straight-use-package 'org)
+;; Install use-package
+(straight-use-package 'use-package)
+
+(use-package ansible
+  :straight t
+  :defer t)
+(use-package blacken
+  :straight t
+  :defer t)
+(use-package browse-kill-ring
+  :straight t
+  :config
+  (require 'browse-kill-ring))
+(use-package dockerfile-mode
+  :straight t
+  :mode ("Dockerfile\\'" . dockerfile-mode)
+  :config
+  (require 'dockerfile-mode)
+  :hook
+  (dockerfile-mode-hook . flymake-hadolint-setup)
+  :defer t)
+(use-package efrit
+  :straight (:host github :repo "steveyegge/efrit")
+  :config
+  (require 'efrit)
+  (setq efrit-model "claude-sonnet-4-20250514")
+  (setq efrit-max-tokens 32768) ; max is 64000 for sonnet 4
+  (setq efrit-remote-queue-directory "~/.emacs.d/efrit-queue")
+  (setq efrit-remote-queue-max-concurrent 10)
+  :defer t)
+(use-package exec-path-from-shell
+  :straight t
+  :config
+  ;; https://github.com/purcell/exec-path-from-shell/blob/master/README.md
+  (dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO" "LANG"
+               "LC_CTYPE" "LC_TYPE" "GOPATH" "GOROOT" "SHELL"))
+  (add-to-list 'exec-path-from-shell-variables var))
+  ; don't invoke an interactive shell; default args are ("-l" "-i")
+  (setq exec-path-from-shell-arguments nil)
+  (exec-path-from-shell-initialize)
+  (require 'exec-path-from-shell))
+(use-package flymake-hadolint
+  :straight t
+  :defer t)
+(use-package flymake-yamllint
+  :straight t
+  :defer t)
+(use-package go-mode
+  :straight t
+  :hook (go-mode . go-mode-setup)
+  :defer t)
+(use-package gptel
+  :straight t)
+(use-package go-playground
+  :straight t
+  :defer t)
+(use-package hcl-mode
+  :straight t
+  :defer t)
+(use-package leuven-theme
+  :straight t
+  ;; leuven-theme specific settings
+  ;; https://github.com/fniessen/emacs-leuven-theme
+  :config (setq leuven-scale-outline-headlines 1.2)
+          (setq leuven-scale-org-agenda-structure 1.2)
+          (setq leuven-scale-org-document-title 1.5)
+          (setq leuven-scale-volatile-highlight 1.2))
+(use-package magit
+  :straight t
+  ; bind 'M-x magit-status' to 'C-x g'
+  :config (global-set-key (kbd "C-x g") 'magit-status)
+  :defer t)
+(use-package markdown-mode
+  :straight t
+  :defer t)
+;; mcp.el
+(use-package mcp
+  :straight (:host github :repo "lizqwerscott/mcp.el")
+  :config
+  (require 'mcp-hub))
+(use-package ob-mermaid
+  :straight t
+  :defer t
+  :config
+  (setq ob-mermaid-cli-path "/home/jundora/.nix-profile/bin/mmdc"))
+(use-package org
+  :straight t
+  :config
+  (require 'org-protocol)
+  (require 'ox-md)
+  (org-babel-do-load-languages
+    'org-babel-load-languages
+    '((C . t)  ; support for both 'C/cpp'
+      (emacs-lisp . t)
+      (java . t)
+      (js . t)
+      (latex . t)
+      (mermaid . t)
+      (org . t)
+      (python . t)
+      (ruby . t)
+      (shell . t)
+      (sql . t))))
+(use-package org-srs
+  :straight t
+  :ensure t
+  :defer t
+  :hook (org-mode . org-srs-embed-overlay-mode))
+; use my fork of org-trello
+(use-package org-trello
+  :straight (:host github
+             :repo "gojun077/org-trello"
+             :branch "move-board-on-refile"
+             :protocol ssh
+             :build (:not compile)))
+;; disable project.el
+(straight-use-package '(project :type built-in :no-build t))
+;; Projectile for project management
+(use-package projectile
+  :straight t
+  :init
+  (projectile-mode +1)
+  :bind-keymap
+  ("C-c p" . projectile-command-map)
+  :config
+  (setq projectile-project-search-path '("~/Documents/repos")))
+(use-package racket-mode
+  :straight t
+  :defer t
+  :hook ((racket-mode . rainbow-delimiters-mode)
+         (racket-mode . smartparens-mode)))
+(use-package rainbow-delimiters
+  :straight t)
+(use-package ruff-format
+  :straight t
+  :config
+  (require 'ruff-format)
+  :hook (python-mode-hook . ruff-format-on-save-mode))
+(use-package sicp
+  :straight t
+  :defer t)
+(use-package smartparens
+  :straight t
+  :config
+  (require 'smartparens-config))
+(use-package tex
+  :straight auctex
+  :config (setq TeX-auto-save t)
+          (setq TeX-parse-self t)
+          (setq-default TeX-master nil)
+          ; use xetex to render pdf from LaTeX
+          (setq TeX-engine 'xetex)
+          ; AUCTEX preview-latex font
+          (set-default 'preview-scale-function 1.2)
+  :hook ((LaTeX-mode . flymake-mode))
+  :defer t)
+(use-package visual-fill-column
+  :straight t)
+(use-package web-mode
+  :straight t
+  :defer t)
+(use-package xclip
+  :straight t
+  ; enable copy-paste to and from system clipboard in emacs nw mode
+  ; https://discourse.doomemacs.org/t/how-to-copy-in-wayland/4041/16
+  :config (setq xclip-program "wl-copy")
+          (setq xclip-select-enable-clipboard t)
+          (setq xclip-mode t)
+          ; copy from emacs -nw terminal session to system clipboard
+          (setq xclip-method (quote wl-copy)))
+(use-package yaml-mode
+  :straight t
+  :hook ((yaml-mode . flymake-yamllint-setup)
+         (yaml-mode . flymake-mode))
+  :defer t)
+
+;;
+;; use-package block for Consult+Vertico ;;
+;;
+;; Setup Vertico for enhanced minibuffer completion
+(use-package vertico
+  :straight t
+  :init
+  (vertico-mode))
+;; Optional but recommended with Vertico
+(use-package orderless
+  :straight t
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles basic partial-completion)))))
+;; Marginalia for annotations in the minibuffer
+(use-package marginalia
+  :straight t
+  :init
+  (marginalia-mode))
+;; Consult for enhanced search commands
+(use-package consult
+  :straight t
+  :bind (("C-s" . consult-line)
+         ("C-c h" . consult-ripgrep)
+         ("C-c f" . consult-find)
+         ("C-c o" . consult-outline)
+         ;; Replace some projectile commands with consult equivalents
+         :map projectile-command-map
+         ("s r" . consult-ripgrep)
+         ("s s" . consult-git-grep)))
+
+;; misc package 'require' declarations
+(require 'whitespace)
+
+;; Load external GPTel configuration
+(unless (load (expand-file-name "init-gptel.el" user-emacs-directory) t t)
+  (message "Warning: Could not load init-gptel.el - check if file exists in %s"
+           user-emacs-directory))
+
+;; Load external org configuration
+(unless (load (expand-file-name "init-org.el" user-emacs-directory) t t)
+  (message "Warning: Could not load init-org.el - check if file exists in %s"
+           user-emacs-directory))
+;;
+;;; mcp configs for mcp.el ;;;
+;;
+(setq mcp-hub-servers
+      ;; https://github.com/merajmehrabi/puppeteer-mcp-server
+      '(("puppeteer" . (:command "node"
+                      :args ("/usr/local/lib/node_modules/puppeteer-mcp-server/dist/index.js")
+                      :env (("PUPPETEER_EXECUTABLE_PATH" . "/usr/bin/chromium-browser"))))))
+
+;; gptel-integrations is loaded from init-gptel.el
+;; MCP config block end
+
+;; map M-y yank-pop to browse-kill-ring
+(browse-kill-ring-default-keybindings)
+
+;; -- misc major-mode hooks --
+(add-hook 'elisp-lisp-mode-hook #'flymake-mode)
+(add-hook 'python-base-mode-hook (lambda ()
+                                   (flymake-mode 1)
+                                   (blacken-mode 1)))
+
+;; make #! script files executable on save (chmod +x)
+(add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
+
+(defun gpj/flymake-cc-command ()
+  "Return the syntax-check command for Flymake based on the current mode."
+  (if (derived-mode-p 'c++-mode 'c++-ts-mode)
+      '("g++" "-fsyntax-only" "-Wall" "-Wextra" "-std=c++17"
+        "-fdiagnostics-color=never" "-x" "c++" "-")
+    '("gcc" "-fsyntax-only" "-Wall" "-Wextra" "-std=c11"
+      "-fdiagnostics-color=never" "-x" "c" "-")))
+
+(defun gpj/flymake-cc-setup ()
+  "Enable Flymake diagnostics using the GCC/Clang backend."
+  (require 'flymake-cc)
+  (setq-local flymake-cc-command #'gpj/flymake-cc-command)
+  (add-hook 'flymake-diagnostic-functions #'flymake-cc nil t)
+  (flymake-mode 1))
+
+(add-hook 'c-mode-hook #'gpj/flymake-cc-setup)
+(when (boundp 'c-ts-mode-hook)
+  (add-hook 'c-ts-mode-hook #'gpj/flymake-cc-setup))
+(when (boundp 'c++-mode-hook)
+  (add-hook 'c++-mode-hook #'gpj/flymake-cc-setup))
+(when (boundp 'c++-ts-mode-hook)
+  (add-hook 'c++-ts-mode-hook #'gpj/flymake-cc-setup))
+
+(add-hook 'sh-mode-hook #'flymake-mode)
+
+;; Capitalize keywords in SQL mode
+(add-hook 'sql-mode-hook 'sqlup-mode)
+;; Capitalize keywords in an interactive session (e.g. psql)
+(add-hook 'sql-interactive-mode-hook 'sqlup-mode)
+;; truncate long lines in sqli mode
+(add-hook 'sql-interactive-mode-hook
+          (lambda ()
+            (toggle-truncate-lines t)))
+;; -- END misc major-mode hooks --
+
+(defun go-mode-setup ()
+  ;; run 'go fmt' on .go source files before save
+  (add-hook 'before-save-hook 'gofmt-before-save)
+  ;; customize compile command to run go build
+  (if (not (string-match "go" compile-command))
+      (set (make-local-variable 'compile-command)
+           "env GOOS=linux GOARCH=amd64 go build -v -o bin/$(basename $(pwd)) && go test -v && go vet"))
+)
+
+
+;;=========================
+;;   CUSTOM MENU OPTIONS
+;;=========================
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(org-agenda-files
+   '("~/Documents/repos/encrypted/gpj-org-mode-files/next_actions.org"))
+ '(org-trello-current-prefix-keybinding "C-c o" nil (org-trello))
+ '(orgtrello-log-level 4 nil (org-trello))
+ '(package-selected-packages
+   '(go-mode org-trello yaml-mode web-mode go-playground smartparens
+             ansible rainbow-delimiters racket-mode markdown-mode magit
+             exec-path-from-shell))
+ '(pdf-latex-command "xetex")
+ '(python-shell-completion-native-disabled-interpreters '("pypy ipython3"))
+ '(warning-suppress-types '((comp))))
+
+
+;;======================
+;;   GLOBAL VARIABLES
+;;======================
+
+; start emacs in server mode
+(server-mode 1)
+
+; ensure GPG password input is handled by emacs during emacs session
+;(setenv "GPG_AGENT_INFO" nil)
+
+; show col and line numbers
+(column-number-mode 1)
+; highlight parens
+(show-paren-mode t)
+
+; specify UTF-8 encoding for all buffers
+(setq set-language-environment "UTF-8")
+(set-language-environment "UTF-8")
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(prefer-coding-system 'utf-8)
+(setq default-buffer-file-coding-system 'utf-8)
+
+; Use spaces instead of tabs
+(setq-default indent-tabs-mode nil)
+; But when I must use TAB, set width to 2 chars
+(setq-default tab-width 2)
+
+; keep dired uncluttered (only one buffer at a time)
+(put 'dired-find-alternate-file 'disabled nil)
+
+; shell script mode formatting
+(setq sh-basic-offset 2)
+(setq sh-indentation 2)
+
+;; cc-mode settings
+; Note K&R style uses spaces for indentation
+(setq c-default-style "k&r"
+      c-basic-offset 4)
+
+;; java-mode settings
+;; use checkstyle linter offsets
+(add-hook 'java-mode-hook
+             (lambda ()
+               (setq c-basic-offset 2)))
+
+; Python settings
+; Note: recent versions of ipython and python interpreters
+; don't support readline() and doctests do not show up
+; in the emacs inferior process running python/ipython.
+; For the time being, run python from CLI as follows:
+;
+; python -m doctest myprog.py -v
+;
+(setq python-shell-completion-native nil)
+(setq python-shell-interpreter "ipython3"
+      python-shell-interpreter-args "--simple-prompt -i --InteractiveShell.display_page=True")
+(setq ansi-color-for-comint-mode t)
+(setq python-check-command "/usr/bin/ruff")
+(setq python-flymake-command '("ruff"
+                               "--quiet"
+                               "--stdin-filename=stdin"
+                               "-"))
+
+;; --- IME settings  ---
+; C-\ language toggle
+(setq default-input-method "korean-hangul")
+
+; my preferred input methods in cycling order
+; note that 'nil' is for no input mode, i.e. Unicode default
+(setq my-input-methods '(nil "korean-hangul" "sgml" "TeX"))
+
+(setq my-input-method-index 0)
+
+(defun cycle-input-method ()
+  "Cycle through predefined input methods."
+  (interactive)
+  (setq my-input-method-index
+        (mod (1+ my-input-method-index) (length my-input-methods)))
+  (let ((method (nth my-input-method-index my-input-methods)))
+    (set-input-method method)
+    (message "Input method: %s" method)))
+
+; bind to C-\
+(global-set-key (kbd "C-\\") 'cycle-input-method)
+;; --- end IME settings ---
+
+; Start emacs maximized
+(setq initial-frame-alist (quote ((fullscreen . maximized))))
+; create backups in $HOME/tmp
+; bkup files will have '!' in place of directory separator '/'
+(setq backup-directory-alist '(("" . "~/tmp")))
+; Enable temp files and autosaving
+(setq make-backup-files t)
+; use Pandoc as default renderer for markdown
+(setq markdown-command "/usr/bin/pandoc")
+(setq auto-save-default t)
+; Enable C-l, C-u change region to lower/upper case
+(put 'upcase-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
+
+(setq zoneinfo-style-world-list
+      '(("Pacific/Honolulu" "Honolulu")
+        ("America/Los_Angeles" "Seattle")
+        ("America/New_York" "New York")
+        ("Europe/London" "London")
+        ("Europe/Paris" "Paris")
+        ("Europe/Sofia" "Sofia")
+        ("Asia/Dhaka" "Dhaka")
+        ("Asia/Ho_Chi_Minh" "Ho_Chi_Minh")
+        ("Asia/Manila" "Manila")
+        ("Asia/Seoul" "Seoul")))
+
+; Commands to run when Emacs launched in graphical mode
+(when (or (display-graphic-p) (daemonp))
+  ;; --- whitespace-mode settings ---
+  ; only run whitespace mode in graphical session
+  ; highlight long lines
+  (setq whitespace-line-column 80)
+  ; define whitespace-style variable
+  (setq whitespace-style '(face tabs spaces trailing lines-tail
+      space-before-tab newline indentation empty space-after-tab
+      space-mark tab-mark newline-mark missing-newline-at-eof))
+  ; enable whitespace-mode for programming buffers only
+  (add-hook 'prog-mode-hook #'whitespace-mode)
+  ;; --- end whitespace-mode settings ---
+
+  ; set fill column to 75
+  (setq-default fill-column 75)
+  ; enable native fill column indicator (emacs 27+)
+  (global-display-fill-column-indicator-mode 1)
+  ; don't show scrollbar
+  (scroll-bar-mode -1)
+  ; don't show toolbar
+  (tool-bar-mode -1)
+  ; focus follows mouse within emacs
+  (setq mouse-autoselect-window t)
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ; Emacs color themes
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (load-theme 'leuven t)
+)
+
+;; Commands to run when Emacs launched in terminal mode
+(unless (display-graphic-p)
+  (load-theme 'adwaita t))
+
+;; Font settings - note that this must be set *after* (load-theme)
+;; to avoid conflicts with the theme
+
+(let ((default-font "MonofurNerdFontMono")
+      (korean-font "NanumGothic"))
+
+  ;; Set default font
+  (set-face-attribute 'default nil
+                      :family default-font
+                      :height 150)
+
+  ;; Set Korean font
+  (set-fontset-font t 'hangul (font-spec :family korean-font))
+
+  ;; Set mode-line font
+  (if (facep 'mode-line-active)
+      (set-face-attribute 'mode-line-active nil
+                          :family default-font
+                          :height 110)
+      (set-face-attribute 'mode-line nil
+                          :family default-font
+                          :height 110))
+  (set-face-attribute 'mode-line-inactive nil
+                      :family default-font
+                      :height 110)
+
+  ;; Create a custom face for the minibuffer
+  (defface my-minibuffer-face
+    '((t :inherit default))
+    "Face for Minibuffer")
+
+  ;; Set the Minibuffer font size
+  (set-face-attribute 'my-minibuffer-face nil
+                      :family default-font
+                      :height 120))
+
+;; Apply the custom face to the minibuffer
+(add-hook 'minibuffer-setup-hook
+          (lambda ()
+            (face-remap-add-relative 'default 'my-minibuffer-face)))
+
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+
+;; font names on Linux 'MonofurNerdFontMono', 'FiraMono'
+
+
+(provide 'emacs)
+;;; emacs ends here
