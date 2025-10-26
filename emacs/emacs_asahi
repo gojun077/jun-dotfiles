@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Sun 12 Oct 2025
+;; Last Updated: Sun 26 Oct 2025
 ;;
 ;; These configs are for Emacs 30.1 and higher.
 ;;; Code:
@@ -14,6 +14,26 @@
 ;; Install use-package
 (straight-use-package 'use-package)
 
+(use-package acp
+  :straight (:host github :repo "xenodium/acp.el")
+  :config
+  (require 'acp))
+(use-package agent-shell
+  :straight (:host github :repo "xenodium/agent-shell")
+  :config
+  (setq agent-shell-anthropic-authentication
+      (agent-shell-anthropic-make-authentication
+       :api-key (lambda () (auth-source-pass-get "secret"
+                                                 "anthropic-api-key"))))
+  (setq agent-shell-google-authentication
+        (agent-shell-google-make-authentication
+         :api-key (lambda () (auth-source-pass-get "secret"
+                                                   "google-api-key"))))
+  (setq agent-shell-openai-authentication
+        (agent-shell-openai-make-authentication
+         :api-key (lambda () (auth-source-pass-get "secret"
+                                                   "openai-api-key"))))
+  (require 'agent-shell))
 (use-package ansible
   :straight t
   :defer t)
@@ -149,6 +169,10 @@
   :config
   (require 'ruff-format)
   :hook (python-mode-hook . ruff-format-on-save-mode))
+(use-package shell-maker
+  :straight t
+  :defer t
+  :ensure t)
 (use-package sicp
   :straight t
   :defer t)
