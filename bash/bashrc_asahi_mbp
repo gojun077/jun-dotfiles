@@ -3,7 +3,7 @@
 #
 # Created On: 30 Apr 2024
 # Created by: gopeterjun@naver.com
-# Last Updated: Fri 24 Oct 2025
+# Last Updated: Mon 27 Oct 2025
 
 # If not running interactively, don't do anything
 #[[ $- != *i* ]] && return
@@ -33,6 +33,10 @@ shopt -s checkwinsize
 
 eval "$(starship init bash)"
 eval "$(fzf --bash)"  # enable 'fzf' shell integration
+# C-t fuzzy file/dir selection
+# C-r fuzzy history search
+# M-c fuzzy `cd`
+# ** <TAB> fuzzy completion in shell command
 
 # the following is to quiet error for SC1091, SC1090 'cannot follow dynamic paths'
 # shellcheck source=/dev/null
