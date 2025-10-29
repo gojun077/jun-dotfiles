@@ -435,14 +435,9 @@
 (setq markdown-command "/usr/bin/pandoc")
 ; start ispell settings
 (with-eval-after-load "ispell"
+  ;; Ensure hunspell is the spell-checking backend
   (setq ispell-program-name "/usr/bin/hunspell")
-  (setenv "DICTDIR" "/usr/share/hunspell")
-  (add-to-list 'ispell-local-dictionary-alist
-               '("ko_KR" "[가-힣]" "[^가-힣]" "[0-9a-zA-Z]" nil
-                 ("-d" "ko_KR") nil utf-8))
-  (add-to-list 'ispell-hunspell-dictionary-alist
-               '("english-korean" "[가-힣[:alpha:]]" "[^가-힣[:alpha:]]"
-                 "[']" nil ("-d" "ko_KR,en_US") nil utf-8)))
+  (setq ispell-dictionary "en_US,ko_KR"))
 ; end ispell settings
 (setq auto-save-default t)
 ; Enable C-l, C-u change region to lower/upper case
