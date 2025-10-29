@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Sun 26 Oct 2025
+;; Last Updated: Wed 29 Oct 2025
 ;;
 ;; These configs are for Emacs 30.1 and higher.
 ;;; Code:
@@ -433,6 +433,10 @@
 (setq make-backup-files t)
 ; use Pandoc as default renderer for markdown
 (setq markdown-command "/usr/bin/pandoc")
+; Spellcheck - use "hunspell"
+(setq ispell-program-name "/usr/bin/hunspell")
+(setenv "DICPATH" "/usr/share/hunspell")
+
 (setq auto-save-default t)
 ; Enable C-l, C-u change region to lower/upper case
 (put 'upcase-region 'disabled nil)
