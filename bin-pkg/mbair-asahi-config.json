@@ -3,10 +3,10 @@
     "bins": {
         "/home/jundora/.local/bin/bin": {
             "path": "/home/jundora/.local/bin/bin",
-            "remote_name": "bin_0.24.0_linux_arm64",
-            "version": "v0.24.0",
-            "hash": "a3f9bbeebdd583069ec4d838e6b2836f4ece35d14fbc1dbc38f92615dfabd274",
-            "url": "https://github.com/marcosnils/bin/releases/tag/v0.24.0",
+            "remote_name": "bin_0.24.1_linux_arm64",
+            "version": "v0.24.1",
+            "hash": "670fe3915bd5fdbd7dce70ccc585648c9e542f58b3481c0e58bca0830822164d",
+            "url": "https://github.com/marcosnils/bin/releases/tag/v0.24.1",
             "provider": "",
             "package_path": "",
             "pinned": false
