@@ -3,7 +3,7 @@
 #
 # Created On: 29 Jul 2024
 # Created by: gopeterjun@naver.com
-# Last Updated: 29 Jul 2024
+# Last Updated: Sun 26 Oct 2025
 
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
@@ -24,9 +24,9 @@ shopt -s checkwinsize
 
 # use starship customizable prompt
 # curl -sS https://starship.rs/install.sh | sh
-eval "$(starship init bash)"
+eval "$($HOME/.local/bin/starship init bash)"
 source ~/.bash_aliases
 # Only show output if this is an interactive shell
 if [[ $- == *i* ]]; then
-  neofetch
+  $HOME/.local/bin/fastfetch
 fi
