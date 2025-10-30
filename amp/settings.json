@@ -1,0 +1,17 @@
+{
+    "mcpServers": {
+        "playwright": {
+            "command": "npx",
+            "args": [
+                "@playwright/mcp@latest",
+                "--browser=firefox"
+            ]
+        }
+    },
+    "commands": {
+        "allowlist": [
+            "cd",
+            "terraform"
+        ]
+    }
+}

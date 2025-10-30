@@ -9,5 +9,8 @@
 # password will be cached for subsequent ssh sessions.
 
 eval "$(starship init bash)"
-neofetch
-
+# Only execute neofetch if this is an interactive shell
+if [[ $- == *i* ]]; then
+  fastfetch
+fi
+source ~/.bash_aliases

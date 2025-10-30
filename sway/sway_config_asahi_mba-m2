@@ -5,7 +5,7 @@
 # Read `man 5 sway` for a complete reference.
 # Created on: 29 Jun 2024
 # Created by: gojun077@gmail.com
-# Last Updated: Wed 09 Apr 2024
+# Last Updated: Thu 09 Oct 2025
 
 
 ### Variables
@@ -58,8 +58,8 @@ output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
 # resumed. It will also lock your screen before your computer goes to sleep.
 
 exec swayidle -w \
-          timeout 600 'swaylock -f -c 000000' \
-          before-sleep 'swaylock -f -c 000000'
+          timeout 600 'swaylock -f -c 000000 --debug' \
+          before-sleep 'swaylock -f -c 000000 --debug'
 
 ### Input configuration
 #
@@ -323,12 +323,15 @@ exec wl-paste -t text --watch clipman store --no-persist --max-items=1024
 exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 # Start emacs (`(server-mode 1)` is set in .emacs)
 exec emacs
+# Start 'kwalletmanager5'
+exec kwalletmanager5
 
 #
 # Custom Keyboard shortcuts/keybindings
 #
-#bindsym $mod+Shift+b exec firefox-wayland
-bindsym $mod+Shift+b exec chromium-browser --enable-features=UseOzonePlatform --ozone-platform=wayland --gtk-version=4
+#bindsym $mod+Shift+b exec chromium-browser --enable-features=UseOzonePlatform --ozone-platform=wayland --gtk-version=4
+# 'Version 141.0.7390.54 (Official Build) Fedora Project (64-bit)' supports Wayland OOTB
+bindsym $mod+Shift+b exec chromium-browser
 bindsym $mod+Shift+m exec emacs
 bindsym $mod+Shift+f exec thunar
 bindsym $mod+Shift+p exec clipman pick -t wofi # view clipboard

@@ -1,0 +1,31 @@
+# Created on: May 2025
+# Last Updated: Sun 01 Jun 2025
+# path to file: ~/.config/mimeapps.list
+
+[Added Associations]
+application/json=emacsclient.desktop;
+application/x-docbook+xml=emacsclient.desktop;
+application/x-yaml=emacsclient.desktop;
+image/avif=imv.desktop;
+image/bmp=imv.desktop;
+image/heif=imv.desktop;
+image/jpeg=imv.desktop;
+image/png=imv.desktop;
+text/markdown=emacsclient.desktop;
+text/plain=emacsclient.desktop;
+text/x-cmake=emacsclient.desktop;
+
+[Default Applications]
+application/json=emacsclient.desktop;
+application/pdf=mupdf.desktop
+application/x-docbook+xml=emacsclient.desktop;
+application/x-yaml=emacsclient.desktop;
+image/avif=imv.desktop;
+image/bmp=imv.desktop;
+image/heif=imv.desktop;
+image/jpeg=imv.desktop;
+image/png=imv.desktop;
+text/markdown=emacsclient.desktop;
+text/plain=emacsclient.desktop;
+text/x-cmake=emacsclient.desktop;
+x-scheme-handler/mailto=chromium-browser.desktop

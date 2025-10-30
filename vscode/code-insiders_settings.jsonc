@@ -1,0 +1,25 @@
+// created on: Mon 26 May 2025
+// last updated: Fri 27 Jun 2025
+// gopeterjun@naver.com
+//
+// original path to this file: ~/.config/'Code - Insiders'/User/settings.json
+// Note that settings.json is a JSONC file, which allows comments
+
+{
+    "C_Cpp.default.compilerPath": "/usr/bin/gcc",
+    "editor.inlineSuggest.suppressSuggestions": true,
+    "amp.commands.allowlist": [
+        "cd",
+        "terraform"
+    ],
+    "amp.experimental.connections": true,
+    "chat.mcp.discovery.enabled": {
+        "claude-desktop": true,
+        "windsurf": true,
+        "cursor-global": true,
+        "cursor-workspace": true
+    },
+    "github.copilot.enable": {
+        "*": false
+    }
+}

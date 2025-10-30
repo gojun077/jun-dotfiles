@@ -1,9 +1,8 @@
 " An example for a vimrc file.
 "
-" Maintainer:   Bram Moolenaar <Bram@vim.org>
-" Last Updated:  2016-12-28
-" Customized by: Jun Go
-" Last change:  2024-06-02
+" Original Maintainer:   Bram Moolenaar <Bram@vim.org> (RIP)
+" Customized by: gopeterjun@naver.com and OpenAI Codex
+" Last change:  Wed 24 Sep 2025
 "
 " To use it, copy it to
 "     for Unix and OS/2:  ~/.vimrc
@@ -36,6 +35,7 @@ set history=50          " keep 50 lines of command line history
 set ruler               " show the cursor position all the time
 set showcmd             " display incomplete commands
 set incsearch           " do incremental searching
+set cursorline          " highlight current line (for Ghostty)
 
 " For Win32 GUI: remove 't' flag from 'guioptions': no tearoff menu entries
 " let &guioptions = substitute(&guioptions, "t", "", "g")
@@ -60,7 +60,12 @@ if &t_Co > 2 || has("gui_running")
   set hlsearch
   "default colors defined in '/usr/share/vim/vimXX/colors/'
   "colo elflord
-  colorscheme shine
+  " Prefer Dracula if installed as a Vim package; fall back to Shine.
+  if isdirectory(expand('~/.vim/pack/themes/start/dracula'))
+    silent! colorscheme dracula
+  else
+    colorscheme shine
+  endif
   "colo evening
 endif
 
@@ -74,22 +79,64 @@ set expandtab
 " The following is the default plugins path for vim on Arch
 "set packpath=/usr/share/vim/vimfiles/plugin/
 " On Ubuntu, the following needs to be uncommented (Run Time Path)
-" On Fedora, you must install language-specific plugins for syntastic
-" i.e., 'vim-syntastic-python', 'vim-syntastic-sh', etc. to get
-" linter output for .py, .sh, and others files, respectively
+" When using the system packages you can simply install `vim-ale`.
+" ALE discovers available linters automatically by inspecting what is
+" available on your $PATH.
 
 set rtp+=/usr/share/vim/vimfiles/plugin/  "runtime path for Fedora
 "set rtp+=/usr/share/vim/addons/plugin    "runtime path for ?
 
-" Settings for Syntastic syntax checker plugin
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
+" ---------------------------------------------------------------------------
+" Asynchronous Linting Engine (ALE) settings – replacement for the deprecated
+" Syntastic plugin.  ALE performs linting and fixing in the background and is
+" the de-facto standard for modern Vim/Neovim setups.
 
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
+" 1.  Runtime path – most distributions place ALE in the generic Vim plugin
+"     directory (e.g. /usr/share/vim/vimfiles).  If you keep using the system
+"     packages, the earlier `set rtp+=` line already covers this.  The extra
+"     check keeps Vim quiet when ALE is not installed.
+
+if empty(filter(split(&rtp, ','), 'v:val =~# "ale"'))
+  " Uncomment the next line when ALE lives in a non-standard location.
+  " set rtp+=~/path/to/ale
+endif
+
+" 2.  Basic configuration.
+
+" Enable linting on text change as well as when leaving insert mode.
+let g:ale_lint_on_text_changed = 'always'
+let g:ale_lint_on_insert_leave = 1
+
+" Use the location list, not the quickfix list, so the errors are per-buffer.
+let g:ale_set_loclist = 1
+let g:ale_set_quickfix = 0
+
+" Show virtual text (`signcolumn`) symbols.
+let g:ale_sign_error   = '✗'
+let g:ale_sign_warning = '△'
+
+" Fixers – run :ALEFix (or automatically on save when turned on).
+let g:ale_fixers = {
+      \   '*': ['remove_trailing_lines', 'trim_whitespace'],
+      \   'python': ['isort', 'black'],
+      \ }
+
+" Enable auto-fixing on write for the languages listed above.
+let g:ale_fix_on_save = 1
+
+" 3.  Statusline integration – mimic the old SyntasticFlag indicator.
+
+function! StatuslineALE() abort
+  if exists('*ale#statusline#Count')
+    let l:counts = ale#statusline#Count(bufnr(''))
+    return l:counts.total ==# 0 ? '' : printf('[E:%d W:%d]', l:counts.error, l:counts.warning)
+  endif
+  return ''
+endfunction
+
+set statusline+=%#warningmsg#
+set statusline+=%{StatuslineALE()}
+set statusline+=%*
 
 
 " Only do this part when compiled with support for autocommands.

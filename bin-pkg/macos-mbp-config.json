@@ -1,0 +1,35 @@
+{
+    "default_path": "/Users/peter/bin-pkg",
+    "bins": {
+        "/Users/peter/bin-pkg/bin": {
+            "path": "/Users/peter/bin-pkg/bin",
+            "remote_name": "bin_0.24.0_darwin_arm64",
+            "version": "v0.24.0",
+            "hash": "c09ac2063b6b747519e4a706a069ab861aecee1835f7db11aff96d659c8b160c",
+            "url": "https://github.com/marcosnils/bin/releases/tag/v0.24.0",
+            "provider": "",
+            "package_path": "",
+            "pinned": false
+        },
+        "/Users/peter/bin-pkg/codex": {
+            "path": "/Users/peter/bin-pkg/codex",
+            "remote_name": "codex-aarch64-apple-darwin",
+            "version": "rust-v0.50.0",
+            "hash": "29c7e241af5bb8f69085f64704241ae275b82523458a055c9480b4e75c7b87fd",
+            "url": "https://github.com/openai/codex/releases/tag/rust-v0.50.0",
+            "provider": "",
+            "package_path": "codex-aarch64-apple-darwin",
+            "pinned": false
+        },
+        "/Users/peter/bin-pkg/k9s": {
+            "path": "/Users/peter/bin-pkg/k9s",
+            "remote_name": "k9s",
+            "version": "v0.50.16",
+            "hash": "33657e432d9fd1fcffe1ce74fdeca7b9cd91eec736af536c04a25a0070bc986a",
+            "url": "https://github.com/derailed/k9s/releases/tag/v0.50.16",
+            "provider": "",
+            "package_path": "k9s",
+            "pinned": false
+        }
+    }
+}

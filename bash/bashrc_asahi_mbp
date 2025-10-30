@@ -3,7 +3,7 @@
 #
 # Created On: 30 Apr 2024
 # Created by: gopeterjun@naver.com
-# Last Updated: 08 Oct 2024
+# Last Updated: Mon 27 Oct 2025
 
 # If not running interactively, don't do anything
 #[[ $- != *i* ]] && return
@@ -33,12 +33,38 @@ shopt -s checkwinsize
 
 eval "$(starship init bash)"
 eval "$(fzf --bash)"  # enable 'fzf' shell integration
+# C-t fuzzy file/dir selection
+# C-r fuzzy history search
+# M-c fuzzy `cd`
+# ** <TAB> fuzzy completion in shell command
 
 # the following is to quiet error for SC1091, SC1090 'cannot follow dynamic paths'
 # shellcheck source=/dev/null
 source "$HOME/.bash_aliases"
-# comment out neofetch to prevent banner from running twice
-#neofetch
-mbcputemp="$(cat /sys/class/thermal/thermal_zone0/temp)"
-printf "%s\\n" "CPU temp: $((mbcputemp/1000)) C"
+
+# Only execute following in interactive shell
+if [[ $- == *i* ]]; then
+  fastfetch
+  mbcputemp="$(cat /sys/class/thermal/thermal_zone0/temp)"
+  printf "%s\\n" "CPU temp: $((mbcputemp/1000)) C"
+fi
+
+export NVM_DIR="$HOME/.config/nvm"
+# shellcheck source=/home/jundora/.config/nvm/nvm.sh
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+# shellcheck source=/home/jundora/.config/nvm/bash_completion
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# pnpm
+export PNPM_HOME="/home/jundora/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
+
+# Set NODE_PATH to include global npm modules
+npm_root=$(npm root -g)
+export NODE_PATH=$npm_root:/usr/local/lib/node_modules:/usr/lib/node_modules:$NODE_PATH
+
 # vim: ts=2 sw=2 et :

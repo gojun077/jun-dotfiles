@@ -1,0 +1,86 @@
+{
+    "default_path": "/home/jundora/.local/bin",
+    "bins": {
+        "/home/jundora/.local/bin/bin": {
+            "path": "/home/jundora/.local/bin/bin",
+            "remote_name": "bin_0.21.2_linux_arm64",
+            "version": "v0.21.2",
+            "hash": "abaef019a13e3697d61414df659baeeacf64fe392abfc14cece1e6d4cbf849ca",
+            "url": "github.com/marcosnils/bin",
+            "provider": "github",
+            "package_path": "",
+            "pinned": false
+        },
+        "/home/jundora/.local/bin/bluetuith": {
+            "path": "/home/jundora/.local/bin/bluetuith",
+            "remote_name": "bluetuith",
+            "version": "v0.2.3",
+            "hash": "d52377d94fa8cf84b6cbbe2d994ec597c16fc34279acdb06ec419edaa0fd8320",
+            "url": "https://github.com/bluetuith-org/bluetuith/releases",
+            "provider": "github",
+            "package_path": "bluetuith",
+            "pinned": false
+        },
+        "/home/jundora/.local/bin/codex": {
+            "path": "/home/jundora/.local/bin/codex",
+            "remote_name": "codex-aarch64-unknown-linux-gnu",
+            "version": "rust-v0.7.0",
+            "hash": "e3181c04c46a0aa38fed4c37278d7bf477d6244ed7aafada5fee124ca22f9ddc",
+            "url": "https://github.com/openai/codex/releases/tag/rust-v0.7.0",
+            "provider": "",
+            "package_path": "codex-aarch64-unknown-linux-gnu",
+            "pinned": false
+        },
+        "/home/jundora/.local/bin/duckdb": {
+            "path": "/home/jundora/.local/bin/duckdb",
+            "remote_name": "duckdb",
+            "version": "v1.3.2",
+            "hash": "cabf67bb69d4c6cabdc7e2fdbe94621bc8fc794f024d857efc09ba4606073b7a",
+            "url": "https://github.com/duckdb/duckdb/releases",
+            "provider": "github",
+            "package_path": "duckdb",
+            "pinned": false
+        },
+        "/home/jundora/.local/bin/gh": {
+            "path": "/home/jundora/.local/bin/gh",
+            "remote_name": "gh",
+            "version": "v2.76.0",
+            "hash": "1f47779248006c91b22e6a6f0d03f05cf6c82a30130683881c91228e1ab81a47",
+            "url": "https://github.com/cli/cli/releases/tag/v2.76.0",
+            "provider": "",
+            "package_path": "gh_2.76.0_linux_arm64/bin/gh",
+            "pinned": false,
+            "skip_path_check": true
+        },
+        "/home/jundora/.local/bin/k9s": {
+            "path": "/home/jundora/.local/bin/k9s",
+            "remote_name": "k9s",
+            "version": "v0.50.9",
+            "hash": "fd06748f3cac4e3cb496f9078a04fdbde1d23985604a6a1afec793747822e795",
+            "url": "https://github.com/derailed/k9s/releases/tag/v0.50.9",
+            "provider": "",
+            "package_path": "k9s",
+            "pinned": false
+        },
+        "/home/jundora/.local/bin/tflint": {
+            "path": "/home/jundora/.local/bin/tflint",
+            "remote_name": "tflint",
+            "version": "v0.58.1",
+            "hash": "024d8daf4c91f0e56a5eac84b804c88dd00a3b55f3ebf572a776b7624bf50a6b",
+            "url": "https://github.com/terraform-linters/tflint/releases",
+            "provider": "github",
+            "package_path": "tflint",
+            "pinned": false
+        },
+        "/home/jundora/.local/bin/topgrade": {
+            "path": "/home/jundora/.local/bin/topgrade",
+            "remote_name": "topgrade",
+            "version": "v16.0.4",
+            "hash": "4831458867832ea06f797536fc04bfea6e03a45f4ea4884fa5856749a81ddbb7",
+            "url": "https://github.com/topgrade-rs/topgrade/releases",
+            "provider": "github",
+            "package_path": "topgrade",
+            "pinned": false
+        }
+    }
+}

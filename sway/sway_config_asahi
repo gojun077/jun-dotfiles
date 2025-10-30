@@ -5,7 +5,7 @@
 # Read `man 5 sway` for a complete reference.
 # Created on: 28 Apr 2024
 # Created by: gojun077@gmail.com
-# Last Updated: Wed 30 Apr 2025
+# Last Updated: Fri 11 July 2025
 
 
 ### Variables
@@ -128,6 +128,10 @@ input "7247:52:SIGMACHIP_Usb_Mouse" {
 input "1133:45938:Logi_K855_Keyboard" {
     # swap Left Alt with Left Win like Mac keyboard
     xkb_options altwin:swap_lalt_lwin
+
+    # NOTE: this keyboard has TWO cmd/alt keys, one on the left and
+    # one on the right; I have swapped the left-hand 'alt' and 'start'
+    # keys, but I have left the right hand 'cmd'/'alt' key unchanged
 }
 
 

@@ -29,7 +29,7 @@
 (add-to-list 'load-path "~/.emacs.d/elpa") ;;personal elisp libs
 
 
-(require 'cl)
+;(require 'cl)  ; 'cl is now replaced by 'cl-lib
 (defvar gojun-pkglist
   '(ansible
     color-theme-sanityinc-solarized
