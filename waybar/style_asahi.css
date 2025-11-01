@@ -3,7 +3,7 @@ style_asahi.css - original path to file: ~/.config/waybar/style.css
 waybar CSS style sheet for Asahi Linux
 Created on: May 16 2024
 Created by: gopeterjun@naver.com
-Last Updated: May 16 2024
+Last Updated: Sun 02 Nov 2025
 */
 
 
@@ -150,6 +150,12 @@ window .modules-left #workspaces button:hover  {
 
 #battery.full {
     margin: 0px 0px 0px 0px;
+}
+
+
+#custom-agenda {
+    background-color: #ffdb58;  /* mustard yellow background */
+    color: #696969;
 }
 
 #temperature {
