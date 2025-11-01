@@ -3,7 +3,7 @@
 #
 # Created On: 30 Apr 2024
 # Created by: gopeterjun@naver.com
-# Last Updated: Fri 22 Aug 2025
+# Last Updated: Mon 27 Oct 2025
 
 # If not running interactively, don't do anything
 #[[ $- != *i* ]] && return
@@ -33,19 +33,21 @@ shopt -s checkwinsize
 
 eval "$(starship init bash)"
 eval "$(fzf --bash)"  # enable 'fzf' shell integration
+# C-t fuzzy file/dir selection
+# C-r fuzzy history search
+# M-c fuzzy `cd`
+# ** <TAB> fuzzy completion in shell command
 
 # the following is to quiet error for SC1091, SC1090 'cannot follow dynamic paths'
 # shellcheck source=/dev/null
 source "$HOME/.bash_aliases"
-# comment out neofetch to prevent banner from running twice
-#neofetch
-# Only execute neofetch if this is an interactive shell
+
+# Only execute following in interactive shell
 if [[ $- == *i* ]]; then
-  neofetch
+  fastfetch
   mbcputemp="$(cat /sys/class/thermal/thermal_zone0/temp)"
   printf "%s\\n" "CPU temp: $((mbcputemp/1000)) C"
 fi
-# vim: ts=2 sw=2 et :
 
 export NVM_DIR="$HOME/.config/nvm"
 # shellcheck source=/home/jundora/.config/nvm/nvm.sh
@@ -64,3 +66,5 @@ esac
 # Set NODE_PATH to include global npm modules
 npm_root=$(npm root -g)
 export NODE_PATH=$npm_root:/usr/local/lib/node_modules:/usr/lib/node_modules:$NODE_PATH
+
+# vim: ts=2 sw=2 et :

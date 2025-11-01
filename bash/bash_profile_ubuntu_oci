@@ -21,9 +21,19 @@ export KUBECONFIG="$HOME/.kube/config"
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:$GOPATH/bin:$GOROOT/bin:$HOME/.local/bin:$HOME/bin"
 
-# This machine is a headless VPS so we don't want a separate 'ssh-agent'
-# running; When I ssh into the box, I will forward my local ssh-agent
 export SSH_AUTH_SOCK=/run/user/1001/ssh-agent.socket
+ssh-add -l &>/dev/null
+if [[ $? -eq 0 || $? -eq 1 ]]; then
+  echo "SSH agent already running with socket $SSH_AUTH_SOCK"
+  return 0
+fi
+
+echo "Socket exists but agent not responding, removing socket"
+rm -f "$SSH_AUTH_SOCK"
+# No agent running or socket not working, start a new one
+echo "Starting new SSH agent"
+ssh-agent -D -a "$SSH_AUTH_SOCK" > /dev/null
+
 # NOTE: if GNOME keyring is installed, you must deactivate its ssh component
 # otw it will overwrite SSH_AUTH_SOCK above
 export TERM=xterm-256color

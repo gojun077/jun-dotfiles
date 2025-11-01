@@ -5,7 +5,7 @@
 # Read `man 5 sway` for a complete reference.
 # Created on: 29 Jun 2024
 # Created by: gojun077@gmail.com
-# Last Updated: Sun 25 May 2024
+# Last Updated: Thu 09 Oct 2025
 
 
 ### Variables
@@ -323,12 +323,15 @@ exec wl-paste -t text --watch clipman store --no-persist --max-items=1024
 exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 # Start emacs (`(server-mode 1)` is set in .emacs)
 exec emacs
+# Start 'kwalletmanager5'
+exec kwalletmanager5
 
 #
 # Custom Keyboard shortcuts/keybindings
 #
-#bindsym $mod+Shift+b exec firefox-wayland
-bindsym $mod+Shift+b exec chromium-browser --enable-features=UseOzonePlatform --ozone-platform=wayland --gtk-version=4
+#bindsym $mod+Shift+b exec chromium-browser --enable-features=UseOzonePlatform --ozone-platform=wayland --gtk-version=4
+# 'Version 141.0.7390.54 (Official Build) Fedora Project (64-bit)' supports Wayland OOTB
+bindsym $mod+Shift+b exec chromium-browser
 bindsym $mod+Shift+m exec emacs
 bindsym $mod+Shift+f exec thunar
 bindsym $mod+Shift+p exec clipman pick -t wofi # view clipboard

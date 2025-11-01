@@ -1,9 +1,9 @@
 ; -*- mode: emacs-lisp -*-
 
-;; My .emacs for Asahilinux Fedora Remix
+;; My .emacs for Argonaut running Fedora server
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Wed 29 Oct 2025
+;; Last Updated: Wed 22 Oct 2025
 ;;
 ;; These configs are for Emacs 30.1 and higher.
 ;;; Code:
@@ -14,26 +14,6 @@
 ;; Install use-package
 (straight-use-package 'use-package)
 
-(use-package acp
-  :straight (:host github :repo "xenodium/acp.el")
-  :config
-  (require 'acp))
-(use-package agent-shell
-  :straight (:host github :repo "xenodium/agent-shell")
-  :config
-  (setq agent-shell-anthropic-authentication
-      (agent-shell-anthropic-make-authentication
-       :api-key (lambda () (auth-source-pass-get "secret"
-                                                 "anthropic-api-key"))))
-  (setq agent-shell-google-authentication
-        (agent-shell-google-make-authentication
-         :api-key (lambda () (auth-source-pass-get "secret"
-                                                   "google-api-key"))))
-  (setq agent-shell-openai-authentication
-        (agent-shell-openai-make-authentication
-         :api-key (lambda () (auth-source-pass-get "secret"
-                                                   "openai-api-key"))))
-  (require 'agent-shell))
 (use-package ansible
   :straight t
   :defer t)
@@ -51,6 +31,15 @@
   (require 'dockerfile-mode)
   :hook
   (dockerfile-mode-hook . flymake-hadolint-setup)
+  :defer t)
+(use-package efrit
+  :straight (:host github :repo "steveyegge/efrit")
+  :config
+  (require 'efrit)
+  (setq efrit-model "claude-sonnet-4-20250514")
+  (setq efrit-max-tokens 32768) ; max is 64000 for sonnet 4
+  (setq efrit-remote-queue-directory "~/.emacs.d/efrit-queue")
+  (setq efrit-remote-queue-max-concurrent 10)
   :defer t)
 (use-package exec-path-from-shell
   :straight t
@@ -160,10 +149,6 @@
   :config
   (require 'ruff-format)
   :hook (python-mode-hook . ruff-format-on-save-mode))
-(use-package shell-maker
-  :straight t
-  :defer t
-  :ensure t)
 (use-package sicp
   :straight t
   :defer t)
@@ -310,7 +295,7 @@
   ;; customize compile command to run go build
   (if (not (string-match "go" compile-command))
       (set (make-local-variable 'compile-command)
-           "env GOOS=linux GOARCH=arm64 go build -v -o bin/$(basename $(pwd)) && go test -v && go vet"))
+           "env GOOS=linux GOARCH=amd64 go build -v -o bin/$(basename $(pwd)) && go test -v && go vet"))
 )
 
 
@@ -433,12 +418,6 @@
 (setq make-backup-files t)
 ; use Pandoc as default renderer for markdown
 (setq markdown-command "/usr/bin/pandoc")
-; start ispell settings
-(with-eval-after-load "ispell"
-  ;; Ensure hunspell is the spell-checking backend
-  (setq ispell-program-name "/usr/bin/hunspell")
-  (setq ispell-dictionary "en_US,ko_KR"))
-; end ispell settings
 (setq auto-save-default t)
 ; Enable C-l, C-u change region to lower/upper case
 (put 'upcase-region 'disabled nil)

@@ -11,6 +11,6 @@
 eval "$(starship init bash)"
 # Only execute neofetch if this is an interactive shell
 if [[ $- == *i* ]]; then
-  neofetch
+  fastfetch
 fi
 source ~/.bash_aliases

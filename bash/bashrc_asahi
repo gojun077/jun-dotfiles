@@ -3,7 +3,7 @@
 #
 # Created On: 30 Apr 2024
 # Created by: gopeterjun@naver.com
-# Last Updated: Sat 28 Jun 2025
+# Last Updated: Fri 24 Oct 2025
 
 # If not running interactively, don't do anything
 #[[ $- != *i* ]] && return
@@ -35,7 +35,7 @@ eval "$(starship init bash)"
 source ~/.bash_aliases
 # Only show output if this is an interactive shell AND not being used by automation
 if [[ $- == *i* ]]; then
-  neofetch
+  fastfetch
   mbcputemp="$(cat /sys/class/thermal/thermal_zone0/temp)"
   printf "%s\\n" "CPU temp: $((mbcputemp/1000)) C"
 fi

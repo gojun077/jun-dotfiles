@@ -3,20 +3,20 @@
     "bins": {
         "/Users/peter/bin-pkg/bin": {
             "path": "/Users/peter/bin-pkg/bin",
-            "remote_name": "bin_0.23.1_darwin_arm64",
-            "version": "v0.23.1",
-            "hash": "6316d2124e9dd6c3fb14ac001e113e3c53bfd65acaf71af45bf7354a03282636",
-            "url": "github.com/marcosnils/bin",
-            "provider": "github",
+            "remote_name": "bin_0.24.1_darwin_arm64",
+            "version": "v0.24.1",
+            "hash": "9a4c1841a52fc2232ee47b0429aad608eafc49bd9583c310ad7622bc603cacca",
+            "url": "https://github.com/marcosnils/bin/releases/tag/v0.24.1",
+            "provider": "",
             "package_path": "",
             "pinned": false
         },
         "/Users/peter/bin-pkg/codex": {
             "path": "/Users/peter/bin-pkg/codex",
             "remote_name": "codex-aarch64-apple-darwin",
-            "version": "rust-v0.41.0",
-            "hash": "72a5b756c29d32f859f4f149d03f1b9919bf28f926b5987d972c6f3dd1a94750",
-            "url": "https://github.com/openai/codex/releases/tag/rust-v0.41.0",
+            "version": "rust-v0.53.0",
+            "hash": "54acba19f2465fb5a719bd89d6d142401a70259da343ebc0b2a2899bbd6e9968",
+            "url": "https://github.com/openai/codex/releases/tag/rust-v0.53.0",
             "provider": "",
             "package_path": "codex-aarch64-apple-darwin",
             "pinned": false
@@ -24,10 +24,10 @@
         "/Users/peter/bin-pkg/k9s": {
             "path": "/Users/peter/bin-pkg/k9s",
             "remote_name": "k9s",
-            "version": "v0.50.12",
-            "hash": "11f52aa8dceb4e441f073e4e728e893afedadd179bf51a59f9dcfebe02ef80ba",
-            "url": "github.com/derailed/k9s",
-            "provider": "github",
+            "version": "v0.50.16",
+            "hash": "33657e432d9fd1fcffe1ce74fdeca7b9cd91eec736af536c04a25a0070bc986a",
+            "url": "https://github.com/derailed/k9s/releases/tag/v0.50.16",
+            "provider": "",
             "package_path": "k9s",
             "pinned": false
         }
