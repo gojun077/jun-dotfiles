@@ -20,6 +20,7 @@
   (require 'acp))
 (use-package agent-shell
   :straight (:host github :repo "xenodium/agent-shell")
+  :after transient
   :config
   (setq agent-shell-anthropic-authentication
       (agent-shell-anthropic-make-authentication
@@ -93,7 +94,7 @@
   :straight t
   ; bind 'M-x magit-status' to 'C-x g'
   :config (global-set-key (kbd "C-x g") 'magit-status)
-  :defer t)
+  :after transient)
 (use-package markdown-mode
   :straight t
   :defer t)
@@ -182,6 +183,8 @@
           (set-default 'preview-scale-function 1.2)
   :hook ((LaTeX-mode . flymake-mode))
   :defer t)
+(use-package transient
+    :straight t)
 (use-package visual-fill-column
   :straight t)
 (use-package web-mode

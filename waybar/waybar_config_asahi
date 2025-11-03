@@ -2,7 +2,7 @@
 // Waybar config file for Asahi Linux
 // Created on: May 16 2024
 // Created by: gopeterjun@naver.com
-// Last Updated: May 16 2024
+// Last Updated: Sun 02 Nov 2025
 
 {
     // "Layer": "top", // Waybar at top layer
@@ -12,34 +12,40 @@
     // Choose the order of the modules
     "modules-left": ["sway/workspaces"],
     "modules-center": ["sway/window"],
-    "modules-right": ["pulseaudio", "network", "cpu", "memory", "disk", "temperature", "backlight", "battery", "custom/clock", "tray",],
+    "modules-right": ["keyboard-state", "custom/agenda", "pulseaudio", "network", "cpu", "memory", "disk", "temperature", "backlight", "battery", "custom/clock", "tray"],
     // Modules configuration
 
-    //"sway/workspaces": {
-    //     "disable-scroll": true,
-    //     "all-outputs": true,
-    //     "format": "{name}: {icon}",
-    //     "format-icons": {
-    //         "1": "⠁",
-    //         "2": "⠃",
-    //         "3": "⠇",
-    //         "4": "⠞",
-    //         "5": "⠟",
-    //         "6": "⠿",
-    //         "urgent": "",
-    //         "focused": "",
-    //         "default": ""
-    //     }
-    // },
-    //"keyboard-state": {
-    //    "numlock": true,
-    //    "capslock": true,
-    //    "format": "{name} {icon}",
-    //    "format-icons": {
-    //        "locked": "🔒",
-    //        "unlocked": "🔓"
-    //    }
-    //},
+    /*
+    "sway/workspaces": {
+         "disable-scroll": true,
+         "all-outputs": true,
+         "format": "{name}: {icon}",
+         "format-icons": {
+             "1": "⠁",
+             "2": "⠃",
+             "3": "⠇",
+             "4": "⠞",
+             "5": "⠟",
+             "6": "⠿",
+             "urgent": "",
+             "focused": "",
+             "default": ""
+         }
+    },
+    */
+    "sway/window": {
+        "format": {},
+        "spacing": 8
+    },
+    "keyboard-state": {
+        "numlock": true,
+        "capslock": true,
+        "format": "{name} {icon}",
+        "format-icons": {
+            "locked": "🔒",
+            "unlocked": "🔓"
+        }
+    },
     "sway/mode": {
         "format": "<span style=\"italic\">{}</span>"
     },
@@ -80,16 +86,24 @@
         "icon-size": 16,
         "spacing": 8
     },
+    "custom/agenda": {
+        "exec": "nextmeeting --cache-events-ttl 2 --waybar",
+        "on-click": "nextmeeting --open-meet-url",
+        "interval": 59,
+        "return-type": "json",
+        "tooltip": "true",
+        "format": "📅 {}"
+    },
     "custom/clock": {
         "exec": "date +'%F  %H:%M:%S'",
         "interval": 5,
     },
     "cpu": {
-        "format": "{usage}% ",
+        "format": "{usage}% 💪",
         "tooltip": false
     },
     "memory": {
-        "format": "{}% "
+        "format": "{}% 🐘"
     },
     "disk": {
         "interval": 30,
@@ -152,15 +166,17 @@
         },
         "on-click": "pavucontrol"
     },
-    // "custom/media": {
-    //     "format": "{icon} {}",
-    //     "return-type": "json",
-    //     "max-length": 40,
-    //     "format-icons": {
-    //         "default": "🎜"
-    //     },
-    //     "escape": true,
-    //     "exec": "$HOME/.config/waybar/mediaplayer.py 2> /dev/null" // Script in resources folder
-    //     // "exec": "$HOME/.config/waybar/mediaplayer.py --player spotify 2> /dev/null" // Filter player based on name
-    // }
+    /*
+     "custom/media": {
+         "format": "{icon} {}",
+         "return-type": "json",
+         "max-length": 40,
+         "format-icons": {
+             "default": "🎜"
+         },
+         "escape": true,
+         "exec": "$HOME/.config/waybar/mediaplayer.py 2> /dev/null" // Script in resources folder
+         // "exec": "$HOME/.config/waybar/mediaplayer.py --player spotify 2> /dev/null" // Filter player based on name
+     }
+    */
 }

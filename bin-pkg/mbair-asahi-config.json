@@ -3,10 +3,10 @@
     "bins": {
         "/home/jundora/.local/bin/bin": {
             "path": "/home/jundora/.local/bin/bin",
-            "remote_name": "bin_0.24.0_linux_arm64",
-            "version": "v0.24.0",
-            "hash": "a3f9bbeebdd583069ec4d838e6b2836f4ece35d14fbc1dbc38f92615dfabd274",
-            "url": "https://github.com/marcosnils/bin/releases/tag/v0.24.0",
+            "remote_name": "bin_0.24.1_linux_arm64",
+            "version": "v0.24.1",
+            "hash": "670fe3915bd5fdbd7dce70ccc585648c9e542f58b3481c0e58bca0830822164d",
+            "url": "https://github.com/marcosnils/bin/releases/tag/v0.24.1",
             "provider": "",
             "package_path": "",
             "pinned": false
@@ -24,9 +24,9 @@
         "/home/jundora/.local/bin/codex": {
             "path": "/home/jundora/.local/bin/codex",
             "remote_name": "codex-aarch64-unknown-linux-gnu",
-            "version": "rust-v0.50.0",
-            "hash": "2c62a7bdb1fb3380f2bbdddc257e2d96d6018e115dc8121eaedf2354f1a4e1f0",
-            "url": "https://github.com/openai/codex/releases/tag/rust-v0.50.0",
+            "version": "rust-v0.53.0",
+            "hash": "497213bdf9b550330afafc29fcf395cef2a866f81090f6a575da542f08a1b0e6",
+            "url": "https://github.com/openai/codex/releases/tag/rust-v0.53.0",
             "provider": "",
             "package_path": "codex-aarch64-unknown-linux-gnu",
             "pinned": false
