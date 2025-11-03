@@ -5,7 +5,7 @@
 # Read `man 5 sway` for a complete reference.
 # Created on: 28 Apr 2024
 # Created by: gojun077@gmail.com
-# Last Updated: Thu 30 Oct 2025
+# Last Updated: Mon 03 Nov 2025
 
 
 ### Variables
@@ -36,7 +36,11 @@ include /etc/sway/config-vars.d/*
 #
 #   output HDMI-A-1 resolution 1920x1080 position 1920,0
 #
-# You can get the names of your outputs by running: swaymsg -t get_outputs
+# Instead of using generic output adapter names like 'HDMI-A-1' you can
+# also use unique identifiers consisting of "<make> <model> <serial>".
+#
+# You can get the names of your outputs by running:
+# 'swaymsg -t get_outputs'
 # Use the full "<make> <model> <serial>" string in quotes.
 #
 # Built-in MBP M1 panel on left (always active)
@@ -46,7 +50,8 @@ output eDP-1 resolution 3456x2160 scale 2 position 0 0
 output "Beihai Century Joint Innovation Technology Co.,Ltd TFG32F16VQ Unknown" resolution 1920x1080@60Hz position 1728 0
 # below monitor is LG monitor at UJET office (right)
 #output HDMI-A-1 resolution 3840x2160@60Hz scale 1.5 position 1728 0
-#
+output "LG Electronics LG HDR 4K 402NTLEB5152" resolution 3840x2160@60Hz scale 1.5 position 1728 0
+
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
