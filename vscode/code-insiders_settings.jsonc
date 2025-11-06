@@ -1,5 +1,5 @@
 // created on: Mon 26 May 2025
-// last updated: Fri 27 Jun 2025
+// last updated: Thu 06 Nov 2025
 // gopeterjun@naver.com
 //
 // original path to this file: ~/.config/'Code - Insiders'/User/settings.json
@@ -21,5 +21,8 @@
     },
     "github.copilot.enable": {
         "*": false
-    }
+    },
+    "github.copilot.chat.agent.currentEditorContext.enabled": false,
+    "github.copilot.nextEditSuggestions.enabled": false,
+    "amp.tab.enabled": true
 }
