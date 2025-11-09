@@ -3,10 +3,10 @@
     "bins": {
         "/home/jundora/.local/bin/bin": {
             "path": "/home/jundora/.local/bin/bin",
-            "remote_name": "bin_0.24.1_linux_arm64",
-            "version": "v0.24.1",
-            "hash": "670fe3915bd5fdbd7dce70ccc585648c9e542f58b3481c0e58bca0830822164d",
-            "url": "https://github.com/marcosnils/bin/releases/tag/v0.24.1",
+            "remote_name": "bin_0.24.2_linux_arm64",
+            "version": "v0.24.2",
+            "hash": "25e8cdd76248c0a847359845f01efb9fa602463f60178299ec29f7c5addfbd06",
+            "url": "https://github.com/marcosnils/bin/releases/tag/v0.24.2",
             "provider": "",
             "package_path": "",
             "pinned": false
@@ -24,10 +24,10 @@
         "/home/jundora/.local/bin/codex": {
             "path": "/home/jundora/.local/bin/codex",
             "remote_name": "codex-aarch64-unknown-linux-gnu",
-            "version": "rust-v0.53.0",
-            "hash": "497213bdf9b550330afafc29fcf395cef2a866f81090f6a575da542f08a1b0e6",
-            "url": "https://github.com/openai/codex/releases/tag/rust-v0.53.0",
-            "provider": "",
+            "version": "rust-v0.56.0",
+            "hash": "78afc4d2eb5c0a7e13a5bd38422d014e397854f7bdd6fa411c93b0105ac6f258",
+            "url": "https://github.com/openai/codex/releases/tag/rust-v0.56.0",
+            "provider": "github",
             "package_path": "codex-aarch64-unknown-linux-gnu",
             "pinned": false
         },
@@ -44,11 +44,11 @@
         "/home/jundora/.local/bin/gh": {
             "path": "/home/jundora/.local/bin/gh",
             "remote_name": "gh",
-            "version": "v2.82.1",
-            "hash": "5dd8315d742a008ebf20082fadfd04e4d0e2f71c858ab12687cbe96fc86f710a",
-            "url": "https://github.com/cli/cli/releases/tag/v2.82.1",
+            "version": "v2.83.0",
+            "hash": "89780e803d135799b7f886c872069d2b7fb165ed9b6b47a4ccda51346c593ee6",
+            "url": "https://github.com/cli/cli/releases/tag/v2.83.0",
             "provider": "",
-            "package_path": "gh_2.82.1_linux_arm64/bin/gh",
+            "package_path": "gh_2.83.0_linux_arm64/bin/gh",
             "pinned": false
         },
         "/home/jundora/.local/bin/git-filter-repo": {

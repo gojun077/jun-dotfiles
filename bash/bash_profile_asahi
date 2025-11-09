@@ -3,7 +3,7 @@
 #
 # Created on: 28 Apr 2024
 # Created by gojun077
-# Last Updated: Mon 20 Oct 2025
+# Last Updated: Fri 31 Oct 2025
 #
 # These settings are sourced by the login shell
 
@@ -33,6 +33,7 @@ export QT_IM_MODULE=fcitx
 export QT_IM_MODULES="wayland;fcitx;"
 export XMODIFIERS="@im=fcitx"
 export KUBECONFIG=$HOME/.kube/config
+export MOSH_SERVER_NETWORK_TMOUT=86400
 export EDITOR="emacsclient -nw"
 
 # add ssh privkeys to ssh-agent
