@@ -17,11 +17,12 @@
 
 (use-package acp
   :straight (:host github :repo "xenodium/acp.el")
+  :defer t
   :config
   (require 'acp))
 (use-package agent-shell
   :straight (:host github :repo "xenodium/agent-shell")
-  :after transient
+  :defer t
   :config
   (setq agent-shell-anthropic-authentication
       (agent-shell-anthropic-make-authentication
@@ -94,8 +95,7 @@
 (use-package magit
   :straight t
   ; bind 'M-x magit-status' to 'C-x g'
-  :config (global-set-key (kbd "C-x g") 'magit-status)
-  :after transient)
+  :config (global-set-key (kbd "C-x g") 'magit-status))
 (use-package markdown-mode
   :straight t
   :defer t)
