@@ -3,7 +3,7 @@
 ;; .emacs for MacOS
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Sun 21 Sep 2025
+;; Last Updated: Sun 09 Nov 2025
 ;;
 ;; This config file is for Emacs 30 and above on Apple Silicon
 ;;; Code:
@@ -31,15 +31,6 @@
   (require 'dockerfile-mode)
   :hook
   (dockerfile-mode-hook . flymake-hadolint-setup)
-  :defer t)
-(use-package efrit
-  :straight (:host github :repo "steveyegge/efrit")
-  :config
-  (require 'efrit)
-  (setq efrit-model "claude-sonnet-4-20250514")
-  (setq efrit-max-tokens 32768) ; max is 64000 for sonnet 4
-  (setq efrit-remote-queue-directory "~/.emacs.d/efrit-queue")
-  (setq efrit-remote-queue-max-concurrent 10)
   :defer t)
 (use-package exec-path-from-shell
   :straight t
