@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Wed 29 Oct 2025
+;; Last Updated: Sun 09 Nov 2025
 ;;
 ;; These configs are for Emacs 30.1 and higher.
 ;;; Code:
@@ -252,10 +252,10 @@
 ;;; mcp configs for mcp.el ;;;
 ;;
 (setq mcp-hub-servers
-      ;; https://github.com/merajmehrabi/puppeteer-mcp-server
-      '(("puppeteer" . (:command "node"
-                      :args ("/usr/local/lib/node_modules/puppeteer-mcp-server/dist/index.js")
-                      :env (("PUPPETEER_EXECUTABLE_PATH" . "/usr/bin/chromium-browser"))))))
+  ;; https://github.com/merajmehrabi/puppeteer-mcp-server
+  '(("puppeteer" . (:command "node"
+     :args ("/usr/local/lib/node_modules/puppeteer-mcp-server/dist/index.js")
+     :env (("PUPPETEER_EXECUTABLE_PATH" . "/usr/bin/chromium-browser"))))))
 
 ;; gptel-integrations is loaded from init-gptel.el
 ;; MCP config block end
@@ -272,6 +272,7 @@
 ;; make #! script files executable on save (chmod +x)
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
 
+;; -- enable flymake-cc even when Makefile does not exist ---
 (defun gpj/flymake-cc-command ()
   "Return the syntax-check command for Flymake based on the current mode."
   (if (derived-mode-p 'c++-mode 'c++-ts-mode)
@@ -294,6 +295,7 @@
   (add-hook 'c++-mode-hook #'gpj/flymake-cc-setup))
 (when (boundp 'c++-ts-mode-hook)
   (add-hook 'c++-ts-mode-hook #'gpj/flymake-cc-setup))
+;; --- end flymake-cc custom config ---
 
 (add-hook 'sh-mode-hook #'flymake-mode)
 
