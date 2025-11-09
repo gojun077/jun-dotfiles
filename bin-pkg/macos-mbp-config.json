@@ -3,10 +3,10 @@
     "bins": {
         "/Users/peter/bin-pkg/bin": {
             "path": "/Users/peter/bin-pkg/bin",
-            "remote_name": "bin_0.24.1_darwin_arm64",
-            "version": "v0.24.1",
-            "hash": "9a4c1841a52fc2232ee47b0429aad608eafc49bd9583c310ad7622bc603cacca",
-            "url": "https://github.com/marcosnils/bin/releases/tag/v0.24.1",
+            "remote_name": "bin_0.24.2_darwin_arm64",
+            "version": "v0.24.2",
+            "hash": "e49ac70cab086e95e4d7ee447ad7f9167888f80a95ad0a6869a22852b133ab8b",
+            "url": "https://github.com/marcosnils/bin/releases/tag/v0.24.2",
             "provider": "",
             "package_path": "",
             "pinned": false
@@ -14,9 +14,9 @@
         "/Users/peter/bin-pkg/codex": {
             "path": "/Users/peter/bin-pkg/codex",
             "remote_name": "codex-aarch64-apple-darwin",
-            "version": "rust-v0.53.0",
-            "hash": "54acba19f2465fb5a719bd89d6d142401a70259da343ebc0b2a2899bbd6e9968",
-            "url": "https://github.com/openai/codex/releases/tag/rust-v0.53.0",
+            "version": "rust-v0.56.0",
+            "hash": "199fffa4d9b09e84244204bbbf6d48379ac5ee3265861ea8c98e1fb95fecc8d0",
+            "url": "https://github.com/openai/codex/releases/tag/rust-v0.56.0",
             "provider": "",
             "package_path": "codex-aarch64-apple-darwin",
             "pinned": false
