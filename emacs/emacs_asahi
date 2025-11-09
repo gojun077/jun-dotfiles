@@ -8,7 +8,8 @@
 ;; These configs are for Emacs 30.1 and higher.
 ;;; Code:
 
-
+;; Note: straight/build-cache.el will not be created if debug is triggered!
+;(setq debug-on-error t)  ; Backtrace on errors
 ;; ensure latest org version is loaded by straight.el
 (straight-use-package 'org)
 ;; Install use-package
@@ -128,7 +129,6 @@
       (sql . t))))
 (use-package org-srs
   :straight t
-  :ensure t
   :defer t
   :hook (org-mode . org-srs-embed-overlay-mode))
 ; use my fork of org-trello
@@ -163,8 +163,7 @@
   :hook (python-mode-hook . ruff-format-on-save-mode))
 (use-package shell-maker
   :straight t
-  :defer t
-  :ensure t)
+  :defer t)
 (use-package sicp
   :straight t
   :defer t)
