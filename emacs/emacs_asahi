@@ -94,6 +94,7 @@
           (setq leuven-scale-volatile-highlight 1.2))
 (use-package magit
   :straight t
+  :defer t
   ; bind 'M-x magit-status' to 'C-x g'
   :config (global-set-key (kbd "C-x g") 'magit-status))
 (use-package markdown-mode
@@ -182,8 +183,6 @@
           (set-default 'preview-scale-function 1.2)
   :hook ((LaTeX-mode . flymake-mode))
   :defer t)
-(use-package transient
-    :straight t)
 (use-package visual-fill-column
   :straight t)
 (use-package web-mode
@@ -345,7 +344,8 @@
 ;;======================
 
 ; start emacs in server mode
-(server-mode 1)
+(unless noninteractive
+  (server-mode 1))
 
 ; ensure GPG password input is handled by emacs during emacs session
 ;(setenv "GPG_AGENT_INFO" nil)

@@ -48,7 +48,12 @@
                      gcs-done))
           t)  ;; append so it runs after the default startup message
 
-;; use straight.el instead of package.el
+;; --- use straight.el instead of package.el ---
+;;
+;; Disable straight.el autoload caching - lexical binding is not
+;; available when straight-cache-autoloads is enabled, and this
+;; can cause  'symbol value void' errors when loading packages
+(setq straight-cache-autoloads nil)
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name
