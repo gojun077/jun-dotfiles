@@ -14,9 +14,9 @@
         "/Users/peter/bin-pkg/codex": {
             "path": "/Users/peter/bin-pkg/codex",
             "remote_name": "codex-aarch64-apple-darwin",
-            "version": "rust-v0.58.0",
-            "hash": "c836095b45054b9f63754481ac454e52f58f493070f17b060b4c0f7dd9321427",
-            "url": "https://github.com/openai/codex/releases/tag/rust-v0.58.0",
+            "version": "rust-v0.61.0",
+            "hash": "06568a186314173e3c6d3907f26da3f24c755c8ed26f8958ddf764130ed25ddd",
+            "url": "https://github.com/openai/codex/releases/tag/rust-v0.61.0",
             "provider": "github",
             "package_path": "codex-aarch64-apple-darwin",
             "pinned": false
