@@ -3,20 +3,20 @@
     "bins": {
         "/opt/homebrew/bin/bin": {
             "path": "/opt/homebrew/bin/bin",
-            "remote_name": "bin_0.23.1_darwin_arm64",
-            "version": "v0.23.1",
-            "hash": "6316d2124e9dd6c3fb14ac001e113e3c53bfd65acaf71af45bf7354a03282636",
-            "url": "github.com/marcosnils/bin",
-            "provider": "github",
+            "remote_name": "bin_0.24.2_darwin_arm64",
+            "version": "v0.24.2",
+            "hash": "e49ac70cab086e95e4d7ee447ad7f9167888f80a95ad0a6869a22852b133ab8b",
+            "url": "https://github.com/marcosnils/bin/releases/tag/v0.24.2",
+            "provider": "",
             "package_path": "",
             "pinned": false
         },
         "/opt/homebrew/bin/codex": {
             "path": "/opt/homebrew/bin/codex",
             "remote_name": "codex-aarch64-apple-darwin",
-            "version": "rust-v0.42.0",
-            "hash": "4359cd190d06b7cec6c98d274dd317e80a9339bdc6c02e748fb8297b28a4ceef",
-            "url": "https://github.com/openai/codex/releases/tag/rust-v0.42.0",
+            "version": "rust-v0.63.0",
+            "hash": "1be00310398e63fb6e36fea26e3c22757664e400b1d81f971af78781fbeb7378",
+            "url": "https://github.com/openai/codex/releases/tag/rust-v0.63.0",
             "provider": "",
             "package_path": "codex-aarch64-apple-darwin",
             "pinned": false
@@ -24,9 +24,9 @@
         "/opt/homebrew/bin/k9s": {
             "path": "/opt/homebrew/bin/k9s",
             "remote_name": "k9s",
-            "version": "v0.50.13",
-            "hash": "4c4adbca7afa339fb780aab3b34f3d941216d4b45b2e8740470163738e45d5bb",
-            "url": "https://github.com/derailed/k9s/releases/tag/v0.50.13",
+            "version": "v0.50.16",
+            "hash": "33657e432d9fd1fcffe1ce74fdeca7b9cd91eec736af536c04a25a0070bc986a",
+            "url": "https://github.com/derailed/k9s/releases/tag/v0.50.16",
             "provider": "",
             "package_path": "k9s",
             "pinned": false
