@@ -3,7 +3,7 @@
 ;; .emacs for MacOS
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Sun 09 Nov 2025
+;; Last Updated: Wed 07 Jan 2026
 ;;
 ;; This config file is for Emacs 30 and above on Apple Silicon
 ;;; Code:
@@ -81,7 +81,7 @@
   :straight t
   :defer t
   :config
-  (setq ob-mermaid-cli-path "/home/jundora/.nix-profile/bin/mmdc"))
+  (setq ob-mermaid-cli-path "/opt/homebrew/bin/mmdc"))
 (use-package org
   :straight t
   :config
