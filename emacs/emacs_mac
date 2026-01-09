@@ -438,7 +438,7 @@
   ;; Set default font
   (set-face-attribute 'default nil
                       :family default-font
-                      :height 150)
+                      :height 170)
 
   ;; Set Korean font
   (set-fontset-font t 'hangul (font-spec :family korean-font))
