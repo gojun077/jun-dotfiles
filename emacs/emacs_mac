@@ -3,7 +3,7 @@
 ;; .emacs for MacOS
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Wed 07 Jan 2026
+;; Last Updated: Fri 09 Jan 2026
 ;;
 ;; This config file is for Emacs 30 and above on Apple Silicon
 ;;; Code:
@@ -397,9 +397,14 @@
 (when (or (display-graphic-p) (daemonp))
   ;; --- whitespace-mode settings ---
   ; only run whitespace mode in graphical session
-  (global-whitespace-mode 1)
-  ; enable whitespace-mode for all files
-  (add-hook 'after-change-major-mode-hook 'whitespace-mode)
+  ; highlight long lines
+  (setq whitespace-line-column 80)
+  ; define 'whitespace-style' variable
+  (setq whitespace-style '(face tabs spaces trailing lines-tail
+      space-before-tab newline indentation empty space-after-tab
+      space-mark tab-mark newline-mark missing-newline-at-eof))
+  ; enable whitespace-mode for programming buffers only
+  (add-hook 'prog-mode-hook #'whitespace-mode)
   ;; --- end whitespace-mode settings ---
 
   ; limit line length
