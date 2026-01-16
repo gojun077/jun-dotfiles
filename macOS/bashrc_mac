@@ -3,7 +3,7 @@
 #
 # Created On: Sometime during Nov 2019
 # Created by: gopeterjun@naver.com
-# Last Updated: Wed 07 Jan 2026
+# Last Updated: Fri 16 Jan 2026
 
 # If not running interactively, don't do anything
 #[[ $- != *i* ]] && return
@@ -23,7 +23,7 @@ HISTFILESIZE=15000
 shopt -s checkwinsize
 
 
-export EDITOR="/usr/local/bin/emacsclient"
+export EDITOR="/opt/homebrew/bin/emacsclient"
 #export TERM=screen-256color
 export TERM=xterm-256color
 # Prompt: "user@hostname CurrentWorkingDirectory $ " no color
