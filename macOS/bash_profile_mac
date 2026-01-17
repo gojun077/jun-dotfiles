@@ -1,21 +1,32 @@
-# ~/.bash_profile
-# for MacOS
+# bash_profile_mac
+# This file should be symlinked to ~/.bash_profile
 #
-# Last Updated: Wed 07 Jan 2026
-# Updated by: gopeterjun
+# Created on: Sometime in 2021
+# Last Updated: Sat 17 Jan 2026
+# Updated by: gopeterjun@naver.com
 #
 # Note: MacOS behavior around `.bash_profile` is different from
 # that of Linux and other POSIX systems. Normally, `.bash_profile`
 # is only executed by the login shell, but `Terminal.app` on MacOS
-# runs a login shell by default for each new terminal window, which
-# means that in practice `.bash_profile` can be sourced multiple
-# times on MacOS.
+# runs a login shell by default for *each* new terminal window.
 #
-# This `.bash_profile` simply loads `.bashrc` and values which should
-# only be run once per session, have been moved to separate bash
-# shell scripts that can be sourced manually.
+# Terminal.app, Ghostty.app, etc your default shell as a *login shell*,
+# which reads '.bash_profile' and launches '-bash' (dash prefix) in the
+# process list. Non-login shells on MacOS read '.bashrc' and don't use a
+# dash prefix.
+
+
+export GOROOT=/usr/local/go
+export GOPATH="/Users/$USER/go"
+export HOMEBREW_PREFIX=/opt/homebrew
+export HOMEBREW_CELLAR=/opt/homebrew/Cellar
+export PYENV_ROOT="$HOME/.pyenv"
+export XDG_CONFIG_HOME="$HOME/.config"
+
+export PATH="$HOME/.local/bin:$HOME/bin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/opt/pmk/env/global/bin:/user/local/MacGPG2/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Applications/Ghostty.app/Contents/MacOS:$PYENV_ROOT:$GOROOT/bin:$GOPATH/bin:$HOME/.krew/bin:$HOME/bin-pkg"
 
 if [ -f ~/.bashrc ]; then
-  source ~/.bashrc
+  # SC override is to quiet the warning about following path to source
+  # shellcheck disable=SC1091
+  source "$HOME"/.bashrc
 fi
-
