@@ -2,7 +2,7 @@
 # This file should be symlinked to ~/.bash_profile
 #
 # Created on: Sometime in 2021
-# Last Updated: Sat 17 Jan 2026
+# Last Updated: Tue 21 Jan 2026
 # Updated by: gopeterjun@naver.com
 #
 # Note: MacOS behavior around `.bash_profile` is different from
@@ -23,7 +23,9 @@ export HOMEBREW_CELLAR=/opt/homebrew/Cellar
 export PYENV_ROOT="$HOME/.pyenv"
 export XDG_CONFIG_HOME="$HOME/.config"
 
-export PATH="$HOME/.local/bin:$HOME/bin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/opt/pmk/env/global/bin:/user/local/MacGPG2/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Applications/Ghostty.app/Contents/MacOS:$PYENV_ROOT:$GOROOT/bin:$GOPATH/bin:$HOME/.krew/bin:$HOME/bin-pkg"
+export PATH="$HOME/.local/bin:$HOME/bin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/opt/pmk/env/global/bin:/user/local/MacGPG2/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Applications/Ghostty.app/Contents/MacOS:$PYENV_ROOT/bin:$GOROOT/bin:$GOPATH/bin:$HOME/.krew/bin:$HOME/bin-pkg:$HOME/Library/Python/3.9/bin"
+
+eval "$(pyenv init --path)"
 
 if [ -f ~/.bashrc ]; then
   # SC override is to quiet the warning about following path to source
