@@ -3,7 +3,7 @@
 ;; .emacs for MacOS
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Tue 20 Jan 2026
+;; Last Updated: Thu 22 Jan 2026
 ;;
 ;; This config file is for Emacs 30 and above on Apple Silicon
 ;;; Code:
@@ -419,6 +419,8 @@
   (scroll-bar-mode -1)
   ; disable toolbar
   (tool-bar-mode -1)
+  ; focus follows mouse within emacs
+  (setq mouse-autoselect-window t)
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ; Emacs color themes
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
