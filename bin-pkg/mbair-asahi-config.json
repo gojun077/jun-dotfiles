@@ -84,9 +84,9 @@
         "/home/jundora/.local/bin/yt-dlp": {
             "path": "/home/jundora/.local/bin/yt-dlp",
             "remote_name": "yt-dlp_linux_aarch64",
-            "version": "2026.01.29",
-            "hash": "b11ab679302389bcb377b67c82beeea4c533d590339e6d282f048dac0c5ca099",
-            "url": "https://github.com/yt-dlp/yt-dlp/releases/tag/2026.01.29",
+            "version": "2026.01.31",
+            "hash": "2e9a19f8a82bd1d7fc4fada595e6098efff1b19d2f861c8014923a75c6490d3e",
+            "url": "https://github.com/yt-dlp/yt-dlp/releases/tag/2026.01.31",
             "provider": "github",
             "package_path": "yt-dlp_linux_aarch64",
             "pinned": false
