@@ -3,7 +3,7 @@
 #
 # Created on: 08 Sep 2024
 # Created by gojun077
-# Last Updated: Sun 05 Jan 2025
+# Last Updated: Sun 01 Feb 2026
 #
 # These settings are sourced by the login shell
 
@@ -17,8 +17,8 @@ GPG_TTY=$(tty)
 export GPG_TTY
 export GOROOT=/usr/local/go  # consider moving this to the system `bash_profile`
 export GOPATH=$HOME/go
-export PYTHONBREAKPOINT=ipdb.set_trace
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$GOPATH/bin:$GOROOT/bin:$HOME/.local/bin:$HOME/bin:$HOME/.tfenv/bin:$HOME/.krew/bin"
+export NVM_DIR="$HOME/.config/nvm"
+export PNPM_HOME="/home/jundora/.local/share/pnpm"
 export SSH_AUTH_SOCK="/run/user/1000/ssh-agent.socket"
 # NOTE: if GNOME keyring is installed, you must deactivate its ssh component
 # otw it will overwrite SSH_AUTH_SOCK above
@@ -33,13 +33,12 @@ export XMODIFIERS="@im=fcitx"
 export KUBECONFIG=$HOME/.kube/config
 export EDITOR="emacsclient -nw"
 
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$GOPATH/bin:$GOROOT/bin:$HOME/.local/bin:$HOME/bin:$HOME/.tfenv/bin:$HOME/.krew/bin:$NVM_DIR:$PNPM_HOME"
+
+
 # add ssh privkeys to ssh-agent
 # if you use a graphical session manager, the screen may go dark
 # while the shell waits for you to enter your ssh privkey password
 #ssh-add ~/.ssh/archjun-newgen
 
 if [ -e /home/jundora/.nix-profile/etc/profile.d/nix.sh ]; then . /home/jundora/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
-
-export NVM_DIR="$HOME/.config/nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

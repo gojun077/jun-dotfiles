@@ -5,7 +5,7 @@
 # Read `man 5 sway` for a complete reference.
 # Created on: 29 Jun 2024
 # Created by: gojun077@gmail.com
-# Last Updated: Thu 09 Oct 2025
+# Last Updated: Sat 31 Jan 2026
 
 
 ### Variables
@@ -36,12 +36,21 @@ include /etc/sway/config-vars.d/*
 #
 #   output HDMI-A-1 resolution 1920x1080 position 1920,0
 #
-# You can get the names of your outputs by running: swaymsg -t get_outputs
+# Instead of using generic output adapter names like 'HDMI-A-1' you can
+# also use unique identifiers consisting of "<make> <model> <serial>".
+#
+# You can get the names of your outputs by running:
+# 'swaymsg -t get_outputs'
+# Use the full "<make> <model> <serial>" string in quotes.
 #
 # built-in MBA M2 14-inch panel on left
 output eDP-1 resolution 2560x1600 scale 1.5 position 0 0
+
+# below monitor is for home office (TFG32F16VQ Beihai Century) (right)
+output "Beihai Century Joint Innovation Technology Co.,Ltd TFG32F16VQ Unknown" resolution 1920x1080@60Hz position 1728 0
+
 # below monitor is for home office (right)
-output HDMI-A-1 resolution 1920x1080@60Hz position 1706 0
+#output HDMI-A-1 resolution 1920x1080@60Hz position 1706 0
 #
 ### Output configuration
 #
@@ -197,6 +206,11 @@ input "1133:45938:Logi_K855_Keyboard" {
 
     # Note: workspaces can have any name you want, not just numbers.
     # We just use 1-10 as the default.
+#
+    # Move between workspaces with default MacOS keychords
+    bindsym Ctrl+Left workspace prev
+    bindsym Ctrl+Right workspace next
+
 #
 # Layout stuff:
 #

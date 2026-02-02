@@ -14,19 +14,19 @@
         "/home/jundora/.local/bin/bluetuith": {
             "path": "/home/jundora/.local/bin/bluetuith",
             "remote_name": "bluetuith",
-            "version": "v0.2.5-rc1",
-            "hash": "729b6cf1df9d163fac373e8cf825c5004cc7818649a6b4d382a0764037fb0d74",
-            "url": "https://github.com/bluetuith-org/bluetuith/releases/tag/v0.2.5-rc1",
-            "provider": "",
+            "version": "v0.2.6",
+            "hash": "a53b6f97128b50ebaf8f9526049e79b44133fac705c28a5f20381d931440f7d2",
+            "url": "https://github.com/bluetuith-org/bluetuith/releases/tag/v0.2.6",
+            "provider": "github",
             "package_path": "bluetuith",
             "pinned": false
         },
         "/home/jundora/.local/bin/codex": {
             "path": "/home/jundora/.local/bin/codex",
             "remote_name": "codex-aarch64-unknown-linux-gnu",
-            "version": "rust-v0.56.0",
-            "hash": "78afc4d2eb5c0a7e13a5bd38422d014e397854f7bdd6fa411c93b0105ac6f258",
-            "url": "https://github.com/openai/codex/releases/tag/rust-v0.56.0",
+            "version": "rust-v0.93.0",
+            "hash": "885a2bf48fca709f89742ee802f6761090057d81f54e8d6d8a3f9ccf724941bd",
+            "url": "https://github.com/openai/codex/releases/tag/rust-v0.93.0",
             "provider": "github",
             "package_path": "codex-aarch64-unknown-linux-gnu",
             "pinned": false
@@ -34,21 +34,21 @@
         "/home/jundora/.local/bin/duckdb": {
             "path": "/home/jundora/.local/bin/duckdb",
             "remote_name": "",
-            "version": "v1.4.1",
-            "hash": "611a55aef4cab81d6733abb7494751711f9257e3f7e0c740c27a5015f234a4dd",
-            "url": "https://github.com/duckdb/duckdb/releases/tag/v1.4.1",
-            "provider": "",
+            "version": "v1.4.4",
+            "hash": "7afbc86097dfc63c38cec773dfcb1e633bbd6b49ffda85ab43baad056d01fd66",
+            "url": "https://github.com/duckdb/duckdb/releases/tag/v1.4.4",
+            "provider": "github",
             "package_path": "",
             "pinned": false
         },
         "/home/jundora/.local/bin/gh": {
             "path": "/home/jundora/.local/bin/gh",
             "remote_name": "gh",
-            "version": "v2.83.0",
-            "hash": "89780e803d135799b7f886c872069d2b7fb165ed9b6b47a4ccda51346c593ee6",
-            "url": "https://github.com/cli/cli/releases/tag/v2.83.0",
-            "provider": "",
-            "package_path": "gh_2.83.0_linux_arm64/bin/gh",
+            "version": "v2.86.0",
+            "hash": "ddaf8e51406aba3d400a91487371967160c3c589368b0c4a74413a0f9591f2f6",
+            "url": "https://github.com/cli/cli/releases/tag/v2.86.0",
+            "provider": "github",
+            "package_path": "gh_2.86.0_linux_arm64/bin/gh",
             "pinned": false
         },
         "/home/jundora/.local/bin/git-filter-repo": {
@@ -64,31 +64,31 @@
         "/home/jundora/.local/bin/k3s": {
             "path": "/home/jundora/.local/bin/k3s",
             "remote_name": "k3s-arm64",
-            "version": "v1.34.1+k3s1",
-            "hash": "3888e0f28e16be4de619d652a5a3e4816ae85878a38f914b1830bff3ef7483ff",
-            "url": "https://github.com/k3s-io/k3s/releases/tag/v1.34.1%2Bk3s1",
-            "provider": "",
+            "version": "v1.35.0+k3s1",
+            "hash": "c0b1673a1f2b740cb7bb08355c885efb6a4aa5c8022e5bb306c621c8c1492883",
+            "url": "https://github.com/k3s-io/k3s/releases/tag/v1.35.0%2Bk3s1",
+            "provider": "github",
             "package_path": "",
             "pinned": false
         },
         "/home/jundora/.local/bin/k9s": {
             "path": "/home/jundora/.local/bin/k9s",
             "remote_name": "k9s",
-            "version": "v0.50.16",
-            "hash": "5f347634d3a3e6cff163136c91548cd4ee9cb0dff5d597a8b767f066c3c0affe",
-            "url": "https://github.com/derailed/k9s/releases/tag/v0.50.16",
-            "provider": "",
+            "version": "v0.50.18",
+            "hash": "c7a73f1e8b5fa1e4d311cd420fa3450f98bbc37d5295077aeac1e8486ff39aa7",
+            "url": "https://github.com/derailed/k9s/releases/tag/v0.50.18",
+            "provider": "github",
             "package_path": "k9s",
             "pinned": false
         },
         "/home/jundora/.local/bin/yt-dlp": {
             "path": "/home/jundora/.local/bin/yt-dlp",
             "remote_name": "yt-dlp_linux_aarch64",
-            "version": "2025.10.22",
-            "hash": "c3cdd542b89863a526df160101a63ecb170076e5fb72d34147f381589db523a2",
-            "url": "https://github.com/yt-dlp/yt-dlp",
+            "version": "2026.01.31",
+            "hash": "2e9a19f8a82bd1d7fc4fada595e6098efff1b19d2f861c8014923a75c6490d3e",
+            "url": "https://github.com/yt-dlp/yt-dlp/releases/tag/2026.01.31",
             "provider": "github",
-            "package_path": "",
+            "package_path": "yt-dlp_linux_aarch64",
             "pinned": false
         }
     }

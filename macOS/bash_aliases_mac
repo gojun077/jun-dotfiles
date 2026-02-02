@@ -1,4 +1,4 @@
-# Last Updated: Fri 27 Dec 2024
+# Last Updated: Wed 07 Jan 2026
 # enable color support of ls and also add handy aliases
 alias ls='ls --color=auto'
 alias grep='grep --color=auto'

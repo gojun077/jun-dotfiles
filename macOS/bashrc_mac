@@ -3,7 +3,7 @@
 #
 # Created On: Sometime during Nov 2019
 # Created by: gopeterjun@naver.com
-# Last Updated: Sat 01 Nov 2025
+# Last Updated: Sun 18 Jan 2026
 
 # If not running interactively, don't do anything
 #[[ $- != *i* ]] && return
@@ -18,30 +18,22 @@ shopt -s histappend
 HISTSIZE=10000
 HISTFILESIZE=15000
 
-# check the window size after each command and, if necessary,
-# update the values of LINES and COLUMNS.
-shopt -s checkwinsize
-
-
-export EDITOR="/usr/local/bin/emacsclient"
+export EDITOR="/opt/homebrew/bin/emacsclient"
 #export TERM=screen-256color
 export TERM=xterm-256color
-# Prompt: "user@hostname CurrentWorkingDirectory $ " no color
-#PS1='[\u@\h \W]\$ '
-# Same as above, but user@host in green, CWD in blue
-#PS1="\[\033[01;32m\]\u@\h\[\033[00m\] \[\033[01;34m\]\W\[\033[00m\]\$ "
-# Prompt: "user@host:" in green, "full path to CWD" in blue
-#PS1="\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ "
 
-eval "$(starship init bash)"
+eval "$(/opt/homebrew/bin/starship init bash)"
 # Only execute if this is an interactive shell
 if [[ $- == *i* ]]; then
   /opt/homebrew/bin/fastfetch
 fi
 
+eval "$(fzf --bash)"
+# C-t fuzzy file/dir selection
+# C-r fuzzy history search
+# M-c fuzzy `cd`
+# ** <TAB> fuzzy completion in shell command
+
 source ~/.bash_aliases
 # vim: ts=2 sw=2 et :
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

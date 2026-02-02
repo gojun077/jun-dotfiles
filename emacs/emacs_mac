@@ -3,7 +3,7 @@
 ;; .emacs for MacOS
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Sun 09 Nov 2025
+;; Last Updated: Thu 22 Jan 2026
 ;;
 ;; This config file is for Emacs 30 and above on Apple Silicon
 ;;; Code:
@@ -34,7 +34,15 @@
   :defer t)
 (use-package exec-path-from-shell
   :straight t
+  :init
+  (setq exec-path-from-shell-check-startup-files nil)
+  (setq exec-path-from-shell-shell-name "/opt/homebrew/bin/bash")
+  (setq exec-path-from-shell-arguments '("-l"))
   :config
+  ;; https://github.com/purcell/exec-path-from-shell/blob/master/README.md
+  (dolist (var '("SSH_AUTH_SOCK" "LANG" "GOPATH" "GOROOT" "SHELL" "PATH"))
+  (add-to-list 'exec-path-from-shell-variables var))
+  (exec-path-from-shell-initialize)
   (require 'exec-path-from-shell))
 (use-package flymake-hadolint
   :straight t
@@ -81,7 +89,7 @@
   :straight t
   :defer t
   :config
-  (setq ob-mermaid-cli-path "/home/jundora/.nix-profile/bin/mmdc"))
+  (setq ob-mermaid-cli-path "/opt/homebrew/bin/mmdc"))
 (use-package org
   :straight t
   :config
@@ -375,12 +383,6 @@
   mac-right-option-modifier 'meta
   ns-right-option-modifier 'meta)
 
-;; https://github.com/purcell/exec-path-from-shell/blob/master/README.md
-(dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO" "LANG"
-               "LC_CTYPE" "LC_TYPE" "GOPATH" "GOROOT" "SHELL"))
-  (add-to-list 'exec-path-from-shell-variables var))
-; don't invoke an interactive shell; default args are ("-l" "-i")
-(setq exec-path-from-shell-arguments nil)
 (setq zoneinfo-style-world-list
       '(("Pacific/Honolulu" "Honolulu")
         ("America/Los_Angeles" "Seattle")
@@ -397,9 +399,14 @@
 (when (or (display-graphic-p) (daemonp))
   ;; --- whitespace-mode settings ---
   ; only run whitespace mode in graphical session
-  (global-whitespace-mode 1)
-  ; enable whitespace-mode for all files
-  (add-hook 'after-change-major-mode-hook 'whitespace-mode)
+  ; highlight long lines
+  (setq whitespace-line-column 80)
+  ; define 'whitespace-style' variable
+  (setq whitespace-style '(face tabs spaces trailing lines-tail
+      space-before-tab newline indentation empty space-after-tab
+      space-mark tab-mark newline-mark missing-newline-at-eof))
+  ; enable whitespace-mode for programming buffers only
+  (add-hook 'prog-mode-hook #'whitespace-mode)
   ;; --- end whitespace-mode settings ---
 
   ; limit line length
@@ -412,18 +419,17 @@
   (scroll-bar-mode -1)
   ; disable toolbar
   (tool-bar-mode -1)
+  ; focus follows mouse within emacs
+  (setq mouse-autoselect-window t)
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ; Emacs color themes
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
   (load-theme 'leuven t)
-  (exec-path-from-shell-initialize)
 )
 
 ;; Commands to run when Emacs launched in terminal mode
 (unless (display-graphic-p)
-  (load-theme 'adwaita t)
-  (exec-path-from-shell-initialize))
+  (load-theme 'adwaita t))
 
 ;; Font settings - note that this must be set *after* (load-theme)
 ;; to avoid conflicts with the theme
@@ -433,7 +439,7 @@
   ;; Set default font
   (set-face-attribute 'default nil
                       :family default-font
-                      :height 150)
+                      :height 170)
 
   ;; Set Korean font
   (set-fontset-font t 'hangul (font-spec :family korean-font))
