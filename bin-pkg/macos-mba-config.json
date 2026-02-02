@@ -13,12 +13,12 @@
         },
         "/opt/homebrew/bin/codex": {
             "path": "/opt/homebrew/bin/codex",
-            "remote_name": "codex-aarch64-apple-darwin",
-            "version": "rust-v0.63.0",
-            "hash": "1be00310398e63fb6e36fea26e3c22757664e400b1d81f971af78781fbeb7378",
-            "url": "https://github.com/openai/codex/releases/tag/rust-v0.63.0",
-            "provider": "",
-            "package_path": "codex-aarch64-apple-darwin",
+            "remote_name": "codex-aarch64-apple-darwin.dmg",
+            "version": "rust-v0.77.0",
+            "hash": "f1ded18f312556820bf6f97753e3ae87d4d105625c288d0eb2f411900dc44ead",
+            "url": "https://github.com/openai/codex/releases/tag/rust-v0.77.0",
+            "provider": "github",
+            "package_path": "",
             "pinned": false
         },
         "/opt/homebrew/bin/k9s": {
