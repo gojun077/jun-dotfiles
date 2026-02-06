@@ -23,8 +23,8 @@ export HOMEBREW_CELLAR=/opt/homebrew/Cellar
 export PYENV_ROOT="$HOME/.pyenv"
 export XDG_CONFIG_HOME="$HOME/.config"
 export PNPM_HOME="$HOME/Library/pnpm"
-
-export PATH="$HOME/.local/bin:$HOME/bin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/opt/pmk/env/global/bin:/user/local/MacGPG2/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Applications/Ghostty.app/Contents/MacOS:$PYENV_ROOT/bin:$GOROOT/bin:$GOPATH/bin:$HOME/.krew/bin:$HOME/bin-pkg:$PNPM_HOME"
+export PSQL="/opt/homebrew/opt/libpq/bin"
+export PATH="$HOME/.local/bin:$HOME/bin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/opt/pmk/env/global/bin:/user/local/MacGPG2/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Applications/Ghostty.app/Contents/MacOS:$PYENV_ROOT/bin:$GOROOT/bin:$GOPATH/bin:$HOME/.krew/bin:$HOME/bin-pkg:$PNPM_HOME:$PSQL"
 
 eval "$(pyenv init --path)"
 
