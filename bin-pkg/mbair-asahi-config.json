@@ -23,12 +23,12 @@
         },
         "/home/jundora/.local/bin/codex": {
             "path": "/home/jundora/.local/bin/codex",
-            "remote_name": "codex-aarch64-unknown-linux-gnu",
-            "version": "rust-v0.93.0",
-            "hash": "885a2bf48fca709f89742ee802f6761090057d81f54e8d6d8a3f9ccf724941bd",
-            "url": "https://github.com/openai/codex/releases/tag/rust-v0.93.0",
+            "remote_name": "codex",
+            "version": "rust-v0.101.0",
+            "hash": "8f387fa7c1b7e206d6fd8d2e4aa24ef19fb8a842622a71c0555bc5d40cd823f1",
+            "url": "https://github.com/openai/codex/releases/tag/rust-v0.101.0",
             "provider": "github",
-            "package_path": "codex-aarch64-unknown-linux-gnu",
+            "package_path": "package/vendor/aarch64-unknown-linux-musl/codex/codex",
             "pinned": false
         },
         "/home/jundora/.local/bin/duckdb": {
@@ -64,9 +64,9 @@
         "/home/jundora/.local/bin/k3s": {
             "path": "/home/jundora/.local/bin/k3s",
             "remote_name": "k3s-arm64",
-            "version": "v1.35.0+k3s1",
-            "hash": "c0b1673a1f2b740cb7bb08355c885efb6a4aa5c8022e5bb306c621c8c1492883",
-            "url": "https://github.com/k3s-io/k3s/releases/tag/v1.35.0%2Bk3s1",
+            "version": "v1.35.1+k3s1",
+            "hash": "c8d08bc38ad51be20ba531b3c412855c38d534f99cdff30fde6891b6f555a846",
+            "url": "https://github.com/k3s-io/k3s/releases/tag/v1.35.1%2Bk3s1",
             "provider": "github",
             "package_path": "",
             "pinned": false
@@ -83,12 +83,12 @@
         },
         "/home/jundora/.local/bin/yt-dlp": {
             "path": "/home/jundora/.local/bin/yt-dlp",
-            "remote_name": "yt-dlp_linux_aarch64",
-            "version": "2026.01.31",
-            "hash": "2e9a19f8a82bd1d7fc4fada595e6098efff1b19d2f861c8014923a75c6490d3e",
-            "url": "https://github.com/yt-dlp/yt-dlp/releases/tag/2026.01.31",
+            "remote_name": "yt-dlp_linux",
+            "version": "2026.02.04",
+            "hash": "051ed827a836f56772d662c38ebfabd8d613a21a39376737d56893184bcc53f8",
+            "url": "https://github.com/yt-dlp/yt-dlp/releases/tag/2026.02.04",
             "provider": "github",
-            "package_path": "yt-dlp_linux_aarch64",
+            "package_path": "",
             "pinned": false
         }
     }

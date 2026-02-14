@@ -3,7 +3,7 @@
 #
 # Created on: 08 Sep 2024
 # Created by gojun077
-# Last Updated: Sun 01 Feb 2026
+# Last Updated: Sat 14 Feb 2026
 #
 # These settings are sourced by the login shell
 
@@ -33,7 +33,7 @@ export XMODIFIERS="@im=fcitx"
 export KUBECONFIG=$HOME/.kube/config
 export EDITOR="emacsclient -nw"
 
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$GOPATH/bin:$GOROOT/bin:$HOME/.local/bin:$HOME/bin:$HOME/.tfenv/bin:$HOME/.krew/bin:$NVM_DIR:$PNPM_HOME"
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$GOPATH/bin:$GOROOT/bin:$HOME/.local/bin:$HOME/bin:$HOME/.tfenv/bin:$HOME/.krew/bin:$NVM_DIR:$PNPM_HOME:$HOME/Documents/local_build/emsdk:$HOME:/Documents/local_build/emsdk/upstream/emscripten"
 
 
 # add ssh privkeys to ssh-agent
