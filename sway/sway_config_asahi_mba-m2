@@ -5,7 +5,7 @@
 # Read `man 5 sway` for a complete reference.
 # Created on: 29 Jun 2024
 # Created by: gojun077@gmail.com
-# Last Updated: Sat 31 Jan 2026
+# Last Updated: Tue 17 Feb 2026
 
 
 ### Variables
@@ -116,7 +116,7 @@ input "14:13330:Mi_Silent_Mouse_5.0" {
   scroll_factor 1.0
 }
 
-input "1133:45111:MX_Anywhere_3S_Mouse" {
+input "1133:45111:Logitech_MX_Anywhere_3S" {
     accel_profile adaptive
     pointer_accel 0
     natural_scroll enabled  # scroll up moves screen down
