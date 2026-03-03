@@ -1,9 +1,9 @@
-" An example for a vimrc file.
+" vimrc for MacOS
 "
 " Maintainer:   Bram Moolenaar <Bram@vim.org> (RIP)
 " Last Updated:  2016-12-28
 " Customized by: Jun Go
-" Last change:  Mon 24 Nov 2025
+" Last change:  Tue 03 Mar 2026
 "
 " To use it, copy it to
 "     for Unix and OS/2:  ~/.vimrc
@@ -59,7 +59,7 @@ if &t_Co > 2 || has("gui_running")
   "default colors defined in '/usr/share/vim/vimXX/colors/'
   "colo elflord
   " Prefer Dracula if installed as a Vim package; fall back to Shine.
-  if isdirectory(expand('~/.vim/pack/themes/start/dracula'))
+  if isdirectory(expand('~/.vim/pack/git-plugins/start/dracula'))
     silent! colorscheme dracula
   else
     colorscheme shine
