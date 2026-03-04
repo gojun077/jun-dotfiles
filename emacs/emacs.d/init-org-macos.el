@@ -46,12 +46,12 @@
                       "\n")))))))
 
 (setq org-refile-targets
-      '(("~/Documents/repos/encrypted/gpj-org-mode-files/next_actions.org" :maxlevel . 1)
-        ("~/Documents/repos/encrypted/gpj-org-mode-files/projects.org" :level . 1)
-        ("~/Documents/repos/encrypted/gpj-org-mode-files/waiting_for.org" :level . 1)
-        ("~/Documents/repos/encrypted/gpj-org-mode-files/someday_maybe.org" :level . 1)
+      '(("~/Documents/repos/encrypted/pj-gtd-org/next_actions.org" :maxlevel . 1)
+        ("~/Documents/repos/encrypted/pj-gtd-org/projects.org" :level . 1)
+        ("~/Documents/repos/encrypted/pj-gtd-org/waiting_for.org" :level . 1)
+        ("~/Documents/repos/encrypted/pj-gtd-org/someday_maybe.org" :level . 1)
         ("~/Documents/repos/personal/org/capture.org" :level . 1)
-        ("~/Documents/repos/encrypted/gpj-org-mode-files/closed_cards.org" :level . 1)))
+        ("~/Documents/repos/encrypted/pj-gtd-org/closed_cards.org" :level . 1)))
 (setq org-default-notes-file (concat org-directory "/capture.org"))
 (setq org-capture-templates
       '(("t" "Todo" entry (file "")
