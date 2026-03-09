@@ -2,7 +2,7 @@
 -- PJ's Wezterm Config for MacOS
 -- Created on: May 12 2024
 -- Created by: gopeterjun@naver.com
--- Last Updated: May 12 2024
+-- Last Updated: Mon 09 Mar 2026
 
 -- Pull in the wezterm API
 local wezterm = require 'wezterm'
@@ -15,6 +15,11 @@ config.color_scheme = 'duskfox'
 config.font = wezterm.font 'Monofur Nerd Font Mono'
 config.font_size = 15.5
 config.enable_tab_bar = false
+
+config.colors = {
+    cursor_bg = '#52ad70',
+    cursor_fg = 'maroon'
+}
 
 -- and finally, return the configuration to wezterm
 return config
