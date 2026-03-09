@@ -3,7 +3,7 @@
 #
 # Created On: Sometime during Nov 2019
 # Created by: gopeterjun@naver.com
-# Last Updated: Tue 03 Mar 2026
+# Last Updated: Mon 09 Mar 2026
 
 # If not running interactively, don't do anything
 #[[ $- != *i* ]] && return
@@ -18,7 +18,7 @@ shopt -s histappend
 HISTSIZE=10000
 HISTFILESIZE=15000
 
-export EDITOR="/opt/homebrew/bin/emacsclient"
+export EDITOR="/opt/homebrew/bin/emacsclient -nw"
 #export TERM=screen-256color
 export TERM=xterm-256color
 
@@ -36,4 +36,3 @@ eval "$(fzf --bash)"
 
 source ~/.bash_aliases
 # vim: ts=2 sw=2 et :
-
