@@ -1,4 +1,10 @@
-# Last Updated: Wed 07 Jan 2026
+#!/usr/bin/env bash
+
+# Original path to file: ~/.bash_aliases
+# bash_aliases_macos
+# Created on: Sometime in 2021?
+# Last Updated: Tue 10 Mar 2026
+
 # enable color support of ls and also add handy aliases
 alias ls='ls --color=auto'
 alias grep='grep --color=auto'
@@ -12,6 +18,24 @@ alias ㅊㅇ='cd'
 alias 니='ls'
 alias screen="/usr/local/bin/screen"
 alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
-alias enox="/usr/local/bin/emacsclient"
+alias enox="/usr/local/bin/emacsclient -nw"
+
+# function to workaround linear-cli bug which leaves the terminal
+# in 'pendin' mode
+
+linear() {
+    # 'command' ensures we call the binary and not the function recursively
+    command linear-cli "$@"
+
+    # Capture the original exit code
+    local exit_code=$?
+
+    # Fix the TTY state (restores 'echo' and clears 'pendin')
+    stty sane
+
+    # Return the original exit code to the shell
+    return $exit_code
+}
+
 
 source ~/.bash_aliases_secure
