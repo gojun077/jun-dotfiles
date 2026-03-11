@@ -18,7 +18,7 @@ alias ㅊㅇ='cd'
 alias 니='ls'
 alias screen="/usr/local/bin/screen"
 alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
-alias enox="/usr/local/bin/emacsclient -nw"
+alias enox="/opt/homebrew/bin/emacsclient -nw"
 
 # SC override is to quiet the warning about non-constant path to source
 # shellcheck disable=SC1090
