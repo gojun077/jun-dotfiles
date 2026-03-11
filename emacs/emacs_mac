@@ -406,35 +406,45 @@
 (setq-default fill-column 75)
 (setq whitespace-line-column 80)
 (setq mouse-autoselect-window t)
+(global-display-fill-column-indicator-mode 1)
 
 ;; Define whitespace appearance
 (setq whitespace-style '(face tabs spaces trailing lines-tail
     space-before-tab newline indentation empty space-after-tab
     space-mark tab-mark newline-mark missing-newline-at-eof))
 
-;; Enable modes globally or via hooks
-(add-hook 'prog-mode-hook #'whitespace-mode)
-(global-display-fill-column-indicator-mode 1)
-
 ;; UI Elements (Usually global, best to disable here)
 (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+(when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+
+(defun my/maybe-enable-whitespace ()
+  "Enable whitespace-mode only if we are in a graphical frame."
+  (if (display-graphic-p)
+      (whitespace-mode 1)
+    (whitespace-mode -1)))
+
+(add-hook 'prog-mode-hook #'my/maybe-enable-whitespace)
 
 ;; ==========================================
 ;; 2. Dynamic Frame Logic (Theming)
 ;; ==========================================
 
-
 (defun my/apply-theme-by-frame-type (frame)
-  "Load appropriate theme based on GUI or Terminal capability."
+  "Load leuven for GUI frames; do nothing to global themes for TTY frames."
   (with-selected-frame frame
-    (mapc #'disable-theme custom-enabled-themes)
-    ;; Passing 'frame' to display-graphic-p ensures it checks the 
-    ;; specific frame being created, not the 'current' one.
     (if (display-graphic-p frame)
-        (load-theme 'leuven t)
-      (load-theme 'adwaita t)
-      (menu-bar-mode -1))))
+        (progn
+          ;; Only disable/load if leuven isn't already the active theme
+          (unless (custom-theme-enabled-p 'leuven)
+            (mapc #'disable-theme custom-enabled-themes)
+            (load-theme 'leuven t)
+            ;; Enable modes globally or via hooks
+            (add-hook 'prog-mode-hook #'whitespace-mode)))
+      ;; For Terminal frames: don't load ws-mode
+      ;; TODO: add face remapping or other tweaks for terminal
+      (progn
+        (setq-local whitespace-mode nil)))))
 
 ;; 1. Handle all future frames (emacsclient)
 (add-hook 'after-make-frame-functions
