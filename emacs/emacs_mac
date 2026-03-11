@@ -3,7 +3,7 @@
 ;; .emacs for MacOS
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Mon 09 Mar 2026
+;; Last Updated: Wed 11 Mar 2026
 ;;
 ;; This config file is for Emacs 30 and above on Apple Silicon
 ;;; Code:
@@ -169,12 +169,13 @@
   :straight t
   ; enable copy-paste to and from system clipboard in emacs nw mode
   ; MacOS
-  :config (setq xclip-program "pbcopy")
-          (setq xclip-select-enable-clipboard t)
-          (setq xclip-mode t)
-          ; copy from emacs -nw terminal session to system clipboard
-          ; https://github.com/emacsmirror/xclip/blob/ec064e6ea9b236e56c0966b2ce03870a12a5d78d/xclip.el#L33
-          (setq xclip-method (quote pbcopy)))
+  :config
+  (xclip-mode 1)
+  ; MacOS specific commands
+  (setq xclip-program "pbcopy")
+  (setq xclip-method 'pbcopy)
+  ; ensure it enables clipboard selection
+  (setq xclip-select-enable-clipboard t))
 (use-package yaml-mode
   :straight t
   :hook ((yaml-mode . flymake-yamllint-setup)
@@ -395,55 +396,37 @@
         ("Asia/Seoul" "Seoul")))
 
 
-;; Commands to run when Emacs launched in graphical mode
-(when (or (display-graphic-p) (daemonp))
-  ;; --- whitespace-mode settings ---
-  ; only run whitespace mode in graphical session
-  ; highlight long lines
-  (setq whitespace-line-column 80)
-  ; define 'whitespace-style' variable
-  (setq whitespace-style '(face tabs spaces trailing lines-tail
-      space-before-tab newline indentation empty space-after-tab
-      space-mark tab-mark newline-mark missing-newline-at-eof))
-  ; enable whitespace-mode for programming buffers only
-  (add-hook 'prog-mode-hook #'whitespace-mode)
-  ;; --- end whitespace-mode settings ---
+;; Emacs settings GUI vs terminal (emacsclient -nw)
+(defun my/apply-theme-and-settings (frame)
+  "Apply settings based on whether the frame is graphic or terminal."
+  (with-selected-frame frame
+    (if (display-graphic-p)
+        (progn
+          (load-theme 'leuven t)
+          ; enable native fill column indicator (emacs 27+)
+          (global-display-fill-column-indicator-mode 1)
+          (setq-default fill-column 75)
+          ; define 'whitespace-style' variable
+          (setq whitespace-style '(face tabs spaces trailing lines-tail
+              space-before-tab newline indentation empty space-after-tab
+              space-mark tab-mark newline-mark missing-newline-at-eof))
+          ; enable whitespace-mode for programming buffers only
+          (add-hook 'prog-mode-hook #'whitespace-mode)
+          (setq whitespace-line-column 80)
+          (scroll-bar-mode -1)
+          (tool-bar-mode -1)
+          ; focus follows mouse
+          (setq mouse-autoselect-window t))
+      (progn
+        (load-theme 'adwaita t)
+        (menu-bar-mode -1)
+        (tool-bar-mode -1)))))
 
-  ; limit line length
-  (setq whitespace-line-column 80)
-  ; set fill column to 75
-  (setq-default fill-column 75)
-  ; enable native fill column indicator (included in emacs 27+)
-  (global-display-fill-column-indicator-mode 1)
-  ; disable scrollbar
-  (scroll-bar-mode -1)
-  ; disable toolbar
-  (tool-bar-mode -1)
-  ; focus follows mouse within emacs
-  (setq mouse-autoselect-window t)
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ; Emacs color themes
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (load-theme 'leuven t)
-)
+;; Apply display settings to the initial frame
+(my/apply-theme-and-settings (selected-frame))
 
-;; Commands to run when Emacs launched in terminal mode
-(unless (display-graphic-p)
-  (load-theme 'adwaita t)
-  ; disable text-based menu bar
-  (menu-bar-mode -1)
-  ; disable toolbar (for consistency with GUI settings)
-  (tool-bar-mode -1)
-  ; identify terminal emulator
-  (add-hook 'tty-setup-hook
-          (lambda ()
-            (xterm-mouse-mode 1)
-            (terminal-cursor-change-mode 1)))
-  ; force cursor to appear in -nw no window mode
-  (setq-default cursor-type 'box)
-  (unless (fboundp 'terminal-cursor-change-mode)
-    ; Sending a raw VT100 code to blink/show
-    (send-string-to-terminal "\e[5m")))
+;; Apply settings to every new frame created by emacsclient
+(add-hook 'after-make-frame-functions #'my/apply-theme-and-settings)
 
 ;; Font settings - note that this must be set *after* (load-theme)
 ;; to avoid conflicts with the theme
