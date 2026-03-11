@@ -3,7 +3,7 @@
 #
 # Created On: Sometime during Nov 2019
 # Created by: gopeterjun@naver.com
-# Last Updated: Mon 09 Mar 2026
+# Last Updated: Wed 11 Mar 2026
 
 # If not running interactively, don't do anything
 #[[ $- != *i* ]] && return
@@ -34,5 +34,7 @@ eval "$(fzf --bash)"
 # M-c fuzzy `cd`
 # ** <TAB> fuzzy completion in shell command
 
+# SC override is to quiet the warning about non-constant path to source
+# shellcheck disable=SC1090
 source ~/.bash_aliases
 # vim: ts=2 sw=2 et :
