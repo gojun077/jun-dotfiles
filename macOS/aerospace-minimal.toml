@@ -25,10 +25,10 @@ outer.right =      0
 [mode.main.binding]
 cmd-slash = 'layout tiles horizontal vertical'
 cmd-comma = 'layout accordion horizontal vertical'
-cmd-h = 'focus left'
-cmd-j = 'focus down'
-cmd-k = 'focus up'
-cmd-l = 'focus right'
+alt-cmd-h = 'focus left'
+alt-cmd-j = 'focus down'
+alt-cmd-k = 'focus up'
+alt-cmd-l = 'focus right'
 
 alt-shift-h = 'move left'
 alt-shift-j = 'move down'
@@ -41,6 +41,7 @@ cmd-m = 'fullscreen'
 
 cmd-right = 'workspace next'
 cmd-left = 'workspace prev'
+cmd-0 = 'workspace 0'
 cmd-1 = 'workspace 1'
 cmd-2 = 'workspace 2'
 cmd-3 = 'workspace 3'
@@ -51,6 +52,7 @@ cmd-7 = 'workspace 7'
 cmd-8 = 'workspace 8'
 cmd-9 = 'workspace 9'
 
+alt-shift-0 = 'move-node-to-workspace 0'
 alt-shift-1 = 'move-node-to-workspace 1'
 alt-shift-2 = 'move-node-to-workspace 2'
 alt-shift-3 = 'move-node-to-workspace 3'
@@ -81,6 +83,7 @@ up = 'volume up'
 shift-down = ['volume set 0', 'mode main']
 
 [workspace-to-monitor-force-assignment]
+0 = 'main'
 1 = 'main'
 2 = 'main'
 3 = 'main'
@@ -89,3 +92,4 @@ shift-down = ['volume set 0', 'mode main']
 6 = 'secondary'
 7 = 'secondary'
 8 = 'secondary'
+9 = 'secondary'
