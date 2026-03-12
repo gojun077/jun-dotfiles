@@ -117,7 +117,9 @@
              :branch "move-board-on-refile"
              :protocol ssh
              :build (:not compile))
-  :defer t)
+  :defer t
+  :custom
+  (org-trello-current-prefix-keybinding "C-c t"))
 ;; disable project.el
 (straight-use-package '(project :type built-in :no-build t))
 ;; Projectile for project management
@@ -273,7 +275,6 @@
  '(epg-gpg-program "/usr/local/MacGPG2/bin/gpg2")
  '(org-agenda-files
    '("~/Documents/repos/encrypted/gpj-org-mode-files/next_actions.org"))
- '(org-trello-current-prefix-keybinding "C-c o" nil (org-trello))
  '(package-selected-packages
    '(org-trello exec-path-from-shell go-mode go-playground rainbow-delimiters
                 magit smartparens web-mode yaml-mode racket-mode paredit
