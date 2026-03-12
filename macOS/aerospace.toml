@@ -126,6 +126,19 @@ cmd-m = 'fullscreen'
 
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace
+
+# Jump focus to the next physical monitor
+cmd-alt-right = 'focus-monitor next'
+cmd-alt-left = 'focus-monitor prev'
+
+# Move to the next workspace (Right)
+cmd-right = 'workspace next'
+# Move to the next workspace (Left)
+cmd-left = 'workspace prev'
+# NOTE: the above two commands will only work for workspaces that exist
+# on the *same* display! To change between workspaces on different
+# monitors, it is better to 'jump' to the workspace via the hotkeys below
+
 cmd-1 = 'workspace 1'
 cmd-2 = 'workspace 2'
 cmd-3 = 'workspace 3'

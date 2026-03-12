@@ -39,6 +39,8 @@ alt-shift-minus = 'resize smart -50'
 alt-shift-equal = 'resize smart +50'
 cmd-m = 'fullscreen'
 
+cmd-right = 'workspace next'
+cmd-left = 'workspace prev'
 cmd-1 = 'workspace 1'
 cmd-2 = 'workspace 2'
 cmd-3 = 'workspace 3'
