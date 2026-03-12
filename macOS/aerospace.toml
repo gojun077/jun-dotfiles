@@ -108,10 +108,10 @@ cmd-slash = 'layout tiles horizontal vertical'
 cmd-comma = 'layout accordion horizontal vertical'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#focus
-cmd-h = 'focus left'
-cmd-j = 'focus down'
-cmd-k = 'focus up'
-cmd-l = 'focus right'
+alt-cmd-h = 'focus left'
+alt-cmd-j = 'focus down'
+alt-cmd-k = 'focus up'
+alt-cmd-l = 'focus right'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#move
 alt-shift-h = 'move left'
@@ -139,6 +139,7 @@ cmd-left = 'workspace prev'
 # on the *same* display! To change between workspaces on different
 # monitors, it is better to 'jump' to the workspace via the hotkeys below
 
+cmd-0 = 'workspace 0'
 cmd-1 = 'workspace 1'
 cmd-2 = 'workspace 2'
 cmd-3 = 'workspace 3'
@@ -172,6 +173,7 @@ cmd-9 = 'workspace 9'
 # cmd-z = 'workspace Z'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
+alt-shift-0 = 'move-node-to-workspace 0'
 alt-shift-1 = 'move-node-to-workspace 1'
 alt-shift-2 = 'move-node-to-workspace 2'
 alt-shift-3 = 'move-node-to-workspace 3'
@@ -233,6 +235,7 @@ up = 'volume up'
 shift-down = ['volume set 0', 'mode main']
 
 [workspace-to-monitor-force-assignment]
+0 = 'main'
 1 = 'main'
 2 = 'main'
 3 = 'main'
@@ -241,3 +244,4 @@ shift-down = ['volume set 0', 'mode main']
 6 = 'secondary'
 7 = 'secondary'
 8 = 'secondary'
+9 = 'secondary'
