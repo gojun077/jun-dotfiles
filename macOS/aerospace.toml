@@ -1,7 +1,7 @@
 # ~/.aerospace.toml
 #
 # Created on: Thu 12 Mar 2026
-# Last Updated: Thu 12 Mar 2026
+# Last Updated: Fri 13 Mar 2026
 #
 # Tiling Window Manager for MacOS
 
@@ -212,7 +212,7 @@ alt-tab = 'workspace-back-and-forth'
 alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#mode
-alt-shift-semicolon = 'mode service'
+cmd-shift-semicolon = 'mode service'
 
 # 'service' binding mode declaration.
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
