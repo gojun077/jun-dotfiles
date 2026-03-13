@@ -114,14 +114,21 @@
 (use-package org-trello
   :straight (:host github
              :repo "gojun077/org-trello"
-             :branch "move-board-on-refile"
+             :branch "disable-ot-indent"
              :protocol ssh
              :build (:not compile))
   :defer t
   :hook
-  ;; workaround for org-trello still holding onto "C-c o" keybinding
+;; workaround for org-trello still holding onto "C-c o" keybinding
   (org-trello-mode . (lambda ()
                        (define-key org-trello-mode-map (kbd "C-c o") nil))))
+
+;; Keep org-indent-mode
+(with-eval-after-load 'org-trello
+  (advice-add 'org-trello-mode :after
+              (lambda (&rest _)
+                (when org-trello-mode
+                  (org-indent-mode 1)))))
 
 ;; disable project.el
 (straight-use-package '(project :type built-in :no-build t))
@@ -276,8 +283,6 @@
    '("535a9d9aef8fcd962a71a73fce5ddf37edbc62859af6f9d57138207c55e3fc17"
      default))
  '(epg-gpg-program "/usr/local/MacGPG2/bin/gpg2")
- '(org-agenda-files
-   '("~/Documents/repos/encrypted/gpj-org-mode-files/next_actions.org"))
  '(org-trello-current-prefix-keybinding "C-c t" nil (org-trello))
  '(package-selected-packages
    '(org-trello exec-path-from-shell go-mode go-playground rainbow-delimiters
