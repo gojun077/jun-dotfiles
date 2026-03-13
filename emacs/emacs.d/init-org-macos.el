@@ -2,7 +2,7 @@
 ; Original path to file: ~/.emacs.d/init-org.el
 ;
 ; Created on: Sun 21 Sep 2025
-; Last Updated: Thu 12 Mar 2026
+; Last Updated: Fri 13 Mar 2026
 ;
 ;------------------------------------------------------------
 ; org-mode settings
@@ -35,7 +35,7 @@
               (let ((end (save-excursion (outline-next-heading) (point))))
                 ;; Check if a "CREATED:" line already exists in this entry
                 (unless (save-excursion
-                          (re-search-forward "CREATED: \\[" end t))
+                          (re-search-forward "  CREATED: \\[" end t))
                   ;; Move to the line right after the heading
                   (forward-line 1)
                   (beginning-of-line)
@@ -56,11 +56,11 @@
                         (progn
                           (forward-line 1)   ; return to line after heading
                           (beginning-of-line)
-                          (insert (concat "CREATED: "
+                          (insert (concat "  CREATED: "
                                           (format-time-string "[%Y-%m-%d %a %H:%M]")
                                           "\n"))))
                     ;; No properties drawer – insert directly after the heading line
-                    (insert (concat "CREATED: "
+                    (insert (concat "  CREATED: "
                                     (format-time-string "[%Y-%m-%d %a %H:%M]")
                                     "\n"))))))))
 
