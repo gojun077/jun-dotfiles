@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Sat 14 Mar 2026
+;; Last Updated: Sun 15 Mar 2026
 ;;
 ;; These configs are for Emacs 30.1 and higher.
 ;;; Code:
@@ -100,6 +100,14 @@
 (use-package markdown-mode
   :straight t
   :defer t)
+(use-package markdown-mode
+  :straight t
+  :defer t
+  :hook (markdown-mode . visual-line-mode)
+  :config
+  ;; Optional: ensures wrapped lines maintain indentation
+  (when (fboundp 'adaptive-wrap-prefix-mode)
+    (add-hook 'markdown-mode-hook #'adaptive-wrap-prefix-mode)))
 ;; mcp.el
 (use-package mcp
   :straight (:host github :repo "lizqwerscott/mcp.el")
@@ -112,6 +120,7 @@
   (setq ob-mermaid-cli-path "/home/jundora/.nix-profile/bin/mmdc"))
 (use-package org
   :straight t
+  :hook (org-mode . visual-line-mode)
   :config
   (require 'org-protocol)
   (require 'ox-md)
@@ -439,6 +448,18 @@
 ; bind to C-\
 (global-set-key (kbd "C-\\") 'cycle-input-method)
 ;; --- end IME settings ---
+
+;; --- custom function unfill-paragraph 'M-Q' ---
+; opposite of default 'M-q' fill-paragraph
+(defun my/unfill-paragraph ()
+  "Convert a multi-line paragraph into a single line of text."
+  (interactive)
+  (let ((fill-column (point-max)))
+    (fill-paragraph)))
+
+;; Bind it to a convenient key, perhaps near M-q
+(global-set-key (kbd "M-Q") 'my/unfill-paragraph)
+;; --- end custom function unfill-paragraph ---
 
 ; Start emacs maximized
 (setq initial-frame-alist (quote ((fullscreen . maximized))))
