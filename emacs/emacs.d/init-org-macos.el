@@ -41,7 +41,7 @@
                   (beginning-of-line)
                   ;; Look for a properties drawer in the entry body
                   (if (re-search-forward "^\\s-*:PROPERTIES:\\s-*$" end t)
-                      ;; Drawer found – find its closing :END: line
+                      ;; Drawer found - find its closing :END: line
                       (if (re-search-forward "^\\s-*:END:\\s-*$" end t)
                           (progn
                             ;; Go to the end of the :END: line, then to the next line
@@ -52,14 +52,14 @@
                             (insert (concat "  CREATED: "
                                             (format-time-string "[%Y-%m-%d %a %H:%M]")
                                             "\n")))
-                        ;; Malformed drawer (no :END:) – fall back to inserting after heading
+                        ;; Malformed drawer (no :END:) - fall back to inserting after heading
                         (progn
                           (forward-line 1)   ; return to line after heading
                           (beginning-of-line)
                           (insert (concat "  CREATED: "
                                           (format-time-string "[%Y-%m-%d %a %H:%M]")
                                           "\n"))))
-                    ;; No properties drawer – insert directly after the heading line
+                    ;; No properties drawer - insert directly after the heading line
                     (insert (concat "  CREATED: "
                                     (format-time-string "[%Y-%m-%d %a %H:%M]")
                                     "\n"))))))))
