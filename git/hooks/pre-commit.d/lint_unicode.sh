@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# .git/hooks/pre-commit (for dotfiles repo)
+#
+# Created on: Sun 14 Sep 2025
+# Last Updated: Sun 14 Sep 2025
+
+# Get the top-level directory of the Git repository
+GIT_DIR=$(git rev-parse --git-dir)
+
+echo "--- Running pre-commit hook ---"
+
+# Define the full path to your checker script
+CHECKER_SCRIPT="$GIT_DIR/scripts/check_illegal_chars.py"
+
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=AM)
+
+if [ -z "$STAGED_FILES" ]; then
+  echo "No staged files to check. Skipping."
+  exit 0
+fi
+
+echo "Checking the following staged files:"
+echo "$STAGED_FILES"
+echo "---------------------------------"
+
+# Run the Python checker on the staged files.
+"$CHECKER_SCRIPT" "$STAGED_FILES"
+
+# Capture the exit code of the script
+EXIT_CODE=$?
+
+if [ $EXIT_CODE -ne 0 ]; then
+  echo "---------------------------------"
+  echo "Pre-commit check failed. Aborting commit."
+  exit 1
+fi
+
+echo "Pre-commit check passed."
+exit 0
