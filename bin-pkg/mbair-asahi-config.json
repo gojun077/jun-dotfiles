@@ -24,9 +24,9 @@
         "/home/jundora/.local/bin/codex": {
             "path": "/home/jundora/.local/bin/codex",
             "remote_name": "codex",
-            "version": "rust-v0.101.0",
-            "hash": "8f387fa7c1b7e206d6fd8d2e4aa24ef19fb8a842622a71c0555bc5d40cd823f1",
-            "url": "https://github.com/openai/codex/releases/tag/rust-v0.101.0",
+            "version": "rust-v0.114.0",
+            "hash": "47da2ec8209ced6102d9817551eae0751320e9ee8453df5a2d33dec685af1935",
+            "url": "https://github.com/openai/codex/releases/tag/rust-v0.114.0",
             "provider": "github",
             "package_path": "package/vendor/aarch64-unknown-linux-musl/codex/codex",
             "pinned": false
@@ -34,9 +34,9 @@
         "/home/jundora/.local/bin/duckdb": {
             "path": "/home/jundora/.local/bin/duckdb",
             "remote_name": "",
-            "version": "v1.4.4",
-            "hash": "7afbc86097dfc63c38cec773dfcb1e633bbd6b49ffda85ab43baad056d01fd66",
-            "url": "https://github.com/duckdb/duckdb/releases/tag/v1.4.4",
+            "version": "v1.5.0",
+            "hash": "4969d57198702859ac7c942e5fa4ef2495d9d6072edc1018a5f0e15cd430ab97",
+            "url": "https://github.com/duckdb/duckdb/releases/tag/v1.5.0",
             "provider": "github",
             "package_path": "",
             "pinned": false
@@ -44,11 +44,11 @@
         "/home/jundora/.local/bin/gh": {
             "path": "/home/jundora/.local/bin/gh",
             "remote_name": "gh",
-            "version": "v2.86.0",
-            "hash": "ddaf8e51406aba3d400a91487371967160c3c589368b0c4a74413a0f9591f2f6",
-            "url": "https://github.com/cli/cli/releases/tag/v2.86.0",
+            "version": "v2.88.1",
+            "hash": "522ded90b0441ddd1c64047ffc70ce6e96be1c9bb1ed20ebc2b72323ab46cd0f",
+            "url": "https://github.com/cli/cli/releases/tag/v2.88.1",
             "provider": "github",
-            "package_path": "gh_2.86.0_linux_arm64/bin/gh",
+            "package_path": "gh_2.88.1_linux_arm64/bin/gh",
             "pinned": false
         },
         "/home/jundora/.local/bin/git-filter-repo": {
@@ -83,10 +83,10 @@
         },
         "/home/jundora/.local/bin/yt-dlp": {
             "path": "/home/jundora/.local/bin/yt-dlp",
-            "remote_name": "yt-dlp_linux",
-            "version": "2026.02.04",
-            "hash": "051ed827a836f56772d662c38ebfabd8d613a21a39376737d56893184bcc53f8",
-            "url": "https://github.com/yt-dlp/yt-dlp/releases/tag/2026.02.04",
+            "remote_name": "yt-dlp_linux_aarch64",
+            "version": "2026.03.13",
+            "hash": "84b6e347d047bffa175d7ca7f6d31ba0741b4d3abbc13f35b9beb2a64e2934dc",
+            "url": "https://github.com/yt-dlp/yt-dlp/releases/tag/2026.03.13",
             "provider": "github",
             "package_path": "",
             "pinned": false
