@@ -2,7 +2,7 @@
 ; Original path to file: ~/.emacs.d/init-org.el
 ;
 ; Created on: Mon 15 Sep 2025
-; Last Updated: Mon 15 Sep 2025
+; Last Updated: Sat 14 Mar 2026
 ;
 ;------------------------------------------------------------
 ; org-mode settings
@@ -31,27 +31,46 @@
           (lambda ()
             (save-excursion
               (org-back-to-heading)
-              (let ((text (buffer-substring (point) (progn (outline-next-heading) (point)))))
-                (if (string-match "CREATED: " text)
-                    ;; if string was found, noop
-                    nil
-                  ;; else, (1) move cursor back to current heading
-                  (outline-previous-heading)
-                  ;;(end-of-line)
-                  ;; (2) insert timestamp on next line
+              ;; Determine the end of the current entry's body (before the next heading)
+              (let ((end (save-excursion (outline-next-heading) (point))))
+                ;; Check if a "CREATED:" line already exists in this entry
+                (unless (save-excursion
+                          (re-search-forward "  CREATED: \\[" end t))
+                  ;; Move to the line right after the heading
                   (forward-line 1)
-                  (insert (concat "CREATED: "
-                      (format-time-string "[%Y-%m-%d %a %H:%M]"
-                                          (current-time))
-                      "\n")))))))
+                  (beginning-of-line)
+                  ;; Look for a properties drawer in the entry body
+                  (if (re-search-forward "^\\s-*:PROPERTIES:\\s-*$" end t)
+                      ;; Drawer found - find its closing :END: line
+                      (if (re-search-forward "^\\s-*:END:\\s-*$" end t)
+                          (progn
+                            ;; Go to the end of the :END: line, then to the next line
+                            (goto-char (match-end 0))
+                            (forward-line 1)
+                            (beginning-of-line)
+                            ;; Insert the timestamp (indented by 2 spaces)
+                            (insert (concat "  CREATED: "
+                                            (format-time-string "[%Y-%m-%d %a %H:%M]")
+                                            "\n")))
+                        ;; Malformed drawer (no :END:) - fall back to inserting after heading
+                        (progn
+                          (forward-line 1)   ; return to line after heading
+                          (beginning-of-line)
+                          (insert (concat "  CREATED: "
+                                          (format-time-string "[%Y-%m-%d %a %H:%M]")
+                                          "\n"))))
+                    ;; No properties drawer - insert directly after the heading line
+                    (insert (concat "  CREATED: "
+                                    (format-time-string "[%Y-%m-%d %a %H:%M]")
+                                    "\n"))))))))
 
 (setq org-refile-targets
-      '(("~/Documents/repos/encrypted/gpj-org-mode-files/next_actions.org" :maxlevel . 1)
-        ("~/Documents/repos/encrypted/gpj-org-mode-files/projects.org" :level . 1)
-        ("~/Documents/repos/encrypted/gpj-org-mode-files/waiting_for.org" :level . 1)
-        ("~/Documents/repos/encrypted/gpj-org-mode-files/someday_maybe.org" :level . 1)
+      '(("~/Documents/repos/encrypted/pj-gtd-org/next_actions.org" :maxlevel . 1)
+        ("~/Documents/repos/encrypted/pj-gtd-org/projects.org" :level . 1)
+        ("~/Documents/repos/encrypted/pj-gtd-org/waiting_for.org" :level . 1)
+        ("~/Documents/repos/encrypted/pj-gtd-org/someday_maybe.org" :level . 1)
         ("~/Documents/repos/personal/org/capture.org" :level . 1)
-        ("~/Documents/repos/encrypted/gpj-org-mode-files/closed_cards.org" :level . 1)))
+        ("~/Documents/repos/encrypted/pj-gtd-org/closed_cards.org" :level . 1)))
 (setq org-default-notes-file (concat org-directory "/capture.org"))
 (setq org-capture-templates
       '(("t" "Todo" entry (file "")
