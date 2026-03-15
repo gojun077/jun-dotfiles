@@ -113,9 +113,7 @@
   (setq ob-mermaid-cli-path "/home/jundora/.nix-profile/bin/mmdc"))
 (use-package org
   :straight t
-  :hook (org-mode . (lambda ()
-                      (unless (bound-and-true-p my-org-disable-visual-line)
-                        (visual-line-mode 1))))
+  :hook (org-mode . visual-line-mode)
   :config
   (require 'org-protocol)
   (require 'ox-md)
@@ -355,9 +353,6 @@
              exec-path-from-shell))
  '(pdf-latex-command "xetex")
  '(python-shell-completion-native-disabled-interpreters '("pypy ipython3"))
- '(safe-local-variable-values
-   '((eval my-org-disable-visual-line 1) (my-org-disable-visual-line . t)
-     (visual-line-mode)))
  '(warning-suppress-types '((comp))))
 
 
@@ -370,9 +365,6 @@
   (server-mode 1))
 ; confirmation 'yes/no' to 'y/n'
 (fset 'yes-or-no-p 'y-or-n-p)
-; custom flag var for disabling visual-line-mode
-(defvar-local my-org-disable-visual-line nil
-  "If non-nil, `visual-line-mode' will not be enabled in this Org buffer.")
 ; show col and line numbers
 (column-number-mode 1)
 ; highlight parens
