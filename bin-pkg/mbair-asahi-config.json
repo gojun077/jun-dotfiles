@@ -31,6 +31,16 @@
             "package_path": "package/vendor/aarch64-unknown-linux-musl/codex/codex",
             "pinned": false
         },
+        "/home/jundora/.local/bin/dolt": {
+            "path": "/home/jundora/.local/bin/dolt",
+            "remote_name": "dolt",
+            "version": "v1.83.6",
+            "hash": "2aa423cee29dd936925dac7b1ad95acaa1d92cad4c673c70d0cc6bf9efbd3ff3",
+            "url": "github.com/dolthub/dolt/releases",
+            "provider": "github",
+            "package_path": "dolt-linux-arm64/bin/dolt",
+            "pinned": false
+        },
         "/home/jundora/.local/bin/duckdb": {
             "path": "/home/jundora/.local/bin/duckdb",
             "remote_name": "",
