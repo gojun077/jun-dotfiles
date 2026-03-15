@@ -15,28 +15,23 @@
 ;; Install use-package
 (straight-use-package 'use-package)
 
-(use-package acp
-  :straight (:host github :repo "xenodium/acp.el")
-  :defer t
-  :config
-  (require 'acp))
+; I use 'adaptive-wrap-prefix-mode' only in 'markdown-mode' for properly
+; indenting bullet text long lines
+; NOTE: it doesn't work with 'org-mode' - use 'org-indent-mode' instead
+(use-package adaptive-wrap
+  :straight t)
 (use-package agent-shell
-  :straight (:host github :repo "xenodium/agent-shell")
+  :straight t
+  :ensure t
   :defer t
   :config
-  (setq agent-shell-anthropic-authentication
-      (agent-shell-anthropic-make-authentication
-       :api-key (lambda () (auth-source-pass-get "secret"
-                                                 "anthropic-api-key"))))
+  (setq agent-shell-anthropic-claude-environment
+        (agent-shell-make-environment-variables
+         "ANTHROPIC_API_KEY" (auth-source-pass-get "secret" "anthropic-api-key")))
   (setq agent-shell-google-authentication
-        (agent-shell-google-make-authentication
-         :api-key (lambda () (auth-source-pass-get "secret"
-                                                   "google-api-key"))))
-  (setq agent-shell-openai-authentication
-        (agent-shell-openai-make-authentication
-         :api-key (lambda () (auth-source-pass-get "secret"
-                                                   "openai-api-key"))))
-  (require 'agent-shell))
+        (agent-shell-make-environment-variables
+         "GEMINI_API_KEY" (auth-source-pass-get "secret" "google-api-key")))
+)
 (use-package ansible
   :straight t
   :defer t)
@@ -105,9 +100,7 @@
   :defer t
   :hook (markdown-mode . visual-line-mode)
   :config
-  ;; Optional: ensures wrapped lines maintain indentation
-  (when (fboundp 'adaptive-wrap-prefix-mode)
-    (add-hook 'markdown-mode-hook #'adaptive-wrap-prefix-mode)))
+  (add-hook 'markdown-mode-hook #'adaptive-wrap-prefix-mode))
 ;; mcp.el
 (use-package mcp
   :straight (:host github :repo "lizqwerscott/mcp.el")
@@ -120,7 +113,9 @@
   (setq ob-mermaid-cli-path "/home/jundora/.nix-profile/bin/mmdc"))
 (use-package org
   :straight t
-  :hook (org-mode . visual-line-mode)
+  :hook (org-mode . (lambda ()
+                      (unless (bound-and-true-p my-org-disable-visual-line)
+                        (visual-line-mode 1))))
   :config
   (require 'org-protocol)
   (require 'ox-md)
@@ -207,6 +202,9 @@
   :defer t)
 (use-package visual-fill-column
   :straight t)
+(use-package vterm
+  :straight t
+  :ensure t)
 (use-package web-mode
   :straight t
   :defer t)
@@ -352,11 +350,14 @@
  ;; If there is more than one, they won't work right.
  '(org-trello-current-prefix-keybinding "C-c t" nil (org-trello))
  '(package-selected-packages
-   '(go-mode yaml-mode web-mode go-playground smartparens
-             ansible rainbow-delimiters racket-mode markdown-mode magit
+   '(go-mode yaml-mode web-mode go-playground smartparens ansible
+             rainbow-delimiters racket-mode markdown-mode magit
              exec-path-from-shell))
  '(pdf-latex-command "xetex")
  '(python-shell-completion-native-disabled-interpreters '("pypy ipython3"))
+ '(safe-local-variable-values
+   '((eval my-org-disable-visual-line 1) (my-org-disable-visual-line . t)
+     (visual-line-mode)))
  '(warning-suppress-types '((comp))))
 
 
@@ -367,32 +368,28 @@
 ; start emacs in server mode
 (unless noninteractive
   (server-mode 1))
-
-; ensure GPG password input is handled by emacs during emacs session
-;(setenv "GPG_AGENT_INFO" nil)
-
+; confirmation 'yes/no' to 'y/n'
+(fset 'yes-or-no-p 'y-or-n-p)
+; custom flag var for disabling visual-line-mode
+(defvar-local my-org-disable-visual-line nil
+  "If non-nil, `visual-line-mode' will not be enabled in this Org buffer.")
 ; show col and line numbers
 (column-number-mode 1)
 ; highlight parens
 (show-paren-mode t)
-
 ; specify UTF-8 encoding for all buffers
-(setq set-language-environment "UTF-8")
 (set-language-environment "UTF-8")
 (set-default-coding-systems 'utf-8)
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
 (prefer-coding-system 'utf-8)
 (setq default-buffer-file-coding-system 'utf-8)
-
 ; Use spaces instead of tabs
 (setq-default indent-tabs-mode nil)
 ; But when I must use TAB, set width to 2 chars
 (setq-default tab-width 2)
-
 ; keep dired uncluttered (only one buffer at a time)
 (put 'dired-find-alternate-file 'disabled nil)
-
 ; shell script mode formatting
 (setq sh-basic-offset 2)
 (setq sh-indentation 2)
@@ -463,20 +460,38 @@
 
 ; Start emacs maximized
 (setq initial-frame-alist (quote ((fullscreen . maximized))))
-; create backups in $HOME/tmp
+
+;; --- backups and history ---
+; create backups in $HOME/.config/
 ; bkup files will have '!' in place of directory separator '/'
-(setq backup-directory-alist '(("" . "~/tmp")))
+(setq backup-directory-alist '(("" . "~/.config/emacs/backups")))
 ; Enable temp files and autosaving
 (setq make-backup-files t)
+(setq auto-save-default t)
+; don't create backup files in TRAMP mode
+(with-eval-after-load 'tramp
+  (setq tramp-backup-directory-alist nil))
+(setq savehist-file "~/.config/emacs/savehist")
+(savehist-mode 1)
+(setq history-length t)
+(setq history-delete-duplicates t)
+(setq savehist-save-minibuffer-history 1)
+(setq savehist-additional-variables
+      '(kill-ring
+        search-ring
+        regexp-search-ring))
+;; --- end backups and history ---
+
 ; use Pandoc as default renderer for markdown
 (setq markdown-command "/usr/bin/pandoc")
-; start ispell settings
+
+;; --- ispell settings ---
 (with-eval-after-load "ispell"
   ;; Ensure hunspell is the spell-checking backend
   (setq ispell-program-name "/usr/bin/hunspell")
   (setq ispell-dictionary "en_US,ko_KR"))
-; end ispell settings
-(setq auto-save-default t)
+;; --- end ispell settings ---
+
 ; Enable C-l, C-u change region to lower/upper case
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
