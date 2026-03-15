@@ -10,7 +10,11 @@
 # requires that `shellcheck` linter be installed locally
 
 # bash array to store list of shell scripts to be committed
-gitfiles=$(git diff-index --cached --name-only HEAD | grep -E '\.(sh)|\.(bash)')
+gitfiles=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.(sh|bash)$')
+
+if [ -z "$gitfiles" ]; then
+  exit 0
+fi
 
 function test_file() {
   myfile="${1}"
@@ -19,8 +23,8 @@ function test_file() {
     return
   fi
 
-  printf "%s\\n" "Linting shell script with *shellcheck*..."
-  if test shellcheck; then
+  printf "%s\\n" "Linting shell script with *shellcheck*: ${myfile}..."
+  if command -v shellcheck >/dev/null 2>&1; then
     shellcheck "${myfile}"
   else
     printf "%s\\n" "'shellcheck' not found in PATH; please install shellcheck"

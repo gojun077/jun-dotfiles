@@ -10,7 +10,11 @@
 # requires that `jq` be installed locally.
 
 # bash array to store list of .json files to be committed
-gitfiles=$(git diff-index --cached --name-only HEAD | grep -E '\.(json)')
+gitfiles=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.json$')
+
+if [ -z "$gitfiles" ]; then
+  exit 0
+fi
 
 function test_file() {
   myfile="${1}"
@@ -20,8 +24,8 @@ function test_file() {
   fi
 
   printf "%s\\n" "Linting json with *jq*..."
-  if test jq; then
-    jq "${myfile}"
+  if command -v jq >/dev/null 2>&1; then
+    jq . "${myfile}" >/dev/null
   else
     printf "%s\\n" "'jq' not found in PATH; please install jq"
   fi

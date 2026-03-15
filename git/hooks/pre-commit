@@ -1,35 +1,44 @@
 #!/usr/bin/env bash
 #
 # Created on: Nov 24 2022
-# Created by: gojun077@gmail.com
-# Last Updated: Nov 24 2022
+# Last Updated: Mar 15 2026
 #
-# git pre-commit hooks for linting common file types like POSIX shell
-# scripts, `.json`, `.yaml`/`yml`, `.py`, `.tf`, etc.
-#
-# I referred to the recipes in the repo
-# https://github.com/mparker17/simple-linter-git-hooks which I have
-# customized to suit my needs. Other references:
-#
-# - https://stackoverflow.com/questions/26624368/handle-multiple-pre-commit-hooks
-#
-# Under `.git/hooks/` in your repo, you can only have one `pre-commit`
-# file, but you can call multiple sub-scripts from it.
+# Master pre-commit hook that executes child scripts in hooks/pre-commit.d/
+# Git executes this script from the root of the repository.
 
-pchdir=".git/hooks/pre-commit.d"
+# If you are using this in a real repo, this path is usually
+# .git/hooks/pre-commit.d
+HOOKS_DIR=".git/hooks/pre-commit.d"
 
-cd "$pchdir" || printf "%s\\n" \
-  "*${pchdir}* directory not found!"; exit 1
+if [ ! -d "$HOOKS_DIR" ]; then
+    # If the directory doesn't exist, we just skip (or you could exit 1 if it's mandatory)
+    exit 0
+fi
 
-myhooks=$(python3 -c "import os; fileL = [p.name for p in os.scandir(os.getcwd()) if p.is_file()]; [print(e) for e in fileL]")
+EXIT_CODE=0
 
-for hook in $myhooks; do
-  bash "$hook"
-  RESULT=$?
-  if [ $RESULT != 0 ]; then
-    echo "pre-commit.d/$hook exit code $RESULT, abort commit"
-    exit $RESULT
-  fi
+# Loop over executable files in the directory
+# We use find to avoid issues with globbing if the directory is empty
+for hook in "$HOOKS_DIR"/*; do
+    # Ensure it's a file and it's executable
+    if [ -f "$hook" ] && [ -x "$hook" ]; then
+        printf "Running hook: %s\n" "$(basename "$hook")"
+
+        # Execute the hook. We DO NOT 'cd' into the directory.
+        # This ensures the child scripts run with the repo root as the CWD.
+        "$hook"
+        RESULT=$?
+
+        if [ $RESULT -ne 0 ]; then
+            printf "❌ %s failed (exit code %s)\n" "$(basename "$hook")" "$RESULT"
+            EXIT_CODE=1
+        fi
+    fi
 done
+
+if [ $EXIT_CODE -ne 0 ]; then
+    printf "\n🚨 Commit aborted due to failing pre-commit hooks.\n"
+    exit $EXIT_CODE
+fi
 
 exit 0

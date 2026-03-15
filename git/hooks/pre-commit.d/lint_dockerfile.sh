@@ -1,39 +1,36 @@
 #!/usr/bin/env bash
-# lint_dockerfile.sh
+# hooks/pre-commit.d/lint_dockerfile.sh
 #
 # Created on: Nov 24 2022
-# Created by: gojun077@gmail.com
-# Last Updated: Nov 24 2022
+# Last Updated: Mar 15 2026
 #
-# This bash script is intended to be executed locally in a git pre-commit
-# hook to check Dockerfile syntax. This script
-# requires that `hadolint` linter be installed locally
+# Lints staged Dockerfiles using hadolint.
 
-# bash array to store list of shell scripts to be committed
-gitfiles=$(git diff-index --cached --name-only HEAD | grep -E '(Dockerfile)')
+# 1. Find staged Dockerfiles, excluding deletions
+# --diff-filter=ACMR ensures we don't try to lint files that were deleted.
+gitfiles=$(git diff --cached --name-only --diff-filter=ACMR | grep -iE 'Dockerfile' | grep -v '\.sh$')
 
-function test_file() {
-  myfile="${1}"
+# 2. Fast exit if no relevant files are staged
+if [ -z "$gitfiles" ]; then
+    exit 0
+fi
 
-  if [ ! -f "${myfile}" ]; then
-    return
-  fi
+if ! command -v hadolint &> /dev/null; then
+    printf "⚠️ 'hadolint' not found in PATH; please install it to lint Dockerfiles.\n"
+    # We exit 0 to avoid blocking the commit if the tool is missing, 
+    # but you could change this to 1 if it's a hard requirement.
+    exit 0
+fi
 
-  printf "%s\\n" "Linting Dockerfile with *hadolint*..."
-  if test hadolint; then
-    hadolint "${myfile}"
-  else
-    printf "%s\\n" "'hadolint' not found in PATH; please install hadolint"
-  fi
-}
+EXIT_CODE=0
+for f in $gitfiles; do
+    # Double check file existence (redundant with ACMR but safe)
+    if [ -f "$f" ]; then
+        printf "Linting Dockerfile with hadolint: %s\n" "$f"
+        if ! hadolint "$f"; then
+            EXIT_CODE=1
+        fi
+    fi
+done
 
-case "${1}" in
-  --about )
-      printf "%s\\n" "Dockerfile syntax lint"
-      ;;
-  * )
-    for f in $gitfiles; do
-      test_file "$f"
-    done
-    ;;
-esac
+exit $EXIT_CODE

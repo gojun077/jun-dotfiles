@@ -5,12 +5,12 @@
 # Last Updated: Sun 14 Sep 2025
 
 # Get the top-level directory of the Git repository
-GIT_DIR=$(git rev-parse --git-dir)
+REPO_ROOT=$(git rev-parse --show-toplevel)
 
 echo "--- Running pre-commit hook ---"
 
 # Define the full path to your checker script
-CHECKER_SCRIPT="$GIT_DIR/scripts/check_illegal_chars.py"
+CHECKER_SCRIPT="$REPO_ROOT/.git/scripts/check_illegal_chars.py"
 
 STAGED_FILES=$(git diff --cached --name-only --diff-filter=AM)
 
@@ -24,7 +24,8 @@ echo "$STAGED_FILES"
 echo "---------------------------------"
 
 # Run the Python checker on the staged files.
-"$CHECKER_SCRIPT" "$STAGED_FILES"
+# Using xargs to correctly pass the list of files to the Python script
+echo "$STAGED_FILES" | xargs "$CHECKER_SCRIPT"
 
 # Capture the exit code of the script
 EXIT_CODE=$?
