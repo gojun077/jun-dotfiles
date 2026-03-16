@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Sun 15 Mar 2026
+;; Last Updated: Mon 16 Mar 2026
 ;;
 ;; These configs are for Emacs 30.1 and higher.
 ;;; Code:
@@ -92,9 +92,6 @@
   :defer t
   ; bind 'M-x magit-status' to 'C-x g'
   :config (global-set-key (kbd "C-x g") 'magit-status))
-(use-package markdown-mode
-  :straight t
-  :defer t)
 (use-package markdown-mode
   :straight t
   :defer t
