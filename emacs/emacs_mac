@@ -3,7 +3,7 @@
 ;; .emacs for MacOS
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Fri 13 Mar 2026
+;; Last Updated: Mon 16 Mar 2026
 ;;
 ;; This config file is for Emacs 30 and above on Apple Silicon
 ;;; Code:
@@ -14,6 +14,8 @@
 ;; Install use-package
 (straight-use-package 'use-package)
 
+(use-package adaptive-wrap
+  :straight t)
 (use-package ansible
   :straight t
   :defer t)
@@ -79,6 +81,9 @@
   :defer t)
 (use-package markdown-mode
   :straight t
+  :hook (markdown-mode . visual-line-mode)
+  :config
+  (add-hook 'markdown-mode-hook #'adaptive-wrap-prefix-mode)
   :defer t)
 ;; mcp.el
 (use-package mcp
@@ -92,6 +97,7 @@
   (setq ob-mermaid-cli-path "/opt/homebrew/bin/mmdc"))
 (use-package org
   :straight t
+  :hook (org-mode . visual-line-mode)
   :config
   ; webpage capture in Emacs
   (require 'org-protocol)
@@ -108,8 +114,7 @@
       (python . t)
       (ruby . t)
       (shell . t)
-      (sql . t)))
-  :defer t)
+      (sql . t))))
 ; use my fork of org-trello
 (use-package org-trello
   :straight (:host github
