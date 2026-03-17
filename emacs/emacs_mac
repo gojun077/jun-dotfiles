@@ -3,7 +3,7 @@
 ;; .emacs for MacOS
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Mon 16 Mar 2026
+;; Last Updated: Tue 17 Mar 2026
 ;;
 ;; This config file is for Emacs 30 and above on Apple Silicon
 ;;; Code:
@@ -381,6 +381,18 @@
 ; bind to C-\
 (global-set-key (kbd "C-\\") 'cycle-input-method)
 ;; --- end IME settings ---
+
+;; --- custom function unfill-paragraph 'M-Q' ---
+; opposite of default 'M-q' fill-paragraph
+(defun my/unfill-paragraph ()
+  "Convert a multi-line paragraph into a single line of text."
+  (interactive)
+  (let ((fill-column (point-max)))
+    (fill-paragraph)))
+
+;; Bind it to a convenient key, perhaps near M-q
+(global-set-key (kbd "M-Q") 'my/unfill-paragraph)
+;; --- end custom function unfill-paragraph ---
 
 ; create backups in $HOME/tmp
 ; bkup files will have '!' in place of directory separator '/'
