@@ -126,7 +126,8 @@
   :hook
 ;; workaround for org-trello still holding onto "C-c o" keybinding
   (org-trello-mode . (lambda ()
-                       (define-key org-trello-mode-map (kbd "C-c o") nil))))
+                       (define-key org-trello-mode-map (kbd "C-c o") nil)))
+  (org-trello-mode . org-indent-mode))
 
 ;; Keep org-indent-mode
 (with-eval-after-load 'org-trello
