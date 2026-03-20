@@ -3,12 +3,9 @@
 # topgrade config for MacOS
 #
 # Created on: Thu 19 Mar 2026
-# Last Updated: Thu 19 Mar 2026
+# Last Updated: Fri 20 Mar 2026
 
 
-
-
-command_timeout = 1000
 # Include any additional configuration file(s)
 # [include] sections are processed in the order you write them
 # Files in $CONFIG_DIR/topgrade.d/ are automatically included before this file
