@@ -1,11 +1,13 @@
-# starship.toml for Macbook Pro M1 work laptop
+# starship.toml for Macbook Pro work laptop
 #
 # Original path to file is ~/.config/starship.toml
 #
 # Created on: 01 Aug 2024
 # Created by: gopeterjun@naver.com
-# Last Updated: 01 Aug 2024
+# Last Updated: Fri 20 Mar 2026
 
+# to fix warning about 'pyenv', timeout 1000ms (1s)
+command_timeout = 1000
 
 [gcloud]
 format = 'on [$symbol$account(@$domain)(\($project\))]($style) '
