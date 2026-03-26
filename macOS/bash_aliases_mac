@@ -3,7 +3,7 @@
 # Original path to file: ~/.bash_aliases
 # bash_aliases_macos
 # Created on: Sometime in 2021?
-# Last Updated: Wed 11 Mar 2026
+# Last Updated: Thu 26 Mar 2026
 
 # enable color support of ls and also add handy aliases
 alias ls='ls --color=auto'
@@ -16,9 +16,26 @@ alias scpa='scp -o "IdentitiesOnly yes"'
 alias vi='vim'
 alias ㅊㅇ='cd'
 alias 니='ls'
-alias screen="/usr/local/bin/screen"
+alias screen="/opt/homebrew/bin/screen"
 alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
 alias enox="/opt/homebrew/bin/emacsclient -nw"
+
+# A simple dictation wrapper for whisper.cpp
+dictate() {
+    local TEMP_WAV="/tmp/dictation_$(date +%s).wav"
+    local MODEL_PATH="$HOME/Documents/local_build/whisper.cpp/models/ggml-large-v3-turbo-q8_0.bin"
+    local WHISPER_BIN="$HOME/Documents/local_build/whisper.cpp/build/bin/whisper-cli"
+
+    echo "🎙️ Recording... Press Ctrl+C to stop."
+    # Record until interrupted
+    sox -d -r 16000 -c 1 "$TEMP_WAV"
+
+    echo "\n📝 Transcribing..."
+    "$WHISPER_BIN" -f "$TEMP_WAV" -m "$MODEL_PATH" -nt -np
+
+    # Optional: Clean up
+    rm "$TEMP_WAV"
+}
 
 # SC override is to quiet the warning about non-constant path to source
 # shellcheck disable=SC1090
