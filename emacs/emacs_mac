@@ -3,7 +3,7 @@
 ;; .emacs for MacOS
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Thu 26 Mar 2026
+;; Last Updated: Tue 31 Mar 2026
 ;;
 ;; This config file is for Emacs 30 and above on Apple Silicon
 ;;; Code:
@@ -127,6 +127,14 @@
   (org-trello-mode . (lambda ()
                        (define-key org-trello-mode-map (kbd "C-c o") nil)))
   (org-trello-mode . org-indent-mode))
+
+;; org-trello-ng - my new proj inspired by org-trello
+;; (use-package org-trello-ng
+;;   :straight (:host github
+;;              :repo "gojun077/org-trello-ng"
+;;              :branch "main"
+;;              :protocol ssh
+;;   :defer t))
 
 ;; Keep org-indent-mode
 (with-eval-after-load 'org-trello
