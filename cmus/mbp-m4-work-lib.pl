@@ -1,3 +1,10 @@
+# lib.pl
+# cmus Internet Radio channel list (for Macbook Pro @work)
+# original path to file: '~/.config/cmus/lib.pl'
+#
+# Created on: Fri 03 Apr 2026
+# Last Updated: Fri 03 Apr 2026
+
 http://cmvs.uncool.club:2121/vinyl-stacks.m3u
 http://kathy.torontocast.com:2475/stream
 http://185.33.21.112:11038
