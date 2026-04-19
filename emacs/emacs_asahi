@@ -42,7 +42,7 @@
 ;;              :branch "upgrade"))
 (use-package beads
   :straight nil
-  :load-path ("/home/jundora/Documents/repos/personal/beads.el/lisp"
+  :load-path ("/home/jundora/Documents/repos/personal/beads.el-gojun077/lisp"
               "/home/jundora/.emacs.d/straight/build/vui"))
 (use-package blacken
   :straight t
