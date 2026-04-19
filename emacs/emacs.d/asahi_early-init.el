@@ -70,6 +70,18 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+;; -----------------------------------------------------------------
+;; Pre-load straight.el's newer `transient' so that Emacs 30's older
+;; built-in copy (v0.7.2.2 at /usr/share/emacs/30.2/lisp/transient.*)
+;; does not get picked up via autoloads before straight's version
+;; (v0.12+) is available. Magit >= 4.5 requires `transient--set-layout'
+;; which was added in transient 0.12.
+;;
+;; This MUST happen before any code can touch a transient autoload
+;; (magit, magit-section, etc. all ship such autoloads).
+(straight-use-package 'transient)
+(require 'transient)
+
 ; don't show menu bar
 (menu-bar-mode 0)
 ; don't show scrollbar
