@@ -12,7 +12,7 @@ REPO_ROOT=$(git rev-parse --show-toplevel)
 CHECKER_SCRIPT="$REPO_ROOT/.git/scripts/check_illegal_chars.py"
 
 # File extensions to skip (documents where Unicode is intentional)
-SKIP_EXTENSIONS='\.md$\.org$\.rst$\.txt$\.adoc$\.tex$\.lyx$\.html$\.xml$\.svg$'
+SKIP_EXTENSIONS='\.md$ \.org$ \.rst$ \.txt$ \.adoc$ \.tex$ \.lyx$ \.html$ \.xml$ \.svg$'
 
 # 1. Find staged files, excluding deletions
 STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACMR)

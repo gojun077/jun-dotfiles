@@ -81,6 +81,16 @@
             "package_path": "git-filter-repo-2.47.0/git-filter-repo",
             "pinned": false
         },
+        "/home/jundora/.local/bin/gitleaks": {
+            "path": "/home/jundora/.local/bin/gitleaks",
+            "remote_name": "gitleaks",
+            "version": "v8.30.1",
+            "hash": "00e91bbe655bd7c47753e8cfe61cb76ea1a5d7e7702fe161ee40102b46b3823b",
+            "url": "https://github.com/gitleaks/gitleaks/releases",
+            "provider": "github",
+            "package_path": "gitleaks",
+            "pinned": false
+        },
         "/home/jundora/.local/bin/k3s": {
             "path": "/home/jundora/.local/bin/k3s",
             "remote_name": "k3s-arm64",
