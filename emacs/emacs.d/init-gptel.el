@@ -398,6 +398,48 @@ Assumes current buffer is the target buffer.  Returns a result string."
                :description "Set to true for case-sensitive search (default: case-insensitive)."))
  :category "search")
 
+(gptel-make-tool
+ :name "list_project_files"
+ :function (lambda (&optional pattern dir)
+             (condition-case err
+                 (let* ((root (or dir
+                                  (condition-case nil
+                                      (projectile-project-root)
+                                    (error default-directory))))
+                        (all-files
+                         (condition-case nil
+                             (projectile-project-files root)
+                           (error
+                            (directory-files-recursively root ".*" t))))
+                        (filtered
+                         (if pattern
+                             (seq-filter (lambda (f) (string-match-p pattern f)) all-files)
+                           all-files))
+                        (max-show 100))
+                   (if (null filtered)
+                       (format "No files found in %s%s"
+                               (abbreviate-file-name root)
+                               (if pattern (format " matching '%s'" pattern) ""))
+                     (format "%d file%s in %s%s:\n%s"
+                             (length filtered)
+                             (if (= (length filtered) 1) "" "s")
+                             (abbreviate-file-name root)
+                             (if (> (length filtered) max-show)
+                                 (format " (showing first %d)" max-show)
+                               "")
+                             (mapconcat 'identity
+                                        (cl-subseq filtered 0 (min (length filtered) max-show))
+                                        "\n"))))
+               (error (format "Error listing files: %s" (error-message-string err)))))
+ :description "List files in the project, optionally filtered by a regex pattern. Respects .gitignore when projectile is available."
+ :args (list '(:name "pattern"
+               :type "string"
+               :description "Optional regex to filter filenames (e.g. '\\.el$', 'src/').")
+             '(:name "dir"
+               :type "string"
+               :description "Directory to list (default: projectile project root or current directory)."))
+ :category "search")
+
 ;; GPTel config block end
 
 ;; Integrations
