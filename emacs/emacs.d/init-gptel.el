@@ -440,6 +440,63 @@ Assumes current buffer is the target buffer.  Returns a result string."
                :description "Directory to list (default: projectile project root or current directory)."))
  :category "search")
 
+(gptel-make-tool
+ :name "write_file"
+ :function (lambda (path content)
+             (condition-case err
+                 (progn
+                   (let ((dir (file-name-directory (expand-file-name path))))
+                     (when (and dir (not (file-directory-p dir)))
+                       (mkdir dir t)))
+                   (with-temp-file path
+                     (insert content))
+                   (format "Wrote %d bytes to %s" (length content) path))
+               (error (format "Error writing file '%s': %s" path (error-message-string err)))))
+ :description "Create a new file or overwrite an existing one. Creates parent directories as needed. NOTE: silently overwrites existing files."
+ :args (list '(:name "path"
+               :type "string"
+               :description "File path to write (relative or absolute).")
+             '(:name "content"
+               :type "string"
+               :description "Content to write to the file."))
+ :category "filesystem")
+
+(gptel-make-tool
+ :name "git_status"
+ :function (lambda ()
+             (require 'magit-git)
+             (condition-case err
+                 (let ((output (magit-git-string "status" "--porcelain=v1")))
+                   (if (string-empty-p (string-trim output))
+                       "Working tree clean. No staged, unstaged, or untracked changes."
+                     (format "```\n%s\n```" (string-trim output))))
+               (error (format "Error getting git status: %s" (error-message-string err)))))
+ :description "Show git status in porcelain format. See https://git-scm.com/docs/git-status#_porcelain_format_format for key."
+ :args nil
+ :category "git")
+
+(gptel-make-tool
+ :name "git_diff"
+ :function (lambda (&optional staged path)
+             (require 'magit-git)
+             (condition-case err
+                 (let* ((args `("diff" ,@(when staged '("--staged")) ,@(when path (list "--" path))))
+                        (output (apply #'magit-git-string (remq nil args))))
+                   (if (string-empty-p (string-trim output))
+                       (format "No %schanges%s."
+                               (if staged "staged " "")
+                               (if path (format " for %s" path) ""))
+                     (format "```diff\n%s\n```" (string-trim output))))
+               (error (format "Error getting git diff: %s" (error-message-string err)))))
+ :description "Show git diff of unstaged changes (or staged if STAGED is non-nil). Optionally limit to PATH."
+ :args (list '(:name "staged"
+               :type "boolean"
+               :description "Show staged changes instead of unstaged.")
+             '(:name "path"
+               :type "string"
+               :description "Limit diff to a specific file or directory."))
+ :category "git")
+
 ;; GPTel config block end
 
 ;; Integrations
