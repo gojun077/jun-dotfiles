@@ -4,9 +4,9 @@
         "/home/jundora/.local/bin/bd": {
             "path": "/home/jundora/.local/bin/bd",
             "remote_name": "bd",
-            "version": "v1.0.2",
-            "hash": "97c2628423b112cc7eff4e7af2be43bfc427bf875c4138280fcaeb55d741ef20",
-            "url": "https://github.com/gastownhall/beads/releases/tag/v1.0.2",
+            "version": "v1.0.3",
+            "hash": "e05cc951406d98d2a0e899ec3197d1d6eaf490eb49c313dbed703f05bbfd595c",
+            "url": "https://github.com/gastownhall/beads/releases/tag/v1.0.3",
             "provider": "github",
             "package_path": "bd",
             "pinned": false
@@ -34,9 +34,9 @@
         "/home/jundora/.local/bin/codex": {
             "path": "/home/jundora/.local/bin/codex",
             "remote_name": "codex",
-            "version": "rust-v0.121.0",
-            "hash": "ffcc20820d1502e285d5e819f6a6c251c40aec5bd9a204c025190978683279ae",
-            "url": "https://github.com/openai/codex/releases/tag/rust-v0.121.0",
+            "version": "rust-v0.125.0",
+            "hash": "6ed7c4ff0d5cee65ae31b81194c0d4a28e6806b6813c7773925c3939660254b4",
+            "url": "https://github.com/openai/codex/releases/tag/rust-v0.125.0",
             "provider": "github",
             "package_path": "package/vendor/aarch64-unknown-linux-musl/codex/codex",
             "pinned": false
@@ -44,9 +44,9 @@
         "/home/jundora/.local/bin/dolt": {
             "path": "/home/jundora/.local/bin/dolt",
             "remote_name": "dolt",
-            "version": "v1.86.3",
-            "hash": "d24a4770badb9e62b8407f4b770ea4d143e7f267fd7d1a94a9b6f63bed88e77c",
-            "url": "https://github.com/dolthub/dolt/releases/tag/v1.86.3",
+            "version": "v1.86.5",
+            "hash": "7d7680c0df2638d174c00b0b6179de92e194f66e14d14b344689b09082cdb701",
+            "url": "https://github.com/dolthub/dolt/releases/tag/v1.86.5",
             "provider": "github",
             "package_path": "dolt-linux-arm64/bin/dolt",
             "pinned": false
@@ -64,11 +64,11 @@
         "/home/jundora/.local/bin/gh": {
             "path": "/home/jundora/.local/bin/gh",
             "remote_name": "gh",
-            "version": "v2.90.0",
-            "hash": "923b6e2ccee52a0cad3310b3422eaf0211523677854eb37a6b9ab512191fe18e",
-            "url": "https://github.com/cli/cli/releases/tag/v2.90.0",
+            "version": "v2.91.0",
+            "hash": "fe2b6f795ec43a8d6471d30a6e37a710d0f7edaf087380767e1f5a2f4c738f93",
+            "url": "https://github.com/cli/cli/releases/tag/v2.91.0",
             "provider": "github",
-            "package_path": "gh_2.90.0_linux_arm64/bin/gh",
+            "package_path": "gh_2.91.0_linux_arm64/bin/gh",
             "pinned": false
         },
         "/home/jundora/.local/bin/git-filter-repo": {
