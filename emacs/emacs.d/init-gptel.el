@@ -497,6 +497,41 @@ Assumes current buffer is the target buffer.  Returns a result string."
                :description "Limit diff to a specific file or directory."))
  :category "git")
 
+(gptel-make-tool
+ :name "buffer_diagnostics"
+ :function (lambda (buffer)
+             (condition-case err
+                 (with-current-buffer (get-buffer buffer)
+                   (unless (buffer-live-p (get-buffer buffer))
+                     (error "Buffer '%s' is not live." buffer))
+                   (if-let* ((diags (flymake-diagnostics)))
+                       (let ((grouped (seq-group-by #'flymake-diagnostic-type diags)))
+                         (format "%d diagnostic%s in '%s':%s"
+                                 (length diags)
+                                 (if (= (length diags) 1) "" "s")
+                                 buffer
+                                 (mapconcat
+                                  (lambda (group)
+                                    (format "\n\n[%s]\n%s"
+                                            (car group)
+                                            (mapconcat
+                                             (lambda (d)
+                                               (format "  Line %d: %s"
+                                                       (line-number-at-pos
+                                                        (flymake-diagnostic-beg d))
+                                                       (flymake-diagnostic-text d)))
+                                             (cdr group)
+                                             "\n")))
+                                  grouped
+                                  "")))
+                     (format "No diagnostics in buffer '%s' (flymake may not be running)." buffer)))
+               (error (format "Error checking diagnostics: %s" (error-message-string err)))))
+ :description "Show flymake diagnostics (errors, warnings, notes) for a buffer, grouped by severity. Requires flymake-mode to be active in the buffer."
+ :args (list '(:name "buffer"
+               :type "string"
+               :description "The name of the buffer to check diagnostics for."))
+ :category "emacs")
+
 ;; GPTel config block end
 
 ;; Integrations
