@@ -1,6 +1,6 @@
 ;;; init-gptel.el --- GPTel configuration (extracted from emacs_asahi)
 ; Created on: Sat 13 Sep 2025
-; Last Updated: Sun 14 Sep 2025
+; Last Updated: Sun 26 Apr 2026
 
 ;;; GPTel specific configurations ;;;
 ;;
@@ -10,20 +10,25 @@
 ;; API key will be read from '~/.authinfo.gpg'
 (gptel-make-anthropic "Claude"
   :stream t
-  :key gptel-api-key)
+  :key gptel-api-key
+  :models '(claude-opus-4-7
+            claude-sonnet-4-6))
 
 ;; Configure Google Gemini
 ;; API key will be read from '~/.authinfo.gpg'
 (gptel-make-gemini "Gemini"
   :stream t
   :key gptel-api-key
-  :models '(gemini-2.5-pro))
+  :models '(gemini-3.1-pro-preview
+            gemini-3.1-flash-lite-preview))
 
 ;; Configure Deepseek
 ;; API key will be read from '~/.authinfo.gpg'
 (gptel-make-deepseek "DeepSeek"
   :stream t
-  :key gptel-api-key)
+  :key gptel-api-key
+  :models '(deepseek-v4-pro
+            deepseek-v4-flash))
 
 ;; Configure Github Copilot Chat
 ;; no API key; browser auth login required
@@ -34,7 +39,8 @@
 (gptel-make-xai "xAI"
   :stream t
   :key gptel-api-key
-  :models '(grok-4-0709))
+  :models '(grok-4.20-0309-reasoning
+            grok-4-1-fast))
 
 ;; Configure Alibaba Qwen3
 ;; API key will be read from '~/.authinfo.gpg'
@@ -44,7 +50,24 @@
   :protocol "https"
   :host "dashscope-intl.aliyuncs.com"
   :endpoint "/compatible-mode/v1/chat/completions"
-  :models '(qwen3-coder-plus))
+  :models '(qwen3.6-plus))
+
+;; OpenRouter offers an OpenAI compatible API
+(gptel-make-openai "OpenRouter"
+  :host "openrouter.ai"
+  :endpoint "/api/v1/chat/completions"
+  :stream t
+  :key gptel-api-key
+  :models '(openrouter/auto
+            openrouter/free
+            anthropic/claude-opus-4.7
+            google/gemini-3.1-pro-preview
+            minimax/minimax-m2.7
+            moonshotai/kimi-k2.6
+            openai/gpt-5.3-codex
+            x-ai/grok-4.20-beta
+            z-ai/glm-5.1))
+
 
 ;; Helper functions for gptel custom tools
 
