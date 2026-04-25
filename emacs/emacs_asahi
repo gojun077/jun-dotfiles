@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Sun 19 Apr 2026
+;; Last Updated: Sat 25 Apr 2026
 ;;
 ;; These configs are for Emacs 30.1 and higher.
 ;;; Code:
@@ -59,6 +59,13 @@
   :hook
   (dockerfile-mode-hook . flymake-hadolint-setup)
   :defer t)
+(use-package eglot
+  :ensure t
+  :hook (go-mode . eglot-ensure)  ;; uses gopls by default in go-mode
+  :config
+  (add-hook 'eglot-managed-mode-hook
+            (lambda ()
+              (add-hook 'before-save-hook #'eglot-format-buffer nil t))))
 (use-package exec-path-from-shell
   :straight t
   :config
