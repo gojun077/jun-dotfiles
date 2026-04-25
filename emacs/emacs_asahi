@@ -394,6 +394,7 @@
 ; But when I must use TAB, set width to 2 chars
 (setq-default tab-width 2)
 ; keep dired uncluttered (only one buffer at a time)
+; select dir and press 'a' to go to that dir and reuse 'dired' buffer
 (put 'dired-find-alternate-file 'disabled nil)
 ; shell script mode formatting
 (setq sh-basic-offset 2)
