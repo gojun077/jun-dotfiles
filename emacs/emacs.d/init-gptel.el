@@ -348,6 +348,56 @@ Assumes current buffer is the target buffer.  Returns a result string."
                               filename (error-message-string err)))))
  :category "emacs")
 
+(gptel-make-tool
+ :name "search_project"
+ :function (lambda (pattern &optional dir file-glob case-sensitive)
+             (condition-case err
+                 (let* ((search-dir (or dir
+                                        (condition-case nil
+                                            (projectile-project-root)
+                                          (error default-directory))))
+                        (case-flag (if case-sensitive "--case-sensitive" "--ignore-case"))
+                        (glob-arg (when file-glob
+                                    (concat "--glob " (shell-quote-argument file-glob))))
+                        (cmd (format "rg --line-number --no-heading --no-messages %s %s %s -- %s"
+                                     case-flag
+                                     (or glob-arg "")
+                                     (shell-quote-argument pattern)
+                                     (shell-quote-argument (expand-file-name search-dir))))
+                        (output (shell-command-to-string cmd))
+                        (trimmed (string-trim output)))
+                   (if (string-empty-p trimmed)
+                       (format "No matches for '%s' in %s"
+                               pattern (abbreviate-file-name search-dir))
+                     (let ((lines (split-string trimmed "\n" t))
+                           (max-show 50))
+                       (format "Found %d match%s for '%s' in %s%s:\n%s"
+                               (length lines)
+                               (if (= (length lines) 1) "" "es")
+                               pattern
+                               (abbreviate-file-name search-dir)
+                               (if (> (length lines) max-show)
+                                   (format " (showing first %d)" max-show)
+                                 "")
+                               (mapconcat 'identity
+                                          (cl-subseq lines 0 (min (length lines) max-show))
+                                          "\n")))))
+               (error (format "Error searching project: %s" (error-message-string err)))))
+ :description "Search for a regex pattern across project files using ripgrep. Respects .gitignore. Returns matching lines with file path and line number."
+ :args (list '(:name "pattern"
+               :type "string"
+               :description "Regex pattern to search for (ripgrep syntax).")
+             '(:name "dir"
+               :type "string"
+               :description "Directory to search in (default: projectile project root or current directory).")
+             '(:name "file-glob"
+               :type "string"
+               :description "Optional file type filter (e.g. '*.el', '*.{ts,tsx}').")
+             '(:name "case-sensitive"
+               :type "boolean"
+               :description "Set to true for case-sensitive search (default: case-insensitive)."))
+ :category "search")
+
 ;; GPTel config block end
 
 ;; Integrations
