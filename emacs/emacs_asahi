@@ -505,80 +505,24 @@
         ("Asia/Manila" "Manila")
         ("Asia/Seoul" "Seoul")))
 
-; Commands to run when Emacs launched in graphical mode
-(when (or (display-graphic-p) (daemonp))
-  ;; --- whitespace-mode settings ---
-  ; only run whitespace mode in graphical session
-  ; highlight long lines
-  (setq whitespace-line-column 80)
-  ; define whitespace-style variable
-  (setq whitespace-style '(face tabs spaces trailing lines-tail
-      space-before-tab newline indentation empty space-after-tab
-      space-mark tab-mark newline-mark missing-newline-at-eof))
-  ; enable whitespace-mode for programming buffers only
-  (add-hook 'prog-mode-hook #'whitespace-mode)
-  ;; --- end whitespace-mode settings ---
+;; --- whitespace-mode settings ---
+; highlight long lines
+(setq whitespace-line-column 80)
+; define whitespace-style variable
+(setq whitespace-style '(face tabs spaces trailing lines-tail
+    space-before-tab newline indentation empty space-after-tab
+    space-mark tab-mark newline-mark missing-newline-at-eof))
+; enable whitespace-mode for programming buffers only
+(add-hook 'prog-mode-hook #'whitespace-mode)
+;; --- end whitespace-mode settings ---
 
-  ; set fill column to 75
-  (setq-default fill-column 75)
-  ; enable native fill column indicator (emacs 27+)
-  (global-display-fill-column-indicator-mode 1)
-  ; don't show scrollbar
-  (scroll-bar-mode -1)
-  ; don't show toolbar
-  (tool-bar-mode -1)
-  ; focus follows mouse within emacs
-  (setq mouse-autoselect-window t)
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ; Emacs color themes
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  (load-theme 'leuven t)
-)
+; set fill column to 75
+(setq-default fill-column 75)
+; enable native fill column indicator (emacs 27+)
+(global-display-fill-column-indicator-mode 1)
 
-;; Commands to run when Emacs launched in terminal mode
-(unless (display-graphic-p)
-  (load-theme 'adwaita t))
-
-;; Font settings - note that this must be set *after* (load-theme)
-;; to avoid conflicts with the theme
-
-(let ((default-font "MonofurNerdFontMono")
-      (korean-font "NanumGothic"))
-
-  ;; Set default font
-  (set-face-attribute 'default nil
-                      :family default-font
-                      :height 150)
-
-  ;; Set Korean font
-  (set-fontset-font t 'hangul (font-spec :family korean-font))
-
-  ;; Set mode-line font
-  (if (facep 'mode-line-active)
-      (set-face-attribute 'mode-line-active nil
-                          :family default-font
-                          :height 110)
-      (set-face-attribute 'mode-line nil
-                          :family default-font
-                          :height 110))
-  (set-face-attribute 'mode-line-inactive nil
-                      :family default-font
-                      :height 110)
-
-  ;; Create a custom face for the minibuffer
-  (defface my-minibuffer-face
-    '((t :inherit default))
-    "Face for Minibuffer")
-
-  ;; Set the Minibuffer font size
-  (set-face-attribute 'my-minibuffer-face nil
-                      :family default-font
-                      :height 120))
-
-;; Apply the custom face to the minibuffer
-(add-hook 'minibuffer-setup-hook
-          (lambda ()
-            (face-remap-add-relative 'default 'my-minibuffer-face)))
+;; GUI/theme/font setup (daemon-aware)
+(require 'init-ui)
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -586,8 +530,6 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
-
-;; font names on Linux 'MonofurNerdFontMono', 'FiraMono'
 
 
 (provide 'emacs)
