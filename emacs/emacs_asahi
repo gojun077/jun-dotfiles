@@ -532,5 +532,8 @@
  )
 
 
+;; Host-local overrides / experiments (not tracked in dotfiles)
+(load (expand-file-name "local.el" user-emacs-directory) t t)
+
 (provide 'emacs)
 ;;; emacs ends here
