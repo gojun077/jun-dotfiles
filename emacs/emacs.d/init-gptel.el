@@ -230,6 +230,7 @@ Assumes current buffer is the target buffer.  Returns a result string."
              '(:name "replace_all"
                :type "boolean"
                :description "When true, replace every occurrence of old_str.  Default: false (error if old_str matches more than once)."))
+ :confirm t
  :category "emacs")
 
 (gptel-make-tool
@@ -270,6 +271,7 @@ Assumes current buffer is the target buffer.  Returns a result string."
              '(:name "position"
                :type "string"
                :description "For insert only: 'before' (default) or 'after' the specified line."))
+ :confirm t
  :category "emacs")
 
 (gptel-make-tool
@@ -345,6 +347,7 @@ Assumes current buffer is the target buffer.  Returns a result string."
  :args (list '(:name "buffer"
                :type "string"
                :description "The name of the buffer to save."))
+ :confirm t
  :category "emacs")
 
 (gptel-make-tool
@@ -381,6 +384,7 @@ Assumes current buffer is the target buffer.  Returns a result string."
  :args (list '(:name "command"
                :type "string"
                :description "The shell command to execute"))
+ :confirm t
  :category "shell")
 
 
@@ -421,6 +425,7 @@ Assumes current buffer is the target buffer.  Returns a result string."
                        (format "Compilation of '%s' failed. Errors:\n%s" filename log-output))))
                (error (format "An error occurred while trying to compile '%s': %s"
                               filename (error-message-string err)))))
+ :confirm t
  :category "emacs")
 
 (gptel-make-tool
@@ -534,6 +539,7 @@ Assumes current buffer is the target buffer.  Returns a result string."
              '(:name "content"
                :type "string"
                :description "Content to write to the file."))
+ :confirm t
  :category "filesystem")
 
 (gptel-make-tool
