@@ -109,6 +109,30 @@ would break syntactic constructs.  Returns nil if the context is safe."
       (format "Warning: Line appears to be an incomplete statement: '%s'. "
               (string-trim current-line))))))
 
+(defun my/gptel--buffer-edit-string (buffer old-str new-str replace-all)
+  "Replace OLD-STR with NEW-STR in current buffer (named BUFFER).
+If OLD-STR matches more than once and REPLACE-ALL is nil, return an
+error string instead of replacing.  Returns a result string."
+  (let ((case-fold-search nil)
+        (count 0))
+    (save-excursion
+      (goto-char (point-min))
+      (while (search-forward old-str nil t)
+        (setq count (1+ count))))
+    (cond
+     ((zerop count)
+      (format "Error: old_str not found in buffer '%s'" buffer))
+     ((and (> count 1) (not replace-all))
+      (format "Error: old_str matches %d times in buffer '%s'; pass replace_all=true to replace all, or extend old_str with surrounding context to make it unique."
+              count buffer))
+     (t
+      (save-excursion
+        (goto-char (point-min))
+        (while (search-forward old-str nil t)
+          (replace-match new-str t t)))
+      (format "Replaced %d occurrence%s of old_str in buffer '%s'"
+              count (if (= count 1) "" "s") buffer)))))
+
 (defun my/gptel--buffer-insert (buffer text start-line position)
   "Insert TEXT in BUFFER at START-LINE, either before or after the line.
 POSITION should be \"before\" or \"after\"; defaults to \"before\".
@@ -182,8 +206,34 @@ Assumes current buffer is the target buffer.  Returns a result string."
       (format "Deleted lines %d-%d in buffer %s" start-line end-line buffer)))))
 
 ;; custom tools for use in 'gptel' mode
+
 (gptel-make-tool
- :name "modify_buffer"
+ :name "edit_buffer"
+ :function (lambda (buffer old-str new-str &optional replace-all)
+             (condition-case err
+                 (let ((buf (get-buffer buffer)))
+                   (unless (buffer-live-p buf)
+                     (error "Buffer '%s' does not exist.  Open the file first" buffer))
+                   (with-current-buffer buf
+                     (my/gptel--buffer-edit-string buffer old-str new-str replace-all)))
+               (error (format "Error in edit_buffer: %s" (error-message-string err)))))
+ :description "Replace exact text in an Emacs buffer.  Finds OLD_STR (which must be unique within the buffer unless REPLACE_ALL is true) and replaces it with NEW_STR.  Preferred over edit_buffer_by_line because it does not depend on shifting line numbers.  Tip: include enough surrounding context in OLD_STR to make it unique."
+ :args (list '(:name "buffer"
+               :type "string"
+               :description "Name of an existing buffer to edit.")
+             '(:name "old_str"
+               :type "string"
+               :description "Exact text to find in the buffer.  Whitespace and newlines must match exactly.  Must be unique within the buffer unless replace_all is true.")
+             '(:name "new_str"
+               :type "string"
+               :description "Text to replace old_str with.  Use the empty string to delete.")
+             '(:name "replace_all"
+               :type "boolean"
+               :description "When true, replace every occurrence of old_str.  Default: false (error if old_str matches more than once)."))
+ :category "emacs")
+
+(gptel-make-tool
+ :name "edit_buffer_by_line"
  :function (lambda (buffer operation &optional text start-line end-line position)
              (condition-case err
                  (with-current-buffer (get-buffer-create buffer)
@@ -200,8 +250,8 @@ Assumes current buffer is the target buffer.  Returns a result string."
                             "Error: Delete operation requires start-line and end-line parameters"
                           (my/gptel--buffer-delete buffer start-line end-line)))
                        (_ (format "Error: Unknown operation '%s'. Use 'insert', 'replace', or 'delete'" operation)))))
-               (error (format "Error in modify_buffer: %s" (error-message-string err)))))
- :description "[STEP 3 of 4] Modify an Emacs buffer by inserting, replacing, or deleting text at specific lines. Use this AFTER search_buffer_text (step 1) and show_buffer_context (step 2), then follow with save_buffer (step 4). IMPORTANT: 1) Only add NEW content that doesn't already exist. 2) Indentation is automatically matched to surrounding code. 3) Don't break syntax - avoid inserting between incomplete code blocks. 4) Based on context analysis, choose safe insertion boundaries."
+               (error (format "Error in edit_buffer_by_line: %s" (error-message-string err)))))
+ :description "FALLBACK: edit a buffer by line number (insert/replace/delete).  Prefer edit_buffer (string-replace) for almost all edits.  Use this only when string-replace is not viable, e.g., inserting into an empty file at a specific line.  Note: line numbers shift after edits, so re-read the buffer between calls."
  :args (list '(:name "buffer"
                :type "string"
                :description "The name of the buffer to modify.")
