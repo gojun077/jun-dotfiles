@@ -1,9 +1,11 @@
-;;; init-gptel.el --- GPTel configuration (extracted from emacs_asahi)
+;;; init-gptel.el --- GPTel configuration (extracted from emacs_asahi)  -*- lexical-binding: t; -*-
 ; Created on: Sat 13 Sep 2025
 ; Last Updated: Sun 26 Apr 2026
 
 ;;; GPTel specific configurations ;;;
 ;;
+(require 'gptel)
+
 (setq gptel-default-mode 'org-mode)
 
 ;; Configure Anthropic Claude
