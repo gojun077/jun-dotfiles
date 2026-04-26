@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# elisp-lint: byte-compile an Emacs Lisp file in an isolated batch Emacs and
+# report warnings/errors. Analogue of `gopls`-style diagnostics.
+#
+# Runs `emacs --batch -Q` so it never touches your live Emacs server, and is
+# safe to invoke from CI. The .elc artifact is written to a tempdir and
+# discarded.
+#
+# Usage: elisp-lint FILE.el
+
+set -euo pipefail
+
+if [[ $# -ne 1 || -z "${1:-}" ]]; then
+    echo "usage: elisp-lint FILE.el" >&2
+    exit 2
+fi
+
+file="$1"
+if [[ ! -f "$file" ]]; then
+    echo "elisp-lint: no such file: $file" >&2
+    exit 2
+fi
+
+tmpdir=$(mktemp -d)
+trap 'rm -rf "$tmpdir"' EXIT
+
+cp -f "$file" "$tmpdir/"
+base=$(basename "$file")
+
+emacs --batch -Q \
+    --eval "(setq byte-compile-error-on-warn t)" \
+    -f batch-byte-compile "$tmpdir/$base"

@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# elisp-search: search the running Emacs's obarray for symbols matching a
+# regexp. Analogue of `go doc` package search / xref workspace symbol lookup.
+# Output is "<symbol>\t<kind>" where <kind> is function, variable, or symbol.
+#
+# Usage: elisp-search REGEXP
+
+set -euo pipefail
+
+if [[ $# -ne 1 || -z "${1:-}" ]]; then
+    echo "usage: elisp-search REGEXP" >&2
+    exit 2
+fi
+
+query="$1"
+tmp=$(mktemp)
+trap 'rm -f "$tmp"' EXIT
+
+emacsclient -e "
+(with-temp-file \"$tmp\"
+  (dolist (s (sort (apropos-internal \"$query\") #'string-lessp))
+    (insert (format \"%s\t%s\n\" s
+                    (cond ((fboundp s) \"function\")
+                          ((boundp s)  \"variable\")
+                          (t           \"symbol\"))))))" >/dev/null
+
+cat "$tmp"

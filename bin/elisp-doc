@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# elisp-doc: print signature, source file, and docstring for an Emacs Lisp symbol.
+# Analogue of `go doc`. Queries the running Emacs server via emacsclient so
+# that symbols from your loaded init/packages are visible.
+#
+# Usage: elisp-doc SYMBOL
+
+set -euo pipefail
+
+if [[ $# -ne 1 || -z "${1:-}" ]]; then
+    echo "usage: elisp-doc SYMBOL" >&2
+    exit 2
+fi
+
+sym="$1"
+tmp=$(mktemp)
+trap 'rm -f "$tmp"' EXIT
+
+emacsclient -e "
+(with-temp-file \"$tmp\"
+  (let ((s (intern-soft \"$sym\")))
+    (if (not s)
+        (insert (format \"Symbol '%s' not found.\n\" \"$sym\"))
+      (insert (format \"Symbol: %s\n\" s))
+      (when (fboundp s)
+        (insert (format \"Signature: %S\n\" (help-function-arglist s t))))
+      (let ((file (symbol-file s)))
+        (when file
+          (insert (format \"File: %s\n\" file))))
+      (insert \"\n\")
+      (insert (or (and (fboundp s) (documentation s))
+                  (documentation-property s 'variable-documentation)
+                  \"No documentation available.\"))
+      (insert \"\n\"))))" >/dev/null
+
+cat "$tmp"
