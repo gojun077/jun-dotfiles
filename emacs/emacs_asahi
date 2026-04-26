@@ -167,17 +167,8 @@
                 (when org-trello-mode
                   (org-indent-mode 1)))))
 
-;; disable project.el
-(straight-use-package '(project :type built-in :no-build t))
-;; Projectile for project management
-(use-package projectile
-  :straight t
-  :init
-  (projectile-mode +1)
-  :bind-keymap
-  ("C-c p" . projectile-command-map)
-  :config
-  (setq projectile-project-search-path '("~/Documents/repos")))
+;; Projectile for project management (also disables built-in project.el)
+(require 'init-projectile)
 (use-package racket-mode
   :straight t
   :defer t
