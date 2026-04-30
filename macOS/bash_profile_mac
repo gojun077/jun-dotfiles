@@ -2,7 +2,7 @@
 # This file should be symlinked to ~/.bash_profile
 #
 # Created on: Sometime in 2021
-# Last Updated: Fri 03 Apr 2026
+# Last Updated: Fri 10 Apr 2026
 # Updated by: gopeterjun@naver.com
 #
 # Note: MacOS behavior around `.bash_profile` is different from
@@ -25,7 +25,7 @@ export PYENV_ROOT="$HOME/.pyenv"
 export XDG_CONFIG_HOME="$HOME/.config"
 export PNPM_HOME="$HOME/Library/pnpm"
 export PSQL="/opt/homebrew/opt/libpq/bin"
-export PATH="$HOME/.local/bin:$HOME/bin:/opt/homebrew/bin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/opt/pmk/env/global/bin:/user/local/MacGPG2/bin:/Applications/Ghostty.app/Contents/MacOS:$PYENV_ROOT/bin:$GOROOT/bin:$GOPATH/bin:$HOME/.krew/bin:$HOME/bin-pkg:$PNPM_HOME:$PSQL:$HOME/.local/gcloud/bin:$HOME/.cargo/bin"
+export PATH="$HOME/.local/bin:$HOME/bin:/opt/homebrew/bin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/opt/pmk/env/global/bin:/user/local/MacGPG2/bin:/Applications/Ghostty.app/Contents/MacOS:$PYENV_ROOT/bin:$GOROOT/bin:$GOPATH/bin:$HOME/.krew/bin:$HOME/bin-pkg:$PNPM_HOME:$PSQL:$HOME/.local/gcloud/bin:$HOME/.cargo/bin:/Library/TeX/texbin/"
 
 eval "$(/opt/homebrew/bin/brew shellenv)"
 eval "$(pyenv init --path)"
