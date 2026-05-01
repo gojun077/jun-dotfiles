@@ -143,17 +143,10 @@
                 (when org-trello-mode
                   (org-indent-mode 1)))))
 
-;; disable project.el
-(straight-use-package '(project :type built-in :no-build t))
-;; Projectile for project management
-(use-package projectile
-  :straight t
-  :init
-  (projectile-mode +1)
-  :bind-keymap
-  ("C-c p" . projectile-command-map)
-  :config
-  (setq projectile-project-search-path '("~/Documents/repos")))
+;; Projectile for project management (also disables built-in project.el)
+(unless (load (expand-file-name "init-projectile.el" user-emacs-directory) t t)
+  (message "Warning: Could not load init-projectile.el - check if file exists in %s"
+           user-emacs-directory))
 (use-package racket-mode
   :straight t
   :defer t
@@ -434,103 +427,31 @@
         ("Asia/Seoul" "Seoul")))
 
 
-;; ====================================================
-;; 1. Global Appearance Settings (Run Once at Startup)
-;; ====================================================
-
-;; General editor behavior
-(setq-default fill-column 75)
+;; --- whitespace-mode settings ---
+; highlight long lines
 (setq whitespace-line-column 80)
-(setq mouse-autoselect-window t)
-(global-display-fill-column-indicator-mode 1)
-
-;; Define whitespace appearance
+; define whitespace-style variable
 (setq whitespace-style '(face tabs spaces trailing lines-tail
     space-before-tab newline indentation empty space-after-tab
     space-mark tab-mark newline-mark missing-newline-at-eof))
-
-;; UI Elements (Usually global, best to disable here)
-(when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-(when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
-(when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
-
+; enable whitespace-mode for programming buffers (GUI only)
 (defun my/maybe-enable-whitespace ()
   "Enable whitespace-mode only if we are in a graphical frame."
   (if (display-graphic-p)
       (whitespace-mode 1)
     (whitespace-mode -1)))
-
 (add-hook 'prog-mode-hook #'my/maybe-enable-whitespace)
+;; --- end whitespace-mode settings ---
 
-;; ==========================================
-;; 2. Dynamic Frame Logic (Theming)
-;; ==========================================
+; set fill column to 75
+(setq-default fill-column 75)
+; enable native fill column indicator (emacs 27+)
+(global-display-fill-column-indicator-mode 1)
 
-(defun my/apply-theme-by-frame-type (frame)
-  "Load leuven for GUI frames; do nothing to global themes for TTY frames."
-  (with-selected-frame frame
-    (if (display-graphic-p frame)
-        (progn
-          ;; Only disable/load if leuven isn't already the active theme
-          (unless (custom-theme-enabled-p 'leuven)
-            (mapc #'disable-theme custom-enabled-themes)
-            (load-theme 'leuven t)
-            ;; Enable modes globally or via hooks
-            (add-hook 'prog-mode-hook #'whitespace-mode)))
-      ;; For Terminal frames: don't load ws-mode
-      ;; TODO: add face remapping or other tweaks for terminal
-      (progn
-        (setq-local whitespace-mode nil)))))
-
-;; 1. Handle all future frames (emacsclient)
-(add-hook 'after-make-frame-functions
-          (lambda (frame)
-            (run-with-timer 0.1 nil #'my/apply-theme-by-frame-type frame)))
-
-;; 2. Handle the current frame (Standard non-daemon startup)
-;; We only run this if we AREN'T in a daemon, to avoid the initial-frame bug.
-(unless (daemonp)
-  (my/apply-theme-by-frame-type (selected-frame)))
-
-;; Font settings - note that this must be set *after* (load-theme)
-;; to avoid conflicts with the theme
-(let ((default-font "Monofur Nerd Font Mono")
-      (korean-font "NanumGothic"))
-
-  ;; Set default font
-  (set-face-attribute 'default nil
-                      :family default-font
-                      :height 170)
-
-  ;; Set Korean font
-  (set-fontset-font t 'hangul (font-spec :family korean-font))
-
-  ;; Set mode-line font
-  (if (facep 'mode-line-active)
-      (set-face-attribute 'mode-line-active nil
-                          :family default-font
-                          :height 110)
-      (set-face-attribute 'mode-line nil
-                          :family default-font
-                          :height 110))
-  (set-face-attribute 'mode-line-inactive nil
-                      :family default-font
-                      :height 110)
-
-  ;; Create a custom face for the minibuffer
-  (defface my-minibuffer-face
-    '((t :inherit default))
-    "Face for Minibuffer")
-
-  ;; Set the Minibuffer font size
-  (set-face-attribute 'my-minibuffer-face nil
-                      :family default-font
-                      :height 120))
-
-;; Apply the custom face to the minibuffer
-(add-hook 'minibuffer-setup-hook
-          (lambda ()
-            (face-remap-add-relative 'default 'my-minibuffer-face)))
+;; GUI/theme/font setup (daemon-aware, macOS-specific)
+(unless (load (expand-file-name "init-ui-macos.el" user-emacs-directory) t t)
+  (message "Warning: Could not load init-ui-macos.el - check if file exists in %s"
+           user-emacs-directory))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -538,10 +459,6 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
-
-;; Nerd Font ttf names on MacOS are slightly different from those on
-;; on Linux: 'Monofur Nerd Font Mono' (MacOS), 'MonofurNerdFontMono'
-;; (Linux)
 
 
 (provide '.emacs)
