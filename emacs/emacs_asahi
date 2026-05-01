@@ -168,7 +168,9 @@
                   (org-indent-mode 1)))))
 
 ;; Projectile for project management (also disables built-in project.el)
-(require 'init-projectile)
+(unless (load (expand-file-name "init-projectile.el" user-emacs-directory) t t)
+  (message "Warning: Could not load init-projectile.el - check if file exists in %s"
+           user-emacs-directory))
 (use-package racket-mode
   :straight t
   :defer t
@@ -522,7 +524,9 @@
 (global-display-fill-column-indicator-mode 1)
 
 ;; GUI/theme/font setup (daemon-aware)
-(require 'init-ui)
+(unless (load (expand-file-name "init-ui.el" user-emacs-directory) t t)
+  (message "Warning: Could not load init-ui.el - check if file exists in %s"
+           user-emacs-directory))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
