@@ -1,5 +1,7 @@
 ;;; init-ui-macos.el --- macOS GUI theme/font/UI tweaks -*- lexical-binding: t; -*-
 ;;; Commentary:
+;; Created on: Fri 01 May 2026
+;; Last Updated: Fri 01 May 2026
 ;; Loaded by emacs_mac.  macOS-specific counterpart to init-ui.el:
 ;; the Nerd Font ttf names on macOS differ from Linux, the default
 ;; font size is larger (Retina), and macOS frames have a menu-bar
@@ -72,14 +74,14 @@ ignored by terminals)."
 ;; symbol (e.g. `bold', `semibold', `light'), a float for `:height',
 ;; and the `variable-pitch' symbol to switch font family.
 (setq modus-themes-headings
-      '((1 . (bold 1.6))
-        (2 . (bold 1.4))
+      '((1 . (bold 1.4))
+        (2 . (bold 1.3))
         (3 . (semibold 1.25))
         (4 . (semibold 1.15))
         (5 . (semibold 1.1))
         (6 . (semibold 1.05))
-        (agenda-date . (semibold 1.3))
-        (agenda-structure . (light 1.5))
+        (agenda-date . (semibold 1.2))
+        (agenda-structure . (light 1.3))
         (t . (semibold))))
 
 ;; Make ef-themes pick up `modus-themes-*' customization options
@@ -91,6 +93,7 @@ ignored by terminals)."
 ;; globally.  See commentary above for why per-frame theming is not
 ;; supported.
 (load-theme 'ef-cyprus :no-confirm)
+(setq ef-themes-to-toggle '(ef-cyprus ef-elea-light))
 
 ;; Apply minibuffer face to every minibuffer
 (add-hook 'minibuffer-setup-hook
