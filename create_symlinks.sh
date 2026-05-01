@@ -136,6 +136,8 @@ case "$HOSTNAME" in
     create_sym "$HOME/.emacs.d/early-init.el" "$DOTFILES/emacs/emacs.d/asahi_early-init.el"
     create_sym "$HOME/.emacs.d/init-gptel.el" "$DOTFILES/emacs/emacs.d/init-gptel.el"
     create_sym "$HOME/.emacs.d/init-org.el"   "$DOTFILES/emacs/emacs.d/init-org.el"
+    create_sym "$HOME/.emacs.d/init-yasnippet.el" "$DOTFILES/emacs/emacs.d/init-yasnippet.el"
+    create_sym "$HOME/.emacs.d/snippets"          "$DOTFILES/emacs/emacs.d/snippets"
 
     # Tmux
     create_sym "$HOME/.tmux.conf"      "$DOTFILES/tmux/tmux-argo.conf"
@@ -260,6 +262,9 @@ case "$HOSTNAME" in
 
       # Emacs
       create_sym "$HOME/.emacs"        "$DOTFILES/emacs/emacs_mac"
+      mkdir -p "$HOME/.emacs.d"
+      create_sym "$HOME/.emacs.d/init-yasnippet.el" "$DOTFILES/emacs/emacs.d/init-yasnippet.el"
+      create_sym "$HOME/.emacs.d/snippets"          "$DOTFILES/emacs/emacs.d/snippets"
 
       # Tmux
       create_sym "$HOME/.tmux.conf"    "$DOTFILES/tmux/tmux-macos.conf"

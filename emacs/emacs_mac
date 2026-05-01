@@ -241,6 +241,11 @@
 (unless (load (expand-file-name "init-org.el" user-emacs-directory) t t)
   (message "Warning: Could not load init-org.el - check if file exists in %s"
            user-emacs-directory))
+
+;; Load YASnippet configuration
+(unless (load (expand-file-name "init-yasnippet.el" user-emacs-directory) t t)
+  (message "Warning: Could not load init-yasnippet.el - check if file exists in %s"
+           user-emacs-directory))
 ;;
 ;;; --- mcp configs for mcp.el --- ;;;
 ;;
