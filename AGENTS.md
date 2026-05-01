@@ -128,3 +128,9 @@ hardening for full-init validation is a future task.
 
 Defined in `mcp/mcpservers.json`. Currently:
 - **puppeteer**: headless browser automation (uses `/usr/bin/chromium-browser`)
+
+## Skills
+
+Defined in `.agents/skills/`. Skills provide specialized instructions and
+workflows for specific tasks. Currently:
+- **tavily**: Public web search, content extraction, site crawling, and AI-powered deep research using the Tavily CLI (`tvly`).
