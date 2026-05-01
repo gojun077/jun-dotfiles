@@ -87,7 +87,7 @@ ignored by terminals)."
 ;; globally.  See commentary above for why per-frame theming is not
 ;; supported.
 (load-theme 'ef-cyprus :no-confirm)
-(setq ef-themes-to-toggle '(ef-cyprus ef-elea-light))
+(setq ef-themes-to-toggle '(ef-maris-light ef-elea-light))
 
 ;; Apply minibuffer face to every minibuffer
 (add-hook 'minibuffer-setup-hook
