@@ -34,6 +34,11 @@
   :hook
   (dockerfile-mode-hook . flymake-hadolint-setup)
   :defer t)
+;; ef-themes 2.0+ is built on top of modus-themes; theme + heading
+;; customization happens in init-ui-macos.el (loaded near end of init).
+(use-package ef-themes
+  :straight t
+  :demand t)
 (use-package exec-path-from-shell
   :straight t
   :init
@@ -66,14 +71,6 @@
 (use-package hcl-mode
   :straight t
   :defer t)
-(use-package leuven-theme
-  :straight t
-  ;; leuven-theme specific settings
-  ;; https://github.com/fniessen/emacs-leuven-theme
-  :config (setq leuven-scale-outline-headlines 1.2)
-          (setq leuven-scale-org-agenda-structure 1.2)
-          (setq leuven-scale-org-document-title 1.5)
-          (setq leuven-scale-volatile-highlight 1.2))
 (use-package magit
   :straight t
   ; bind 'M-x magit-status' to 'C-x g'

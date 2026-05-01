@@ -13,7 +13,7 @@
 ;;   https://emacs.stackexchange.com/q/2096
 ;;
 ;; Consequence: TTY emacsclient frames spawned from this daemon will
-;; render with the same `leuven' theme as GUI frames.  If you ever
+;; render with the same `ef-cyprus' theme as GUI frames.  If you ever
 ;; want differentiated GUI vs TTY rendering, the supported paths are:
 ;;   (a) use a theme whose face specs include display predicates like
 ;;       `(((type tty)) ...)' / `(((type graphic)) ...)' so a single
@@ -63,8 +63,34 @@ ignored by terminals)."
 (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
 
-;; Theme: loaded ONCE, globally.  See commentary above.
-(load-theme 'leuven t)
+;; Org-heading scaling: ef-themes 2.0+ is built atop modus-themes and,
+;; with `ef-themes-take-over-modus-themes-mode' enabled, respects the
+;; `modus-themes-headings' alist.  This gives a single API for tuning
+;; heading sizes/weights across both theme families.
+;;
+;; Each entry is `(LEVEL . (PROPS))' where PROPS may include a weight
+;; symbol (e.g. `bold', `semibold', `light'), a float for `:height',
+;; and the `variable-pitch' symbol to switch font family.
+(setq modus-themes-headings
+      '((1 . (bold 1.6))
+        (2 . (bold 1.4))
+        (3 . (semibold 1.25))
+        (4 . (semibold 1.15))
+        (5 . (semibold 1.1))
+        (6 . (semibold 1.05))
+        (agenda-date . (semibold 1.3))
+        (agenda-structure . (light 1.5))
+        (t . (semibold))))
+
+;; Make ef-themes pick up `modus-themes-*' customization options
+;; (introduced in ef-themes 2.0).
+(when (fboundp 'ef-themes-take-over-modus-themes-mode)
+  (ef-themes-take-over-modus-themes-mode 1))
+
+;; Theme: ef-cyprus (light, Mediterranean palette).  Loaded ONCE,
+;; globally.  See commentary above for why per-frame theming is not
+;; supported.
+(load-theme 'ef-cyprus :no-confirm)
 
 ;; Apply minibuffer face to every minibuffer
 (add-hook 'minibuffer-setup-hook
