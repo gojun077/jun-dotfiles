@@ -25,7 +25,15 @@
   :straight t
   :config
   (setq yas-snippet-dirs (list (expand-file-name "snippets" user-emacs-directory)))
-  (yas-global-mode 1))
+  (yas-global-mode 1)
+  ;; yas-global-mode skips minibuffers by default; enable explicitly
+  (add-hook 'minibuffer-setup-hook #'yas-minor-mode))
+
+;; suppress warning from delete-minibuffer-contents during expansion;
+;; deferred so custom-set-variables won't overwrite it
+(add-hook 'after-init-hook
+          (lambda ()
+            (add-to-list 'warning-suppress-types '(yasnippet backquote-change))))
 
 (provide 'init-yasnippet)
 ;;; init-yasnippet.el ends here

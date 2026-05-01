@@ -1,12 +1,15 @@
+# -*- mode: snippet -*-
 # name: Mini-Path-Switcher
 # key: goto
 # condition: (eq minibuffer-completion-table 'read-file-name-internal)
 # --
-${1:$$(yas-choose-value '("~/Documents/repos/encrypted/dotfilesenc/"
-                         "~/Documents/repos/work"
-                         "~/Documents/repos/work/cohere"
-                         "~/Documents/repos/encrypted/pj-gtd-org"
-                         "~/Documents/repos/personal"
-                         "~/dotfiles"
-                         "~/bin"
-                         "~/Documents/repos/junsTechNotes"))}
+`(progn (delete-minibuffer-contents)
+    (let ((enable-recursive-minibuffers t))
+      (yas-choose-value '("~/Documents/repos/encrypted/dotfiles-enc/"
+                          "~/Documents/repos/work"
+                          "~/Documents/repos/work/cohere"
+                          "~/Documents/repos/encrypted/pj-gtd-org"
+                          "~/Documents/repos/personal"
+                          "~/dotfiles"
+                          "~/bin"
+                          "~/Documents/repos/junsTechNotes"))))`
