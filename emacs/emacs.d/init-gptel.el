@@ -346,7 +346,7 @@ Assumes current buffer is the target buffer.  Returns a result string."
                    (progn
                      (save-buffer)
                      (format "Saved buffer '%s' to file: %s" buffer (buffer-file-name)))
-                 (format "Buffer '%s' is not associated with a file. Use write-file to save it." buffer))))
+                 (format "Buffer '%s' is not associated with a file. Use overwrite_file to save it to a path." buffer))))
  :description "[STEP 4 - SAVE] Save buffer changes to file. Use this AFTER modify_buffer (step 3) to persist your changes to disk. Always save after making modifications unless you plan to make multiple changes first."
  :args (list '(:name "buffer"
                :type "string"
@@ -568,24 +568,48 @@ Assumes current buffer is the target buffer.  Returns a result string."
  :category "search")
 
 (gptel-make-tool
- :name "write_file"
+ :name "create_file"
  :function (lambda (path content)
              (condition-case err
-                 (progn
-                   (let ((dir (file-name-directory (expand-file-name path))))
+                 (let ((expanded (expand-file-name path)))
+                   (when (file-exists-p expanded)
+                     (error "File already exists: %s.  Use overwrite_file to replace it." expanded))
+                   (let ((dir (file-name-directory expanded)))
                      (when (and dir (not (file-directory-p dir)))
                        (mkdir dir t)))
-                   (with-temp-file path
+                   (with-temp-file expanded
                      (insert content))
-                   (format "Wrote %d bytes to %s" (length content) path))
+                   (format "Created %s (%d bytes)" expanded (length content)))
+               (error (format "Error creating file '%s': %s" path (error-message-string err)))))
+ :description "Create a new file.  Errors if the file already exists (use overwrite_file to replace it).  Creates parent directories as needed."
+ :args (list '(:name "path"
+               :type "string"
+               :description "File path to create (relative or absolute).")
+             '(:name "content"
+               :type "string"
+               :description "Content to write to the new file."))
+ :confirm t
+ :category "filesystem")
+
+(gptel-make-tool
+ :name "overwrite_file"
+ :function (lambda (path content)
+             (condition-case err
+                 (let ((expanded (expand-file-name path)))
+                   (let ((dir (file-name-directory expanded)))
+                     (when (and dir (not (file-directory-p dir)))
+                       (mkdir dir t)))
+                   (with-temp-file expanded
+                     (insert content))
+                   (format "Wrote %s (%d bytes)" expanded (length content)))
                (error (format "Error writing file '%s': %s" path (error-message-string err)))))
- :description "Create a new file or overwrite an existing one. Creates parent directories as needed. NOTE: silently overwrites existing files."
+ :description "Overwrite a file with new content, replacing it entirely.  Creates the file and parent directories if they do not exist.  Use create_file when you want to be sure you are not clobbering an existing file."
  :args (list '(:name "path"
                :type "string"
                :description "File path to write (relative or absolute).")
              '(:name "content"
                :type "string"
-               :description "Content to write to the file."))
+               :description "Full content to write to the file."))
  :confirm t
  :category "filesystem")
 
