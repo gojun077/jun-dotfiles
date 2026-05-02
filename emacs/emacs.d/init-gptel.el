@@ -1,6 +1,6 @@
 ;;; init-gptel.el --- GPTel configuration (extracted from emacs_asahi)  -*- lexical-binding: t; -*-
 ; Created on: Sat 13 Sep 2025
-; Last Updated: Sun 26 Apr 2026
+; Last Updated: Sun 03 May 2026
 
 ;;; GPTel specific configurations ;;;
 ;;
@@ -67,7 +67,9 @@
             minimax/minimax-m2.7
             moonshotai/kimi-k2.6
             openai/gpt-5.3-codex
+            openai/gpt-5.5-pro
             x-ai/grok-4.20-beta
+            xiaomi/mimo-v2.5-pro
             z-ai/glm-5.1))
 
 
