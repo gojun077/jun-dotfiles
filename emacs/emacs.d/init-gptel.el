@@ -82,6 +82,13 @@ On error, return a formatted error message using ERROR-LABEL."
          ,@body)
      (error (format "Error %s: %s" ,error-label (error-message-string err)))))
 
+(defun my/gptel--resolve-buffer (name-or-path)
+  "Return a live buffer matching NAME-OR-PATH (buffer name or file path).
+Signals an error if no matching buffer is found."
+  (or (get-buffer name-or-path)
+      (find-buffer-visiting (expand-file-name name-or-path))
+      (error "No buffer for '%s'.  Use open_file to open it first." name-or-path)))
+
 (defun my/gptel--render-numbered-lines (label start-line end-line)
   "Render the current buffer as numbered lines, optionally paginated.
 LABEL is shown in the header (typically a file path or buffer name).
@@ -213,16 +220,13 @@ Assumes current buffer is the target buffer.  Returns a result string."
  :name "edit_buffer"
  :function (lambda (buffer old-str new-str &optional replace-all)
              (condition-case err
-                 (let ((buf (get-buffer buffer)))
-                   (unless (buffer-live-p buf)
-                     (error "Buffer '%s' does not exist.  Open the file first" buffer))
-                   (with-current-buffer buf
-                     (my/gptel--buffer-edit-string buffer old-str new-str replace-all)))
+                 (with-current-buffer (my/gptel--resolve-buffer buffer)
+                   (my/gptel--buffer-edit-string buffer old-str new-str replace-all))
                (error (format "Error in edit_buffer: %s" (error-message-string err)))))
  :description "Replace exact text in an Emacs buffer.  Finds OLD_STR (which must be unique within the buffer unless REPLACE_ALL is true) and replaces it with NEW_STR.  Preferred over edit_buffer_by_line because it does not depend on shifting line numbers.  Tip: include enough surrounding context in OLD_STR to make it unique."
  :args (list '(:name "buffer"
                :type "string"
-               :description "Name of an existing buffer to edit.")
+               :description "Buffer name or file path.  Use list_buffers to find valid names.")
              '(:name "old_str"
                :type "string"
                :description "Exact text to find in the buffer.  Whitespace and newlines must match exactly.  Must be unique within the buffer unless replace_all is true.")
@@ -239,7 +243,7 @@ Assumes current buffer is the target buffer.  Returns a result string."
  :name "edit_buffer_by_line"
  :function (lambda (buffer operation &optional text start-line end-line position)
              (condition-case err
-                 (with-current-buffer (get-buffer-create buffer)
+                 (with-current-buffer (my/gptel--resolve-buffer buffer)
                    (save-excursion
                      (pcase operation
                        ("insert"
@@ -279,7 +283,7 @@ Assumes current buffer is the target buffer.  Returns a result string."
 (gptel-make-tool
  :name "show_buffer_context"
  :function (lambda (buffer line-number &optional context-lines)
-             (my/gptel--with-buffer-safety (get-buffer buffer) "showing context"
+             (my/gptel--with-buffer-safety (my/gptel--resolve-buffer buffer) "showing context"
                (save-excursion
                  (let* ((context-size (or context-lines 5))
                         (total-lines (count-lines (point-min) (point-max)))
@@ -316,7 +320,7 @@ Assumes current buffer is the target buffer.  Returns a result string."
 (gptel-make-tool
  :name "search_buffer_text"
  :function (lambda (buffer search-text)
-             (my/gptel--with-buffer-safety (get-buffer buffer) "searching buffer"
+             (my/gptel--with-buffer-safety (my/gptel--resolve-buffer buffer) "searching buffer"
                (save-excursion
                  (goto-char (point-min))
                  (let ((matches '()))
@@ -341,7 +345,7 @@ Assumes current buffer is the target buffer.  Returns a result string."
 (gptel-make-tool
  :name "save_buffer"
  :function (lambda (buffer)
-             (my/gptel--with-buffer-safety (get-buffer buffer) "saving buffer"
+             (my/gptel--with-buffer-safety (my/gptel--resolve-buffer buffer) "saving buffer"
                (if (buffer-file-name)
                    (progn
                      (save-buffer)
@@ -379,6 +383,43 @@ Assumes current buffer is the target buffer.  Returns a result string."
  :category "filesystem")
 
 (gptel-make-tool
+ :name "open_file"
+ :function (lambda (path)
+             (condition-case err
+                 (let* ((expanded (expand-file-name path))
+                        (buf (find-file-noselect expanded)))
+                   (format "Opened '%s' in buffer: %s" expanded (buffer-name buf)))
+               (error (format "Error opening file '%s': %s" path (error-message-string err)))))
+ :description "Open a file in Emacs and return its buffer name.  Unlike read_file, the buffer is kept alive so you can edit it with edit_buffer.  Pass the returned buffer name to edit_buffer, save_buffer, etc."
+ :args (list '(:name "path"
+               :type "string"
+               :description "Path to the file to open (relative or absolute)."))
+ :category "filesystem")
+
+(gptel-make-tool
+ :name "list_buffers"
+ :function (lambda ()
+             (let* ((bufs (seq-filter
+                           (lambda (b)
+                             (not (string-prefix-p " " (buffer-name b))))
+                           (buffer-list)))
+                    (entries
+                     (mapcar (lambda (buf)
+                               (with-current-buffer buf
+                                 (format "  %-35s  %-20s  %7d bytes  %s"
+                                         (buffer-name)
+                                         (symbol-name major-mode)
+                                         (buffer-size)
+                                         (or (buffer-file-name) "(no file)"))))
+                             bufs)))
+               (format "%d buffers:\n%s"
+                       (length entries)
+                       (mapconcat #'identity entries "\n"))))
+ :description "List all visible Emacs buffers with their name, major mode, size, and associated file path.  Use this to find the exact buffer name to pass to edit_buffer and similar tools.  Buffer names and file paths are both accepted by any tool with a 'buffer' argument."
+ :args '()
+ :category "emacs")
+
+(gptel-make-tool
  :name "run_shell_command"
  :function (lambda (command)
              (condition-case err
@@ -404,7 +445,7 @@ Assumes current buffer is the target buffer.  Returns a result string."
 (gptel-make-tool
  :name "indent_region"
  :function (lambda (buffer start-line end-line)
-             (my/gptel--with-buffer-safety (get-buffer buffer) "indenting region"
+             (my/gptel--with-buffer-safety (my/gptel--resolve-buffer buffer) "indenting region"
                (let ((total-lines (count-lines (point-min) (point-max))))
                  (cond
                   ((or (< start-line 1)
@@ -439,9 +480,7 @@ Assumes current buffer is the target buffer.  Returns a result string."
  :name "check_parens"
  :function (lambda (buffer)
              (condition-case err
-                 (with-current-buffer (get-buffer buffer)
-                   (unless (buffer-live-p (get-buffer buffer))
-                     (error "Buffer '%s' is not live." buffer))
+                 (with-current-buffer (my/gptel--resolve-buffer buffer)
                    (save-excursion
                      (check-parens))
                    (format "Parentheses and expressions are balanced in buffer '%s'." buffer))
@@ -653,9 +692,7 @@ Assumes current buffer is the target buffer.  Returns a result string."
  :name "buffer_diagnostics"
  :function (lambda (buffer)
              (condition-case err
-                 (with-current-buffer (get-buffer buffer)
-                   (unless (buffer-live-p (get-buffer buffer))
-                     (error "Buffer '%s' is not live." buffer))
+                 (with-current-buffer (my/gptel--resolve-buffer buffer)
                    (if-let* ((diags (flymake-diagnostics)))
                        (let ((grouped (seq-group-by #'flymake-diagnostic-type diags)))
                          (format "%d diagnostic%s in '%s':%s"
