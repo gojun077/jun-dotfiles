@@ -379,7 +379,7 @@ Assumes current buffer is the target buffer.  Returns a result string."
  :category "filesystem")
 
 (gptel-make-tool
- :name "execute_safe_command"
+ :name "run_shell_command"
  :function (lambda (command)
              (condition-case err
                  (let* ((temp-buffer (generate-new-buffer " *shell-output*"))
@@ -393,10 +393,10 @@ Assumes current buffer is the target buffer.  Returns a result string."
                                  "(no output)"
                                trimmed-output))))
                (error (format "Command: %s\nError: %s" command (error-message-string err)))))
- :description "Run a shell command safely and return both the command you used and its output."
+ :description "Run a shell command and return its output and exit code.  Executes via the system shell with no sandboxing -- confirm before running destructive or side-effecting commands."
  :args (list '(:name "command"
                :type "string"
-               :description "The shell command to execute"))
+               :description "The shell command to execute."))
  :confirm t
  :category "shell")
 
