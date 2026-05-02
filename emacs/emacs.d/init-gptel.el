@@ -218,12 +218,16 @@ Assumes current buffer is the target buffer.  Returns a result string."
 
 (gptel-make-tool
  :name "edit_buffer"
- :function (lambda (buffer old-str new-str &optional replace-all)
+ :function (lambda (buffer old-str new-str &optional replace-all no-save)
              (condition-case err
                  (with-current-buffer (my/gptel--resolve-buffer buffer)
-                   (my/gptel--buffer-edit-string buffer old-str new-str replace-all))
+                   (let ((result (my/gptel--buffer-edit-string buffer old-str new-str replace-all)))
+                     (when (and (not no-save) (buffer-file-name))
+                       (save-buffer)
+                       (setq result (concat result " (saved)")))
+                     result))
                (error (format "Error in edit_buffer: %s" (error-message-string err)))))
- :description "Replace exact text in an Emacs buffer.  Finds OLD_STR (which must be unique within the buffer unless REPLACE_ALL is true) and replaces it with NEW_STR.  Preferred over edit_buffer_by_line because it does not depend on shifting line numbers.  Tip: include enough surrounding context in OLD_STR to make it unique."
+ :description "Replace exact text in an Emacs buffer, then auto-save if the buffer visits a file.  Finds OLD_STR (must be unique unless REPLACE_ALL is true) and replaces it with NEW_STR.  Preferred over edit_buffer_by_line.  Tip: include enough surrounding context in OLD_STR to make it unique."
  :args (list '(:name "buffer"
                :type "string"
                :description "Buffer name or file path.  Use list_buffers to find valid names.")
@@ -235,7 +239,10 @@ Assumes current buffer is the target buffer.  Returns a result string."
                :description "Text to replace old_str with.  Use the empty string to delete.")
              '(:name "replace_all"
                :type "boolean"
-               :description "When true, replace every occurrence of old_str.  Default: false (error if old_str matches more than once)."))
+               :description "When true, replace every occurrence of old_str.  Default: false (error if old_str matches more than once).")
+             '(:name "no_save"
+               :type "boolean"
+               :description "When true, skip the automatic save.  Default: false (changes are saved immediately if the buffer visits a file)."))
  :confirm t
  :category "emacs")
 
@@ -305,7 +312,7 @@ Assumes current buffer is the target buffer.  Returns a result string."
                    (format "Context around line %d in buffer '%s' (lines %d-%d of %d):\n%s"
                            line-number buffer start-line end-line total-lines
                            (mapconcat 'identity (nreverse lines) "\n"))))))
- :description "[STEP 2 of 4] Show the context around a specific line in a buffer to analyze code structure, indentation, and existing content. Use this AFTER search_buffer_text (step 1) and BEFORE modify_buffer (step 3) to choose the optimal insertion point and understand proper indentation."
+ :description "Show the lines around a specific line number in a buffer, with the target line marked.  Useful for understanding code structure and indentation before editing."
  :args (list '(:name "buffer"
                :type "string"
                :description "The name of the buffer to examine.")
@@ -333,7 +340,7 @@ Assumes current buffer is the target buffer.  Returns a result string."
                                (length matches) search-text buffer
                                (mapconcat 'identity (nreverse matches) "\n"))
                      (format "Text '%s' not found in buffer '%s'" search-text buffer))))))
- :description "[STEP 1 of 4] Search for existing text in a buffer to avoid creating duplicates. Use this FIRST before any modifications to check if similar code already exists. Follow with show_buffer_context (step 2), modify_buffer (step 3), then save_buffer (step 4)."
+ :description "Search for text in a buffer and return all matching line numbers and content.  Useful before editing to confirm the target text exists and is unique."
  :args (list '(:name "buffer"
                :type "string"
                :description "The name of the buffer to search in.")
@@ -351,7 +358,7 @@ Assumes current buffer is the target buffer.  Returns a result string."
                      (save-buffer)
                      (format "Saved buffer '%s' to file: %s" buffer (buffer-file-name)))
                  (format "Buffer '%s' is not associated with a file. Use overwrite_file to save it to a path." buffer))))
- :description "[STEP 4 - SAVE] Save buffer changes to file. Use this AFTER modify_buffer (step 3) to persist your changes to disk. Always save after making modifications unless you plan to make multiple changes first."
+ :description "Save buffer changes to disk.  edit_buffer auto-saves after each edit, so this is mainly needed after edit_buffer_by_line or when batching multiple edits before saving."
  :args (list '(:name "buffer"
                :type "string"
                :description "The name of the buffer to save."))
