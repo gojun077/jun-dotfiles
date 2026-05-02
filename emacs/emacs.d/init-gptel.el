@@ -82,32 +82,43 @@ On error, return a formatted error message using ERROR-LABEL."
          ,@body)
      (error (format "Error %s: %s" ,error-label (error-message-string err)))))
 
-(defun my/gptel--indent-text-to-column (text target-col)
-  "Indent each non-empty line in TEXT to match TARGET-COL.
-If TEXT already starts with whitespace, return it unchanged."
-  (if (string-match "^[ \t]" text)
-      text
-    (mapconcat (lambda (line)
-                 (if (string-empty-p (string-trim line))
-                     line
-                   (concat (make-string target-col ?\s) line)))
-               (split-string text "\n")
-               "\n")))
-
-(defun my/gptel--check-insertion-context (prev-line current-line)
-  "Return a warning string if inserting between PREV-LINE and CURRENT-LINE
-would break syntactic constructs.  Returns nil if the context is safe."
-  (when (and current-line prev-line)
-    (cond
-     ((and (string-match ")\\s-*$" prev-line)
-           (not (string-match ";;" prev-line))
-           (not (string-match ";;" current-line)))
-      (format "Warning: Inserting between case pattern '%s' and its closing ';;' may break syntax. "
-              (string-trim prev-line)))
-     ((and (string-match "\\(if\\|while\\|for\\|case\\)\\s-" current-line)
-           (not (string-match ";;\\s-*$" current-line)))
-      (format "Warning: Line appears to be an incomplete statement: '%s'. "
-              (string-trim current-line))))))
+(defun my/gptel--render-numbered-lines (label start-line end-line)
+  "Render the current buffer as numbered lines, optionally paginated.
+LABEL is shown in the header (typically a file path or buffer name).
+START-LINE and END-LINE are 1-based and inclusive.  When START-LINE is
+nil it defaults to 1; when END-LINE is nil it defaults to a 500-line
+window starting at START-LINE.  Each output line is prefixed with
+`<lineno>: ' to match the conventional agent Read tool format."
+  (save-excursion
+    (let* ((total (count-lines (point-min) (point-max)))
+           (start (max 1 (or start-line 1)))
+           (default-end (+ start 499))
+           (requested-end (or end-line default-end))
+           (end (min total requested-end)))
+      (cond
+       ((zerop total)
+        (format "%s: file is empty (0 lines)" label))
+       ((> start total)
+        (format "%s: start-line %d is past end of file (%d line%s)"
+                label start total (if (= total 1) "" "s")))
+       ((< requested-end start)
+        (format "Error: end-line (%d) is less than start-line (%d)"
+                requested-end start))
+       (t
+        (goto-char (point-min))
+        (forward-line (1- start))
+        (let ((lines '())
+              (n start))
+          (while (and (<= n end) (not (eobp)))
+            (let ((line-text (buffer-substring-no-properties
+                              (line-beginning-position)
+                              (line-end-position))))
+              (push (format "%d: %s" n line-text) lines))
+            (forward-line 1)
+            (setq n (1+ n)))
+          (format "%s (lines %d-%d of %d):\n%s"
+                  label start end total
+                  (mapconcat 'identity (nreverse lines) "\n"))))))))
 
 (defun my/gptel--buffer-edit-string (buffer old-str new-str replace-all)
   "Replace OLD-STR with NEW-STR in current buffer (named BUFFER).
@@ -134,8 +145,10 @@ error string instead of replacing.  Returns a result string."
               count (if (= count 1) "" "s") buffer)))))
 
 (defun my/gptel--buffer-insert (buffer text start-line position)
-  "Insert TEXT in BUFFER at START-LINE, either before or after the line.
+  "Insert TEXT verbatim in BUFFER at START-LINE.
 POSITION should be \"before\" or \"after\"; defaults to \"before\".
+TEXT is inserted exactly as provided -- no indentation adjustment.
+Use the indent_region tool afterwards if reformatting is needed.
 Assumes current buffer is the target buffer.  Returns a result string."
   (let ((total-lines (count-lines (point-min) (point-max))))
     (cond
@@ -150,24 +163,13 @@ Assumes current buffer is the target buffer.  Returns a result string."
      (t
       (goto-char (point-min))
       (forward-line (1- start-line))
-      (let* ((current-line (string-trim (thing-at-point 'line t)))
-             (prev-line (save-excursion
-                          (forward-line -1)
-                          (string-trim (thing-at-point 'line t))))
-             (warning-msg (my/gptel--check-insertion-context prev-line current-line))
-             (target-indent (save-excursion
-                              (beginning-of-line)
-                              (skip-chars-forward " \t")
-                              (current-column)))
-             (formatted-text (my/gptel--indent-text-to-column text target-indent)))
-        (if (string= position "after")
-            (progn (end-of-line) (insert "\n" formatted-text))
-          (progn (beginning-of-line) (insert formatted-text "\n")))
-        (format "%sInserted text %s line %d in buffer %s"
-                (or warning-msg "")
-                (or position "before")
-                start-line
-                buffer))))))
+      (if (string= position "after")
+          (progn (end-of-line) (insert "\n" text))
+        (progn (beginning-of-line) (insert text "\n")))
+      (format "Inserted text %s line %d in buffer %s"
+              (or position "before")
+              start-line
+              buffer)))))
 
 (defun my/gptel--buffer-replace (buffer text start-line end-line)
   "Replace lines START-LINE to END-LINE in BUFFER with TEXT.
@@ -288,7 +290,9 @@ Assumes current buffer is the target buffer.  Returns a result string."
                    (forward-line (1- start-line))
                    (dotimes (i (1+ (- end-line start-line)))
                      (let ((current-line-num (+ start-line i))
-                           (line-content (string-trim (thing-at-point 'line t))))
+                           (line-content (buffer-substring-no-properties
+                                          (line-beginning-position)
+                                          (line-end-position))))
                        (push (format "%s%d: %s"
                                      (if (= current-line-num line-number) ">>> " "    ")
                                      current-line-num
@@ -352,14 +356,23 @@ Assumes current buffer is the target buffer.  Returns a result string."
 
 (gptel-make-tool
  :name "read_file"
- :description "[READ-ONLY] Open a file in Emacs and return its contents. Use this to examine file content before making modifications."
- :args (list '(:name "path" :type string :description "Path to the file (e.g. ~/notes/todo.txt)"))
- :function (lambda (path)
+ :description "[READ-ONLY] Open a file in Emacs and return its contents with each line prefixed by `<lineno>: ' (matches the conventional Read-tool format).  By default returns the first 500 lines; pass START-LINE and/or END-LINE to paginate through larger files."
+ :args (list '(:name "path"
+               :type "string"
+               :description "Path to the file (e.g. ~/notes/todo.txt).")
+             '(:name "start-line"
+               :type "number"
+               :description "First line to return (1-based, inclusive).  Defaults to 1.")
+             '(:name "end-line"
+               :type "number"
+               :description "Last line to return (1-based, inclusive).  Defaults to start-line + 499 (a 500-line window)."))
+ :function (lambda (path &optional start-line end-line)
              (condition-case err
                  (let ((existing (get-file-buffer path))
                        (buf (find-file-noselect path)))
                    (unwind-protect
-                       (with-current-buffer buf (buffer-string))
+                       (with-current-buffer buf
+                         (my/gptel--render-numbered-lines path start-line end-line))
                      (unless existing
                        (kill-buffer buf))))
                (error (format "Error reading file '%s': %s" path (error-message-string err)))))
@@ -387,6 +400,40 @@ Assumes current buffer is the target buffer.  Returns a result string."
  :confirm t
  :category "shell")
 
+
+(gptel-make-tool
+ :name "indent_region"
+ :function (lambda (buffer start-line end-line)
+             (my/gptel--with-buffer-safety (get-buffer buffer) "indenting region"
+               (let ((total-lines (count-lines (point-min) (point-max))))
+                 (cond
+                  ((or (< start-line 1)
+                       (> end-line total-lines)
+                       (> start-line end-line))
+                   (format "Error: Invalid line range %d-%d (total lines: %d)"
+                           start-line end-line total-lines))
+                  (t
+                   (save-excursion
+                     (goto-char (point-min))
+                     (forward-line (1- start-line))
+                     (let ((start (point)))
+                       (forward-line (- end-line start-line))
+                       (end-of-line)
+                       (indent-region start (point))))
+                   (format "Indented lines %d-%d in buffer '%s' using %s rules"
+                           start-line end-line buffer major-mode))))))
+ :description "Re-indent lines START-LINE through END-LINE in BUFFER using the buffer's major-mode indentation logic (calls `indent-region').  Use AFTER edit_buffer / edit_buffer_by_line if inserted code needs reformatting.  Note: indentation is the major mode's interpretation, which may differ from what you wrote -- re-read the buffer afterwards to confirm."
+ :args (list '(:name "buffer"
+               :type "string"
+               :description "Name of the buffer to re-indent.")
+             '(:name "start-line"
+               :type "number"
+               :description "First line of the region to indent (1-based, inclusive).")
+             '(:name "end-line"
+               :type "number"
+               :description "Last line of the region to indent (1-based, inclusive)."))
+ :confirm t
+ :category "emacs")
 
 (gptel-make-tool
  :name "check_parens"
