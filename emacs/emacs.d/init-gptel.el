@@ -728,6 +728,132 @@ Assumes current buffer is the target buffer.  Returns a result string."
                :description "The name of the buffer to check diagnostics for."))
  :category "emacs")
 
+;; --- Agentic preset helpers ---
+
+(defun my/gptel--project-context-string ()
+  "Return a formatted project-context block for agentic system prompts.
+Injected into system messages at request-send time via the preset lambda."
+  (let* ((root (condition-case nil
+                   (abbreviate-file-name (projectile-project-root))
+                 (error (abbreviate-file-name default-directory))))
+         (buf-name (buffer-name))
+         (buf-file (buffer-file-name)))
+    (concat "<project-context>\n"
+            "Project root: " root "\n"
+            "Active buffer: " buf-name
+            (when buf-file (concat " (" (abbreviate-file-name buf-file) ")"))
+            "\n</project-context>")))
+
+(defconst my/gptel--agent-read-system
+  "You are an Emacs coding assistant in read-only research mode.
+
+TOOLS: search, read, and analyse only -- no edits, no shell.
+
+WORKFLOW:
+1. Use list_project_files or search_project to discover relevant files.
+2. Use read_file to read (full file first; paginate with start-line/end-line only for re-reads).
+3. Use show_buffer_context to zoom in on a specific line range.
+4. Use search_buffer_text and search_project for cross-referencing symbols.
+5. Use git_status / git_diff to understand recent changes.
+6. Use check_parens or buffer_diagnostics for static analysis.
+
+PARALLELIZE: when reads are independent (e.g. reading several files), issue them in a single message.
+
+[project_context]"
+  "System prompt for the `agent-read' preset.")
+
+(defconst my/gptel--agent-edit-system
+  "You are an Emacs coding assistant operating directly on the user's open buffers.
+
+CRITICAL: edit_buffer auto-saves the buffer after each edit (unless no_save=true).
+Use save_buffer explicitly only after edit_buffer_by_line, or when deliberately
+batching several edits before a single save.
+
+WORKFLOW:
+1. Use list_project_files or search_project to discover relevant files.
+2. Use read_file (full file first!) or show_buffer_context before editing.
+3. Use open_file to load a file into a live buffer; pass the returned buffer name to edit_buffer.
+4. Prefer edit_buffer (string replace) over edit_buffer_by_line -- line numbers shift after every edit.
+   - old_str must uniquely match the target text. Include enough surrounding context.
+   - Do NOT include the `<n>: ' line-number prefix that read_file adds -- strip it from old_str.
+   - Pass replace_all=true only when intentionally replacing every occurrence.
+5. Use check_parens / byte_compile_file / buffer_diagnostics to verify after edits.
+6. Use git_status / git_diff to review your changes before finishing.
+
+PARALLELIZE: when reads are independent, issue them in a single message.
+
+[project_context]"
+  "System prompt for the `agent-edit' preset.")
+
+(defconst my/gptel--agent-shell-system
+  "You are an Emacs coding assistant with full shell access.
+
+CRITICAL: edit_buffer auto-saves the buffer after each edit (unless no_save=true).
+Use save_buffer explicitly only after edit_buffer_by_line, or when deliberately
+batching several edits before a single save.
+
+WORKFLOW:
+1. Use list_project_files or search_project to discover relevant files.
+2. Use read_file (full file first!) or show_buffer_context before editing.
+3. Use open_file to load a file into a live buffer; pass the returned buffer name to edit_buffer.
+4. Prefer edit_buffer (string replace) over edit_buffer_by_line -- line numbers shift after every edit.
+   - old_str must uniquely match the target text. Include enough surrounding context.
+   - Do NOT include the `<n>: ' line-number prefix that read_file adds -- strip it from old_str.
+5. Use check_parens / byte_compile_file / buffer_diagnostics to verify after edits.
+6. Reserve run_shell_command for git, build tools, package managers, and system commands.
+   NEVER use run_shell_command for file operations -- use read_file / search_project / list_project_files.
+7. Use git_status / git_diff to review your changes before finishing.
+
+PARALLELIZE: when operations are independent, issue them in a single message.
+
+[project_context]"
+  "System prompt for the `agent-shell' preset.")
+
+;; --- Agentic presets ---
+
+(gptel-make-preset 'agent-read
+  :description "Read-only agent: search, read, plan, review. No edits, no shell."
+  :backend "Claude"
+  :model 'claude-sonnet-4-6
+  :system (lambda ()
+            (string-replace "[project_context]"
+                            (my/gptel--project-context-string)
+                            my/gptel--agent-read-system))
+  :tools '("read_file" "show_buffer_context" "search_buffer_text"
+           "search_project" "list_project_files" "list_buffers"
+           "git_status" "git_diff" "buffer_diagnostics" "check_parens"))
+
+(gptel-make-preset 'agent-edit
+  :description "Full-edit agent: read, modify buffers, create files, verify. No shell."
+  :backend "Claude"
+  :model 'claude-sonnet-4-6
+  :system (lambda ()
+            (string-replace "[project_context]"
+                            (my/gptel--project-context-string)
+                            my/gptel--agent-edit-system))
+  :tools '("read_file" "show_buffer_context" "search_buffer_text"
+           "search_project" "list_project_files" "list_buffers"
+           "open_file" "edit_buffer" "edit_buffer_by_line" "save_buffer"
+           "create_file" "overwrite_file" "indent_region"
+           "check_parens" "byte_compile_file" "buffer_diagnostics"
+           "git_status" "git_diff"))
+
+(gptel-make-preset 'agent-shell
+  :description "Shell-capable agent: full edit plus arbitrary shell commands."
+  :parents 'agent-edit
+  :system (lambda ()
+            (string-replace "[project_context]"
+                            (my/gptel--project-context-string)
+                            my/gptel--agent-shell-system))
+  :tools '(:append ("run_shell_command")))
+
+(gptel-make-preset 'git-review
+  :description "Git review agent: status and diff only -- no edits, no file reads."
+  :backend "Claude"
+  :model 'claude-sonnet-4-6
+  :system "You are a code reviewer. Review the provided git diff and status output. Provide concise, actionable feedback: what changed, what looks risky, what's missing (tests, docs, edge cases)."
+  :tools '("git_status" "git_diff"))
+
 ;; GPTel config block end
 
 ;; Integrations
