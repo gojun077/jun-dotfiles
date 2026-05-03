@@ -250,24 +250,31 @@ Assumes current buffer is the target buffer.  Returns a result string."
 
 (gptel-make-tool
  :name "edit_buffer_by_line"
- :function (lambda (buffer operation &optional text start-line end-line position)
+ :function (lambda (buffer operation &optional text start-line end-line position no-save)
              (condition-case err
                  (with-current-buffer (my/gptel--resolve-buffer buffer)
-                   (save-excursion
-                     (pcase operation
-                       ("insert"
-                        (my/gptel--buffer-insert buffer text start-line position))
-                       ("replace"
-                        (if (not (and start-line end-line text))
-                            "Error: Replace operation requires start-line, end-line, and text parameters"
-                          (my/gptel--buffer-replace buffer text start-line end-line)))
-                       ("delete"
-                        (if (not (and start-line end-line))
-                            "Error: Delete operation requires start-line and end-line parameters"
-                          (my/gptel--buffer-delete buffer start-line end-line)))
-                       (_ (format "Error: Unknown operation '%s'. Use 'insert', 'replace', or 'delete'" operation)))))
+                   (let ((result
+                          (save-excursion
+                            (pcase operation
+                              ("insert"
+                               (my/gptel--buffer-insert buffer text start-line position))
+                              ("replace"
+                               (if (not (and start-line end-line text))
+                                   "Error: Replace operation requires start-line, end-line, and text parameters"
+                                 (my/gptel--buffer-replace buffer text start-line end-line)))
+                              ("delete"
+                               (if (not (and start-line end-line))
+                                   "Error: Delete operation requires start-line and end-line parameters"
+                                 (my/gptel--buffer-delete buffer start-line end-line)))
+                              (_ (format "Error: Unknown operation '%s'. Use 'insert', 'replace', or 'delete'" operation))))))
+                     (when (and (not no-save)
+                                (buffer-file-name)
+                                (not (string-prefix-p "Error" result)))
+                       (save-buffer)
+                       (setq result (concat result " (saved)")))
+                     result))
                (error (format "Error in edit_buffer_by_line: %s" (error-message-string err)))))
- :description "FALLBACK: edit a buffer by line number (insert/replace/delete).  Prefer edit_buffer (string-replace) for almost all edits.  Use this only when string-replace is not viable, e.g., inserting into an empty file at a specific line.  Note: line numbers shift after edits, so re-read the buffer between calls."
+ :description "FALLBACK: edit a buffer by line number (insert/replace/delete), then auto-save if the buffer visits a file (unless no_save=true).  Prefer edit_buffer (string-replace) for almost all edits.  Use this only when string-replace is not viable, e.g., inserting into an empty file at a specific line.  Note: line numbers shift after edits, so re-read the buffer between calls."
  :args (list '(:name "buffer"
                :type "string"
                :description "The name of the buffer to modify.")
@@ -285,7 +292,10 @@ Assumes current buffer is the target buffer.  Returns a result string."
                :description "End line number (1-based). Required for replace/delete operations.")
              '(:name "position"
                :type "string"
-               :description "For insert only: 'before' (default) or 'after' the specified line."))
+               :description "For insert only: 'before' (default) or 'after' the specified line.")
+             '(:name "no_save"
+               :type "boolean"
+               :description "When true, skip the automatic save.  Default: false (changes are saved immediately if the buffer visits a file)."))
  :confirm t
  :category "emacs")
 
@@ -360,7 +370,7 @@ Assumes current buffer is the target buffer.  Returns a result string."
                      (save-buffer)
                      (format "Saved buffer '%s' to file: %s" buffer (buffer-file-name)))
                  (format "Buffer '%s' is not associated with a file. Use overwrite_file to save it to a path." buffer))))
- :description "Save buffer changes to disk.  edit_buffer auto-saves after each edit, so this is mainly needed after edit_buffer_by_line or when batching multiple edits before saving."
+ :description "Save buffer changes to disk.  edit_buffer and edit_buffer_by_line auto-save after each edit, so this is mainly needed when batching multiple edits with no_save=true before a single save."
  :args (list '(:name "buffer"
                :type "string"
                :description "The name of the buffer to save."))
@@ -527,36 +537,50 @@ Assumes current buffer is the target buffer.  Returns a result string."
  :name "search_project"
  :function (lambda (pattern &optional dir file-glob case-sensitive)
              (condition-case err
-                 (let* ((search-dir (or dir
+                 (let* ((rg (executable-find "rg"))
+                        (search-dir (or dir
                                         (condition-case nil
                                             (projectile-project-root)
                                           (error default-directory))))
-                        (case-flag (if case-sensitive "--case-sensitive" "--ignore-case"))
-                        (glob-arg (when file-glob
-                                    (concat "--glob " (shell-quote-argument file-glob))))
-                        (cmd (format "rg --line-number --no-heading --no-messages %s %s %s -- %s"
-                                     case-flag
-                                     (or glob-arg "")
-                                     (shell-quote-argument pattern)
-                                     (shell-quote-argument (expand-file-name search-dir))))
-                        (output (shell-command-to-string cmd))
-                        (trimmed (string-trim output)))
-                   (if (string-empty-p trimmed)
-                       (format "No matches for '%s' in %s"
-                               pattern (abbreviate-file-name search-dir))
-                     (let ((lines (split-string trimmed "\n" t))
-                           (max-show 50))
-                       (format "Found %d match%s for '%s' in %s%s:\n%s"
-                               (length lines)
-                               (if (= (length lines) 1) "" "es")
-                               pattern
-                               (abbreviate-file-name search-dir)
-                               (if (> (length lines) max-show)
-                                   (format " (showing first %d)" max-show)
-                                 "")
-                               (mapconcat 'identity
-                                          (cl-subseq lines 0 (min (length lines) max-show))
-                                          "\n")))))
+                        (expanded-dir (expand-file-name search-dir)))
+                   (cond
+                    ((not rg)
+                     "Error: ripgrep ('rg') is not installed or not on PATH.")
+                    ((not (file-directory-p expanded-dir))
+                     (format "Error: directory does not exist: %s" expanded-dir))
+                    (t
+                     (let* ((args (append
+                                   (list "--line-number" "--no-heading" "--color=never"
+                                         (if case-sensitive "--case-sensitive" "--ignore-case"))
+                                   (when file-glob (list "--glob" file-glob))
+                                   (list "--" pattern expanded-dir)))
+                            (exit-status nil)
+                            (output (with-temp-buffer
+                                      (setq exit-status
+                                            (apply #'call-process rg nil t nil args))
+                                      (buffer-string)))
+                            (trimmed (string-trim output)))
+                       (cond
+                        ((= exit-status 1)
+                         (format "No matches for '%s' in %s"
+                                 pattern (abbreviate-file-name search-dir)))
+                        ((not (zerop exit-status))
+                         (format "Error: rg exited with status %d.\n%s"
+                                 exit-status trimmed))
+                        (t
+                         (let ((lines (split-string trimmed "\n" t))
+                               (max-show 50))
+                           (format "Found %d match%s for '%s' in %s%s:\n%s"
+                                   (length lines)
+                                   (if (= (length lines) 1) "" "es")
+                                   pattern
+                                   (abbreviate-file-name search-dir)
+                                   (if (> (length lines) max-show)
+                                       (format " (showing first %d)" max-show)
+                                     "")
+                                   (mapconcat 'identity
+                                              (cl-subseq lines 0 (min (length lines) max-show))
+                                              "\n")))))))))
                (error (format "Error searching project: %s" (error-message-string err)))))
  :description "Search for a regex pattern across project files using ripgrep. Respects .gitignore. Returns matching lines with file path and line number."
  :args (list '(:name "pattern"
@@ -666,7 +690,9 @@ Assumes current buffer is the target buffer.  Returns a result string."
  :function (lambda ()
              (require 'magit-git)
              (condition-case err
-                 (let ((output (magit-git-string "status" "--porcelain=v1")))
+                 (let ((output (with-temp-buffer
+                                 (magit-git-insert "status" "--porcelain=v1")
+                                 (buffer-string))))
                    (if (string-empty-p (string-trim output))
                        "Working tree clean. No staged, unstaged, or untracked changes."
                      (format "```\n%s\n```" (string-trim output))))
@@ -680,8 +706,12 @@ Assumes current buffer is the target buffer.  Returns a result string."
  :function (lambda (&optional staged path)
              (require 'magit-git)
              (condition-case err
-                 (let* ((args `("diff" ,@(when staged '("--staged")) ,@(when path (list "--" path))))
-                        (output (apply #'magit-git-string (remq nil args))))
+                 (let* ((args `("diff"
+                                ,@(when staged '("--staged"))
+                                ,@(when path (list "--" path))))
+                        (output (with-temp-buffer
+                                  (apply #'magit-git-insert args)
+                                  (buffer-string))))
                    (if (string-empty-p (string-trim output))
                        (format "No %schanges%s."
                                (if staged "staged " "")
@@ -702,27 +732,32 @@ Assumes current buffer is the target buffer.  Returns a result string."
  :function (lambda (buffer)
              (condition-case err
                  (with-current-buffer (my/gptel--resolve-buffer buffer)
-                   (if-let* ((diags (flymake-diagnostics)))
-                       (let ((grouped (seq-group-by #'flymake-diagnostic-type diags)))
-                         (format "%d diagnostic%s in '%s':%s"
-                                 (length diags)
-                                 (if (= (length diags) 1) "" "s")
-                                 buffer
-                                 (mapconcat
-                                  (lambda (group)
-                                    (format "\n\n[%s]\n%s"
-                                            (car group)
-                                            (mapconcat
-                                             (lambda (d)
-                                               (format "  Line %d: %s"
-                                                       (line-number-at-pos
-                                                        (flymake-diagnostic-beg d))
-                                                       (flymake-diagnostic-text d)))
-                                             (cdr group)
-                                             "\n")))
-                                  grouped
-                                  "")))
-                     (format "No diagnostics in buffer '%s' (flymake may not be running)." buffer)))
+                   (cond
+                    ((not (bound-and-true-p flymake-mode))
+                     (format "flymake-mode is not active in buffer '%s'." buffer))
+                    ((null (flymake-diagnostics))
+                     (format "No diagnostics in buffer '%s'." buffer))
+                    (t
+                     (let* ((diags (flymake-diagnostics))
+                            (grouped (seq-group-by #'flymake-diagnostic-type diags)))
+                       (format "%d diagnostic%s in '%s':%s"
+                               (length diags)
+                               (if (= (length diags) 1) "" "s")
+                               buffer
+                               (mapconcat
+                                (lambda (group)
+                                  (format "\n\n[%s]\n%s"
+                                          (car group)
+                                          (mapconcat
+                                           (lambda (d)
+                                             (format "  Line %d: %s"
+                                                     (line-number-at-pos
+                                                      (flymake-diagnostic-beg d))
+                                                     (flymake-diagnostic-text d)))
+                                           (cdr group)
+                                           "\n")))
+                                grouped
+                                ""))))))
                (error (format "Error checking diagnostics: %s" (error-message-string err)))))
  :description "Show flymake diagnostics (errors, warnings, notes) for a buffer, grouped by severity. Requires flymake-mode to be active in the buffer."
  :args (list '(:name "buffer"
@@ -767,9 +802,9 @@ PARALLELIZE: when reads are independent (e.g. reading several files), issue them
 (defconst my/gptel--agent-edit-system
   "You are an Emacs coding assistant operating directly on the user's open buffers.
 
-CRITICAL: edit_buffer auto-saves the buffer after each edit (unless no_save=true).
-Use save_buffer explicitly only after edit_buffer_by_line, or when deliberately
-batching several edits before a single save.
+CRITICAL: edit_buffer and edit_buffer_by_line both auto-save the buffer after
+each edit (unless no_save=true).  Use save_buffer explicitly only when
+deliberately batching several no_save=true edits before a single save.
 
 WORKFLOW:
 1. Use list_project_files or search_project to discover relevant files.
@@ -790,9 +825,9 @@ PARALLELIZE: when reads are independent, issue them in a single message.
 (defconst my/gptel--agent-shell-system
   "You are an Emacs coding assistant with full shell access.
 
-CRITICAL: edit_buffer auto-saves the buffer after each edit (unless no_save=true).
-Use save_buffer explicitly only after edit_buffer_by_line, or when deliberately
-batching several edits before a single save.
+CRITICAL: edit_buffer and edit_buffer_by_line both auto-save the buffer after
+each edit (unless no_save=true).  Use save_buffer explicitly only when
+deliberately batching several no_save=true edits before a single save.
 
 WORKFLOW:
 1. Use list_project_files or search_project to discover relevant files.
@@ -853,7 +888,13 @@ PARALLELIZE: when operations are independent, issue them in a single message.
   :description "Git review agent: status and diff only -- no edits, no file reads."
   :backend "Claude"
   :model 'claude-sonnet-4-6
-  :system "You are a code reviewer. Review the provided git diff and status output. Provide concise, actionable feedback: what changed, what looks risky, what's missing (tests, docs, edge cases)."
+  :system "You are a code reviewer.
+
+WORKFLOW:
+1. Start by calling `git_status` to see the working-tree state.
+2. Call `git_diff` (and `git_diff` with staged=true if anything is staged) to fetch the actual changes -- do NOT wait for the user to paste output.
+3. Issue independent git_status / git_diff calls in parallel in a single message when possible.
+4. Then provide concise, actionable feedback: what changed, what looks risky, what's missing (tests, docs, edge cases)."
   :tools '("git_status" "git_diff"))
 
 ;; GPTel config block end
