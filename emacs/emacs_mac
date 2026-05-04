@@ -21,8 +21,8 @@
   :defer t)
 (use-package beads
   :straight nil
-  :load-path ("/home/jundora/Documents/repos/personal/beads.el/lisp"
-              "/home/jundora/.emacs.d/straight/build/vui"))
+  :load-path ("~/Documents/repos/personal/beads.el/lisp"
+              "~/Documents/repos/personal/beads.el/vendor/vui.el"))
 (use-package blacken
   :straight t
   :defer t)
