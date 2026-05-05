@@ -452,7 +452,7 @@
 ; set fill column to 75
 (setq-default fill-column 75)
 ; enable native fill column indicator (emacs 27+)
-;(global-display-fill-column-indicator-mode 1)
+(global-display-fill-column-indicator-mode 1)
 
 ;; GUI/theme/font setup (daemon-aware, macOS-specific)
 (unless (load (expand-file-name "init-ui-macos.el" user-emacs-directory) t t)
@@ -464,7 +464,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(fill-column-indicator ((t (:background "gray95" :foreground "gray96" :height 1)))))
 
 
 (provide '.emacs)
