@@ -34,19 +34,19 @@
         "/home/jundora/.local/bin/codex": {
             "path": "/home/jundora/.local/bin/codex",
             "remote_name": "codex",
-            "version": "rust-v0.128.0",
-            "hash": "2c6b3241a337491a5ecec93140072a70f9d0574e471484b8773a106b18489017",
-            "url": "https://github.com/openai/codex/releases/tag/rust-v0.128.0",
+            "version": "rust-v0.130.0",
+            "hash": "6e192a8525c336790c19dec64432ac95ca3714ff4159f875a5a9296eef7d71e8",
+            "url": "https://github.com/openai/codex/releases/tag/rust-v0.130.0",
             "provider": "github",
-            "package_path": "package/vendor/aarch64-unknown-linux-musl/codex/codex",
+            "package_path": "",
             "pinned": false
         },
         "/home/jundora/.local/bin/dolt": {
             "path": "/home/jundora/.local/bin/dolt",
             "remote_name": "dolt",
-            "version": "v1.86.6",
-            "hash": "e510b8715b00d0a5b2b6b0c9c750daeddec120695669ddba9e91c7b5fcc6f902",
-            "url": "https://github.com/dolthub/dolt/releases/tag/v1.86.6",
+            "version": "v2.0.1",
+            "hash": "79d92f50e63b1dfd14d44c264c01d08b6b99433367824e5386b01a3300f7eb25",
+            "url": "https://github.com/dolthub/dolt/releases/tag/v2.0.1",
             "provider": "github",
             "package_path": "dolt-linux-arm64/bin/dolt",
             "pinned": false
@@ -94,9 +94,9 @@
         "/home/jundora/.local/bin/k3s": {
             "path": "/home/jundora/.local/bin/k3s",
             "remote_name": "k3s-arm64",
-            "version": "v1.35.4+k3s1",
-            "hash": "53eab87ef5601265a6cbd09756840646693e71db84ee8578884d8f7749345a73",
-            "url": "https://github.com/k3s-io/k3s/releases/tag/v1.35.4%2Bk3s1",
+            "version": "v1.36.0+k3s1",
+            "hash": "5a4e4e76ddacb7997384746992439b9a75ed930d8d2b9caf1938571d416d8a0e",
+            "url": "https://github.com/k3s-io/k3s/releases/tag/v1.36.0%2Bk3s1",
             "provider": "github",
             "package_path": "",
             "pinned": false
