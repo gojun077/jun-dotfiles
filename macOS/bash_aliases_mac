@@ -3,7 +3,7 @@
 # Original path to file: ~/.bash_aliases
 # bash_aliases_macos
 # Created on: Sometime in 2021?
-# Last Updated: Thu 26 Mar 2026
+# Last Updated: Sun 10 May 2026
 
 # enable color support of ls and also add handy aliases
 alias ls='ls --color=auto'
@@ -35,6 +35,15 @@ dictate() {
 
     # Optional: Clean up
     rm "$TEMP_WAV"
+}
+
+# Run a command with macOS sleep prevention held for the command's lifetime.
+# Holds idle (-i) and system (-s) sleep assertions; display is allowed to dim.
+# Useful for long jobs like `cgc index`, `rsync`, `crane`/`skopeo` pulls, etc.
+# Exit code is propagated from the wrapped command.
+# Usage: nosleep cgc index ~/path/to/repo
+nosleep() {
+    caffeinate -i -s -- "$@"
 }
 
 # SC override is to quiet the warning about non-constant path to source

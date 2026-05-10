@@ -14,9 +14,9 @@
         "/Users/peter.junkoh/.local/bin/notion": {
             "path": "/Users/peter.junkoh/.local/bin/notion",
             "remote_name": "notion",
-            "version": "v0.5.0",
-            "hash": "70ed2c15fbf4431e4a6a9445080c3dcac94ec780d1e7d9f236c58684920034d2",
-            "url": "https://github.com/4ier/notion-cli/releases/tag/v0.5.0",
+            "version": "v0.7.0",
+            "hash": "da9f3a20c18f57127d5456f446d9a1e105fe6646aabc844886c5fca973256660",
+            "url": "https://github.com/4ier/notion-cli/releases/tag/v0.7.0",
             "provider": "github",
             "package_path": "notion",
             "pinned": false
