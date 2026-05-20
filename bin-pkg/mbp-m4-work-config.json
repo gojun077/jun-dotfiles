@@ -3,10 +3,10 @@
     "bins": {
         "/Users/peter.junkoh/.local/bin/bin": {
             "path": "/Users/peter.junkoh/.local/bin/bin",
-            "remote_name": "bin_0.25.5_darwin_arm64",
-            "version": "v0.25.5",
-            "hash": "ab875ee6b2526e515c09d2b0b272682ded5eec36f225984a50d74cfe7ad5190d",
-            "url": "https://github.com/marcosnils/bin/releases/tag/v0.25.5",
+            "remote_name": "bin_0.26.0_darwin_arm64",
+            "version": "v0.26.0",
+            "hash": "97be992bee0265be2810f2f3b7624c68a1c14b39966b10eee63fbeee0cc7ef2e",
+            "url": "https://github.com/marcosnils/bin/releases/tag/v0.26.0",
             "provider": "github",
             "package_path": "",
             "pinned": false

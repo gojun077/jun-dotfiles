@@ -2,7 +2,7 @@
 # This file should be symlinked to ~/.bash_profile
 #
 # Created on: Sometime in 2021
-# Last Updated: Fri 10 Apr 2026
+# Last Updated: Sun 17 May 2026
 # Updated by: gopeterjun@naver.com
 #
 # Note: MacOS behavior around `.bash_profile` is different from
@@ -16,7 +16,6 @@
 # dash prefix.
 
 
-export GOROOT=/usr/local/go
 export GOPATH="/Users/$USER/go"
 export GPG_TTY="$(tty)"
 export HOMEBREW_PREFIX=/opt/homebrew
