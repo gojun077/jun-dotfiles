@@ -4,19 +4,19 @@
         "/home/jundora/.local/bin/bd": {
             "path": "/home/jundora/.local/bin/bd",
             "remote_name": "bd",
-            "version": "v1.0.3",
-            "hash": "e05cc951406d98d2a0e899ec3197d1d6eaf490eb49c313dbed703f05bbfd595c",
-            "url": "https://github.com/gastownhall/beads/releases/tag/v1.0.3",
+            "version": "v1.0.4",
+            "hash": "e361b93edd5cf9e8ebce1fb9bf8808d5ed82d04b261ffa2f2cffaff17e7dc016",
+            "url": "https://github.com/gastownhall/beads/releases/tag/v1.0.4",
             "provider": "github",
             "package_path": "bd",
             "pinned": false
         },
         "/home/jundora/.local/bin/bin": {
             "path": "/home/jundora/.local/bin/bin",
-            "remote_name": "bin_0.25.5_linux_arm64",
-            "version": "v0.25.5",
-            "hash": "c32ae6f54bea38c7ac6352dca329bb420746185749e8760d2c68ad506b445b12",
-            "url": "https://github.com/marcosnils/bin/releases/tag/v0.25.5",
+            "remote_name": "bin_0.26.0_linux_arm64",
+            "version": "v0.26.0",
+            "hash": "c308bc42b88495028fffb2a256f71218c7d468dacca2970d173b5c6cffad48cb",
+            "url": "https://github.com/marcosnils/bin/releases/tag/v0.26.0",
             "provider": "github",
             "package_path": "",
             "pinned": false
@@ -34,9 +34,9 @@
         "/home/jundora/.local/bin/codex": {
             "path": "/home/jundora/.local/bin/codex",
             "remote_name": "codex",
-            "version": "rust-v0.130.0",
-            "hash": "6e192a8525c336790c19dec64432ac95ca3714ff4159f875a5a9296eef7d71e8",
-            "url": "https://github.com/openai/codex/releases/tag/rust-v0.130.0",
+            "version": "rust-v0.133.0",
+            "hash": "048fc27cd6c4523ba2cf08dbbdf9c9544e68eb956bf1c92fccaf51571b5aecef",
+            "url": "https://github.com/openai/codex/releases/tag/rust-v0.133.0",
             "provider": "github",
             "package_path": "",
             "pinned": false
@@ -44,9 +44,9 @@
         "/home/jundora/.local/bin/dolt": {
             "path": "/home/jundora/.local/bin/dolt",
             "remote_name": "dolt",
-            "version": "v2.0.1",
-            "hash": "79d92f50e63b1dfd14d44c264c01d08b6b99433367824e5386b01a3300f7eb25",
-            "url": "https://github.com/dolthub/dolt/releases/tag/v2.0.1",
+            "version": "v2.0.5",
+            "hash": "fd824399b37e1308d55d5a24c6b851eb3aab0f8fe4356a8f96e84e11b1d77850",
+            "url": "https://github.com/dolthub/dolt/releases/tag/v2.0.5",
             "provider": "github",
             "package_path": "dolt-linux-arm64/bin/dolt",
             "pinned": false
@@ -54,9 +54,9 @@
         "/home/jundora/.local/bin/duckdb": {
             "path": "/home/jundora/.local/bin/duckdb",
             "remote_name": "",
-            "version": "v1.5.2",
-            "hash": "e1e469f045952835effd4c69fc42495f1c63821593220e074ded76c18688dff7",
-            "url": "https://github.com/duckdb/duckdb/releases/tag/v1.5.2",
+            "version": "v1.5.3",
+            "hash": "552d67aa4e736478c5f2cf25324a25fad2897cecd2843a6d32bf52b5ff395189",
+            "url": "https://github.com/duckdb/duckdb/releases/tag/v1.5.3",
             "provider": "github",
             "package_path": "",
             "pinned": false
@@ -94,9 +94,9 @@
         "/home/jundora/.local/bin/k3s": {
             "path": "/home/jundora/.local/bin/k3s",
             "remote_name": "k3s-arm64",
-            "version": "v1.36.0+k3s1",
-            "hash": "5a4e4e76ddacb7997384746992439b9a75ed930d8d2b9caf1938571d416d8a0e",
-            "url": "https://github.com/k3s-io/k3s/releases/tag/v1.36.0%2Bk3s1",
+            "version": "v1.36.1+k3s1",
+            "hash": "2240e9f7fd8cf36e9998d7ef18781975780d724b59408174618ec15b410891dc",
+            "url": "https://github.com/k3s-io/k3s/releases/tag/v1.36.1%2Bk3s1",
             "provider": "github",
             "package_path": "",
             "pinned": false
