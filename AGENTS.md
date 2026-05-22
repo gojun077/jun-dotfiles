@@ -109,20 +109,17 @@ diagnostics). Use these when reading or editing any `.el` file in the repo.
 |---------|---------|---------|
 | `make get_elisp_info SYMBOL=<name>` | `emacsclient` → live server | Print signature, source file, and docstring |
 | `make search_elisp QUERY=<regexp>`  | `emacsclient` → live server | Apropos search over loaded symbols |
-| `make validate_elisp FILE=<path>`   | `emacs --batch -Q`          | Byte-compile lint (warnings = errors) |
+| `make validate_elisp FILE=<path>`   | `emacs --batch -Q` + lint harness | Byte-compile lint (warnings = errors) |
 
 The underlying scripts live in `bin/` and can also be invoked directly
 (`bin/elisp-doc`, `bin/elisp-search`, `bin/elisp-lint`).
 
 **Why two backends:** docs/search query the running Emacs server so
 they see your loaded init and third-party packages. Lint runs in an
-isolated batch Emacs (`-Q`, no init) so it never redefines functions in
-the live session and is safe to run in CI.
-
-**Caveat:** `validate_elisp` runs against the file in isolation and does
-not load your config. Files that `(require ...)` packages from your
-init will produce free-variable warnings. That's expected for the MVP;
-hardening for full-init validation is a future task.
+isolated batch Emacs (`-Q`, no init) with `bin/lint-harness.el`, which
+adds existing straight.el/package.el build directories and generated
+autoloads to `load-path` without installing packages or touching the
+live session.
 
 ## MCP Servers
 

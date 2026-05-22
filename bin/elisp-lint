@@ -2,9 +2,9 @@
 # elisp-lint: byte-compile an Emacs Lisp file in an isolated batch Emacs and
 # report warnings/errors. Analogue of `gopls`-style diagnostics.
 #
-# Runs `emacs --batch -Q` so it never touches your live Emacs server, and is
-# safe to invoke from CI. The .elc artifact is written to a tempdir and
-# discarded.
+# Runs `emacs --batch -Q` with a minimal lint harness so it never touches your
+# live Emacs server, and is safe to invoke from CI. The .elc artifact is
+# written to a tempdir and discarded.
 #
 # Usage: elisp-lint FILE.el
 
@@ -26,7 +26,9 @@ trap 'rm -rf "$tmpdir"' EXIT
 
 cp -f "$file" "$tmpdir/"
 base=$(basename "$file")
+script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 
 emacs --batch -Q \
+    -l "$script_dir/lint-harness.el" \
     --eval "(setq byte-compile-error-on-warn t)" \
     -f batch-byte-compile "$tmpdir/$base"

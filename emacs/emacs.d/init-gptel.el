@@ -6,6 +6,13 @@
 ;;
 (require 'gptel)
 
+(declare-function flymake-diagnostic-beg "flymake" (diag))
+(declare-function flymake-diagnostic-text "flymake" (diag))
+(declare-function flymake-diagnostic-type "flymake" (diag))
+(declare-function magit-git-insert "magit-git" (&rest args))
+(declare-function projectile-project-files "projectile" (&optional project-root))
+(declare-function projectile-project-root "projectile" (&optional dir))
+
 (setq gptel-default-mode 'org-mode)
 
 ;; Configure Anthropic Claude
