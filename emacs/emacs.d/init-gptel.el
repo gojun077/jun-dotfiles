@@ -9,6 +9,7 @@
 (declare-function flymake-diagnostic-beg "flymake" (diag))
 (declare-function flymake-diagnostic-text "flymake" (diag))
 (declare-function flymake-diagnostic-type "flymake" (diag))
+(declare-function gptel--display-tool-calls "gptel" (tool-calls info &optional use-minibuffer))
 (declare-function magit-git-insert "magit-git" (&rest args))
 (declare-function projectile-project-files "projectile" (&optional project-root))
 (declare-function projectile-project-root "projectile" (&optional dir))
@@ -775,6 +776,105 @@ Assumes current buffer is the target buffer.  Returns a result string."
                :description "The name of the buffer to check diagnostics for."))
  :category "emacs")
 
+(defconst my/gptel--subagent-preset-prefix "agent-"
+  "Preset-name prefix used to expose gptel presets as sub-agents.")
+
+(defun my/gptel--subagent-preset-names ()
+  "Return names of gptel presets available to `delegate_agent'."
+  (cl-loop for (name . _spec) in gptel--known-presets
+           for name-string = (symbol-name name)
+           when (string-prefix-p my/gptel--subagent-preset-prefix name-string)
+           collect name-string))
+
+(defun my/gptel--update-subagent-tool-enum ()
+  "Refresh `delegate_agent' subagent_type enum from live agent presets."
+  (when-let* ((names (my/gptel--subagent-preset-names))
+              (tool (ignore-errors (gptel-get-tool "delegate_agent")))
+              (subagent-arg (car (gptel-tool-args tool))))
+    (setf (plist-get subagent-arg :enum) (vconcat names))))
+
+(defun my/gptel--run-subagent (callback subagent-type description prompt)
+  "Run SUBAGENT-TYPE on PROMPT and return the final result through CALLBACK.
+DESCRIPTION is a short user-visible task label.  The sub-agent runs as a
+fresh gptel request with no inherited gptel context."
+  (condition-case err
+      (let* ((subagent-name (string-trim subagent-type))
+             (available (my/gptel--subagent-preset-names))
+             (preset (intern subagent-name)))
+        (if (not (member subagent-name available))
+            (funcall callback
+                     (format "Error: Unknown subagent_type '%s'. Available sub-agents: %s"
+                             subagent-type
+                             (if available
+                                 (mapconcat #'identity available ", ")
+                               "(none)")))
+          (let ((partial (format "%s result for task: %s\n\n"
+                                 subagent-name description))
+                (done nil))
+            (message "Launching gptel sub-agent %s: %s" subagent-name description)
+            (gptel-with-preset
+                `(:parents ,preset
+                  :context nil
+                  :use-tools t
+                  :include-reasoning nil)
+              (gptel-request prompt
+                :stream nil
+                :callback
+                (lambda (response info)
+                  (cond
+                   ((stringp response)
+                    (setq partial (concat partial response))
+                    (unless (or done (plist-get info :tool-use))
+                      (setq done t)
+                      (funcall callback partial)))
+                   ((and (consp response) (eq (car response) 'tool-call))
+                    (gptel--display-tool-calls (cdr response) info))
+                   ((and (consp response) (eq (car response) 'tool-result))
+                    nil)
+                   ((eq response 'abort)
+                    (unless done
+                      (setq done t)
+                      (funcall callback
+                               (format "Error: Sub-agent %s aborted task '%s'."
+                                       subagent-name description))))
+                   ((null response)
+                    (unless done
+                      (setq done t)
+                      (funcall callback
+                               (format "Error: Sub-agent %s failed task '%s': %s"
+                                       subagent-name description
+                                       (or (plist-get info :status) "no response")))))
+                   ((eq response t)
+                    nil)
+                   (t
+                    (unless done
+                      (setq done t)
+                      (funcall callback
+                               (format "Error: Sub-agent %s returned unexpected response for task '%s': %S"
+                                       subagent-name description response)))))))))))
+    (error (funcall callback
+                    (format "Error launching sub-agent '%s': %s"
+                            subagent-type (error-message-string err))))))
+
+(gptel-make-tool
+ :name "delegate_agent"
+ :function #'my/gptel--run-subagent
+ :description "Launch a sibling gptel sub-agent for an independent multi-step task.  The sub-agent uses one of the existing agent-* presets, runs with fresh request context (`:context nil`, so it does not inherit the parent conversation), may use that preset's tools autonomously, and returns one consolidated result string to the parent.  Use agent-read for context-cheap research or inspection; choose mutating sub-agents only when file edits or shell access are intentionally needed."
+ :args (list '(:name "subagent_type"
+               :type "string"
+               :enum ["agent-read" "agent-edit" "agent-shell"]
+               :description "Which agent-* preset to launch.  This enum is refreshed from the live preset roster when agent presets are applied.")
+             '(:name "description"
+               :type "string"
+               :description "Short 3-5 word task label used for status/result headers.")
+             '(:name "prompt"
+               :type "string"
+               :description "Detailed instructions for the sub-agent.  Include exactly what to investigate or change, constraints to follow, and what information to return."))
+ :async t
+ :confirm t
+ :include t
+ :category "agent")
+
 ;; --- Agentic preset helpers ---
 
 (defun my/gptel--project-context-string ()
@@ -819,13 +919,14 @@ deliberately batching several no_save=true edits before a single save.
 WORKFLOW:
 1. Use list_project_files or search_project to discover relevant files.
 2. Use read_file (full file first!) or show_buffer_context before editing.
-3. Use open_file to load a file into a live buffer; pass the returned buffer name to edit_buffer.
-4. Prefer edit_buffer (string replace) over edit_buffer_by_line -- line numbers shift after every edit.
+3. Use delegate_agent with subagent_type=agent-read for independent, context-cheap research.
+4. Use open_file to load a file into a live buffer; pass the returned buffer name to edit_buffer.
+5. Prefer edit_buffer (string replace) over edit_buffer_by_line -- line numbers shift after every edit.
    - old_str must uniquely match the target text. Include enough surrounding context.
    - Do NOT include the `<n>: ' line-number prefix that read_file adds -- strip it from old_str.
    - Pass replace_all=true only when intentionally replacing every occurrence.
-5. Use check_parens / byte_compile_file / buffer_diagnostics to verify after edits.
-6. Use git_status / git_diff to review your changes before finishing.
+6. Use check_parens / byte_compile_file / buffer_diagnostics to verify after edits.
+7. Use git_status / git_diff to review your changes before finishing.
 
 PARALLELIZE: when reads are independent, issue them in a single message.
 
@@ -842,14 +943,15 @@ deliberately batching several no_save=true edits before a single save.
 WORKFLOW:
 1. Use list_project_files or search_project to discover relevant files.
 2. Use read_file (full file first!) or show_buffer_context before editing.
-3. Use open_file to load a file into a live buffer; pass the returned buffer name to edit_buffer.
-4. Prefer edit_buffer (string replace) over edit_buffer_by_line -- line numbers shift after every edit.
+3. Use delegate_agent with subagent_type=agent-read for independent, context-cheap research.
+4. Use open_file to load a file into a live buffer; pass the returned buffer name to edit_buffer.
+5. Prefer edit_buffer (string replace) over edit_buffer_by_line -- line numbers shift after every edit.
    - old_str must uniquely match the target text. Include enough surrounding context.
    - Do NOT include the `<n>: ' line-number prefix that read_file adds -- strip it from old_str.
-5. Use check_parens / byte_compile_file / buffer_diagnostics to verify after edits.
-6. Reserve run_shell_command for git, build tools, package managers, and system commands.
+6. Use check_parens / byte_compile_file / buffer_diagnostics to verify after edits.
+7. Reserve run_shell_command for git, build tools, package managers, and system commands.
    NEVER use run_shell_command for file operations -- use read_file / search_project / list_project_files.
-7. Use git_status / git_diff to review your changes before finishing.
+8. Use git_status / git_diff to review your changes before finishing.
 
 PARALLELIZE: when operations are independent, issue them in a single message.
 
@@ -872,6 +974,7 @@ PARALLELIZE: when operations are independent, issue them in a single message.
 
 (gptel-make-preset 'agent-edit
   :description "Full-edit agent: read, modify buffers, create files, verify. No shell."
+  :pre #'my/gptel--update-subagent-tool-enum
   :backend "Claude"
   :model 'claude-sonnet-4-6
   :system (lambda ()
@@ -880,6 +983,7 @@ PARALLELIZE: when operations are independent, issue them in a single message.
                             my/gptel--agent-edit-system))
   :tools '("read_file" "show_buffer_context" "search_buffer_text"
            "search_project" "list_project_files" "list_buffers"
+           "delegate_agent"
            "open_file" "edit_buffer" "edit_buffer_by_line" "save_buffer"
            "create_file" "overwrite_file" "indent_region"
            "check_parens" "byte_compile_file" "buffer_diagnostics"
@@ -906,6 +1010,8 @@ WORKFLOW:
 3. Issue independent git_status / git_diff calls in parallel in a single message when possible.
 4. Then provide concise, actionable feedback: what changed, what looks risky, what's missing (tests, docs, edge cases)."
   :tools '("git_status" "git_diff"))
+
+(my/gptel--update-subagent-tool-enum)
 
 ;; GPTel config block end
 
