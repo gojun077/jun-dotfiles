@@ -31,22 +31,12 @@
             "package_path": "bluetuith",
             "pinned": false
         },
-        "/home/jundora/.local/bin/codex": {
-            "path": "/home/jundora/.local/bin/codex",
-            "remote_name": "codex",
-            "version": "rust-v0.133.0",
-            "hash": "048fc27cd6c4523ba2cf08dbbdf9c9544e68eb956bf1c92fccaf51571b5aecef",
-            "url": "https://github.com/openai/codex/releases/tag/rust-v0.133.0",
-            "provider": "github",
-            "package_path": "",
-            "pinned": false
-        },
         "/home/jundora/.local/bin/dolt": {
             "path": "/home/jundora/.local/bin/dolt",
             "remote_name": "dolt",
-            "version": "v2.0.5",
-            "hash": "fd824399b37e1308d55d5a24c6b851eb3aab0f8fe4356a8f96e84e11b1d77850",
-            "url": "https://github.com/dolthub/dolt/releases/tag/v2.0.5",
+            "version": "v2.0.6",
+            "hash": "447d86e96ab26e622695227c02262cd01248c223650272bc79ad92de77807f52",
+            "url": "https://github.com/dolthub/dolt/releases/tag/v2.0.6",
             "provider": "github",
             "package_path": "dolt-linux-arm64/bin/dolt",
             "pinned": false

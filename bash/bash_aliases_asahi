@@ -12,7 +12,6 @@ alias ㅣㄴ='ls'
 alias hazip='curl https://icanhazip.com'
 alias ls='ls --color=auto'
 #alias chromium-browser='chromium-browser --ozone-platform=wayland --enable-wayland-ime'
-alias codex='codex --sandbox workspace-write'
 alias enox='emacsclient -nw'
 
 ansicat() {
