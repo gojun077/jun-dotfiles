@@ -52,7 +52,7 @@
 (gptel-make-xai "xAI"
   :stream t
   :key gptel-api-key
-  :models '(grok-4.20-0309-reasoning
+  :models '(grok-4.3
             grok-4-1-fast))
 
 ;; Configure Alibaba Qwen3
@@ -102,19 +102,18 @@ Signals an error if no matching buffer is found."
       (find-buffer-visiting (expand-file-name name-or-path))
       (error "No buffer for '%s'.  Use open_file to open it first." name-or-path)))
 
-(defun my/gptel--render-numbered-lines (label start-line end-line)
-  "Render the current buffer as numbered lines, optionally paginated.
-LABEL is shown in the header (typically a file path or buffer name).
-START-LINE and END-LINE are 1-based and inclusive.  When START-LINE is
-nil it defaults to 1; when END-LINE is nil it defaults to a 500-line
-window starting at START-LINE.  Each output line is prefixed with
-`<lineno>: ' to match the conventional agent Read tool format."
+(defun my/gptel--render-hashed-lines (label start-line end-line)
+  "Render the current buffer with line numbers + 3-char content hash.
+  Each line is formatted as \"N:HHH|text\" (HHH = first 3 hex chars of
+  MD5 of trimmed line content).  This enables hash-anchored editing and
+  prevents phantom edits from line shifts or whitespace differences.
+  LABEL, START-LINE, END-LINE behave as before. Default window: 2000 lines."
   (save-excursion
     (let* ((total (count-lines (point-min) (point-max)))
-           (start (max 1 (or start-line 1)))
-           (default-end (+ start 499))
-           (requested-end (or end-line default-end))
-           (end (min total requested-end)))
+            (start (max 1 (or start-line 1)))
+            (default-end (+ start 1999))
+            (requested-end (or end-line default-end))
+            (end (min total requested-end)))
       (cond
        ((zerop total)
         (format "%s: file is empty (0 lines)" label))
@@ -130,10 +129,11 @@ window starting at START-LINE.  Each output line is prefixed with
         (let ((lines '())
               (n start))
           (while (and (<= n end) (not (eobp)))
-            (let ((line-text (buffer-substring-no-properties
-                              (line-beginning-position)
-                              (line-end-position))))
-              (push (format "%d: %s" n line-text) lines))
+            (let* ((line-text (buffer-substring-no-properties
+                               (line-beginning-position)
+                               (line-end-position)))
+                   (h (substring (md5 (string-trim line-text)) 0 3)))
+              (push (format "%d:%s|%s" n h line-text) lines))
             (forward-line 1)
             (setq n (1+ n)))
           (format "%s (lines %d-%d of %d):\n%s"
@@ -240,7 +240,7 @@ Assumes current buffer is the target buffer.  Returns a result string."
                        (setq result (concat result " (saved)")))
                      result))
                (error (format "Error in edit_buffer: %s" (error-message-string err)))))
- :description "Replace exact text in an Emacs buffer, then auto-save if the buffer visits a file.  Finds OLD_STR (must be unique unless REPLACE_ALL is true) and replaces it with NEW_STR.  Preferred over edit_buffer_by_line.  Tip: include enough surrounding context in OLD_STR to make it unique."
+ :description "Replace exact text in an Emacs buffer, then auto-save if the buffer visits a file.  Finds OLD_STR (must be unique unless REPLACE_ALL is true) and replaces it with NEW_STR.  Tip: include enough surrounding context in OLD_STR to make it unique."
  :args (list '(:name "buffer"
                :type "string"
                :description "Buffer name or file path.  Use list_buffers to find valid names.")
@@ -259,56 +259,6 @@ Assumes current buffer is the target buffer.  Returns a result string."
  :confirm t
  :category "emacs")
 
-(gptel-make-tool
- :name "edit_buffer_by_line"
- :function (lambda (buffer operation &optional text start-line end-line position no-save)
-             (condition-case err
-                 (with-current-buffer (my/gptel--resolve-buffer buffer)
-                   (let ((result
-                          (save-excursion
-                            (pcase operation
-                              ("insert"
-                               (my/gptel--buffer-insert buffer text start-line position))
-                              ("replace"
-                               (if (not (and start-line end-line text))
-                                   "Error: Replace operation requires start-line, end-line, and text parameters"
-                                 (my/gptel--buffer-replace buffer text start-line end-line)))
-                              ("delete"
-                               (if (not (and start-line end-line))
-                                   "Error: Delete operation requires start-line and end-line parameters"
-                                 (my/gptel--buffer-delete buffer start-line end-line)))
-                              (_ (format "Error: Unknown operation '%s'. Use 'insert', 'replace', or 'delete'" operation))))))
-                     (when (and (not no-save)
-                                (buffer-file-name)
-                                (not (string-prefix-p "Error" result)))
-                       (save-buffer)
-                       (setq result (concat result " (saved)")))
-                     result))
-               (error (format "Error in edit_buffer_by_line: %s" (error-message-string err)))))
- :description "FALLBACK: edit a buffer by line number (insert/replace/delete), then auto-save if the buffer visits a file (unless no_save=true).  Prefer edit_buffer (string-replace) for almost all edits.  Use this only when string-replace is not viable, e.g., inserting into an empty file at a specific line.  Note: line numbers shift after edits, so re-read the buffer between calls."
- :args (list '(:name "buffer"
-               :type "string"
-               :description "The name of the buffer to modify.")
-             '(:name "operation"
-               :type "string"
-               :description "Operation: 'insert', 'replace', or 'delete'.")
-             '(:name "text"
-               :type "string"
-               :description "Text to insert/replace (not used for delete).")
-             '(:name "start-line"
-               :type "number"
-               :description "Line number (1-based). For insert: target line. For replace/delete: start of range.")
-             '(:name "end-line"
-               :type "number"
-               :description "End line number (1-based). Required for replace/delete operations.")
-             '(:name "position"
-               :type "string"
-               :description "For insert only: 'before' (default) or 'after' the specified line.")
-             '(:name "no_save"
-               :type "boolean"
-               :description "When true, skip the automatic save.  Default: false (changes are saved immediately if the buffer visits a file)."))
- :confirm t
- :category "emacs")
 
 (gptel-make-tool
  :name "show_buffer_context"
@@ -381,7 +331,7 @@ Assumes current buffer is the target buffer.  Returns a result string."
                      (save-buffer)
                      (format "Saved buffer '%s' to file: %s" buffer (buffer-file-name)))
                  (format "Buffer '%s' is not associated with a file. Use overwrite_file to save it to a path." buffer))))
- :description "Save buffer changes to disk.  edit_buffer and edit_buffer_by_line auto-save after each edit, so this is mainly needed when batching multiple edits with no_save=true before a single save."
+ :description "Save buffer changes to disk.  edit_buffer auto-saves after each edit, so this is mainly needed when batching multiple edits with no_save=true before a single save."
  :args (list '(:name "buffer"
                :type "string"
                :description "The name of the buffer to save."))
@@ -390,23 +340,23 @@ Assumes current buffer is the target buffer.  Returns a result string."
 
 (gptel-make-tool
  :name "read_file"
- :description "[READ-ONLY] Open a file in Emacs and return its contents with each line prefixed by `<lineno>: ' (matches the conventional Read-tool format).  By default returns the first 500 lines; pass START-LINE and/or END-LINE to paginate through larger files."
- :args (list '(:name "path"
-               :type "string"
-               :description "Path to the file (e.g. ~/notes/todo.txt).")
-             '(:name "start-line"
-               :type "number"
-               :description "First line to return (1-based, inclusive).  Defaults to 1.")
-             '(:name "end-line"
-               :type "number"
-               :description "Last line to return (1-based, inclusive).  Defaults to start-line + 499 (a 500-line window)."))
+  :description "[READ-ONLY] Open a file in Emacs and return its contents with each line prefixed by `<lineno>: ' (matches the conventional Read-tool format).  By default returns the first 2000 lines; pass START-LINE and/or END-LINE to paginate through larger files."
+  :args (list '(:name "path"
+                :type "string"
+                :description "Path to the file (e.g. ~/notes/todo.txt).")
+              '(:name "start-line"
+                :type "number"
+                :description "First line to return (1-based, inclusive).  Defaults to 1.")
+              '(:name "end-line"
+                :type "number"
+                :description "Last line to return (1-based, inclusive).  Defaults to start-line + 1999 (a 2000-line window)."))
  :function (lambda (path &optional start-line end-line)
              (condition-case err
                  (let ((existing (get-file-buffer path))
                        (buf (find-file-noselect path)))
                    (unwind-protect
                        (with-current-buffer buf
-                         (my/gptel--render-numbered-lines path start-line end-line))
+                         (my/gptel--render-hashed-lines path start-line end-line))
                      (unless existing
                        (kill-buffer buf))))
                (error (format "Error reading file '%s': %s" path (error-message-string err)))))
@@ -493,7 +443,7 @@ Assumes current buffer is the target buffer.  Returns a result string."
                        (indent-region start (point))))
                    (format "Indented lines %d-%d in buffer '%s' using %s rules"
                            start-line end-line buffer major-mode))))))
- :description "Re-indent lines START-LINE through END-LINE in BUFFER using the buffer's major-mode indentation logic (calls `indent-region').  Use AFTER edit_buffer / edit_buffer_by_line if inserted code needs reformatting.  Note: indentation is the major mode's interpretation, which may differ from what you wrote -- re-read the buffer afterwards to confirm."
+ :description "Re-indent lines START-LINE through END-LINE in BUFFER using the buffer's major-mode indentation logic (calls `indent-region').  Use AFTER edit_buffer if inserted code needs reformatting.  Note: indentation is the major mode's interpretation, which may differ from what you wrote -- re-read the buffer afterwards to confirm."
  :args (list '(:name "buffer"
                :type "string"
                :description "Name of the buffer to re-indent.")
@@ -984,7 +934,7 @@ PARALLELIZE: when operations are independent, issue them in a single message.
   :tools '("read_file" "show_buffer_context" "search_buffer_text"
            "search_project" "list_project_files" "list_buffers"
            "delegate_agent"
-           "open_file" "edit_buffer" "edit_buffer_by_line" "save_buffer"
+            "open_file" "edit_buffer" "save_buffer"
            "create_file" "overwrite_file" "indent_region"
            "check_parens" "byte_compile_file" "buffer_diagnostics"
            "git_status" "git_diff"))
