@@ -423,7 +423,13 @@ Assumes current buffer is the target buffer.  Returns a result string."
                                  "(no output)"
                                trimmed-output))))
                (error (format "Command: %s\nError: %s" command (error-message-string err)))))
- :description "Run a shell command and return its output and exit code.  Executes via the system shell with no sandboxing -- confirm before running destructive or side-effecting commands."
+ :description "Run an arbitrary shell command and return its output and exit code.
+CRITICAL: NEVER use this tool for file or search operations (e.g., ls, find, cat, grep, head, tail, sed, awk).
+ALWAYS use native Emacs tools instead:
+  - For listing files: use `list_project_files`
+  - For searching text: use `search_project`
+  - For reading file contents: use `read_file`
+Reserve this tool EXCLUSIVELY for compilation, tests, package managers, and git operations."
  :args (list '(:name "command"
                :type "string"
                :description "The shell command to execute."))
