@@ -110,10 +110,12 @@ Signals an error if no matching buffer is found."
   LABEL, START-LINE, END-LINE behave as before. Default window: 2000 lines."
   (save-excursion
     (let* ((total (count-lines (point-min) (point-max)))
-            (start (max 1 (or start-line 1)))
-            (default-end (+ start 1999))
-            (requested-end (or end-line default-end))
-            (end (min total requested-end)))
+           (start-line (and start-line (round start-line)))
+           (end-line (and end-line (round end-line)))
+           (start (max 1 (or start-line 1)))
+           (default-end (+ start 1999))
+           (requested-end (or end-line default-end))
+           (end (min total requested-end)))
       (cond
        ((zerop total)
         (format "%s: file is empty (0 lines)" label))
@@ -170,7 +172,8 @@ POSITION should be \"before\" or \"after\"; defaults to \"before\".
 TEXT is inserted exactly as provided -- no indentation adjustment.
 Use the indent_region tool afterwards if reformatting is needed.
 Assumes current buffer is the target buffer.  Returns a result string."
-  (let ((total-lines (count-lines (point-min) (point-max))))
+  (let* ((start-line (and start-line (round start-line)))
+         (total-lines (count-lines (point-min) (point-max))))
     (cond
      ((not start-line)
       (goto-char (point-max))
@@ -194,7 +197,9 @@ Assumes current buffer is the target buffer.  Returns a result string."
 (defun my/gptel--buffer-replace (buffer text start-line end-line)
   "Replace lines START-LINE to END-LINE in BUFFER with TEXT.
 Assumes current buffer is the target buffer.  Returns a result string."
-  (let ((total-lines (count-lines (point-min) (point-max))))
+  (let* ((start-line (round start-line))
+         (end-line (round end-line))
+         (total-lines (count-lines (point-min) (point-max))))
     (cond
      ((or (< start-line 1) (> end-line total-lines) (> start-line end-line))
       (format "Error: Invalid line range %d-%d (total lines: %d)"
@@ -212,7 +217,9 @@ Assumes current buffer is the target buffer.  Returns a result string."
 (defun my/gptel--buffer-delete (buffer start-line end-line)
   "Delete lines START-LINE to END-LINE in BUFFER.
 Assumes current buffer is the target buffer.  Returns a result string."
-  (let ((total-lines (count-lines (point-min) (point-max))))
+  (let* ((start-line (round start-line))
+         (end-line (round end-line))
+         (total-lines (count-lines (point-min) (point-max))))
     (cond
      ((or (< start-line 1) (> end-line total-lines) (> start-line end-line))
       (format "Error: Invalid line range %d-%d (total lines: %d)"
@@ -263,28 +270,30 @@ Assumes current buffer is the target buffer.  Returns a result string."
 (gptel-make-tool
  :name "show_buffer_context"
  :function (lambda (buffer line-number &optional context-lines)
-             (my/gptel--with-buffer-safety (my/gptel--resolve-buffer buffer) "showing context"
-               (save-excursion
-                 (let* ((context-size (or context-lines 5))
-                        (total-lines (count-lines (point-min) (point-max)))
-                        (start-line (max 1 (- line-number context-size)))
-                        (end-line (min total-lines (+ line-number context-size)))
-                        (lines '()))
-                   (goto-char (point-min))
-                   (forward-line (1- start-line))
-                   (dotimes (i (1+ (- end-line start-line)))
-                     (let ((current-line-num (+ start-line i))
-                           (line-content (buffer-substring-no-properties
-                                          (line-beginning-position)
-                                          (line-end-position))))
-                       (push (format "%s%d: %s"
-                                     (if (= current-line-num line-number) ">>> " "    ")
-                                     current-line-num
-                                     line-content) lines))
-                     (forward-line 1))
-                   (format "Context around line %d in buffer '%s' (lines %d-%d of %d):\n%s"
-                           line-number buffer start-line end-line total-lines
-                           (mapconcat 'identity (nreverse lines) "\n"))))))
+             (let ((line-number (round line-number))
+                   (context-lines (and context-lines (round context-lines))))
+               (my/gptel--with-buffer-safety (my/gptel--resolve-buffer buffer) "showing context"
+                 (save-excursion
+                   (let* ((context-size (or context-lines 5))
+                          (total-lines (count-lines (point-min) (point-max)))
+                          (start-line (max 1 (- line-number context-size)))
+                          (end-line (min total-lines (+ line-number context-size)))
+                          (lines '()))
+                     (goto-char (point-min))
+                     (forward-line (1- start-line))
+                     (dotimes (i (1+ (- end-line start-line)))
+                       (let ((current-line-num (+ start-line i))
+                             (line-content (buffer-substring-no-properties
+                                            (line-beginning-position)
+                                            (line-end-position))))
+                         (push (format "%s%d: %s"
+                                       (if (= current-line-num line-number) ">>> " "    ")
+                                       current-line-num
+                                       line-content) lines))
+                       (forward-line 1))
+                     (format "Context around line %d in buffer '%s' (lines %d-%d of %d):\n%s"
+                             line-number buffer start-line end-line total-lines
+                             (mapconcat 'identity (nreverse lines) "\n")))))))
  :description "Show the lines around a specific line number in a buffer, with the target line marked.  Useful for understanding code structure and indentation before editing."
  :args (list '(:name "buffer"
                :type "string"
@@ -425,24 +434,26 @@ Assumes current buffer is the target buffer.  Returns a result string."
 (gptel-make-tool
  :name "indent_region"
  :function (lambda (buffer start-line end-line)
-             (my/gptel--with-buffer-safety (my/gptel--resolve-buffer buffer) "indenting region"
-               (let ((total-lines (count-lines (point-min) (point-max))))
-                 (cond
-                  ((or (< start-line 1)
-                       (> end-line total-lines)
-                       (> start-line end-line))
-                   (format "Error: Invalid line range %d-%d (total lines: %d)"
-                           start-line end-line total-lines))
-                  (t
-                   (save-excursion
-                     (goto-char (point-min))
-                     (forward-line (1- start-line))
-                     (let ((start (point)))
-                       (forward-line (- end-line start-line))
-                       (end-of-line)
-                       (indent-region start (point))))
-                   (format "Indented lines %d-%d in buffer '%s' using %s rules"
-                           start-line end-line buffer major-mode))))))
+             (let ((start-line (round start-line))
+                   (end-line (round end-line)))
+               (my/gptel--with-buffer-safety (my/gptel--resolve-buffer buffer) "indenting region"
+                 (let ((total-lines (count-lines (point-min) (point-max))))
+                   (cond
+                    ((or (< start-line 1)
+                         (> end-line total-lines)
+                         (> start-line end-line))
+                     (format "Error: Invalid line range %d-%d (total lines: %d)"
+                             start-line end-line total-lines))
+                    (t
+                     (save-excursion
+                       (goto-char (point-min))
+                       (forward-line (1- start-line))
+                       (let ((start (point)))
+                         (forward-line (- end-line start-line))
+                         (end-of-line)
+                         (indent-region start (point))))
+                     (format "Indented lines %d-%d in buffer '%s' using %s rules"
+                             start-line end-line buffer major-mode)))))))
  :description "Re-indent lines START-LINE through END-LINE in BUFFER using the buffer's major-mode indentation logic (calls `indent-region').  Use AFTER edit_buffer if inserted code needs reformatting.  Note: indentation is the major mode's interpretation, which may differ from what you wrote -- re-read the buffer afterwards to confirm."
  :args (list '(:name "buffer"
                :type "string"
