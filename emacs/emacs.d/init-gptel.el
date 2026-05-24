@@ -1,6 +1,6 @@
 ;;; init-gptel.el --- GPTel configuration (extracted from emacs_asahi)  -*- lexical-binding: t; -*-
 ; Created on: Sat 13 Sep 2025
-; Last Updated: Sat 23 May 2026
+; Last Updated: Sun 24 May 2026
 
 ;;; GPTel specific configurations ;;;
 ;;
@@ -30,7 +30,7 @@
   :stream t
   :key gptel-api-key
   :models '(gemini-3.1-pro-preview
-            gemini-3.1-flash-lite-preview))
+            gemini-3.5-flash))
 
 ;; Configure OpenAI subscription (OAuth)
 (gptel-make-openai-oauth "OpenAI-pro")
