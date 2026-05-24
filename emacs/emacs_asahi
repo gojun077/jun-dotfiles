@@ -140,10 +140,6 @@
       (ruby . t)
       (shell . t)
       (sql . t))))
-(use-package org-srs
-  :straight t
-  :defer t
-  :hook (org-mode . org-srs-embed-overlay-mode))
 ; use my fork of org-trello
 (use-package org-trello
   :straight (:host github
