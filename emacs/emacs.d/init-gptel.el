@@ -6,6 +6,7 @@
 ;;
 (require 'gptel)
 (require 'json)
+(require 'bytecomp)
 
 (declare-function flymake-diagnostic-beg "flymake" (diag))
 (declare-function flymake-diagnostic-text "flymake" (diag))
@@ -14,6 +15,7 @@
 (declare-function magit-git-insert "magit-git" (&rest args))
 (declare-function projectile-project-files "projectile" (&optional project-root))
 (declare-function projectile-project-root "projectile" (&optional dir))
+(declare-function byte-compile-dest-file "bytecomp" (filename))
 
 (setq gptel-default-mode 'org-mode)
 
@@ -1494,6 +1496,177 @@ Reserve this tool for commands that genuinely need an external process: tests, b
  :include nil
  :category "emacs")
 
+(defun my/gptel--verify-flymake-summary ()
+  "Return a verification entry summarizing Flymake diagnostics in current buffer."
+  (cond
+   ((not (bound-and-true-p flymake-mode))
+    '(:skip "Flymake is not active for this buffer."))
+   ((null (flymake-diagnostics))
+    '(:pass "Flymake is active and reports no diagnostics."))
+   (t
+    (let* ((diags (flymake-diagnostics))
+           (grouped (seq-group-by #'flymake-diagnostic-type diags))
+           (severity-counts
+            (mapconcat (lambda (group)
+                         (format "%s=%d" (car group) (length (cdr group))))
+                       grouped ", "))
+           (error-count (length (alist-get :error grouped))))
+      (if (> error-count 0)
+          (list :fail (format "Flymake reports %d diagnostic%s (%s)."
+                              (length diags)
+                              (if (= (length diags) 1) "" "s")
+                              severity-counts))
+        (list :pass (format "Flymake reports no errors (%d non-error diagnostic%s: %s)."
+                            (length diags)
+                            (if (= (length diags) 1) "" "s")
+                            severity-counts)))))))
+
+(defun my/gptel--verify-byte-compile-elisp (file)
+  "Return a verification entry for byte-compiling Emacs Lisp FILE."
+  (let* ((output-file (byte-compile-dest-file file))
+         (output-existed (file-exists-p output-file))
+         (result nil)
+         (log-output ""))
+    (unwind-protect
+        (progn
+          (with-current-buffer (get-buffer-create "*Compile-Log*")
+            (erase-buffer))
+          (let ((byte-compile-error-on-warn t))
+            (setq result (byte-compile-file file)))
+          (setq log-output
+                (string-trim
+                 (with-current-buffer (get-buffer "*Compile-Log*")
+                   (buffer-string))))
+          (cond
+           ((eq result 'no-byte-compile)
+            '(:skip "File declares no-byte-compile."))
+           (result
+            (list :pass
+                  (if (string-empty-p log-output)
+                      "Byte compilation succeeded with no compile log output."
+                    (format "Byte compilation succeeded; compile log was non-empty:\n%s"
+                            log-output))))
+           (t
+            (list :fail
+                  (if (string-empty-p log-output)
+                      "Byte compilation failed with no compile log output."
+                    (format "Byte compilation failed:\n%s" log-output))))))
+      (when (and (not output-existed) (file-exists-p output-file))
+        (delete-file output-file)))))
+
+(defun my/gptel--verification-status (entries)
+  "Return PASS, FAIL, or SKIPPED from verification ENTRIES."
+  (cond
+   ((seq-some (lambda (entry) (plist-get entry :fail)) entries) "FAIL")
+   ((seq-some (lambda (entry) (plist-get entry :pass)) entries) "PASS")
+   (t "SKIPPED")))
+
+(defun my/gptel--format-verification-entries (entries)
+  "Return compact text for verification ENTRIES."
+  (mapconcat
+   (lambda (entry)
+     (cond
+      ((plist-get entry :fail) (format "FAIL: %s" (plist-get entry :fail)))
+      ((plist-get entry :pass) (format "PASS: %s" (plist-get entry :pass)))
+      ((plist-get entry :skip) (format "SKIP: %s" (plist-get entry :skip)))
+      (t (format "SKIP: Unrecognized verification entry: %S" entry))))
+   entries
+   "\n"))
+
+(defun my/gptel--verify-task (target skip-reason)
+  "Verify TARGET buffer/file, or return SKIPPED with SKIP-REASON."
+  (condition-case err
+      (cond
+       ((and skip-reason (not (string-empty-p (string-trim skip-reason))))
+        (let* ((entries (list (list :skip (string-trim skip-reason))))
+               (status (my/gptel--verification-status entries)))
+          (my/gptel--format-tool-result
+           "verify_task"
+           `((status . ,status)
+             (target . ,target))
+           (format "Verification %s.\n%s"
+                   status (my/gptel--format-verification-entries entries))
+           "Only report task completion after explaining why verification was skipped.")))
+       ((or (null target) (string-empty-p (string-trim target)))
+        (let* ((entries (list '(:skip "No target buffer or file was provided.")))
+               (status (my/gptel--verification-status entries)))
+          (my/gptel--format-tool-result
+           "verify_task"
+           `((status . ,status))
+           (format "Verification %s.\n%s"
+                   status (my/gptel--format-verification-entries entries))
+           "Call verify_task with the edited buffer/file, or pass skip_reason when no meaningful check exists.")))
+       (t
+        (let* ((expanded (expand-file-name target))
+               (existing (or (get-buffer target)
+                             (find-buffer-visiting expanded)))
+               (buf (or existing
+                        (and (file-readable-p expanded)
+                             (find-file-noselect expanded)))))
+          (unless buf
+            (error "No buffer or readable file for target '%s'" target))
+          (unwind-protect
+              (with-current-buffer buf
+                (my/gptel--ensure-readable-buffer "verify_task")
+                (let* ((file (buffer-file-name))
+                       (elisp-file (and file (string-match-p (rx ".el" string-end) file)))
+                       (entries nil))
+                  (when (and file (buffer-modified-p))
+                    (push '(:fail "Buffer has unsaved changes; save before verifying file-backed checks.") entries))
+                  (if elisp-file
+                      (progn
+                        (push (condition-case paren-err
+                                  (progn
+                                    (save-excursion (check-parens))
+                                    '(:pass "Parentheses and expressions are balanced."))
+                                (error (list :fail (format "check-parens failed: %s"
+                                                           (error-message-string paren-err)))))
+                              entries)
+                        (push (condition-case compile-err
+                                  (my/gptel--verify-byte-compile-elisp file)
+                                (error (list :fail (format "Byte compilation errored: %s"
+                                                           (error-message-string compile-err)))))
+                              entries))
+                    (push '(:skip "Target is not an Emacs Lisp file; skipped check_parens and byte_compile_file.")
+                          entries))
+                  (push (my/gptel--verify-flymake-summary) entries)
+                  (let* ((entries (nreverse entries))
+                         (status (my/gptel--verification-status entries)))
+                    (my/gptel--format-tool-result
+                     "verify_task"
+                     `((status . ,status)
+                       (target . ,(or file (buffer-name)))
+                       (mode . ,major-mode))
+                     (format "Verification %s for %s.\n%s"
+                             status
+                             (or file (buffer-name))
+                             (my/gptel--format-verification-entries entries))
+                     (pcase status
+                       ("PASS" "You may report task completion with this verification result.")
+                       ("FAIL" "Fix the failing check, then rerun verify_task before reporting completion.")
+                       (_ "If no meaningful check exists, report completion with the skipped verification reason."))))))
+            (unless existing
+              (kill-buffer buf))))))
+    (error (my/gptel--format-tool-result
+            "verify_task"
+            `((status . "FAIL")
+              (target . ,target))
+            (format "Verification FAIL.\nFAIL: %s" (error-message-string err))
+            "Fix the issue or call verify_task with a valid target before reporting completion."))))
+
+(gptel-make-tool
+ :name "verify_task"
+ :function #'my/gptel--verify-task
+ :description "Run the appropriate final verification for an edited buffer/file before declaring a task complete. For Emacs Lisp files this checks balanced expressions and byte-compiles the file, and it includes Flymake diagnostics when active. Returns compact PASS/FAIL/SKIPPED-with-reason. Pass skip_reason only when no meaningful automated check applies."
+ :args (list '(:name "target"
+               :type "string"
+               :description "Buffer name or file path to verify, usually the edited file.")
+             '(:name "skip_reason"
+               :type "string"
+               :description "Optional explicit reason to return SKIPPED when no meaningful automated verification exists. Do not use this for edited Emacs Lisp files."))
+ :include nil
+ :category "emacs")
+
 (defconst my/gptel--subagent-preset-prefix "agent-"
   "Preset-name prefix used to expose gptel presets as sub-agents.")
 
@@ -1709,7 +1882,7 @@ WORKFLOW:
 4. Use search_buffer_text and search_project for cross-referencing symbols.
 5. Use git_status / git_diff to understand recent changes.
 6. If a tool returns :TOOL_OUTPUT_REF:, use search_tool_output or bounded fetch_tool_output ranges to inspect it; never ask for a full raw replay.
-7. Use check_parens or buffer_diagnostics for static analysis.
+7. Use verify_task for final diagnostics when a concrete target is available, or check_parens / buffer_diagnostics for exploratory static analysis.
 
 PARALLELIZE: when reads are independent (e.g. reading several files), issue them in a single message.
 
@@ -1740,8 +1913,9 @@ WORKFLOW:
    - Use exact old_str replacement only as a fallback when hashline tags are unavailable.
    - In fallback mode, old_str must uniquely match the target text; pass replace_all=true only when intentionally replacing every occurrence.
 6. If a tool returns :TOOL_OUTPUT_REF:, use search_tool_output or bounded fetch_tool_output ranges to inspect it; never ask for a full raw replay.
-7. Use check_parens / byte_compile_file / buffer_diagnostics to verify after edits.
-8. Use git_status / git_diff to review your changes before finishing.
+7. Before declaring completion, call verify_task on the edited buffer/file and get PASS. If no meaningful automated check exists, call verify_task with skip_reason and report SKIPPED honestly.
+8. Use check_parens / byte_compile_file / buffer_diagnostics for narrower follow-up diagnostics when verify_task fails or more detail is needed.
+9. Use git_status / git_diff to review your changes before finishing.
 
 PARALLELIZE: when reads are independent, issue them in a single message.
 
@@ -1769,13 +1943,14 @@ WORKFLOW:
    - In hashline mode, old_str can be the empty string.
    - Use exact old_str replacement only as a fallback when hashline tags are unavailable.
 6. If a tool returns :TOOL_OUTPUT_REF:, use search_tool_output or bounded fetch_tool_output ranges to inspect it; never ask for a full raw replay.
-7. Use check_parens / byte_compile_file / buffer_diagnostics to verify after edits.
-8. Reserve run_shell_command for commands that genuinely need an external process:
+7. Before declaring completion, call verify_task on the edited buffer/file and get PASS. If no meaningful automated check exists, call verify_task with skip_reason and report SKIPPED honestly.
+8. Use check_parens / byte_compile_file / buffer_diagnostics for narrower follow-up diagnostics when verify_task fails or more detail is needed.
+9. Reserve run_shell_command for commands that genuinely need an external process:
    tests, builds, linters/formatters, package managers, one-off system inspection,
    or git operations not covered by git_status/git_diff.
    NEVER use run_shell_command for ls/find/tree/pwd/cat/head/tail/sed/grep/rg-style work:
    use list_project_files / read_file / show_buffer_context / search_project / search_buffer_text.
-9. Use git_status / git_diff to review your changes before finishing.
+10. Use git_status / git_diff to review your changes before finishing.
 
 PARALLELIZE: when operations are independent, issue them in a single message.
 
@@ -1796,7 +1971,8 @@ PARALLELIZE: when operations are independent, issue them in a single message.
   :tools '("read_file" "show_buffer_context" "search_buffer_text"
            "search_project" "list_project_files" "list_buffers"
            "fetch_tool_output" "search_tool_output"
-           "git_status" "git_diff" "buffer_diagnostics" "check_parens"))
+           "git_status" "git_diff" "buffer_diagnostics" "check_parens"
+           "verify_task"))
 
 (gptel-make-preset 'agent-edit
   :description "Full-edit agent: read, modify buffers, create files, verify. No shell."
@@ -1814,6 +1990,7 @@ PARALLELIZE: when operations are independent, issue them in a single message.
             "open_file" "edit_buffer" "save_buffer"
            "create_file" "overwrite_file" "indent_region"
            "check_parens" "byte_compile_file" "buffer_diagnostics"
+           "verify_task"
            "git_status" "git_diff"))
 
 (gptel-make-preset 'agent-shell
