@@ -88,6 +88,39 @@
 
 ;; Helper functions for gptel custom tools
 
+(defconst my/gptel--high-risk-buffer-max-chars 200000
+  "Maximum buffer size that read/context tools may inspect by default.
+Larger buffers are refused to avoid accidentally replaying huge tool,
+diagnostic, process, or chat transcripts into later gptel requests.")
+
+(defconst my/gptel--high-risk-buffer-name-regexp
+  (rx string-start "*"
+      (or "gptel" "gptel-diagnostic" "Compile-Log" "Async Shell Command"
+          "Shell Command Output" "Messages")
+      (* not-newline) "*" string-end)
+  "Internal or diagnostic buffer names that read/context tools refuse.")
+
+(defun my/gptel--high-risk-buffer-reason ()
+  "Return a reason current buffer is unsafe for read/context tools, or nil."
+  (cond
+   ((string-match-p my/gptel--high-risk-buffer-name-regexp (buffer-name))
+    "it looks like an internal diagnostic, transcript, or log buffer")
+   ((bound-and-true-p gptel-mode)
+    "it is a gptel chat/transcript buffer")
+   ((get-buffer-process (current-buffer))
+    "it is attached to a process that may contain unbounded output")
+   ((> (buffer-size) my/gptel--high-risk-buffer-max-chars)
+    (format "it is very large (%d chars; limit %d)"
+            (buffer-size) my/gptel--high-risk-buffer-max-chars))))
+
+(defun my/gptel--ensure-readable-buffer (operation)
+  "Signal an error if current buffer is unsafe for OPERATION.
+The refusal protects gptel sessions from token runaway caused by reading
+recursive diagnostics, chat transcripts, process buffers, or huge buffers."
+  (when-let ((reason (my/gptel--high-risk-buffer-reason)))
+    (error "%s refused for buffer '%s': %s. Reading this buffer could paste recursive tool schemas, chat history, diagnostics, or unbounded process output into the transcript and cause token runaway. Narrow the request to a normal file buffer, use a smaller file range, or inspect the buffer manually."
+           operation (buffer-name) reason)))
+
 (defmacro my/gptel--with-buffer-safety (buffer-expr error-label &rest body)
   "Execute BODY with current-buffer set to BUFFER-EXPR.
 On error, return a formatted error message using ERROR-LABEL."
@@ -294,6 +327,7 @@ Assumes current buffer is the target buffer.  Returns a result string."
              (let ((line-number (round line-number))
                    (context-lines (and context-lines (round context-lines))))
                (my/gptel--with-buffer-safety (my/gptel--resolve-buffer buffer) "showing context"
+                 (my/gptel--ensure-readable-buffer "show_buffer_context")
                  (save-excursion
                    (let* ((context-size (or context-lines 5))
                           (total-lines (count-lines (point-min) (point-max)))
@@ -333,6 +367,7 @@ Assumes current buffer is the target buffer.  Returns a result string."
  :name "search_buffer_text"
  :function (lambda (buffer search-text)
              (my/gptel--with-buffer-safety (my/gptel--resolve-buffer buffer) "searching buffer"
+               (my/gptel--ensure-readable-buffer "search_buffer_text")
                (save-excursion
                  (if (string-empty-p search-text)
                      "Error: search-text must not be empty."
@@ -401,6 +436,7 @@ Assumes current buffer is the target buffer.  Returns a result string."
                        (buf (find-file-noselect path)))
                    (unwind-protect
                        (with-current-buffer buf
+                         (my/gptel--ensure-readable-buffer "read_file")
                          (my/gptel--truncate-tool-result
                           (my/gptel--render-hashed-lines path start-line end-line)))
                      (unless existing
@@ -772,36 +808,35 @@ Reserve this tool for commands that genuinely need an external process: tests, b
 (gptel-make-tool
  :name "buffer_diagnostics"
  :function (lambda (buffer)
-             (condition-case err
-                 (with-current-buffer (my/gptel--resolve-buffer buffer)
-                   (cond
-                    ((not (bound-and-true-p flymake-mode))
-                     (format "flymake-mode is not active in buffer '%s'." buffer))
-                    ((null (flymake-diagnostics))
-                     (format "No diagnostics in buffer '%s'." buffer))
-                    (t
-                     (let* ((diags (flymake-diagnostics))
-                            (grouped (seq-group-by #'flymake-diagnostic-type diags)))
-                       (my/gptel--truncate-tool-result
-                        (format "%d diagnostic%s in '%s':%s"
-                                (length diags)
-                                (if (= (length diags) 1) "" "s")
-                                buffer
-                                (mapconcat
-                                 (lambda (group)
-                                   (format "\n\n[%s]\n%s"
-                                           (car group)
-                                           (mapconcat
-                                            (lambda (d)
-                                              (format "  Line %d: %s"
-                                                      (line-number-at-pos
-                                                       (flymake-diagnostic-beg d))
-                                                      (flymake-diagnostic-text d)))
-                                            (cdr group)
-                                            "\n")))
-                                 grouped
-                                 "")))))))
-               (error (format "Error checking diagnostics: %s" (error-message-string err)))))
+             (my/gptel--with-buffer-safety (my/gptel--resolve-buffer buffer) "checking diagnostics"
+               (my/gptel--ensure-readable-buffer "buffer_diagnostics")
+               (cond
+                ((not (bound-and-true-p flymake-mode))
+                 (format "flymake-mode is not active in buffer '%s'." buffer))
+                ((null (flymake-diagnostics))
+                 (format "No diagnostics in buffer '%s'." buffer))
+                (t
+                 (let* ((diags (flymake-diagnostics))
+                        (grouped (seq-group-by #'flymake-diagnostic-type diags)))
+                   (my/gptel--truncate-tool-result
+                    (format "%d diagnostic%s in '%s':%s"
+                            (length diags)
+                            (if (= (length diags) 1) "" "s")
+                            buffer
+                            (mapconcat
+                             (lambda (group)
+                               (format "\n\n[%s]\n%s"
+                                       (car group)
+                                       (mapconcat
+                                        (lambda (d)
+                                          (format "  Line %d: %s"
+                                                  (line-number-at-pos
+                                                   (flymake-diagnostic-beg d))
+                                                  (flymake-diagnostic-text d)))
+                                        (cdr group)
+                                        "\n")))
+                             grouped
+                             ""))))))))
  :description "Show flymake diagnostics (errors, warnings, notes) for a buffer, grouped by severity. Requires flymake-mode to be active in the buffer."
  :args (list '(:name "buffer"
                :type "string"
