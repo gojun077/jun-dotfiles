@@ -150,23 +150,27 @@ If OLD-STR matches more than once and REPLACE-ALL is nil, return an
 error string instead of replacing.  Returns a result string."
   (let ((case-fold-search nil)
         (count 0))
-    (save-excursion
-      (goto-char (point-min))
-      (while (search-forward old-str nil t)
-        (setq count (1+ count))))
     (cond
-     ((zerop count)
-      (format "Error: old_str not found in buffer '%s'" buffer))
-     ((and (> count 1) (not replace-all))
-      (format "Error: old_str matches %d times in buffer '%s'; pass replace_all=true to replace all, or extend old_str with surrounding context to make it unique."
-              count buffer))
+     ((string-empty-p old-str)
+      "Error: old_str must not be empty")
      (t
       (save-excursion
         (goto-char (point-min))
         (while (search-forward old-str nil t)
-          (replace-match new-str t t)))
-      (format "Replaced %d occurrence%s of old_str in buffer '%s'"
-              count (if (= count 1) "" "s") buffer)))))
+          (setq count (1+ count))))
+      (cond
+       ((zerop count)
+        (format "Error: old_str not found in buffer '%s'" buffer))
+       ((and (> count 1) (not replace-all))
+        (format "Error: old_str matches %d times in buffer '%s'; pass replace_all=true to replace all, or extend old_str with surrounding context to make it unique."
+                count buffer))
+       (t
+        (save-excursion
+          (goto-char (point-min))
+          (while (search-forward old-str nil t)
+            (replace-match new-str t t)))
+        (format "Replaced %d occurrence%s of old_str in buffer '%s'"
+                count (if (= count 1) "" "s") buffer)))))))
 
 (defun my/gptel--buffer-insert (buffer text start-line position)
   "Insert TEXT verbatim in BUFFER at START-LINE.
@@ -236,6 +240,18 @@ Assumes current buffer is the target buffer.  Returns a result string."
         (delete-region start-pos (point)))
       (format "Deleted lines %d-%d in buffer %s" start-line end-line buffer)))))
 
+(defconst my/gptel--tool-result-max-chars 20000
+  "Maximum characters returned by a single gptel custom tool result.")
+
+(defun my/gptel--truncate-tool-result (text &optional max-chars)
+  "Return TEXT capped to MAX-CHARS for compact tool transcripts."
+  (let ((max-chars (or max-chars my/gptel--tool-result-max-chars)))
+    (if (<= (length text) max-chars)
+        text
+      (concat (substring text 0 max-chars)
+              (format "\n\n[Tool result truncated after %d of %d characters. Narrow the request or use pagination to inspect the rest.]"
+                      max-chars (length text))))))
+
 ;; custom tools for use in 'gptel' mode
 
 (gptel-make-tool
@@ -244,7 +260,10 @@ Assumes current buffer is the target buffer.  Returns a result string."
              (condition-case err
                  (with-current-buffer (my/gptel--resolve-buffer buffer)
                    (let ((result (my/gptel--buffer-edit-string buffer old-str new-str replace-all)))
-                     (when (and (not no-save) (buffer-file-name))
+                     (when (and (not no-save)
+                                (not (string-prefix-p "Error:" result))
+                                (buffer-file-name)
+                                (buffer-modified-p))
                        (save-buffer)
                        (setq result (concat result " (saved)")))
                      result))
@@ -293,9 +312,10 @@ Assumes current buffer is the target buffer.  Returns a result string."
                                        current-line-num
                                        line-content) lines))
                        (forward-line 1))
-                     (format "Context around line %d in buffer '%s' (lines %d-%d of %d):\n%s"
-                             line-number buffer start-line end-line total-lines
-                             (mapconcat 'identity (nreverse lines) "\n")))))))
+                     (my/gptel--truncate-tool-result
+                      (format "Context around line %d in buffer '%s' (lines %d-%d of %d):\n%s"
+                              line-number buffer start-line end-line total-lines
+                              (mapconcat 'identity (nreverse lines) "\n"))))))))
  :description "Show the lines around a specific line number in a buffer, with the target line marked.  Useful for understanding code structure and indentation before editing."
  :args (list '(:name "buffer"
                :type "string"
@@ -314,17 +334,29 @@ Assumes current buffer is the target buffer.  Returns a result string."
  :function (lambda (buffer search-text)
              (my/gptel--with-buffer-safety (my/gptel--resolve-buffer buffer) "searching buffer"
                (save-excursion
-                 (goto-char (point-min))
-                 (let ((matches '()))
-                   (while (search-forward search-text nil t)
-                     (let ((line-num (line-number-at-pos))
-                           (line-content (string-trim (thing-at-point 'line t))))
-                       (push (format "Line %d: %s" line-num line-content) matches)))
-                   (if matches
-                       (format "Found %d occurrences of '%s' in buffer '%s':\n%s"
-                               (length matches) search-text buffer
-                               (mapconcat 'identity (nreverse matches) "\n"))
-                     (format "Text '%s' not found in buffer '%s'" search-text buffer))))))
+                 (if (string-empty-p search-text)
+                     "Error: search-text must not be empty."
+                   (goto-char (point-min))
+                   (let ((matches '())
+                         (count 0)
+                         (max-show 50))
+                     (while (search-forward search-text nil t)
+                       (setq count (1+ count))
+                       (when (<= count max-show)
+                         (let ((line-num (line-number-at-pos))
+                               (line-content (string-trim (thing-at-point 'line t))))
+                           (push (format "Line %d: %s" line-num line-content) matches))))
+                     (if matches
+                         (my/gptel--truncate-tool-result
+                          (format "Found %d occurrence%s of '%s' in buffer '%s'%s:\n%s"
+                                  count
+                                  (if (= count 1) "" "s")
+                                  search-text buffer
+                                  (if (> count max-show)
+                                      (format " (showing first %d)" max-show)
+                                    "")
+                                  (mapconcat 'identity (nreverse matches) "\n")))
+                       (format "Text '%s' not found in buffer '%s'" search-text buffer)))))))
  :description "Search for text in a buffer and return all matching line numbers and content.  Useful before editing to confirm the target text exists and is unique."
  :args (list '(:name "buffer"
                :type "string"
@@ -369,7 +401,8 @@ Assumes current buffer is the target buffer.  Returns a result string."
                        (buf (find-file-noselect path)))
                    (unwind-protect
                        (with-current-buffer buf
-                         (my/gptel--render-hashed-lines path start-line end-line))
+                         (my/gptel--truncate-tool-result
+                          (my/gptel--render-hashed-lines path start-line end-line)))
                      (unless existing
                        (kill-buffer buf))))
                (error (format "Error reading file '%s': %s" path (error-message-string err)))))
@@ -398,6 +431,7 @@ Assumes current buffer is the target buffer.  Returns a result string."
                            (lambda (b)
                              (not (string-prefix-p " " (buffer-name b))))
                            (buffer-list)))
+                    (max-show 100)
                     (entries
                      (mapcar (lambda (buf)
                                (with-current-buffer buf
@@ -407,9 +441,16 @@ Assumes current buffer is the target buffer.  Returns a result string."
                                          (buffer-size)
                                          (or (buffer-file-name) "(no file)"))))
                              bufs)))
-               (format "%d buffers:\n%s"
-                       (length entries)
-                       (mapconcat #'identity entries "\n"))))
+               (my/gptel--truncate-tool-result
+                (format "%d buffer%s%s:\n%s"
+                        (length entries)
+                        (if (= (length entries) 1) "" "s")
+                        (if (> (length entries) max-show)
+                            (format " (showing first %d)" max-show)
+                          "")
+                        (mapconcat #'identity
+                                   (cl-subseq entries 0 (min (length entries) max-show))
+                                   "\n")))))
  :description "List all visible Emacs buffers with their name, major mode, size, and associated file path.  Use this to find the exact buffer name to pass to edit_buffer and similar tools.  Buffer names and file paths are both accepted by any tool with a 'buffer' argument."
  :args '()
  :include nil
@@ -419,16 +460,18 @@ Assumes current buffer is the target buffer.  Returns a result string."
  :name "run_shell_command"
  :function (lambda (command)
              (condition-case err
-                 (let* ((temp-buffer (generate-new-buffer " *shell-output*"))
-                        (exit-code (call-process-shell-command command nil temp-buffer t))
-                        (output (with-current-buffer temp-buffer (buffer-string))))
-                   (kill-buffer temp-buffer)
-                   (let ((trimmed-output (string-trim output)))
-                     (format "```bash\n%s\n```\n\n**Exit code:** %d\n\n**Output:**\n```\n%s\n```"
-                             command exit-code
-                             (if (string-empty-p trimmed-output)
-                                 "(no output)"
-                               trimmed-output))))
+                 (let ((temp-buffer (generate-new-buffer " *shell-output*")))
+                   (unwind-protect
+                       (let* ((exit-code (call-process-shell-command command nil temp-buffer t))
+                              (output (with-current-buffer temp-buffer (buffer-string)))
+                              (trimmed-output (string-trim output)))
+                         (format "```bash\n%s\n```\n\n**Exit code:** %d\n\n**Output:**\n```\n%s\n```"
+                                 command exit-code
+                                 (if (string-empty-p trimmed-output)
+                                     "(no output)"
+                                   (my/gptel--truncate-tool-result trimmed-output))))
+                     (when (buffer-live-p temp-buffer)
+                       (kill-buffer temp-buffer))))
                (error (format "Command: %s\nError: %s" command (error-message-string err)))))
  :description "Run an arbitrary shell command and return its output and exit code.
 
@@ -690,7 +733,8 @@ Reserve this tool for commands that genuinely need an external process: tests, b
                                  (buffer-string))))
                    (if (string-empty-p (string-trim output))
                        "Working tree clean. No staged, unstaged, or untracked changes."
-                     (format "```\n%s\n```" (string-trim output))))
+                     (format "```\n%s\n```"
+                             (my/gptel--truncate-tool-result (string-trim output)))))
                (error (format "Error getting git status: %s" (error-message-string err)))))
  :description "Show git status in porcelain format. See https://git-scm.com/docs/git-status#_porcelain_format_format for key."
  :args nil
@@ -712,7 +756,8 @@ Reserve this tool for commands that genuinely need an external process: tests, b
                        (format "No %schanges%s."
                                (if staged "staged " "")
                                (if path (format " for %s" path) ""))
-                     (format "```diff\n%s\n```" (string-trim output))))
+                     (format "```diff\n%s\n```"
+                             (my/gptel--truncate-tool-result (string-trim output)))))
                (error (format "Error getting git diff: %s" (error-message-string err)))))
  :description "Show git diff of unstaged changes (or staged if STAGED is non-nil). Optionally limit to PATH."
  :args (list '(:name "staged"
@@ -737,24 +782,25 @@ Reserve this tool for commands that genuinely need an external process: tests, b
                     (t
                      (let* ((diags (flymake-diagnostics))
                             (grouped (seq-group-by #'flymake-diagnostic-type diags)))
-                       (format "%d diagnostic%s in '%s':%s"
-                               (length diags)
-                               (if (= (length diags) 1) "" "s")
-                               buffer
-                               (mapconcat
-                                (lambda (group)
-                                  (format "\n\n[%s]\n%s"
-                                          (car group)
-                                          (mapconcat
-                                           (lambda (d)
-                                             (format "  Line %d: %s"
-                                                     (line-number-at-pos
-                                                      (flymake-diagnostic-beg d))
-                                                     (flymake-diagnostic-text d)))
-                                           (cdr group)
-                                           "\n")))
-                                grouped
-                                ""))))))
+                       (my/gptel--truncate-tool-result
+                        (format "%d diagnostic%s in '%s':%s"
+                                (length diags)
+                                (if (= (length diags) 1) "" "s")
+                                buffer
+                                (mapconcat
+                                 (lambda (group)
+                                   (format "\n\n[%s]\n%s"
+                                           (car group)
+                                           (mapconcat
+                                            (lambda (d)
+                                              (format "  Line %d: %s"
+                                                      (line-number-at-pos
+                                                       (flymake-diagnostic-beg d))
+                                                      (flymake-diagnostic-text d)))
+                                            (cdr group)
+                                            "\n")))
+                                 grouped
+                                 "")))))))
                (error (format "Error checking diagnostics: %s" (error-message-string err)))))
  :description "Show flymake diagnostics (errors, warnings, notes) for a buffer, grouped by severity. Requires flymake-mode to be active in the buffer."
  :args (list '(:name "buffer"
@@ -813,7 +859,7 @@ fresh gptel request with no inherited gptel context."
                     (setq partial (concat partial response))
                     (unless (or done (plist-get info :tool-use))
                       (setq done t)
-                      (funcall callback partial)))
+                      (funcall callback (my/gptel--truncate-tool-result partial))))
                    ((and (consp response) (eq (car response) 'tool-call))
                     (gptel--display-tool-calls (cdr response) info))
                    ((and (consp response) (eq (car response) 'tool-result))
