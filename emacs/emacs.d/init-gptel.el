@@ -7,6 +7,9 @@
 (require 'gptel)
 (require 'json)
 (require 'bytecomp)
+(require 'cl-lib)
+(require 'seq)
+
 
 (declare-function flymake-diagnostic-beg "flymake" (diag))
 (declare-function flymake-diagnostic-text "flymake" (diag))
@@ -15,6 +18,9 @@
 (declare-function magit-git-insert "magit-git" (&rest args))
 (declare-function projectile-project-files "projectile" (&optional project-root))
 (declare-function projectile-project-root "projectile" (&optional dir))
+(declare-function beads-client-list "beads-client" (&optional filters))
+(declare-function beads-client-show "beads-client" (id))
+(declare-function beads-client-ready "beads-client" (&optional filters))
 (declare-function byte-compile-dest-file "bytecomp" (filename))
 
 (setq gptel-default-mode 'org-mode)
@@ -45,6 +51,7 @@
 (gptel-make-deepseek "DeepSeek"
   :stream t
   :key gptel-api-key
+  :request-params '(:thinking (:type "disabled"))
   :models '(deepseek-v4-pro
             deepseek-v4-flash))
 
@@ -714,21 +721,251 @@ The body is capped to MAX-CHARS, TOOL's specific cap, or
 
 ;; custom tools for use in 'gptel' mode
 
+(defconst my/gptel--beads-source-root
+  (expand-file-name "~/Documents/repos/personal/beads.el-gojun077")
+  "Checkout containing beads.el, used by the Beads gptel tools.")
+
+(defun my/gptel--ensure-beads-client ()
+  "Ensure the beads.el client API is available."
+  (let ((lisp-dir (expand-file-name "lisp" my/gptel--beads-source-root)))
+    (when (file-directory-p lisp-dir)
+      (add-to-list 'load-path lisp-dir))
+    (require 'beads-client nil t)
+    (require 'beads-backend-dolt-sql nil t)
+    (unless (fboundp 'beads-client-list)
+      (error "beads-client is unavailable; expected beads.el under %s"
+             my/gptel--beads-source-root))))
+
+(defun my/gptel--beads-project-root (project-root)
+  "Return a Beads project root for PROJECT-ROOT or `default-directory'."
+  (file-name-as-directory
+   (expand-file-name
+    (or (and (stringp project-root) (not (string-empty-p project-root)) project-root)
+        (or (ignore-errors (projectile-project-root)) default-directory)))))
+
+(defun my/gptel--beads-with-project (project-root thunk)
+  "Call THUNK with `default-directory' bound to PROJECT-ROOT."
+  (my/gptel--ensure-beads-client)
+  (let ((default-directory (my/gptel--beads-project-root project-root)))
+    (funcall thunk)))
+
+(defun my/gptel--beads-normalize-sequence (value)
+  "Return VALUE as a plain list when it is a sequence-like JSON value."
+  (cond
+   ((null value) nil)
+   ((vectorp value) (append value nil))
+   ((listp value) value)
+   (t (list value))))
+
+(defun my/gptel--beads-field (issue field)
+  "Return ISSUE alist FIELD, accepting symbol or string keys."
+  (or (alist-get field issue)
+      (alist-get (symbol-name field) issue nil nil #'string=)))
+
+(defun my/gptel--beads-format-scalar (value)
+  "Format VALUE as a compact scalar string."
+  (cond
+   ((null value) "")
+   ((eq value t) "true")
+   ((eq value :json-false) "false")
+   ((stringp value) value)
+   ((numberp value) (number-to-string value))
+   (t (format "%s" value))))
+
+(defun my/gptel--beads-format-list (value)
+  "Format VALUE as a comma-separated list."
+  (mapconcat #'my/gptel--beads-format-scalar
+             (my/gptel--beads-normalize-sequence value)
+             ", "))
+
+(defun my/gptel--beads-issue-summary (issue)
+  "Return one compact line summarizing ISSUE."
+  (format "%s [%s P%s %s] %s"
+          (my/gptel--beads-format-scalar (my/gptel--beads-field issue 'id))
+          (my/gptel--beads-format-scalar (my/gptel--beads-field issue 'status))
+          (my/gptel--beads-format-scalar (my/gptel--beads-field issue 'priority))
+          (my/gptel--beads-format-scalar (or (my/gptel--beads-field issue 'type)
+                                             (my/gptel--beads-field issue 'issue_type)))
+          (my/gptel--beads-format-scalar (my/gptel--beads-field issue 'title))))
+
+(defun my/gptel--beads-issue-detail (issue)
+  "Return a readable bounded detail view for ISSUE."
+  (let ((sections
+         `(("ID" . ,(my/gptel--beads-field issue 'id))
+           ("Title" . ,(my/gptel--beads-field issue 'title))
+           ("Status" . ,(my/gptel--beads-field issue 'status))
+           ("Type" . ,(or (my/gptel--beads-field issue 'type)
+                          (my/gptel--beads-field issue 'issue_type)))
+           ("Priority" . ,(my/gptel--beads-field issue 'priority))
+           ("Assignee" . ,(my/gptel--beads-field issue 'assignee))
+           ("Labels" . ,(my/gptel--beads-format-list (my/gptel--beads-field issue 'labels)))
+           ("Description" . ,(my/gptel--beads-field issue 'description))
+           ("Design" . ,(my/gptel--beads-field issue 'design))
+           ("Acceptance" . ,(or (my/gptel--beads-field issue 'acceptance_criteria)
+                                (my/gptel--beads-field issue 'acceptance)))
+           ("Notes" . ,(my/gptel--beads-field issue 'notes))
+           ("Created" . ,(my/gptel--beads-field issue 'created_at))
+           ("Updated" . ,(my/gptel--beads-field issue 'updated_at))
+           ("Closed" . ,(my/gptel--beads-field issue 'closed_at)))))
+    (string-join
+     (delq nil
+           (mapcar (lambda (section)
+                     (let ((value (my/gptel--beads-format-scalar (cdr section))))
+                       (unless (string-empty-p value)
+                         (format "%s: %s" (car section) value))))
+                   sections))
+     "\n")))
+
+(defun my/gptel--beads-filter-plist (status priority type assignee labels limit all)
+  "Build a beads-client filter plist from scalar tool arguments."
+  (let (filters)
+    (when all (setq filters (plist-put filters :all t)))
+    (when (and status (not (string-empty-p status)))
+      (setq filters (plist-put filters :status status)))
+    (when priority
+      (setq filters (plist-put filters :priority priority)))
+    (when (and type (not (string-empty-p type)))
+      (setq filters (plist-put filters :issue-type type)))
+    (when (and assignee (not (string-empty-p assignee)))
+      (setq filters (plist-put filters :assignee assignee)))
+    (when (and labels (not (string-empty-p labels)))
+      (setq filters (plist-put filters :labels labels)))
+    (when limit
+      (setq filters (plist-put filters :limit limit)))
+    filters))
+
+
+(gptel-make-tool
+ :name "beads_list_issues"
+ :function (lambda (&optional project-root status priority type assignee labels limit all)
+             (condition-case err
+                 (my/gptel--beads-with-project
+                  project-root
+                  (lambda ()
+                    (let* ((filters (my/gptel--beads-filter-plist
+                                     status priority type assignee labels limit all))
+                           (issues (my/gptel--beads-normalize-sequence
+                                    (beads-client-list filters)))
+                           (shown issues))
+                      (my/gptel--format-tool-result
+                       "beads_list_issues"
+                       `((project_root . ,default-directory)
+                         (issue_count . ,(length issues))
+                         (shown_count . ,(length shown)))
+                       (if issues
+                           (mapconcat #'my/gptel--beads-issue-summary shown "\n")
+                         "No issues matched.")
+                       "Use beads_show_issue with an issue id for full details."))))
+               (error (format "Error listing Beads issues: %s" (error-message-string err)))))
+ :description "List Beads issues via beads.el's in-process client, not by shelling out to bd. Returns compact one-line issue summaries. PROJECT_ROOT defaults to the current project/default-directory; set ALL to include closed issues when supported."
+ :args (list '(:name "project_root"
+                     :type "string"
+                     :description "Optional Beads project root containing .beads/. Defaults to current project/default-directory.")
+             '(:name "status"
+                     :type "string"
+                     :description "Optional status filter, e.g. open, in_progress, closed.")
+             '(:name "priority"
+                     :type "number"
+                     :description "Optional priority filter.")
+             '(:name "type"
+                     :type "string"
+                     :description "Optional issue type filter, e.g. task, bug, epic.")
+             '(:name "assignee"
+                     :type "string"
+                     :description "Optional assignee filter.")
+             '(:name "labels"
+                     :type "string"
+                     :description "Optional labels filter, as accepted by beads.el/bd.")
+             '(:name "limit"
+                     :type "number"
+                     :description "Optional maximum number of issues to return.")
+             '(:name "all"
+                     :type "boolean"
+                     :description "When true, request the complete list including closed issues, where backend supports it."))
+ :include nil
+ :category "beads")
+
+(gptel-make-tool
+ :name "beads_show_issue"
+ :function (lambda (id &optional project-root)
+             (condition-case err
+                 (my/gptel--beads-with-project
+                  project-root
+                  (lambda ()
+                    (let ((issue (beads-client-show id)))
+                      (my/gptel--format-tool-result
+                       "beads_show_issue"
+                       `((project_root . ,default-directory)
+                         (issue_id . ,id))
+                       (my/gptel--beads-issue-detail issue)
+                       "Use beads_list_issues to find related or next issues."))))
+               (error (format "Error showing Beads issue '%s': %s" id (error-message-string err)))))
+ :description "Show one Beads issue by ID via beads.el's in-process client, not by shelling out to bd. Returns key fields and long-text sections when present."
+ :args (list '(:name "id"
+                     :type "string"
+                     :description "Beads issue ID, e.g. pj_gtd_org-non.")
+             '(:name "project_root"
+                     :type "string"
+                     :description "Optional Beads project root containing .beads/. Defaults to current project/default-directory."))
+ :include nil
+ :category "beads")
+
+(gptel-make-tool
+ :name "beads_ready_issues"
+ :function (lambda (&optional project-root assignee priority limit)
+             (condition-case err
+                 (my/gptel--beads-with-project
+                  project-root
+                  (lambda ()
+                    (let* ((filters (let (plist)
+                                      (when assignee (setq plist (plist-put plist :assignee assignee)))
+                                      (when priority (setq plist (plist-put plist :priority priority)))
+                                      (when limit (setq plist (plist-put plist :limit limit)))
+                                      plist))
+                           (issues (my/gptel--beads-normalize-sequence
+                                    (beads-client-ready filters))))
+                      (my/gptel--format-tool-result
+                       "beads_ready_issues"
+                       `((project_root . ,default-directory)
+                         (issue_count . ,(length issues)))
+                       (if issues
+                           (mapconcat #'my/gptel--beads-issue-summary issues "\n")
+                         "No ready issues matched.")
+                       "Use beads_show_issue with an issue id for full details."))))
+               (error (format "Error listing ready Beads issues: %s" (error-message-string err)))))
+ :description "List unblocked/ready Beads issues via beads.el's in-process client, not by shelling out to bd."
+ :args (list '(:name "project_root"
+                     :type "string"
+                     :description "Optional Beads project root containing .beads/. Defaults to current project/default-directory.")
+             '(:name "assignee"
+                     :type "string"
+                     :description "Optional assignee filter.")
+             '(:name "priority"
+                     :type "number"
+                     :description "Optional priority filter.")
+             '(:name "limit"
+                     :type "number"
+                     :description "Optional maximum number of ready issues to return."))
+ :include nil
+ :category "beads")
+
+
+
 (gptel-make-tool
  :name "remember"
  :function (lambda (scope entry &optional old-entry)
              (my/gptel--remember scope entry old-entry))
  :description "Append or update one small curated persistent-memory fact/preference in the configured project or user memory file. This mutates durable agent state, so use only for intentional memory updates -- never for secrets, raw tool output, chat transcripts, or speculative notes. Omitting OLD_ENTRY appends a dated bullet; passing OLD_ENTRY replaces that exact text with a new dated bullet. Refuses writes that would exceed the same bounded-memory cap used for prompt injection, with an actionable summarize/prune message."
  :args (list '(:name "scope"
-               :type "string"
-               :enum ["project" "user"]
-               :description "Memory file to update: project writes PROJECT_ROOT/MEMORY.md; user writes the configured user memory file.")
+                     :type "string"
+                     :enum ["project" "user"]
+                     :description "Memory file to update: project writes PROJECT_ROOT/MEMORY.md; user writes the configured user memory file.")
              '(:name "entry"
-               :type "string"
-               :description "One concise durable fact or preference to remember. Keep it small and curated; do not pass transcripts, raw command output, secrets, or uncertainty.")
+                     :type "string"
+                     :description "One concise durable fact or preference to remember. Keep it small and curated; do not pass transcripts, raw command output, secrets, or uncertainty.")
              '(:name "old_entry"
-               :type "string"
-               :description "Optional exact existing text to replace. Omit or pass empty string to append a new dated entry."))
+                     :type "string"
+                     :description "Optional exact existing text to replace. Omit or pass empty string to append a new dated entry."))
  :confirm t
  :category "memory")
 
@@ -738,8 +975,8 @@ The body is capped to MAX-CHARS, TOOL's specific cap, or
              (my/gptel--list-skills max-skills))
  :description "List available procedural gptel skills from the configured skills directory. Read-only and bounded: returns file names, titles, and short 'when to use' hints rather than dumping full skill files. Use search_skills or load_skill for targeted retrieval."
  :args (list '(:name "max_skills"
-               :type "number"
-               :description "Maximum skills to list. Defaults to 25; hard maximum 100."))
+                     :type "number"
+                     :description "Maximum skills to list. Defaults to 25; hard maximum 100."))
  :include nil
  :category "skills")
 
@@ -2618,6 +2855,7 @@ PARALLELIZE: when operations are independent, issue them in a single message.
   :tools '("read_file" "show_buffer_context" "search_buffer_text"
            "search_project" "list_project_files" "list_buffers"
            "fetch_tool_output" "search_tool_output"
+           "beads_list_issues" "beads_show_issue" "beads_ready_issues"
            "list_skills" "search_skills" "load_skill"
            "git_status" "git_diff" "buffer_diagnostics" "check_parens"
            "verify_task"))
@@ -2634,6 +2872,7 @@ PARALLELIZE: when operations are independent, issue them in a single message.
   :tools '("read_file" "show_buffer_context" "search_buffer_text"
            "search_project" "list_project_files" "list_buffers"
            "fetch_tool_output" "search_tool_output"
+           "beads_list_issues" "beads_show_issue" "beads_ready_issues"
            "list_skills" "search_skills" "load_skill"
            "delegate_agent"
            "remember" "save_skill"
