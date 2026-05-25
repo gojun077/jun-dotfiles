@@ -1475,7 +1475,8 @@ Reserve this tool for commands that genuinely need an external process: tests, b
                    (unless (file-exists-p filename)
                      (error "File not found: %s" filename))
                    (with-current-buffer (get-buffer-create "*Compile-Log*")
-                     (erase-buffer))
+                     (let ((inhibit-read-only t))
+                       (erase-buffer)))
                    (if (byte-compile-file filename)
                        (format "Successfully compiled '%s' with no errors." filename)
                      (let ((log-output (with-current-buffer (get-buffer "*Compile-Log*")
@@ -1855,7 +1856,8 @@ Reserve this tool for commands that genuinely need an external process: tests, b
     (unwind-protect
         (progn
           (with-current-buffer (get-buffer-create "*Compile-Log*")
-            (erase-buffer))
+            (let ((inhibit-read-only t))
+              (erase-buffer)))
           (let ((byte-compile-error-on-warn t))
             (setq result (byte-compile-file file)))
           (setq log-output
