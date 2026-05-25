@@ -306,6 +306,7 @@ Assumes current buffer is the target buffer.  Returns a result string."
              '(:name "context-lines"
                :type "number"
                :description "Number of lines before and after to show (default: 5)."))
+ :include nil
  :category "emacs")
 
 (gptel-make-tool
@@ -331,6 +332,7 @@ Assumes current buffer is the target buffer.  Returns a result string."
              '(:name "search-text"
                :type "string"
                :description "The text to search for (e.g., a function name or key phrase)."))
+ :include nil
  :category "emacs")
 
 (gptel-make-tool
@@ -371,6 +373,7 @@ Assumes current buffer is the target buffer.  Returns a result string."
                      (unless existing
                        (kill-buffer buf))))
                (error (format "Error reading file '%s': %s" path (error-message-string err)))))
+ :include nil
  :category "filesystem")
 
 (gptel-make-tool
@@ -385,6 +388,7 @@ Assumes current buffer is the target buffer.  Returns a result string."
  :args (list '(:name "path"
                :type "string"
                :description "Path to the file to open (relative or absolute)."))
+ :include nil
  :category "filesystem")
 
 (gptel-make-tool
@@ -408,6 +412,7 @@ Assumes current buffer is the target buffer.  Returns a result string."
                        (mapconcat #'identity entries "\n"))))
  :description "List all visible Emacs buffers with their name, major mode, size, and associated file path.  Use this to find the exact buffer name to pass to edit_buffer and similar tools.  Buffer names and file paths are both accepted by any tool with a 'buffer' argument."
  :args '()
+ :include nil
  :category "emacs")
 
 (gptel-make-tool
@@ -440,6 +445,7 @@ Reserve this tool for commands that genuinely need an external process: tests, b
                :type "string"
                :description "External command to execute. Before using this, prefer list_project_files/read_file/search_project/show_buffer_context/search_buffer_text/git_status/git_diff when they can answer the question."))
  :confirm t
+ :include nil
  :category "shell")
 
 
@@ -534,7 +540,7 @@ Reserve this tool for commands that genuinely need an external process: tests, b
                      (format "Error: directory does not exist: %s" expanded-dir))
                     (t
                      (let* ((args (append
-                                   (list "--line-number" "--no-heading" "--color=never"
+                                   (list "--line-number" "--no-heading" "--color=never" "--follow" "--no-messages"
                                          (if case-sensitive "--case-sensitive" "--ignore-case"))
                                    (when file-glob (list "--glob" file-glob))
                                    (list "--" pattern expanded-dir)))
@@ -545,13 +551,10 @@ Reserve this tool for commands that genuinely need an external process: tests, b
                                       (buffer-string)))
                             (trimmed (string-trim output)))
                        (cond
-                        ((= exit-status 1)
+                        ((and (= exit-status 1) (string-empty-p trimmed))
                          (format "No matches for '%s' in %s"
                                  pattern (abbreviate-file-name search-dir)))
-                        ((not (zerop exit-status))
-                         (format "Error: rg exited with status %d.\n%s"
-                                 exit-status trimmed))
-                        (t
+                        ((not (string-empty-p trimmed))
                          (let ((lines (split-string trimmed "\n" t))
                                (max-show 50))
                            (format "Found %d match%s for '%s' in %s%s:\n%s"
@@ -564,7 +567,13 @@ Reserve this tool for commands that genuinely need an external process: tests, b
                                      "")
                                    (mapconcat 'identity
                                               (cl-subseq lines 0 (min (length lines) max-show))
-                                              "\n")))))))))
+                                              "\n"))))
+                        ((not (zerop exit-status))
+                         (format "Error: rg exited with status %d."
+                                 exit-status))
+                        (t
+                         (format "No matches for '%s' in %s"
+                                 pattern (abbreviate-file-name search-dir))))))))
                (error (format "Error searching project: %s" (error-message-string err)))))
  :description "Search for a regex pattern across project files without invoking run_shell_command. Use this instead of grep/rg/find+xargs shell commands. Respects .gitignore via ripgrep. Returns matching lines with file path and line number."
  :args (list '(:name "pattern"
@@ -579,6 +588,7 @@ Reserve this tool for commands that genuinely need an external process: tests, b
              '(:name "case-sensitive"
                :type "boolean"
                :description "Set to true for case-sensitive search (default: case-insensitive)."))
+ :include nil
  :category "search")
 
 (gptel-make-tool
@@ -621,6 +631,7 @@ Reserve this tool for commands that genuinely need an external process: tests, b
              '(:name "dir"
                :type "string"
                :description "Directory to list (default: projectile project root or current directory)."))
+ :include nil
  :category "search")
 
 (gptel-make-tool
@@ -683,6 +694,7 @@ Reserve this tool for commands that genuinely need an external process: tests, b
                (error (format "Error getting git status: %s" (error-message-string err)))))
  :description "Show git status in porcelain format. See https://git-scm.com/docs/git-status#_porcelain_format_format for key."
  :args nil
+ :include nil
  :category "git")
 
 (gptel-make-tool
@@ -709,6 +721,7 @@ Reserve this tool for commands that genuinely need an external process: tests, b
              '(:name "path"
                :type "string"
                :description "Limit diff to a specific file or directory."))
+ :include nil
  :category "git")
 
 (gptel-make-tool
@@ -747,6 +760,7 @@ Reserve this tool for commands that genuinely need an external process: tests, b
  :args (list '(:name "buffer"
                :type "string"
                :description "The name of the buffer to check diagnostics for."))
+ :include nil
  :category "emacs")
 
 (defconst my/gptel--subagent-preset-prefix "agent-"
