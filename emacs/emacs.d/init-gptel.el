@@ -375,6 +375,42 @@ Assumes current buffer is the target buffer.  Returns a result string."
               (format "\n\n[Tool result truncated after %d of %d characters. Narrow the request or use pagination to inspect the rest.]"
                       max-chars (length text))))))
 
+(defun my/gptel--format-metadata-value (value)
+  "Return VALUE formatted for a compact tool metadata header."
+  (cond
+   ((null value) nil)
+   ((eq value t) "true")
+   ((eq value :false) "false")
+   ((stringp value) value)
+   (t (format "%s" value))))
+
+(defun my/gptel--format-tool-result (tool metadata body &optional next max-chars)
+  "Return BODY with a compact metadata header for TOOL.
+METADATA is an alist of (KEY . VALUE). NEXT is a recommended follow-up.
+The body is capped to MAX-CHARS or `my/gptel--tool-result-max-chars'."
+  (let* ((body (or body ""))
+         (max-chars (or max-chars my/gptel--tool-result-max-chars))
+         (body-chars (length body))
+         (truncated (> body-chars max-chars))
+         (shown-body (if truncated (substring body 0 max-chars) body))
+         (metadata-lines
+          (delq nil
+                (mapcar (lambda (entry)
+                          (when-let ((value (my/gptel--format-metadata-value (cdr entry))))
+                            (format "%s: %s" (car entry) value)))
+                        (append `((tool . ,tool)
+                                  (body_chars . ,body-chars)
+                                  (truncated . ,(if truncated "yes" "no")))
+                                metadata
+                                (when next `((next . ,next))))))))
+    (concat "Metadata:\n"
+            (mapconcat #'identity metadata-lines "\n")
+            "\n\n"
+            shown-body
+            (when truncated
+              (format "\n\n[Tool result truncated after %d of %d body characters. Use the `next` hint in Metadata to narrow or paginate.]"
+                      max-chars body-chars)))))
+
 ;; custom tools for use in 'gptel' mode
 
 (gptel-make-tool
@@ -444,10 +480,16 @@ Assumes current buffer is the target buffer.  Returns a result string."
                                        current-line-num
                                        line-content) lines))
                        (forward-line 1))
-                     (my/gptel--truncate-tool-result
+                     (my/gptel--format-tool-result
+                      "show_buffer_context"
+                      `((target . ,buffer)
+                        (line . ,line-number)
+                        (range . ,(format "%d-%d" start-line end-line))
+                        (total_lines . ,total-lines))
                       (format "Context around line %d in buffer '%s' (lines %d-%d of %d):\n%s"
                               line-number buffer start-line end-line total-lines
-                              (mapconcat 'identity (nreverse lines) "\n"))))))))
+                              (mapconcat 'identity (nreverse lines) "\n"))
+                      "Call show_buffer_context with a smaller context-lines value, or read_file with start-line/end-line for a precise range."))))))
  :description "Show the lines around a specific line number in a buffer, with the target line marked.  Useful for understanding code structure and indentation before editing."
  :args (list '(:name "buffer"
                :type "string"
@@ -479,8 +521,13 @@ Assumes current buffer is the target buffer.  Returns a result string."
                          (let ((line-num (line-number-at-pos))
                                (line-content (string-trim (thing-at-point 'line t))))
                            (push (format "Line %d: %s" line-num line-content) matches))))
-                     (if matches
-                         (my/gptel--truncate-tool-result
+                     (my/gptel--format-tool-result
+                      "search_buffer_text"
+                      `((target . ,buffer)
+                        (query . ,search-text)
+                        (match_count . ,count)
+                        (shown_count . ,(length matches)))
+                      (if matches
                           (format "Found %d occurrence%s of '%s' in buffer '%s'%s:\n%s"
                                   count
                                   (if (= count 1) "" "s")
@@ -488,8 +535,9 @@ Assumes current buffer is the target buffer.  Returns a result string."
                                   (if (> count max-show)
                                       (format " (showing first %d)" max-show)
                                     "")
-                                  (mapconcat 'identity (nreverse matches) "\n")))
-                       (format "Text '%s' not found in buffer '%s'" search-text buffer)))))))
+                                  (mapconcat 'identity (nreverse matches) "\n"))
+                        (format "Text '%s' not found in buffer '%s'" search-text buffer))
+                      "If shown_count is lower than match_count, refine search-text or use show_buffer_context around a reported line."))))))
  :description "Search for text in a buffer and return all matching line numbers and content.  Useful before editing to confirm the target text exists and is unique."
  :args (list '(:name "buffer"
                :type "string"
@@ -535,8 +583,20 @@ Assumes current buffer is the target buffer.  Returns a result string."
                    (unwind-protect
                        (with-current-buffer buf
                          (my/gptel--ensure-readable-buffer "read_file")
-                         (my/gptel--truncate-tool-result
-                          (my/gptel--render-hashed-lines path start-line end-line)))
+                         (let* ((total (count-lines (point-min) (point-max)))
+                                (start-line (and start-line (round start-line)))
+                                (end-line (and end-line (round end-line)))
+                                (start (max 1 (or start-line 1)))
+                                (requested-end (or end-line (+ start 1999)))
+                                (end (min total requested-end)))
+                           (my/gptel--format-tool-result
+                            "read_file"
+                            `((target . ,(abbreviate-file-name (expand-file-name path)))
+                              (range . ,(if (zerop total) "0-0" (format "%d-%d" start end)))
+                              (total_lines . ,total)
+                              (requested_end . ,requested-end))
+                            (my/gptel--render-hashed-lines path start-line end-line)
+                            "Call read_file again with start-line/end-line for the next page or a narrower range.")))
                      (unless existing
                        (kill-buffer buf))))
                (error (format "Error reading file '%s': %s" path (error-message-string err)))))
@@ -575,7 +635,10 @@ Assumes current buffer is the target buffer.  Returns a result string."
                                          (buffer-size)
                                          (or (buffer-file-name) "(no file)"))))
                              bufs)))
-               (my/gptel--truncate-tool-result
+               (my/gptel--format-tool-result
+                "list_buffers"
+                `((buffer_count . ,(length entries))
+                  (shown_count . ,(min (length entries) max-show)))
                 (format "%d buffer%s%s:\n%s"
                         (length entries)
                         (if (= (length entries) 1) "" "s")
@@ -584,7 +647,8 @@ Assumes current buffer is the target buffer.  Returns a result string."
                           "")
                         (mapconcat #'identity
                                    (cl-subseq entries 0 (min (length entries) max-show))
-                                   "\n")))))
+                                   "\n"))
+                "Use a specific buffer name with show_buffer_context, search_buffer_text, or buffer_diagnostics.")))
  :description "List all visible Emacs buffers with their name, major mode, size, and associated file path.  Use this to find the exact buffer name to pass to edit_buffer and similar tools.  Buffer names and file paths are both accepted by any tool with a 'buffer' argument."
  :args '()
  :include nil
@@ -599,11 +663,17 @@ Assumes current buffer is the target buffer.  Returns a result string."
                        (let* ((exit-code (call-process-shell-command command nil temp-buffer t))
                               (output (with-current-buffer temp-buffer (buffer-string)))
                               (trimmed-output (string-trim output)))
-                         (format "```bash\n%s\n```\n\n**Exit code:** %d\n\n**Output:**\n```\n%s\n```"
-                                 command exit-code
-                                 (if (string-empty-p trimmed-output)
-                                     "(no output)"
-                                   (my/gptel--truncate-tool-result trimmed-output))))
+                         (my/gptel--format-tool-result
+                          "run_shell_command"
+                          `((command . ,command)
+                            (exit_code . ,exit-code)
+                            (output_chars . ,(length output)))
+                          (format "```bash\n%s\n```\n\n**Exit code:** %d\n\n**Output:**\n```\n%s\n```"
+                                  command exit-code
+                                  (if (string-empty-p trimmed-output)
+                                      "(no output)"
+                                    trimmed-output))
+                          "If output was truncated, rerun a narrower command or redirect output to a file and inspect targeted ranges."))
                      (when (buffer-live-p temp-buffer)
                        (kill-buffer temp-buffer))))
                (error (format "Command: %s\nError: %s" command (error-message-string err)))))
@@ -729,28 +799,62 @@ Reserve this tool for commands that genuinely need an external process: tests, b
                             (trimmed (string-trim output)))
                        (cond
                         ((and (= exit-status 1) (string-empty-p trimmed))
-                         (format "No matches for '%s' in %s"
-                                 pattern (abbreviate-file-name search-dir)))
+                         (my/gptel--format-tool-result
+                          "search_project"
+                          `((target . ,(abbreviate-file-name search-dir))
+                            (query . ,pattern)
+                            (file_glob . ,file-glob)
+                            (exit_code . ,exit-status)
+                            (match_count . 0)
+                            (shown_count . 0))
+                          (format "No matches for '%s' in %s"
+                                  pattern (abbreviate-file-name search-dir))
+                          "Broaden the pattern or adjust file-glob/dir if needed."))
                         ((not (string-empty-p trimmed))
                          (let ((lines (split-string trimmed "\n" t))
                                (max-show 50))
-                           (format "Found %d match%s for '%s' in %s%s:\n%s"
-                                   (length lines)
-                                   (if (= (length lines) 1) "" "es")
-                                   pattern
-                                   (abbreviate-file-name search-dir)
-                                   (if (> (length lines) max-show)
-                                       (format " (showing first %d)" max-show)
-                                     "")
-                                   (mapconcat 'identity
-                                              (cl-subseq lines 0 (min (length lines) max-show))
-                                              "\n"))))
+                           (my/gptel--format-tool-result
+                            "search_project"
+                            `((target . ,(abbreviate-file-name search-dir))
+                              (query . ,pattern)
+                              (file_glob . ,file-glob)
+                              (exit_code . ,exit-status)
+                              (match_count . ,(length lines))
+                              (shown_count . ,(min (length lines) max-show)))
+                            (format "Found %d match%s for '%s' in %s%s:\n%s"
+                                    (length lines)
+                                    (if (= (length lines) 1) "" "es")
+                                    pattern
+                                    (abbreviate-file-name search-dir)
+                                    (if (> (length lines) max-show)
+                                        (format " (showing first %d)" max-show)
+                                      "")
+                                    (mapconcat 'identity
+                                               (cl-subseq lines 0 (min (length lines) max-show))
+                                               "\n"))
+                            "If shown_count is lower than match_count, narrow dir/file-glob or use a more specific pattern.")))
                         ((not (zerop exit-status))
-                         (format "Error: rg exited with status %d."
-                                 exit-status))
+                         (my/gptel--format-tool-result
+                          "search_project"
+                          `((target . ,(abbreviate-file-name search-dir))
+                            (query . ,pattern)
+                            (file_glob . ,file-glob)
+                            (exit_code . ,exit-status))
+                          (format "Error: rg exited with status %d."
+                                  exit-status)
+                          "Check the regex pattern, directory, and file-glob."))
                         (t
-                         (format "No matches for '%s' in %s"
-                                 pattern (abbreviate-file-name search-dir))))))))
+                         (my/gptel--format-tool-result
+                          "search_project"
+                          `((target . ,(abbreviate-file-name search-dir))
+                            (query . ,pattern)
+                            (file_glob . ,file-glob)
+                            (exit_code . ,exit-status)
+                            (match_count . 0)
+                            (shown_count . 0))
+                          (format "No matches for '%s' in %s"
+                                  pattern (abbreviate-file-name search-dir))
+                          "Broaden the pattern or adjust file-glob/dir if needed.")))))))
                (error (format "Error searching project: %s" (error-message-string err)))))
  :description "Search for a regex pattern across project files without invoking run_shell_command. Use this instead of grep/rg/find+xargs shell commands. Respects .gitignore via ripgrep. Returns matching lines with file path and line number."
  :args (list '(:name "pattern"
@@ -786,20 +890,27 @@ Reserve this tool for commands that genuinely need an external process: tests, b
                              (seq-filter (lambda (f) (string-match-p pattern f)) all-files)
                            all-files))
                         (max-show 100))
-                   (if (null filtered)
-                       (format "No files found in %s%s"
-                               (abbreviate-file-name root)
-                               (if pattern (format " matching '%s'" pattern) ""))
-                     (format "%d file%s in %s%s:\n%s"
-                             (length filtered)
-                             (if (= (length filtered) 1) "" "s")
-                             (abbreviate-file-name root)
-                             (if (> (length filtered) max-show)
-                                 (format " (showing first %d)" max-show)
-                               "")
-                             (mapconcat 'identity
-                                        (cl-subseq filtered 0 (min (length filtered) max-show))
-                                        "\n"))))
+                   (my/gptel--format-tool-result
+                    "list_project_files"
+                    `((target . ,(abbreviate-file-name root))
+                      (pattern . ,pattern)
+                      (file_count . ,(length filtered))
+                      (shown_count . ,(min (length filtered) max-show)))
+                    (if (null filtered)
+                        (format "No files found in %s%s"
+                                (abbreviate-file-name root)
+                                (if pattern (format " matching '%s'" pattern) ""))
+                      (format "%d file%s in %s%s:\n%s"
+                              (length filtered)
+                              (if (= (length filtered) 1) "" "s")
+                              (abbreviate-file-name root)
+                              (if (> (length filtered) max-show)
+                                  (format " (showing first %d)" max-show)
+                                "")
+                              (mapconcat 'identity
+                                         (cl-subseq filtered 0 (min (length filtered) max-show))
+                                         "\n")))
+                    "If shown_count is lower than file_count, pass a narrower pattern or dir."))
                (error (format "Error listing files: %s" (error-message-string err)))))
  :description "List files in the project using native Emacs/projectile APIs, optionally filtered by a regex pattern. Use this instead of ls/find/tree shell commands. Respects .gitignore when projectile is available."
  :args (list '(:name "pattern"
@@ -866,9 +977,20 @@ Reserve this tool for commands that genuinely need an external process: tests, b
                                  (magit-git-insert "status" "--porcelain=v1")
                                  (buffer-string))))
                    (if (string-empty-p (string-trim output))
-                       "Working tree clean. No staged, unstaged, or untracked changes."
-                     (format "```\n%s\n```"
-                             (my/gptel--truncate-tool-result (string-trim output)))))
+                       (my/gptel--format-tool-result
+                        "git_status"
+                        '((target . "current git repository")
+                          (entry_count . 0))
+                        "Working tree clean. No staged, unstaged, or untracked changes."
+                        "Use git_diff only if you need to verify a specific path.")
+                     (let* ((trimmed (string-trim output))
+                            (lines (split-string trimmed "\n" t)))
+                       (my/gptel--format-tool-result
+                        "git_status"
+                        `((target . "current git repository")
+                          (entry_count . ,(length lines)))
+                        (format "```\n%s\n```" trimmed)
+                        "Use git_diff with staged/path arguments to inspect the relevant changes."))))
                (error (format "Error getting git status: %s" (error-message-string err)))))
  :description "Show git status in porcelain format. See https://git-scm.com/docs/git-status#_porcelain_format_format for key."
  :args nil
@@ -887,11 +1009,30 @@ Reserve this tool for commands that genuinely need an external process: tests, b
                                   (apply #'magit-git-insert args)
                                   (buffer-string))))
                    (if (string-empty-p (string-trim output))
-                       (format "No %schanges%s."
-                               (if staged "staged " "")
-                               (if path (format " for %s" path) ""))
-                     (format "```diff\n%s\n```"
-                             (my/gptel--truncate-tool-result (string-trim output)))))
+                       (my/gptel--format-tool-result
+                        "git_diff"
+                        `((target . ,(or path "current git repository"))
+                          (staged . ,(if staged "yes" "no"))
+                          (diff_chars . 0)
+                          (file_count . 0))
+                        (format "No %schanges%s."
+                                (if staged "staged " "")
+                                (if path (format " for %s" path) ""))
+                        "No follow-up needed unless you want a different staged/path scope.")
+                     (let* ((trimmed (string-trim output))
+                            (file-count (with-temp-buffer
+                                          (insert trimmed)
+                                          (goto-char (point-min))
+                                          (cl-loop while (re-search-forward "^diff --git " nil t)
+                                                   count 1))))
+                       (my/gptel--format-tool-result
+                        "git_diff"
+                        `((target . ,(or path "current git repository"))
+                          (staged . ,(if staged "yes" "no"))
+                          (diff_chars . ,(length trimmed))
+                          (file_count . ,file-count))
+                        (format "```diff\n%s\n```" trimmed)
+                        "If truncated, call git_diff with a narrower path or staged scope."))))
                (error (format "Error getting git diff: %s" (error-message-string err)))))
  :description "Show git diff of unstaged changes (or staged if STAGED is non-nil). Optionally limit to PATH."
  :args (list '(:name "staged"
@@ -910,13 +1051,34 @@ Reserve this tool for commands that genuinely need an external process: tests, b
                (my/gptel--ensure-readable-buffer "buffer_diagnostics")
                (cond
                 ((not (bound-and-true-p flymake-mode))
-                 (format "flymake-mode is not active in buffer '%s'." buffer))
+                 (my/gptel--format-tool-result
+                  "buffer_diagnostics"
+                  `((target . ,buffer)
+                    (flymake_active . "no")
+                    (diagnostic_count . 0))
+                  (format "flymake-mode is not active in buffer '%s'." buffer)
+                  "Enable flymake-mode or run a file-specific validator if diagnostics are needed."))
                 ((null (flymake-diagnostics))
-                 (format "No diagnostics in buffer '%s'." buffer))
+                 (my/gptel--format-tool-result
+                  "buffer_diagnostics"
+                  `((target . ,buffer)
+                    (flymake_active . "yes")
+                    (diagnostic_count . 0))
+                  (format "No diagnostics in buffer '%s'." buffer)
+                  "No follow-up needed unless the buffer changed; rerun after edits."))
                 (t
                  (let* ((diags (flymake-diagnostics))
-                        (grouped (seq-group-by #'flymake-diagnostic-type diags)))
-                   (my/gptel--truncate-tool-result
+                        (grouped (seq-group-by #'flymake-diagnostic-type diags))
+                        (severity-counts
+                         (mapconcat (lambda (group)
+                                      (format "%s=%d" (car group) (length (cdr group))))
+                                    grouped ", ")))
+                   (my/gptel--format-tool-result
+                    "buffer_diagnostics"
+                    `((target . ,buffer)
+                      (flymake_active . "yes")
+                      (diagnostic_count . ,(length diags))
+                      (severity_counts . ,severity-counts))
                     (format "%d diagnostic%s in '%s':%s"
                             (length diags)
                             (if (= (length diags) 1) "" "s")
@@ -934,7 +1096,8 @@ Reserve this tool for commands that genuinely need an external process: tests, b
                                         (cdr group)
                                         "\n")))
                              grouped
-                             ""))))))))
+                             ""))
+                    "Use show_buffer_context around a diagnostic line, then edit and rerun buffer_diagnostics."))))))
  :description "Show flymake diagnostics (errors, warnings, notes) for a buffer, grouped by severity. Requires flymake-mode to be active in the buffer."
  :args (list '(:name "buffer"
                :type "string"
