@@ -349,7 +349,7 @@ Assumes current buffer is the target buffer.  Returns a result string."
 
 (gptel-make-tool
  :name "read_file"
-  :description "[READ-ONLY] Open a file in Emacs and return its contents with each line prefixed by `<lineno>: ' (matches the conventional Read-tool format).  By default returns the first 2000 lines; pass START-LINE and/or END-LINE to paginate through larger files."
+  :description "[READ-ONLY] Native Emacs file reader. Use this instead of shell commands like cat/head/tail/sed for inspecting file contents. Opens a file in Emacs and returns its contents with each line prefixed by `N:HHH|' (line number plus short content hash). By default returns the first 2000 lines; pass START-LINE and/or END-LINE to paginate through larger files."
   :args (list '(:name "path"
                 :type "string"
                 :description "Path to the file (e.g. ~/notes/todo.txt).")
@@ -424,15 +424,19 @@ Assumes current buffer is the target buffer.  Returns a result string."
                                trimmed-output))))
                (error (format "Command: %s\nError: %s" command (error-message-string err)))))
  :description "Run an arbitrary shell command and return its output and exit code.
-CRITICAL: NEVER use this tool for file or search operations (e.g., ls, find, cat, grep, head, tail, sed, awk).
-ALWAYS use native Emacs tools instead:
-  - For listing files: use `list_project_files`
-  - For searching text: use `search_project`
-  - For reading file contents: use `read_file`
-Reserve this tool EXCLUSIVELY for compilation, tests, package managers, and git operations."
+
+LAST RESORT ONLY. Do NOT use this for routine project navigation, file inspection, or text search.
+
+Use native Emacs tools instead:
+  - ls/find/tree/pwd-style file discovery -> list_project_files
+  - cat/head/tail/sed-style file reading -> read_file or show_buffer_context
+  - grep/rg/find+xargs-style text search -> search_project or search_buffer_text
+  - git status/diff -> git_status / git_diff
+
+Reserve this tool for commands that genuinely need an external process: tests, builds, linters/formatters, package managers, one-off system inspection, or git operations not covered by git_status/git_diff."
  :args (list '(:name "command"
                :type "string"
-               :description "The shell command to execute."))
+               :description "External command to execute. Before using this, prefer list_project_files/read_file/search_project/show_buffer_context/search_buffer_text/git_status/git_diff when they can answer the question."))
  :confirm t
  :category "shell")
 
@@ -560,7 +564,7 @@ Reserve this tool EXCLUSIVELY for compilation, tests, package managers, and git 
                                               (cl-subseq lines 0 (min (length lines) max-show))
                                               "\n")))))))))
                (error (format "Error searching project: %s" (error-message-string err)))))
- :description "Search for a regex pattern across project files using ripgrep. Respects .gitignore. Returns matching lines with file path and line number."
+ :description "Search for a regex pattern across project files without invoking run_shell_command. Use this instead of grep/rg/find+xargs shell commands. Respects .gitignore via ripgrep. Returns matching lines with file path and line number."
  :args (list '(:name "pattern"
                :type "string"
                :description "Regex pattern to search for (ripgrep syntax).")
@@ -608,7 +612,7 @@ Reserve this tool EXCLUSIVELY for compilation, tests, package managers, and git 
                                         (cl-subseq filtered 0 (min (length filtered) max-show))
                                         "\n"))))
                (error (format "Error listing files: %s" (error-message-string err)))))
- :description "List files in the project, optionally filtered by a regex pattern. Respects .gitignore when projectile is available."
+ :description "List files in the project using native Emacs/projectile APIs, optionally filtered by a regex pattern. Use this instead of ls/find/tree shell commands. Respects .gitignore when projectile is available."
  :args (list '(:name "pattern"
                :type "string"
                :description "Optional regex to filter filenames (e.g. '\\.el$', 'src/').")
@@ -863,6 +867,9 @@ Injected into system messages at request-send time via the preset lambda."
 
 TOOLS: search, read, and analyse only -- no edits, no shell.
 
+TOOL SELECTION: prefer the native Emacs/project tools. They are faster, keep
+context compact, and avoid wasting tokens on shell transcript boilerplate.
+
 WORKFLOW:
 1. Use list_project_files or search_project to discover relevant files.
 2. Use read_file to read (full file first; paginate with start-line/end-line only for re-reads).
@@ -879,18 +886,23 @@ PARALLELIZE: when reads are independent (e.g. reading several files), issue them
 (defconst my/gptel--agent-edit-system
   "You are an Emacs coding assistant operating directly on the user's open buffers.
 
-CRITICAL: edit_buffer and edit_buffer_by_line both auto-save the buffer after
-each edit (unless no_save=true).  Use save_buffer explicitly only when
-deliberately batching several no_save=true edits before a single save.
+TOOLS: native Emacs file/search/edit tools only -- no shell.
+
+TOOL SELECTION: prefer the native Emacs/project tools. They are faster, keep
+context compact, and avoid wasting tokens on shell transcript boilerplate.
+
+CRITICAL: edit_buffer auto-saves the buffer after each edit (unless
+no_save=true).  Use save_buffer explicitly only when deliberately batching
+several no_save=true edits before a single save.
 
 WORKFLOW:
 1. Use list_project_files or search_project to discover relevant files.
 2. Use read_file (full file first!) or show_buffer_context before editing.
 3. Use delegate_agent with subagent_type=agent-read for independent, context-cheap research.
 4. Use open_file to load a file into a live buffer; pass the returned buffer name to edit_buffer.
-5. Prefer edit_buffer (string replace) over edit_buffer_by_line -- line numbers shift after every edit.
+5. Prefer edit_buffer (string replace) for edits; line numbers shift after every edit.
    - old_str must uniquely match the target text. Include enough surrounding context.
-   - Do NOT include the `<n>: ' line-number prefix that read_file adds -- strip it from old_str.
+   - Do NOT include the `N:HHH|' line/hash prefix that read_file adds -- strip it from old_str.
    - Pass replace_all=true only when intentionally replacing every occurrence.
 6. Use check_parens / byte_compile_file / buffer_diagnostics to verify after edits.
 7. Use git_status / git_diff to review your changes before finishing.
@@ -903,21 +915,28 @@ PARALLELIZE: when reads are independent, issue them in a single message.
 (defconst my/gptel--agent-shell-system
   "You are an Emacs coding assistant with full shell access.
 
-CRITICAL: edit_buffer and edit_buffer_by_line both auto-save the buffer after
-each edit (unless no_save=true).  Use save_buffer explicitly only when
-deliberately batching several no_save=true edits before a single save.
+TOOL SELECTION: native Emacs tools are the default. They are faster, keep
+context compact, and avoid wasting tokens on shell transcript boilerplate.
+Do not shell out for routine file discovery, file reading, or text search.
+
+CRITICAL: edit_buffer auto-saves the buffer after each edit (unless
+no_save=true).  Use save_buffer explicitly only when deliberately batching
+several no_save=true edits before a single save.
 
 WORKFLOW:
 1. Use list_project_files or search_project to discover relevant files.
 2. Use read_file (full file first!) or show_buffer_context before editing.
 3. Use delegate_agent with subagent_type=agent-read for independent, context-cheap research.
 4. Use open_file to load a file into a live buffer; pass the returned buffer name to edit_buffer.
-5. Prefer edit_buffer (string replace) over edit_buffer_by_line -- line numbers shift after every edit.
+5. Prefer edit_buffer (string replace) for edits; line numbers shift after every edit.
    - old_str must uniquely match the target text. Include enough surrounding context.
-   - Do NOT include the `<n>: ' line-number prefix that read_file adds -- strip it from old_str.
+   - Do NOT include the `N:HHH|' line/hash prefix that read_file adds -- strip it from old_str.
 6. Use check_parens / byte_compile_file / buffer_diagnostics to verify after edits.
-7. Reserve run_shell_command for git, build tools, package managers, and system commands.
-   NEVER use run_shell_command for file operations -- use read_file / search_project / list_project_files.
+7. Reserve run_shell_command for commands that genuinely need an external process:
+   tests, builds, linters/formatters, package managers, one-off system inspection,
+   or git operations not covered by git_status/git_diff.
+   NEVER use run_shell_command for ls/find/tree/pwd/cat/head/tail/sed/grep/rg-style work:
+   use list_project_files / read_file / show_buffer_context / search_project / search_buffer_text.
 8. Use git_status / git_diff to review your changes before finishing.
 
 PARALLELIZE: when operations are independent, issue them in a single message.
