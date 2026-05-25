@@ -5,6 +5,7 @@
 ;;; GPTel specific configurations ;;;
 ;;
 (require 'gptel)
+(require 'json)
 
 (declare-function flymake-diagnostic-beg "flymake" (diag))
 (declare-function flymake-diagnostic-text "flymake" (diag))
@@ -394,6 +395,79 @@ caps because they are more likely to contain runaway or recursive output."
       (cdr (assoc-string tool my/gptel--tool-result-max-chars-by-tool t))
       my/gptel--tool-result-max-chars))
 
+(defcustom my/gptel--tool-output-store-directory
+  (expand-file-name "gptel/tool-outputs/"
+                    (or (getenv "XDG_STATE_HOME")
+                        (expand-file-name "~/.local/state")))
+  "Local side-car directory for oversized gptel custom tool outputs.
+Objects are addressed by sha256 and may contain sensitive source code, logs,
+diagnostics, command output, or local paths.  Keep this outside project repos
+and org chat files."
+  :type 'directory
+  :group 'gptel)
+
+(defun my/gptel--tool-output-store-path (hash suffix)
+  "Return side-car store path for object HASH with file SUFFIX."
+  (expand-file-name (concat hash suffix)
+                    (expand-file-name (substring hash 0 2)
+                                      my/gptel--tool-output-store-directory)))
+
+(defun my/gptel--tool-output-metadata-json (tool metadata hash body)
+  "Return JSON manifest text for stored TOOL output BODY with HASH."
+  (let ((record `((id . ,(concat "sha256:" hash))
+                  (tool . ,tool)
+                  (stored_at . ,(format-time-string "%FT%TZ" (current-time) t))
+                  (bytes . ,(string-bytes body))
+                  (chars . ,(length body))
+                  (lines . ,(with-temp-buffer
+                              (insert body)
+                              (count-lines (point-min) (point-max))))
+                  (content_type . "text/plain; charset=utf-8")
+                  (scope . ,(mapcar
+                             (lambda (entry)
+                               (cons (format "%s" (car entry))
+                                     (my/gptel--format-metadata-value (cdr entry))))
+                             metadata)))))
+    (concat (json-encode record) "\n")))
+
+(defun my/gptel--store-tool-output (tool metadata body)
+  "Store oversized TOOL output BODY and return reference metadata."
+  (let* ((hash (secure-hash 'sha256 body))
+         (object-path (my/gptel--tool-output-store-path hash ".txt"))
+         (manifest-path (my/gptel--tool-output-store-path hash ".json"))
+         (dir (file-name-directory object-path))
+         (lines (with-temp-buffer
+                  (insert body)
+                  (count-lines (point-min) (point-max)))))
+    (make-directory dir t)
+    (unless (file-exists-p object-path)
+      (let ((coding-system-for-write 'utf-8-unix))
+        (with-temp-file object-path
+          (insert body))))
+    (unless (file-exists-p manifest-path)
+      (let ((coding-system-for-write 'utf-8-unix))
+        (with-temp-file manifest-path
+          (insert (my/gptel--tool-output-metadata-json tool metadata hash body)))))
+    `((id . ,(concat "sha256:" hash))
+      (tool . ,tool)
+      (bytes . ,(string-bytes body))
+      (chars . ,(length body))
+      (lines . ,lines)
+      (object_path . ,(abbreviate-file-name object-path))
+      (manifest_path . ,(abbreviate-file-name manifest-path)))))
+
+(defun my/gptel--tool-output-reference-block (reference cap-chars)
+  "Return an org-friendly reference block for stored output REFERENCE."
+  (format ":TOOL_OUTPUT_REF:\n:id %s\n:tool %s\n:bytes %s\n:chars %s\n:lines %s\n:object_path %s\n:manifest_path %s\n:summary Output exceeded cap_chars=%d, so the raw body was stored out-of-band and omitted from this transcript. Treat the stored object as sensitive local data.\n:END:"
+          (alist-get 'id reference)
+          (alist-get 'tool reference)
+          (alist-get 'bytes reference)
+          (alist-get 'chars reference)
+          (alist-get 'lines reference)
+          (alist-get 'object_path reference)
+          (alist-get 'manifest_path reference)
+          cap-chars))
+
 (defun my/gptel--truncate-tool-result (text &optional max-chars)
   "Return TEXT capped to MAX-CHARS for compact tool transcripts."
   (let ((max-chars (or max-chars my/gptel--tool-result-max-chars)))
@@ -421,7 +495,11 @@ The body is capped to MAX-CHARS, TOOL's specific cap, or
          (max-chars (my/gptel--tool-result-cap tool max-chars))
          (body-chars (length body))
          (truncated (> body-chars max-chars))
-         (shown-body (if truncated (substring body 0 max-chars) body))
+         (reference (when truncated
+                      (my/gptel--store-tool-output tool metadata body)))
+         (shown-body (if truncated
+                         (my/gptel--tool-output-reference-block reference max-chars)
+                       body))
          (metadata-lines
           (delq nil
                 (mapcar (lambda (entry)
@@ -430,6 +508,7 @@ The body is capped to MAX-CHARS, TOOL's specific cap, or
                         (append `((tool . ,tool)
                                   (body_chars . ,body-chars)
                                   (cap_chars . ,max-chars)
+                                  (stored_ref . ,(alist-get 'id reference))
                                   (truncated . ,(if truncated "yes" "no")))
                                 metadata
                                 (when next `((next . ,next))))))))
@@ -438,8 +517,8 @@ The body is capped to MAX-CHARS, TOOL's specific cap, or
             "\n\n"
             shown-body
             (when truncated
-              (format "\n\n[Tool result truncated after %d of %d body characters by the `%s` cap. Use the `next` hint in Metadata to narrow or paginate.]"
-                      max-chars body-chars tool)))))
+              (format "\n\n[Tool result stored after exceeding the `%s` cap: %d of %d body characters were omitted from this transcript. Use the reference above plus the `next` hint in Metadata to narrow or paginate.]"
+                      tool max-chars body-chars)))))
 
 ;; custom tools for use in 'gptel' mode
 
@@ -1185,9 +1264,13 @@ fresh gptel request with no inherited gptel context."
                     (setq partial (concat partial response))
                     (unless (or done (plist-get info :tool-use))
                       (setq done t)
-                      (funcall callback (my/gptel--truncate-tool-result
-                                         partial
-                                         (my/gptel--tool-result-cap "delegate_agent")))))
+                      (funcall callback
+                               (my/gptel--format-tool-result
+                                "delegate_agent"
+                                `((subagent . ,subagent-name)
+                                  (task . ,description))
+                                partial
+                                "If stored or truncated, ask delegate_agent for a narrower task or result."))))
                    ((and (consp response) (eq (car response) 'tool-call))
                     (gptel--display-tool-calls (cdr response) info))
                    ((and (consp response) (eq (car response) 'tool-result))
