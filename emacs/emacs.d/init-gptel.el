@@ -1853,12 +1853,77 @@ PROMPT and ARGS are the arguments received by `gptel-request'."
 (advice-remove 'gptel-request #'my/gptel--prompt-size-preflight)
 (advice-add 'gptel-request :before #'my/gptel--prompt-size-preflight)
 
+(defcustom my/gptel--project-memory-file-name "MEMORY.md"
+  "Project-local memory file name injected into agentic gptel prompts.
+The file is resolved relative to the current project root.  Missing files are
+ignored.  Keep this file curated: do not store secrets, raw tool output, or
+chat transcripts."
+  :type 'string
+  :group 'gptel)
+
+(defcustom my/gptel--user-memory-file
+  (expand-file-name "gptel/USER.md"
+                    (or (getenv "XDG_CONFIG_HOME")
+                        (expand-file-name "~/.config")))
+  "User preference memory file injected into agentic gptel prompts.
+Missing files are ignored.  Keep this file curated: do not store secrets, raw
+tool output, or chat transcripts."
+  :type 'file
+  :group 'gptel)
+
+(defcustom my/gptel--memory-file-max-chars 2000
+  "Maximum characters injected from each gptel persistent memory file."
+  :type 'integer
+  :group 'gptel)
+
+(defun my/gptel--project-root ()
+  "Return the current project root, falling back to `default-directory'."
+  (condition-case nil
+      (projectile-project-root)
+    (error default-directory)))
+
+(defun my/gptel--read-bounded-memory-file (label path)
+  "Return a bounded memory block for LABEL at PATH, or nil if absent."
+  (when (and path (file-readable-p path))
+    (condition-case err
+        (with-temp-buffer
+          (insert-file-contents-literally path)
+          (let* ((text (string-trim (buffer-string)))
+                 (total-chars (length text))
+                 (cap my/gptel--memory-file-max-chars)
+                 (truncated (> total-chars cap))
+                 (shown (if truncated (substring text 0 cap) text)))
+            (unless (string-empty-p shown)
+              (format "## %s memory (%s, chars %d%s)\n%s%s"
+                      label
+                      (abbreviate-file-name path)
+                      total-chars
+                      (if truncated (format ", capped at %d" cap) "")
+                      shown
+                      (if truncated
+                          "\n\n[Memory truncated: summarize or prune this memory file before relying on omitted content.]"
+                        "")))))
+      (error (format "## %s memory (%s)\n[Memory unavailable: %s]"
+                     label (abbreviate-file-name path) (error-message-string err))))))
+
+(defun my/gptel--memory-context-string ()
+  "Return bounded persistent memory context for agentic system prompts."
+  (let* ((root (my/gptel--project-root))
+         (project-memory (expand-file-name my/gptel--project-memory-file-name root))
+         (blocks (delq nil
+                       (list
+                        (my/gptel--read-bounded-memory-file "Project" project-memory)
+                        (my/gptel--read-bounded-memory-file "User" my/gptel--user-memory-file)))))
+    (when blocks
+      (concat "<persistent-memory>\n"
+              "Curated memory only. Treat as guidance, not proof. Do not add secrets, raw tool output, or chat transcripts.\n\n"
+              (mapconcat #'identity blocks "\n\n")
+              "\n</persistent-memory>"))))
+
 (defun my/gptel--project-context-string ()
   "Return a formatted project-context block for agentic system prompts.
 Injected into system messages at request-send time via the preset lambda."
-  (let* ((root (condition-case nil
-                   (abbreviate-file-name (projectile-project-root))
-                 (error (abbreviate-file-name default-directory))))
+  (let* ((root (abbreviate-file-name (my/gptel--project-root)))
          (buf-name (buffer-name))
          (buf-file (buffer-file-name)))
     (concat "<project-context>\n"
@@ -1866,6 +1931,12 @@ Injected into system messages at request-send time via the preset lambda."
             "Active buffer: " buf-name
             (when buf-file (concat " (" (abbreviate-file-name buf-file) ")"))
             "\n</project-context>")))
+
+(defun my/gptel--agent-context-string ()
+  "Return bounded context blocks for agentic system prompts."
+  (string-join (delq nil (list (my/gptel--project-context-string)
+                               (my/gptel--memory-context-string)))
+               "\n\n"))
 
 (defconst my/gptel--agent-read-system
   "You are an Emacs coding assistant in read-only research mode.
@@ -1974,7 +2045,7 @@ PARALLELIZE: when operations are independent, issue them in a single message.
   :model 'claude-sonnet-4-6
   :system (lambda ()
             (string-replace "[project_context]"
-                            (my/gptel--project-context-string)
+                            (my/gptel--agent-context-string)
                             my/gptel--agent-read-system))
   :tools '("read_file" "show_buffer_context" "search_buffer_text"
            "search_project" "list_project_files" "list_buffers"
@@ -1989,7 +2060,7 @@ PARALLELIZE: when operations are independent, issue them in a single message.
   :model 'claude-sonnet-4-6
   :system (lambda ()
             (string-replace "[project_context]"
-                            (my/gptel--project-context-string)
+                            (my/gptel--agent-context-string)
                             my/gptel--agent-edit-system))
   :tools '("read_file" "show_buffer_context" "search_buffer_text"
            "search_project" "list_project_files" "list_buffers"
@@ -2006,7 +2077,7 @@ PARALLELIZE: when operations are independent, issue them in a single message.
   :parents 'agent-edit
   :system (lambda ()
             (string-replace "[project_context]"
-                            (my/gptel--project-context-string)
+                            (my/gptel--agent-context-string)
                             my/gptel--agent-shell-system))
   :tools '(:append ("run_shell_command")))
 
