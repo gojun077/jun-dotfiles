@@ -380,6 +380,8 @@ Assumes current buffer is the target buffer.  Returns a result string."
     ("git_status" . 10000)
     ("git_diff" . 12000)
     ("buffer_diagnostics" . 12000)
+    ("fetch_tool_output" . 12000)
+    ("search_tool_output" . 12000)
     ("delegate_agent" . 20000))
   "Tool-specific body caps for high-volume gptel custom tool results.
 Tools not listed here use `my/gptel--tool-result-max-chars'.  Deliberate
@@ -411,6 +413,50 @@ and org chat files."
   (expand-file-name (concat hash suffix)
                     (expand-file-name (substring hash 0 2)
                                       my/gptel--tool-output-store-directory)))
+
+(defun my/gptel--tool-output-id-hash (id)
+  "Return the sha256 hash portion of stored tool output ID."
+  (let ((hash (string-remove-prefix "sha256:" (string-trim id))))
+    (unless (and (= (length hash) 64)
+                 (not (string-match-p "[^[:xdigit:]]" hash)))
+      (error "Invalid tool output id '%s'; expected sha256:<64 hex chars>" id))
+    hash))
+
+(defun my/gptel--tool-output-object-path (id)
+  "Return existing object path for stored tool output ID."
+  (let* ((hash (my/gptel--tool-output-id-hash id))
+         (path (my/gptel--tool-output-store-path hash ".txt")))
+    (unless (file-readable-p path)
+      (error "Stored tool output not found for sha256:%s under %s"
+             hash (abbreviate-file-name my/gptel--tool-output-store-directory)))
+    path))
+
+(defun my/gptel--read-stored-output-lines (id start-line end-line)
+  "Return bounded lines START-LINE through END-LINE from stored output ID."
+  (let* ((path (my/gptel--tool-output-object-path id))
+         (start-line (round start-line))
+         (end-line (round end-line)))
+    (when (or (< start-line 1) (< end-line start-line))
+      (error "Invalid line range %d-%d; use positive 1-based inclusive lines"
+             start-line end-line))
+    (with-temp-buffer
+      (insert-file-contents path)
+      (let ((total-lines (count-lines (point-min) (point-max))))
+        (when (> end-line total-lines)
+          (setq end-line total-lines))
+        (if (> start-line total-lines)
+            `((path . ,path)
+              (total_lines . ,total-lines)
+              (range . ,(format "%d-%d" start-line end-line))
+              (text . ""))
+          (goto-char (point-min))
+          (forward-line (1- start-line))
+          (let ((start (point)))
+            (forward-line (1+ (- end-line start-line)))
+            `((path . ,path)
+              (total_lines . ,total-lines)
+              (range . ,(format "%d-%d" start-line end-line))
+              (text . ,(buffer-substring-no-properties start (point))))))))))
 
 (defun my/gptel--tool-output-metadata-json (tool metadata hash body)
   "Return JSON manifest text for stored TOOL output BODY with HASH."
@@ -521,6 +567,101 @@ The body is capped to MAX-CHARS, TOOL's specific cap, or
                       tool max-chars body-chars)))))
 
 ;; custom tools for use in 'gptel' mode
+
+(gptel-make-tool
+ :name "fetch_tool_output"
+ :function (lambda (id start-line end-line)
+             (condition-case err
+                 (let* ((result (my/gptel--read-stored-output-lines id start-line end-line))
+                        (path (alist-get 'path result))
+                        (total-lines (alist-get 'total_lines result))
+                        (range (alist-get 'range result))
+                        (text (alist-get 'text result)))
+                   (my/gptel--format-tool-result
+                    "fetch_tool_output"
+                    `((target . ,id)
+                      (range . ,range)
+                      (total_lines . ,total-lines)
+                      (object_path . ,(abbreviate-file-name path)))
+                    (if (string-empty-p text)
+                        (format "No stored output lines in requested range %s (total lines: %d)."
+                                range total-lines)
+                      (format "Stored tool output %s, lines %s of %d:\n%s"
+                              id range total-lines text))
+                    "Call fetch_tool_output with a different bounded start-line/end-line range, or search_tool_output for a specific pattern."))
+               (error (format "Error fetching stored tool output: %s"
+                              (error-message-string err)))))
+ :description "Fetch a bounded line range from a stored gptel tool-output reference. Requires sha256 ID plus explicit 1-based inclusive start/end lines; there is no unrestricted full-output fetch."
+ :args (list '(:name "id"
+               :type "string"
+               :description "Stored output id from :TOOL_OUTPUT_REF:, e.g. sha256:<hash>.")
+             '(:name "start-line"
+               :type "number"
+               :description "First line to fetch (1-based, inclusive). Required.")
+             '(:name "end-line"
+               :type "number"
+               :description "Last line to fetch (1-based, inclusive). Required; keep ranges small."))
+ :include nil
+ :category "emacs")
+
+(gptel-make-tool
+ :name "search_tool_output"
+ :function (lambda (id pattern &optional max-matches)
+             (condition-case err
+                 (let* ((path (my/gptel--tool-output-object-path id))
+                        (max-matches (min 100 (max 1 (round (or max-matches 25)))))
+                        (matches nil)
+                        (match-count 0)
+                        (total-lines 0))
+                   (when (string-empty-p pattern)
+                     (error "pattern must not be empty"))
+                   (with-temp-buffer
+                     (insert-file-contents path)
+                     (setq total-lines (count-lines (point-min) (point-max)))
+                     (goto-char (point-min))
+                     (while (re-search-forward pattern nil t)
+                       (setq match-count (1+ match-count))
+                       (when (<= match-count max-matches)
+                         (let ((line-num (line-number-at-pos))
+                               (line (string-trim
+                                      (buffer-substring-no-properties
+                                       (line-beginning-position)
+                                       (line-end-position)))))
+                           (push (format "Line %d: %s" line-num line) matches)))))
+                   (my/gptel--format-tool-result
+                    "search_tool_output"
+                    `((target . ,id)
+                      (query . ,pattern)
+                      (match_count . ,match-count)
+                      (shown_count . ,(length matches))
+                      (max_matches . ,max-matches)
+                      (total_lines . ,total-lines)
+                      (object_path . ,(abbreviate-file-name path)))
+                    (if matches
+                        (format "Found %d match%s for %S in stored output %s%s:\n%s"
+                                match-count
+                                (if (= match-count 1) "" "es")
+                                pattern id
+                                (if (> match-count max-matches)
+                                    (format " (showing first %d)" max-matches)
+                                  "")
+                                (mapconcat #'identity (nreverse matches) "\n"))
+                      (format "No matches for %S in stored output %s." pattern id))
+                    "Use fetch_tool_output around a reported line number, or rerun search_tool_output with a more specific pattern/max-matches."))
+               (error (format "Error searching stored tool output: %s"
+                              (error-message-string err)))))
+ :description "Search within a stored gptel tool-output reference and return capped matching line snippets. Requires a regex pattern and caps results to max-matches (default 25, hard max 100); use fetch_tool_output for bounded context around hits."
+ :args (list '(:name "id"
+               :type "string"
+               :description "Stored output id from :TOOL_OUTPUT_REF:, e.g. sha256:<hash>.")
+             '(:name "pattern"
+               :type "string"
+               :description "Regex pattern to search within the stored output.")
+             '(:name "max-matches"
+               :type "number"
+               :description "Maximum matches to return (default 25, hard maximum 100)."))
+ :include nil
+ :category "emacs")
 
 (gptel-make-tool
  :name "edit_buffer"
@@ -1428,7 +1569,8 @@ WORKFLOW:
 3. Use show_buffer_context to zoom in on a specific line range.
 4. Use search_buffer_text and search_project for cross-referencing symbols.
 5. Use git_status / git_diff to understand recent changes.
-6. Use check_parens or buffer_diagnostics for static analysis.
+6. If a tool returns :TOOL_OUTPUT_REF:, use search_tool_output or bounded fetch_tool_output ranges to inspect it; never ask for a full raw replay.
+7. Use check_parens or buffer_diagnostics for static analysis.
 
 PARALLELIZE: when reads are independent (e.g. reading several files), issue them in a single message.
 
@@ -1458,8 +1600,9 @@ WORKFLOW:
    - In hashline mode, old_str can be the empty string.
    - Use exact old_str replacement only as a fallback when hashline tags are unavailable.
    - In fallback mode, old_str must uniquely match the target text; pass replace_all=true only when intentionally replacing every occurrence.
-6. Use check_parens / byte_compile_file / buffer_diagnostics to verify after edits.
-7. Use git_status / git_diff to review your changes before finishing.
+6. If a tool returns :TOOL_OUTPUT_REF:, use search_tool_output or bounded fetch_tool_output ranges to inspect it; never ask for a full raw replay.
+7. Use check_parens / byte_compile_file / buffer_diagnostics to verify after edits.
+8. Use git_status / git_diff to review your changes before finishing.
 
 PARALLELIZE: when reads are independent, issue them in a single message.
 
@@ -1486,13 +1629,14 @@ WORKFLOW:
    - Hashline edits verify the current line hash, recover nearby shifted lines, and fail safely with refreshed context if stale.
    - In hashline mode, old_str can be the empty string.
    - Use exact old_str replacement only as a fallback when hashline tags are unavailable.
-6. Use check_parens / byte_compile_file / buffer_diagnostics to verify after edits.
-7. Reserve run_shell_command for commands that genuinely need an external process:
+6. If a tool returns :TOOL_OUTPUT_REF:, use search_tool_output or bounded fetch_tool_output ranges to inspect it; never ask for a full raw replay.
+7. Use check_parens / byte_compile_file / buffer_diagnostics to verify after edits.
+8. Reserve run_shell_command for commands that genuinely need an external process:
    tests, builds, linters/formatters, package managers, one-off system inspection,
    or git operations not covered by git_status/git_diff.
    NEVER use run_shell_command for ls/find/tree/pwd/cat/head/tail/sed/grep/rg-style work:
    use list_project_files / read_file / show_buffer_context / search_project / search_buffer_text.
-8. Use git_status / git_diff to review your changes before finishing.
+9. Use git_status / git_diff to review your changes before finishing.
 
 PARALLELIZE: when operations are independent, issue them in a single message.
 
@@ -1512,6 +1656,7 @@ PARALLELIZE: when operations are independent, issue them in a single message.
                             my/gptel--agent-read-system))
   :tools '("read_file" "show_buffer_context" "search_buffer_text"
            "search_project" "list_project_files" "list_buffers"
+           "fetch_tool_output" "search_tool_output"
            "git_status" "git_diff" "buffer_diagnostics" "check_parens"))
 
 (gptel-make-preset 'agent-edit
@@ -1525,6 +1670,7 @@ PARALLELIZE: when operations are independent, issue them in a single message.
                             my/gptel--agent-edit-system))
   :tools '("read_file" "show_buffer_context" "search_buffer_text"
            "search_project" "list_project_files" "list_buffers"
+           "fetch_tool_output" "search_tool_output"
            "delegate_agent"
             "open_file" "edit_buffer" "save_buffer"
            "create_file" "overwrite_file" "indent_region"
@@ -1550,8 +1696,9 @@ WORKFLOW:
 1. Start by calling `git_status` to see the working-tree state.
 2. Call `git_diff` (and `git_diff` with staged=true if anything is staged) to fetch the actual changes -- do NOT wait for the user to paste output.
 3. Issue independent git_status / git_diff calls in parallel in a single message when possible.
-4. Then provide concise, actionable feedback: what changed, what looks risky, what's missing (tests, docs, edge cases)."
-  :tools '("git_status" "git_diff"))
+4. If git_diff returns :TOOL_OUTPUT_REF:, use search_tool_output or bounded fetch_tool_output ranges to inspect the relevant stored diff.
+5. Then provide concise, actionable feedback: what changed, what looks risky, what's missing (tests, docs, edge cases)."
+  :tools '("git_status" "git_diff" "fetch_tool_output" "search_tool_output"))
 
 (my/gptel--update-subagent-tool-enum)
 
