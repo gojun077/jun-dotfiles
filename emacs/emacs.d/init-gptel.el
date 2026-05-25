@@ -403,9 +403,19 @@ caps because they are more likely to contain runaway or recursive output."
                         (expand-file-name "~/.local/state")))
   "Local side-car directory for oversized gptel custom tool outputs.
 Objects are addressed by sha256 and may contain sensitive source code, logs,
-diagnostics, command output, or local paths.  Keep this outside project repos
-and org chat files."
+diagnostics, command output, secrets, or local paths.  This directory is a
+local private cache, not a project artifact: keep it outside project repos,
+do not sync it into `pj-gtd-org', and clean it periodically with
+`my/gptel-clean-tool-output-store'."
   :type 'directory
+  :group 'gptel)
+
+(defcustom my/gptel--tool-output-retention-days 14
+  "Default maximum age in days for gptel side-car tool output objects.
+`my/gptel-clean-tool-output-store' deletes `.txt' objects and `.json'
+manifests older than this threshold.  Set to nil to disable age-based cleanup
+unless an explicit DAYS argument is provided."
+  :type '(choice (const :tag "Disable age cleanup" nil) integer)
   :group 'gptel)
 
 (defun my/gptel--tool-output-store-path (hash suffix)
@@ -413,6 +423,65 @@ and org chat files."
   (expand-file-name (concat hash suffix)
                     (expand-file-name (substring hash 0 2)
                                       my/gptel--tool-output-store-directory)))
+
+(defun my/gptel--tool-output-files ()
+  "Return side-car `.txt' object and `.json' manifest files."
+  (when (file-directory-p my/gptel--tool-output-store-directory)
+    (directory-files-recursively
+     my/gptel--tool-output-store-directory
+     "\\.\\(txt\\|json\\)\\'")))
+
+(defun my/gptel--tool-output-old-p (path cutoff)
+  "Return non-nil when PATH was last modified before CUTOFF time."
+  (time-less-p (file-attribute-modification-time (file-attributes path)) cutoff))
+
+(defun my/gptel--delete-empty-tool-output-dirs ()
+  "Delete empty sharded directories under the gptel tool-output store."
+  (when (file-directory-p my/gptel--tool-output-store-directory)
+    (dolist (dir (directory-files my/gptel--tool-output-store-directory t "\`[^.]"))
+      (when (and (file-directory-p dir)
+                 (null (directory-files dir nil "\`[^.]")))
+        (delete-directory dir)))))
+
+(defun my/gptel-clean-tool-output-store (&optional days dry-run)
+  "Delete side-car tool-output files older than DAYS.
+DAYS defaults to `my/gptel--tool-output-retention-days'.  With prefix arg,
+prompt for DAYS.  When DRY-RUN is non-nil, report candidates without deleting.
+
+Privacy policy: this store is local-only and may contain secrets, source code,
+logs, diagnostics, and command output.  Raw objects are intentionally kept out
+of gptel chat transcripts and out of `pj-gtd-org' org files; use this command
+to remove stale local copies."
+  (interactive
+   (list (when current-prefix-arg
+           (read-number "Delete gptel tool outputs older than days: "
+                        (or my/gptel--tool-output-retention-days 14)))
+         nil))
+  (let* ((days (or days my/gptel--tool-output-retention-days))
+         (files (my/gptel--tool-output-files)))
+    (unless days
+      (error "No retention period configured; pass DAYS or set my/gptel--tool-output-retention-days"))
+    (let* ((cutoff (time-subtract (current-time) (days-to-time days)))
+           (old-files (seq-filter (lambda (path)
+                                    (my/gptel--tool-output-old-p path cutoff))
+                                  files))
+           (deleted 0))
+      (dolist (path old-files)
+        (unless dry-run
+          (delete-file path)
+          (setq deleted (1+ deleted))))
+      (unless dry-run
+        (my/gptel--delete-empty-tool-output-dirs))
+      (let ((message (format "%s %d gptel side-car tool-output file%s older than %d day%s in %s. These files may contain sensitive local data."
+                             (if dry-run "Would delete" "Deleted")
+                             (if dry-run (length old-files) deleted)
+                             (if (= (length old-files) 1) "" "s")
+                             days
+                             (if (= days 1) "" "s")
+                             (abbreviate-file-name my/gptel--tool-output-store-directory))))
+        (when (called-interactively-p 'interactive)
+          (message "%s" message))
+        message))))
 
 (defun my/gptel--tool-output-id-hash (id)
   "Return the sha256 hash portion of stored tool output ID."
