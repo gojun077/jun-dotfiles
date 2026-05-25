@@ -1,6 +1,6 @@
 ;;; init-gptel.el --- GPTel configuration (extracted from emacs_asahi)  -*- lexical-binding: t; -*-
 ; Created on: Sat 13 Sep 2025
-; Last Updated: Sun 24 May 2026
+; Last Updated: Mon 25 May 2026
 
 ;;; GPTel specific configurations ;;;
 ;;
@@ -33,7 +33,9 @@
             gemini-3.5-flash))
 
 ;; Configure OpenAI subscription (OAuth)
-(gptel-make-openai-oauth "OpenAI-pro")
+(gptel-make-openai-oauth "OpenAI-pro"
+  :models '(gpt-5.3-codex
+            gpt-5.5))
 
 ;; Configure Deepseek
 ;; API key will be read from '~/.authinfo.gpg'
