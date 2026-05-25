@@ -1319,7 +1319,7 @@ Reserve this tool for commands that genuinely need an external process: tests, b
              (condition-case err
                  (let ((expanded (expand-file-name path)))
                    (when (file-exists-p expanded)
-                     (error "File already exists: %s.  Use overwrite_file to replace it." expanded))
+                     (error "File already exists: %s. Use open_file plus edit_buffer hashline edits for existing files." expanded))
                    (let ((dir (file-name-directory expanded)))
                      (when (and dir (not (file-directory-p dir)))
                        (mkdir dir t)))
@@ -1327,7 +1327,7 @@ Reserve this tool for commands that genuinely need an external process: tests, b
                      (insert content))
                    (format "Created %s (%d bytes)" expanded (length content)))
                (error (format "Error creating file '%s': %s" path (error-message-string err)))))
- :description "Create a new file.  Errors if the file already exists (use overwrite_file to replace it).  Creates parent directories as needed."
+ :description "Create a new file only. Errors if the file already exists; for existing files, use open_file plus edit_buffer hashline edits instead of rewriting the whole file. Creates parent directories as needed."
  :args (list '(:name "path"
                :type "string"
                :description "File path to create (relative or absolute).")
@@ -1349,7 +1349,7 @@ Reserve this tool for commands that genuinely need an external process: tests, b
                      (insert content))
                    (format "Wrote %s (%d bytes)" expanded (length content)))
                (error (format "Error writing file '%s': %s" path (error-message-string err)))))
- :description "Overwrite a file with new content, replacing it entirely.  Creates the file and parent directories if they do not exist.  Use create_file when you want to be sure you are not clobbering an existing file."
+ :description "Exceptional escape hatch: overwrite a whole file with new content, replacing it entirely. This tool is intentionally excluded from default agent presets. Prefer open_file plus edit_buffer hashline edits for existing files, and create_file for new files. Only use overwrite_file when a user explicitly asks for a full rewrite or when replacing a generated/disposable file after reading the current file and confirming that a full replacement is safer than a targeted edit. Creates parent directories if needed."
  :args (list '(:name "path"
                :type "string"
                :description "File path to write (relative or absolute).")
@@ -1901,6 +1901,10 @@ CRITICAL: edit_buffer auto-saves the buffer after each edit (unless
 no_save=true).  Use save_buffer explicitly only when deliberately batching
 several no_save=true edits before a single save.
 
+FULL-FILE WRITES: do not rewrite existing files wholesale.  For existing
+files, use open_file plus edit_buffer hashline edits.  create_file is only for
+brand-new files and refuses to clobber existing paths.
+
 WORKFLOW:
 1. Use list_project_files or search_project to discover relevant files.
 2. Use read_file (full file first!) or show_buffer_context before editing.
@@ -1932,6 +1936,10 @@ Do not shell out for routine file discovery, file reading, or text search.
 CRITICAL: edit_buffer auto-saves the buffer after each edit (unless
 no_save=true).  Use save_buffer explicitly only when deliberately batching
 several no_save=true edits before a single save.
+
+FULL-FILE WRITES: do not rewrite existing files wholesale.  For existing
+files, use open_file plus edit_buffer hashline edits.  create_file is only for
+brand-new files and refuses to clobber existing paths.
 
 WORKFLOW:
 1. Use list_project_files or search_project to discover relevant files.
@@ -1988,7 +1996,7 @@ PARALLELIZE: when operations are independent, issue them in a single message.
            "fetch_tool_output" "search_tool_output"
            "delegate_agent"
             "open_file" "edit_buffer" "save_buffer"
-           "create_file" "overwrite_file" "indent_region"
+           "create_file" "indent_region"
            "check_parens" "byte_compile_file" "buffer_diagnostics"
            "verify_task"
            "git_status" "git_diff"))
