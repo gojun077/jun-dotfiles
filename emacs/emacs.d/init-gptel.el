@@ -363,8 +363,36 @@ Assumes current buffer is the target buffer.  Returns a result string."
         (delete-region start-pos (point)))
       (format "Deleted lines %d-%d in buffer %s" start-line end-line buffer)))))
 
-(defconst my/gptel--tool-result-max-chars 20000
-  "Maximum characters returned by a single gptel custom tool result.")
+(defcustom my/gptel--tool-result-max-chars 20000
+  "Fallback maximum characters returned by a single gptel custom tool result."
+  :type 'integer
+  :group 'gptel)
+
+(defcustom my/gptel--tool-result-max-chars-by-tool
+  '(("read_file" . 40000)
+    ("show_buffer_context" . 12000)
+    ("search_buffer_text" . 12000)
+    ("search_project" . 16000)
+    ("list_project_files" . 12000)
+    ("list_buffers" . 10000)
+    ("run_shell_command" . 12000)
+    ("git_status" . 10000)
+    ("git_diff" . 12000)
+    ("buffer_diagnostics" . 12000)
+    ("delegate_agent" . 20000))
+  "Tool-specific body caps for high-volume gptel custom tool results.
+Tools not listed here use `my/gptel--tool-result-max-chars'.  Deliberate
+file reads get a larger cap because they are paginated and hash-anchored;
+shell output, diffs, diagnostics, and arbitrary buffer views use stricter
+caps because they are more likely to contain runaway or recursive output."
+  :type '(alist :key-type string :value-type integer)
+  :group 'gptel)
+
+(defun my/gptel--tool-result-cap (tool &optional max-chars)
+  "Return the result cap for TOOL, honoring explicit MAX-CHARS first."
+  (or max-chars
+      (cdr (assoc-string tool my/gptel--tool-result-max-chars-by-tool t))
+      my/gptel--tool-result-max-chars))
 
 (defun my/gptel--truncate-tool-result (text &optional max-chars)
   "Return TEXT capped to MAX-CHARS for compact tool transcripts."
@@ -387,9 +415,10 @@ Assumes current buffer is the target buffer.  Returns a result string."
 (defun my/gptel--format-tool-result (tool metadata body &optional next max-chars)
   "Return BODY with a compact metadata header for TOOL.
 METADATA is an alist of (KEY . VALUE). NEXT is a recommended follow-up.
-The body is capped to MAX-CHARS or `my/gptel--tool-result-max-chars'."
+The body is capped to MAX-CHARS, TOOL's specific cap, or
+`my/gptel--tool-result-max-chars'."
   (let* ((body (or body ""))
-         (max-chars (or max-chars my/gptel--tool-result-max-chars))
+         (max-chars (my/gptel--tool-result-cap tool max-chars))
          (body-chars (length body))
          (truncated (> body-chars max-chars))
          (shown-body (if truncated (substring body 0 max-chars) body))
@@ -400,6 +429,7 @@ The body is capped to MAX-CHARS or `my/gptel--tool-result-max-chars'."
                             (format "%s: %s" (car entry) value)))
                         (append `((tool . ,tool)
                                   (body_chars . ,body-chars)
+                                  (cap_chars . ,max-chars)
                                   (truncated . ,(if truncated "yes" "no")))
                                 metadata
                                 (when next `((next . ,next))))))))
@@ -408,8 +438,8 @@ The body is capped to MAX-CHARS or `my/gptel--tool-result-max-chars'."
             "\n\n"
             shown-body
             (when truncated
-              (format "\n\n[Tool result truncated after %d of %d body characters. Use the `next` hint in Metadata to narrow or paginate.]"
-                      max-chars body-chars)))))
+              (format "\n\n[Tool result truncated after %d of %d body characters by the `%s` cap. Use the `next` hint in Metadata to narrow or paginate.]"
+                      max-chars body-chars tool)))))
 
 ;; custom tools for use in 'gptel' mode
 
@@ -1155,7 +1185,9 @@ fresh gptel request with no inherited gptel context."
                     (setq partial (concat partial response))
                     (unless (or done (plist-get info :tool-use))
                       (setq done t)
-                      (funcall callback (my/gptel--truncate-tool-result partial))))
+                      (funcall callback (my/gptel--truncate-tool-result
+                                         partial
+                                         (my/gptel--tool-result-cap "delegate_agent")))))
                    ((and (consp response) (eq (car response) 'tool-call))
                     (gptel--display-tool-calls (cdr response) info))
                    ((and (consp response) (eq (car response) 'tool-result))
