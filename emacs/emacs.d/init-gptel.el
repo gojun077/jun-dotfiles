@@ -458,8 +458,8 @@ and org chat files."
               (range . ,(format "%d-%d" start-line end-line))
               (text . ,(buffer-substring-no-properties start (point))))))))))
 
-(defun my/gptel--tool-output-metadata-json (tool metadata hash body)
-  "Return JSON manifest text for stored TOOL output BODY with HASH."
+(defun my/gptel--tool-output-metadata-json (tool metadata hash body summary)
+  "Return JSON manifest text for stored TOOL output BODY with HASH and SUMMARY."
   (let ((record `((id . ,(concat "sha256:" hash))
                   (tool . ,tool)
                   (stored_at . ,(format-time-string "%FT%TZ" (current-time) t))
@@ -469,6 +469,7 @@ and org chat files."
                               (insert body)
                               (count-lines (point-min) (point-max))))
                   (content_type . "text/plain; charset=utf-8")
+                  (summary . ,summary)
                   (scope . ,(mapcar
                              (lambda (entry)
                                (cons (format "%s" (car entry))
@@ -476,8 +477,8 @@ and org chat files."
                              metadata)))))
     (concat (json-encode record) "\n")))
 
-(defun my/gptel--store-tool-output (tool metadata body)
-  "Store oversized TOOL output BODY and return reference metadata."
+(defun my/gptel--store-tool-output (tool metadata body summary)
+  "Store oversized TOOL output BODY with SUMMARY and return reference metadata."
   (let* ((hash (secure-hash 'sha256 body))
          (object-path (my/gptel--tool-output-store-path hash ".txt"))
          (manifest-path (my/gptel--tool-output-store-path hash ".json"))
@@ -490,10 +491,9 @@ and org chat files."
       (let ((coding-system-for-write 'utf-8-unix))
         (with-temp-file object-path
           (insert body))))
-    (unless (file-exists-p manifest-path)
-      (let ((coding-system-for-write 'utf-8-unix))
-        (with-temp-file manifest-path
-          (insert (my/gptel--tool-output-metadata-json tool metadata hash body)))))
+    (let ((coding-system-for-write 'utf-8-unix))
+      (with-temp-file manifest-path
+        (insert (my/gptel--tool-output-metadata-json tool metadata hash body summary))))
     `((id . ,(concat "sha256:" hash))
       (tool . ,tool)
       (bytes . ,(string-bytes body))
@@ -502,9 +502,9 @@ and org chat files."
       (object_path . ,(abbreviate-file-name object-path))
       (manifest_path . ,(abbreviate-file-name manifest-path)))))
 
-(defun my/gptel--tool-output-reference-block (reference cap-chars)
-  "Return an org-friendly reference block for stored output REFERENCE."
-  (format ":TOOL_OUTPUT_REF:\n:id %s\n:tool %s\n:bytes %s\n:chars %s\n:lines %s\n:object_path %s\n:manifest_path %s\n:summary Output exceeded cap_chars=%d, so the raw body was stored out-of-band and omitted from this transcript. Treat the stored object as sensitive local data.\n:END:"
+(defun my/gptel--tool-output-reference-block (reference cap-chars summary)
+  "Return an org-friendly reference block for stored output REFERENCE and SUMMARY."
+  (format ":TOOL_OUTPUT_REF:\n:id %s\n:tool %s\n:bytes %s\n:chars %s\n:lines %s\n:object_path %s\n:manifest_path %s\n:summary %s\n:END:"
           (alist-get 'id reference)
           (alist-get 'tool reference)
           (alist-get 'bytes reference)
@@ -512,7 +512,70 @@ and org chat files."
           (alist-get 'lines reference)
           (alist-get 'object_path reference)
           (alist-get 'manifest_path reference)
-          cap-chars))
+          (format "Output exceeded cap_chars=%d and was stored out-of-band. %s Treat the stored object as sensitive local data."
+                  cap-chars summary)))
+
+(defun my/gptel--summary-lines (body count &optional from-end)
+  "Return up to COUNT non-empty BODY lines as a compact summary string.
+When FROM-END is non-nil, return lines from the end of BODY."
+  (let* ((lines (split-string body "\n" t "[[:space:]]+"))
+         (selected (if from-end
+                       (last lines (min count (length lines)))
+                     (cl-subseq lines 0 (min count (length lines))))))
+    (string-join
+     (mapcar (lambda (line)
+               (truncate-string-to-width (string-trim line) 180 nil nil t))
+             selected)
+     " | ")))
+
+(defun my/gptel--metadata-summary (metadata keys)
+  "Return compact KEY=VALUE summary entries from METADATA for KEYS."
+  (mapconcat
+   #'identity
+   (delq nil
+         (mapcar (lambda (key)
+                   (let ((value (my/gptel--format-metadata-value (alist-get key metadata))))
+                     (when value (format "%s=%s" key value))))
+                 keys))
+   ", "))
+
+(defun my/gptel--tool-output-summary (tool metadata body reference max-chars)
+  "Return deterministic compact summary for oversized TOOL result.
+The summary is rule-based; it does not call an LLM or invent facts."
+  (let* ((id (alist-get 'id reference))
+         (base (format "stored_ref=%s, cap_chars=%d, body_chars=%d"
+                       id max-chars (length body)))
+         (meta (pcase tool
+                 ("read_file"
+                  (my/gptel--metadata-summary metadata '(target range total_lines requested_end)))
+                 ((or "search_project" "search_buffer_text" "search_tool_output")
+                  (my/gptel--metadata-summary metadata '(target query match_count shown_count max_matches total_lines)))
+                 ("run_shell_command"
+                  (my/gptel--metadata-summary metadata '(command exit_code output_chars)))
+                 ("git_diff"
+                  (my/gptel--metadata-summary metadata '(target staged diff_chars file_count)))
+                 ("buffer_diagnostics"
+                  (my/gptel--metadata-summary metadata '(target flymake_active diagnostic_count severity_counts)))
+                 (_
+                  (my/gptel--metadata-summary metadata '(target scope range total_lines match_count shown_count exit_code)))))
+         (sample (pcase tool
+                   ("run_shell_command"
+                    (format "first_lines=[%s], last_lines=[%s]"
+                            (my/gptel--summary-lines body 3)
+                            (my/gptel--summary-lines body 3 t)))
+                   ((or "search_project" "search_buffer_text" "search_tool_output" "buffer_diagnostics")
+                    (format "first_hits=[%s]" (my/gptel--summary-lines body 5)))
+                   ("git_diff"
+                    (format "diff_headers=[%s]"
+                            (let ((headers (seq-filter
+                                            (lambda (line)
+                                              (string-match-p "\`\(diff --git\|+++ \|--- \|@@ \)" line))
+                                            (split-string body "\n" t))))
+                              (mapconcat #'identity
+                                         (cl-subseq headers 0 (min 20 (length headers)))
+                                         " | "))))
+                   (_ nil))))
+    (string-join (delq nil (list base meta sample)) "; ")))
 
 (defun my/gptel--truncate-tool-result (text &optional max-chars)
   "Return TEXT capped to MAX-CHARS for compact tool transcripts."
@@ -541,10 +604,16 @@ The body is capped to MAX-CHARS, TOOL's specific cap, or
          (max-chars (my/gptel--tool-result-cap tool max-chars))
          (body-chars (length body))
          (truncated (> body-chars max-chars))
+         (summary nil)
          (reference (when truncated
-                      (my/gptel--store-tool-output tool metadata body)))
+                      (let ((reference (my/gptel--store-tool-output tool metadata body "pending summary")))
+                        (setq summary (my/gptel--tool-output-summary tool metadata body reference max-chars))
+                        (my/gptel--store-tool-output tool metadata body summary))))
          (shown-body (if truncated
-                         (my/gptel--tool-output-reference-block reference max-chars)
+                         (concat "Deterministic summary:\n"
+                                 summary
+                                 "\n\n"
+                                 (my/gptel--tool-output-reference-block reference max-chars summary))
                        body))
          (metadata-lines
           (delq nil
@@ -555,6 +624,7 @@ The body is capped to MAX-CHARS, TOOL's specific cap, or
                                   (body_chars . ,body-chars)
                                   (cap_chars . ,max-chars)
                                   (stored_ref . ,(alist-get 'id reference))
+                                  (summary . ,summary)
                                   (truncated . ,(if truncated "yes" "no")))
                                 metadata
                                 (when next `((next . ,next))))))))
