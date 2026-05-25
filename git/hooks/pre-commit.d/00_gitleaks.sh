@@ -16,7 +16,7 @@ if git diff --cached --quiet 2>/dev/null; then
     exit 0
 fi
 
-printf "--> Running gitleaks (staged changes)...\n"
+printf '%s\n' "--> Running gitleaks (staged changes)..."
 # --pre-commit uses git diff; --staged limits to the index
 gitleaks git --pre-commit --staged --redact --verbose
 exit $?
