@@ -169,13 +169,75 @@ Signals an error if no matching buffer is found."
             (let* ((line-text (buffer-substring-no-properties
                                (line-beginning-position)
                                (line-end-position)))
-                   (h (substring (md5 (string-trim line-text)) 0 3)))
+                   (h (my/gptel--hash-line line-text)))
               (push (format "%d:%s|%s" n h line-text) lines))
             (forward-line 1)
             (setq n (1+ n)))
           (format "%s (lines %d-%d of %d):\n%s"
                   label start end total
                   (mapconcat 'identity (nreverse lines) "\n"))))))))
+
+(defconst my/gptel--hashline-displacement-window 20
+  "Number of nearby lines to scan when a hashline tag has shifted.")
+
+(defun my/gptel--hash-line (line)
+  "Return the 3-character hash for LINE used in hashline tool output."
+  (substring (md5 (string-trim line)) 0 3))
+
+(defun my/gptel--current-line-hash ()
+  "Return the hashline hash for the current line."
+  (my/gptel--hash-line
+   (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
+
+(defun my/gptel--parse-hashline-tag (tag label)
+  "Parse TAG of the form N:HHH for LABEL and return (LINE . HASH)."
+  (unless (and (stringp tag)
+               (string-match-p (rx string-start (+ digit) ":" (+ hex-digit) string-end) tag))
+    (error "%s must be a line tag like '42:abc', copied from read_file output" label))
+  (let ((parts (split-string tag ":")))
+    (cons (string-to-number (car parts)) (downcase (cadr parts)))))
+
+(defun my/gptel--goto-line-checked (line total)
+  "Move point to LINE in current buffer, validating against TOTAL lines."
+  (when (or (< line 1) (> line total))
+    (error "Line %d is out of range (1-%d)" line total))
+  (goto-char (point-min))
+  (forward-line (1- line)))
+
+(defun my/gptel--resolve-hashline-tag (tag label)
+  "Resolve TAG for LABEL to (LINE DISPLACED-P), or signal with context."
+  (let* ((parsed (my/gptel--parse-hashline-tag tag label))
+         (target-line (car parsed))
+         (target-hash (cdr parsed))
+         (total (count-lines (point-min) (point-max)))
+         (scan-start (max 1 (- target-line my/gptel--hashline-displacement-window)))
+         (scan-end (min total (+ target-line my/gptel--hashline-displacement-window)))
+         (matches nil))
+    (my/gptel--goto-line-checked target-line total)
+    (if (string= (my/gptel--current-line-hash) target-hash)
+        (list target-line nil)
+      (save-excursion
+        (goto-char (point-min))
+        (forward-line (1- scan-start))
+        (let ((line scan-start))
+          (while (and (<= line scan-end) (not (eobp)))
+            (when (string= (my/gptel--current-line-hash) target-hash)
+              (push line matches))
+            (forward-line 1)
+            (setq line (1+ line)))))
+      (setq matches (nreverse matches))
+      (cond
+       ((= (length matches) 1)
+        (list (car matches) t))
+       ((> (length matches) 1)
+        (error "%s tag %s no longer matches line %d, and hash %s appears multiple times nearby at lines %s. Re-read a narrower range before editing."
+               label tag target-line target-hash (mapconcat #'number-to-string matches ", ")))
+       (t
+        (error "%s tag %s no longer matches line %d, and hash %s was not found within +/- %d lines. Re-read and retry with fresh tags.\n\n%s"
+               label tag target-line target-hash my/gptel--hashline-displacement-window
+               (my/gptel--render-hashed-lines
+                (format "Current context around stale tag %s" tag)
+                scan-start scan-end)))))))
 
 (defun my/gptel--buffer-edit-string (buffer old-str new-str replace-all)
   "Replace OLD-STR with NEW-STR in current buffer (named BUFFER).
@@ -204,6 +266,34 @@ error string instead of replacing.  Returns a result string."
             (replace-match new-str t t)))
         (format "Replaced %d occurrence%s of old_str in buffer '%s'"
                 count (if (= count 1) "" "s") buffer)))))))
+
+(defun my/gptel--buffer-edit-hashline (buffer start-line end-line new-str)
+  "Replace hash-anchored START-LINE..END-LINE in BUFFER with NEW-STR.
+START-LINE and END-LINE are read_file tags like \"42:abc\".  If a tag has
+shifted, scan a small nearby window for the same hash before editing."
+  (let* ((start-result (my/gptel--resolve-hashline-tag start-line "start_line"))
+         (end-tag (if (and end-line (not (string-empty-p end-line)))
+                      end-line
+                    start-line))
+         (end-result (my/gptel--resolve-hashline-tag end-tag "end_line"))
+         (resolved-start (car start-result))
+         (resolved-end (car end-result))
+         (displaced (or (cadr start-result) (cadr end-result))))
+    (cond
+     ((> resolved-start resolved-end)
+      (format "Error: Resolved start_line %s to line %d, after end_line %s at line %d. Re-read and retry with fresh tags."
+              start-line resolved-start end-tag resolved-end))
+     (t
+      (goto-char (point-min))
+      (forward-line (1- resolved-start))
+      (let ((start-pos (point)))
+        (forward-line (- resolved-end resolved-start))
+        (end-of-line)
+        (delete-region start-pos (point))
+        (insert (or new-str "")))
+      (format "Hashline edit replaced lines %d-%d in buffer '%s'%s"
+              resolved-start resolved-end buffer
+              (if displaced " after nearby hash recovery" ""))))))
 
 (defun my/gptel--buffer-insert (buffer text start-line position)
   "Insert TEXT verbatim in BUFFER at START-LINE.
@@ -289,10 +379,12 @@ Assumes current buffer is the target buffer.  Returns a result string."
 
 (gptel-make-tool
  :name "edit_buffer"
- :function (lambda (buffer old-str new-str &optional replace-all no-save)
+ :function (lambda (buffer old-str new-str &optional replace-all no-save start-line end-line)
              (condition-case err
                  (with-current-buffer (my/gptel--resolve-buffer buffer)
-                   (let ((result (my/gptel--buffer-edit-string buffer old-str new-str replace-all)))
+                   (let ((result (if (and start-line (not (string-empty-p start-line)))
+                                     (my/gptel--buffer-edit-hashline buffer start-line end-line new-str)
+                                   (my/gptel--buffer-edit-string buffer old-str new-str replace-all))))
                      (when (and (not no-save)
                                 (not (string-prefix-p "Error:" result))
                                 (buffer-file-name)
@@ -301,22 +393,28 @@ Assumes current buffer is the target buffer.  Returns a result string."
                        (setq result (concat result " (saved)")))
                      result))
                (error (format "Error in edit_buffer: %s" (error-message-string err)))))
- :description "Replace exact text in an Emacs buffer, then auto-save if the buffer visits a file.  Finds OLD_STR (must be unique unless REPLACE_ALL is true) and replaces it with NEW_STR.  Tip: include enough surrounding context in OLD_STR to make it unique."
+ :description "Edit an Emacs buffer, then auto-save if the buffer visits a file. Preferred mode: pass START_LINE and optional END_LINE as hashline tags from read_file output, e.g. `42:abc`, and NEW_STR as the replacement text. The tool verifies the current line hashes before editing, scans nearby lines if tags shifted, and refuses stale/ambiguous tags with fresh context. Fallback mode: omit START_LINE and replace exact OLD_STR with NEW_STR; OLD_STR must be unique unless REPLACE_ALL is true."
  :args (list '(:name "buffer"
                :type "string"
                :description "Buffer name or file path.  Use list_buffers to find valid names.")
              '(:name "old_str"
                :type "string"
-               :description "Exact text to find in the buffer.  Whitespace and newlines must match exactly.  Must be unique within the buffer unless replace_all is true.")
+               :description "Fallback exact text to replace when start_line is omitted. Use the empty string in hashline mode. Whitespace and newlines must match exactly. Must be unique unless replace_all is true.")
              '(:name "new_str"
                :type "string"
-               :description "Text to replace old_str with.  Use the empty string to delete.")
+               :description "Replacement text. In hashline mode, this replaces the entire tagged line/range. Use the empty string to delete.")
              '(:name "replace_all"
                :type "boolean"
-               :description "When true, replace every occurrence of old_str.  Default: false (error if old_str matches more than once).")
+               :description "Fallback exact-text mode only: when true, replace every occurrence of old_str. Default: false (error if old_str matches more than once).")
              '(:name "no_save"
                :type "boolean"
-               :description "When true, skip the automatic save.  Default: false (changes are saved immediately if the buffer visits a file)."))
+               :description "When true, skip the automatic save.  Default: false (changes are saved immediately if the buffer visits a file).")
+             '(:name "start_line"
+               :type "string"
+               :description "Preferred hashline edit anchor copied from read_file output, e.g. `42:abc`. When set, old_str is ignored.")
+             '(:name "end_line"
+               :type "string"
+               :description "Optional ending hashline tag for a multi-line replacement. Defaults to start_line."))
  :confirm t
  :category "emacs")
 
@@ -997,10 +1095,12 @@ WORKFLOW:
 2. Use read_file (full file first!) or show_buffer_context before editing.
 3. Use delegate_agent with subagent_type=agent-read for independent, context-cheap research.
 4. Use open_file to load a file into a live buffer; pass the returned buffer name to edit_buffer.
-5. Prefer edit_buffer (string replace) for edits; line numbers shift after every edit.
-   - old_str must uniquely match the target text. Include enough surrounding context.
-   - Do NOT include the `N:HHH|' line/hash prefix that read_file adds -- strip it from old_str.
-   - Pass replace_all=true only when intentionally replacing every occurrence.
+5. Prefer edit_buffer hashline edits: copy start_line/end_line tags like `42:abc` from read_file output and put the replacement in new_str.
+   - Hashline edits verify the current line hash, recover nearby shifted lines, and fail safely with refreshed context if stale.
+   - For single-line edits, pass start_line only; for ranges, pass both start_line and end_line.
+   - In hashline mode, old_str can be the empty string.
+   - Use exact old_str replacement only as a fallback when hashline tags are unavailable.
+   - In fallback mode, old_str must uniquely match the target text; pass replace_all=true only when intentionally replacing every occurrence.
 6. Use check_parens / byte_compile_file / buffer_diagnostics to verify after edits.
 7. Use git_status / git_diff to review your changes before finishing.
 
@@ -1025,9 +1125,10 @@ WORKFLOW:
 2. Use read_file (full file first!) or show_buffer_context before editing.
 3. Use delegate_agent with subagent_type=agent-read for independent, context-cheap research.
 4. Use open_file to load a file into a live buffer; pass the returned buffer name to edit_buffer.
-5. Prefer edit_buffer (string replace) for edits; line numbers shift after every edit.
-   - old_str must uniquely match the target text. Include enough surrounding context.
-   - Do NOT include the `N:HHH|' line/hash prefix that read_file adds -- strip it from old_str.
+5. Prefer edit_buffer hashline edits: copy start_line/end_line tags like `42:abc` from read_file output and put the replacement in new_str.
+   - Hashline edits verify the current line hash, recover nearby shifted lines, and fail safely with refreshed context if stale.
+   - In hashline mode, old_str can be the empty string.
+   - Use exact old_str replacement only as a fallback when hashline tags are unavailable.
 6. Use check_parens / byte_compile_file / buffer_diagnostics to verify after edits.
 7. Reserve run_shell_command for commands that genuinely need an external process:
    tests, builds, linters/formatters, package managers, one-off system inspection,
