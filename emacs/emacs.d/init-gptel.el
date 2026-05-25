@@ -1987,6 +1987,28 @@ and do not store secrets, raw tool output, or chat transcripts."
   :type 'integer
   :group 'gptel)
 
+(defcustom my/gptel--project-awareness-files
+  '("AGENTS.md" "README.md" "README.org" "Makefile"
+    "package.json" "pyproject.toml" "Cargo.toml" "go.mod")
+  "Project-root files summarized in agentic gptel project context when present."
+  :type '(repeat string)
+  :group 'gptel)
+
+(defcustom my/gptel--project-awareness-file-max-chars 700
+  "Maximum characters injected from each project-awareness file excerpt."
+  :type 'integer
+  :group 'gptel)
+
+(defcustom my/gptel--project-awareness-max-files 4
+  "Maximum project-awareness file excerpts injected into agentic prompts."
+  :type 'integer
+  :group 'gptel)
+
+(defcustom my/gptel--project-awareness-file-map-max-entries 50
+  "Maximum project file-map entries injected into agentic prompts."
+  :type 'integer
+  :group 'gptel)
+
 (defun my/gptel--project-root ()
   "Return the current project root, falling back to `default-directory'."
   (condition-case nil
@@ -2368,17 +2390,110 @@ append ENTRY as a dated memory bullet."
               (mapconcat #'identity blocks "\n\n")
               "\n</persistent-memory>"))))
 
+(defun my/gptel--project-awareness-file-paths (root)
+  "Return existing project-awareness file paths under ROOT."
+  (let ((paths (seq-filter #'file-readable-p
+                           (mapcar (lambda (name) (expand-file-name name root))
+                                   my/gptel--project-awareness-files))))
+    (cl-subseq paths 0 (min (max 0 my/gptel--project-awareness-max-files)
+                            (length paths)))))
+
+(defun my/gptel--project-awareness-file-excerpt (root path)
+  "Return a bounded project-awareness excerpt for PATH under ROOT."
+  (condition-case err
+      (let* ((cap (max 0 my/gptel--project-awareness-file-max-chars))
+             (attrs (file-attributes path))
+             (bytes (file-attribute-size attrs))
+             (text (with-temp-buffer
+                     (insert-file-contents-literally path nil 0 (1+ cap))
+                     (string-trim (buffer-string))))
+             (chars (length text))
+             (truncated (or (> bytes cap) (> chars cap)))
+             (shown (if (> chars cap) (substring text 0 cap) text)))
+        (format "### %s (bytes %d, shown_chars %d%s)\n%s"
+                (file-relative-name path root)
+                bytes
+                (length shown)
+                (if truncated ", truncated yes" ", truncated no")
+                shown))
+    (error (format "### %s\n[Project-awareness file unavailable: %s]"
+                   (file-relative-name path root) (error-message-string err)))))
+
+(defun my/gptel--project-awareness-file-section (root)
+  "Return bounded useful-file excerpts for ROOT, or nil."
+  (let* ((paths (my/gptel--project-awareness-file-paths root))
+         (total-present
+          (length (seq-filter #'file-readable-p
+                              (mapcar (lambda (name) (expand-file-name name root))
+                                      my/gptel--project-awareness-files)))))
+    (when paths
+      (format "## Useful project files (shown %d of %d candidates, per_file_cap_chars %d)\n%s"
+              (length paths)
+              total-present
+              my/gptel--project-awareness-file-max-chars
+              (mapconcat (lambda (path)
+                           (my/gptel--project-awareness-file-excerpt root path))
+                         paths
+                         "\n\n")))))
+
+(defun my/gptel--project-awareness-top-level-files (root)
+  "Return bounded top-level file-map entries for ROOT without recursion."
+  (when (file-directory-p root)
+    (sort
+     (mapcar (lambda (path)
+               (concat (file-name-nondirectory (directory-file-name path))
+                       (if (file-directory-p path) "/" "")))
+             (seq-filter (lambda (path)
+                           (not (string-prefix-p "." (file-name-nondirectory path))))
+                         (directory-files root t "\\`[^.]")))
+     #'string<)))
+
+(defun my/gptel--project-awareness-file-map (root)
+  "Return (SOURCE FILES) for a deterministic bounded project file map."
+  (condition-case nil
+      (let ((files (projectile-project-files root)))
+        (list "projectile" (sort files #'string<)))
+    (error (list "top-level" (my/gptel--project-awareness-top-level-files root)))))
+
+(defun my/gptel--project-awareness-file-map-section (root)
+  "Return a bounded project file-map section for ROOT."
+  (pcase-let* ((`(,source ,files) (my/gptel--project-awareness-file-map root))
+               (files (or files nil))
+               (limit (max 1 my/gptel--project-awareness-file-map-max-entries))
+               (shown (cl-subseq files 0 (min (length files) limit))))
+    (when shown
+      (format "## Project file map (%s, shown %d of %d, truncated %s)\n%s"
+              source
+              (length shown)
+              (length files)
+              (if (> (length files) limit) "yes" "no")
+              (mapconcat #'identity shown "\n")))))
+
+(defun my/gptel--project-awareness-string (root)
+  "Return a compact bounded project-awareness block for ROOT."
+  (let ((sections (delq nil (list (my/gptel--project-awareness-file-section root)
+                                  (my/gptel--project-awareness-file-map-section root)))))
+    (when sections
+      (concat "<project-awareness>\n"
+              "Deterministic bounded hints only; use read_file/search_project for authoritative details.\n\n"
+              (mapconcat #'identity sections "\n\n")
+              "\n</project-awareness>"))))
+
 (defun my/gptel--project-context-string ()
   "Return a formatted project-context block for agentic system prompts.
 Injected into system messages at request-send time via the preset lambda."
-  (let* ((root (abbreviate-file-name (my/gptel--project-root)))
+  (let* ((project-root (my/gptel--project-root))
+         (root (abbreviate-file-name project-root))
          (buf-name (buffer-name))
-         (buf-file (buffer-file-name)))
+         (buf-file (buffer-file-name))
+         (awareness (my/gptel--project-awareness-string project-root)))
     (concat "<project-context>\n"
             "Project root: " root "\n"
             "Active buffer: " buf-name
             (when buf-file (concat " (" (abbreviate-file-name buf-file) ")"))
-            "\n</project-context>")))
+            "\n</project-context>"
+            (when awareness
+              (concat "\n\n" awareness)))))
 
 (defun my/gptel--agent-context-string ()
   "Return bounded context blocks for agentic system prompts."
