@@ -384,6 +384,11 @@ Assumes current buffer is the target buffer.  Returns a result string."
     ("buffer_diagnostics" . 12000)
     ("fetch_tool_output" . 12000)
     ("search_tool_output" . 12000)
+    ("remember" . 4000)
+    ("list_skills" . 8000)
+    ("search_skills" . 12000)
+    ("load_skill" . 12000)
+    ("save_skill" . 4000)
     ("delegate_agent" . 20000))
   "Tool-specific body caps for high-volume gptel custom tool results.
 Tools not listed here use `my/gptel--tool-result-max-chars'.  Deliberate
@@ -708,6 +713,89 @@ The body is capped to MAX-CHARS, TOOL's specific cap, or
                       tool max-chars body-chars)))))
 
 ;; custom tools for use in 'gptel' mode
+
+(gptel-make-tool
+ :name "remember"
+ :function (lambda (scope entry &optional old-entry)
+             (my/gptel--remember scope entry old-entry))
+ :description "Append or update one small curated persistent-memory fact/preference in the configured project or user memory file. This mutates durable agent state, so use only for intentional memory updates -- never for secrets, raw tool output, chat transcripts, or speculative notes. Omitting OLD_ENTRY appends a dated bullet; passing OLD_ENTRY replaces that exact text with a new dated bullet. Refuses writes that would exceed the same bounded-memory cap used for prompt injection, with an actionable summarize/prune message."
+ :args (list '(:name "scope"
+               :type "string"
+               :enum ["project" "user"]
+               :description "Memory file to update: project writes PROJECT_ROOT/MEMORY.md; user writes the configured user memory file.")
+             '(:name "entry"
+               :type "string"
+               :description "One concise durable fact or preference to remember. Keep it small and curated; do not pass transcripts, raw command output, secrets, or uncertainty.")
+             '(:name "old_entry"
+               :type "string"
+               :description "Optional exact existing text to replace. Omit or pass empty string to append a new dated entry."))
+ :confirm t
+ :category "memory")
+
+(gptel-make-tool
+ :name "list_skills"
+ :function (lambda (&optional max-skills)
+             (my/gptel--list-skills max-skills))
+ :description "List available procedural gptel skills from the configured skills directory. Read-only and bounded: returns file names, titles, and short 'when to use' hints rather than dumping full skill files. Use search_skills or load_skill for targeted retrieval."
+ :args (list '(:name "max_skills"
+               :type "number"
+               :description "Maximum skills to list. Defaults to 25; hard maximum 100."))
+ :include nil
+ :category "skills")
+
+(gptel-make-tool
+ :name "search_skills"
+ :function (lambda (query &optional max-matches)
+             (my/gptel--search-skills query max-matches))
+ :description "Search procedural gptel skill files with a bounded regex query and return matching line snippets. Use this to find relevant saved procedures without loading the whole directory."
+ :args (list '(:name "query"
+               :type "string"
+               :description "Regex query to search within saved skill markdown files.")
+             '(:name "max_matches"
+               :type "number"
+               :description "Maximum matching lines to return. Defaults to 25; hard maximum 100."))
+ :include nil
+ :category "skills")
+
+(gptel-make-tool
+ :name "load_skill"
+ :function (lambda (name-or-file &optional max-chars)
+             (my/gptel--load-skill name-or-file max-chars))
+ :description "Load one procedural gptel skill file by slug/file name, with a character cap and truncation metadata. Use after list_skills/search_skills identifies a relevant skill."
+ :args (list '(:name "name_or_file"
+               :type "string"
+               :description "Skill slug or markdown file name under the configured skills directory, e.g. 'deploy-k3s-node' or 'deploy-k3s-node.md'.")
+             '(:name "max_chars"
+               :type "number"
+               :description "Maximum skill body characters to return. Defaults to configured cap; hard maximum is twice that cap."))
+ :include nil
+ :category "skills")
+
+(gptel-make-tool
+ :name "save_skill"
+ :function (lambda (title when-to-use steps verification caveats &optional replace-existing)
+             (my/gptel--save-skill title when-to-use steps verification caveats replace-existing))
+ :description "Save a concise procedural skill as a markdown guide in the configured gptel skills directory. This mutates durable agent procedure state and requires confirmation. Use for reusable workflows, not one-off facts/preferences (use remember for those), secrets, raw tool output, or transcripts."
+ :args (list '(:name "title"
+               :type "string"
+               :description "Short skill title. Used to derive the markdown filename.")
+             '(:name "when_to_use"
+               :type "string"
+               :description "Concise trigger conditions for using this skill.")
+             '(:name "steps"
+               :type "string"
+               :description "Reusable procedural steps. Keep concise; summarize rather than paste transcripts.")
+             '(:name "verification"
+               :type "string"
+               :description "How to verify the procedure succeeded.")
+             '(:name "caveats"
+               :type "string"
+               :description "Important constraints, safety notes, or known failure modes.")
+             '(:name "replace_existing"
+               :type "boolean"
+               :description "When true, replace an existing skill file with the same slug. Default false refuses to overwrite."))
+ :confirm t
+ :category "skills")
 
 (gptel-make-tool
  :name "fetch_tool_output"
@@ -1876,6 +1964,29 @@ tool output, or chat transcripts."
   :type 'integer
   :group 'gptel)
 
+(defcustom my/gptel--memory-entry-max-chars 800
+  "Maximum characters accepted for a single curated gptel memory entry."
+  :type 'integer
+  :group 'gptel)
+
+(defcustom my/gptel--skills-directory
+  (expand-file-name "gptel-skills/" user-emacs-directory)
+  "Directory where gptel procedural skill markdown files are stored.
+These are durable reusable procedures, not factual memory.  Keep files concise
+and do not store secrets, raw tool output, or chat transcripts."
+  :type 'directory
+  :group 'gptel)
+
+(defcustom my/gptel--skill-file-max-chars 8000
+  "Maximum characters accepted for one saved gptel procedural skill file."
+  :type 'integer
+  :group 'gptel)
+
+(defcustom my/gptel--skill-load-max-chars 4000
+  "Default maximum characters returned when loading one gptel skill."
+  :type 'integer
+  :group 'gptel)
+
 (defun my/gptel--project-root ()
   "Return the current project root, falling back to `default-directory'."
   (condition-case nil
@@ -1905,6 +2016,343 @@ tool output, or chat transcripts."
                         "")))))
       (error (format "## %s memory (%s)\n[Memory unavailable: %s]"
                      label (abbreviate-file-name path) (error-message-string err))))))
+
+(defun my/gptel--memory-file-for-scope (scope)
+  "Return the configured memory file path for SCOPE.
+SCOPE must be either `project' or `user'."
+  (pcase (downcase (string-trim (or scope "")))
+    ("project" (expand-file-name my/gptel--project-memory-file-name
+                                  (my/gptel--project-root)))
+    ("user" my/gptel--user-memory-file)
+    (_ (error "scope must be either 'project' or 'user'"))))
+
+(defun my/gptel--memory-read-raw (path)
+  "Return PATH contents as a string, or an empty string when PATH is absent."
+  (if (file-readable-p path)
+      (with-temp-buffer
+        (insert-file-contents-literally path)
+        (buffer-string))
+    ""))
+
+(defun my/gptel--format-memory-entry (text)
+  "Return curated memory entry TEXT with date metadata."
+  (format "- %s: %s\n"
+          (format-time-string "%Y-%m-%d")
+          (string-trim text)))
+
+(defun my/gptel--memory-cap-refusal (path chars action)
+  "Return an actionable refusal for PATH with CHARS after attempted ACTION."
+  (format "Refused to %s %s because it would contain %d chars, over the configured memory cap of %d. Summarize or prune this memory file first, then retry with one small curated fact or preference."
+          action
+          (abbreviate-file-name path)
+          chars
+          my/gptel--memory-file-max-chars))
+
+(defun my/gptel--remember (scope entry &optional old-entry)
+  "Append or update curated persistent memory ENTRY for SCOPE.
+When OLD-ENTRY is non-empty, replace that exact text with ENTRY.  Otherwise,
+append ENTRY as a dated memory bullet."
+  (condition-case err
+      (let* ((path (my/gptel--memory-file-for-scope scope))
+             (entry (string-trim (or entry "")))
+             (old-entry (and old-entry (string-trim old-entry)))
+             (old-entry (and old-entry (not (string-empty-p old-entry)) old-entry))
+             (existing (my/gptel--memory-read-raw path))
+             (existing-chars (length (string-trim existing)))
+             (operation (if old-entry "update" "append"))
+             candidate)
+        (cond
+         ((string-empty-p entry)
+          "Error: entry must not be empty. Provide one small curated fact or preference, not a transcript.")
+         ((> (length entry) my/gptel--memory-entry-max-chars)
+          (format "Error: entry is %d chars, over the per-entry cap of %d. Summarize it into one small durable fact or preference, then retry."
+                  (length entry) my/gptel--memory-entry-max-chars))
+         ((and (not old-entry)
+               (> existing-chars my/gptel--memory-file-max-chars))
+          (my/gptel--memory-cap-refusal path existing-chars operation))
+         (old-entry
+          (let ((count 0)
+                (case-fold-search nil))
+            (with-temp-buffer
+              (insert existing)
+              (goto-char (point-min))
+              (while (search-forward old-entry nil t)
+                (setq count (1+ count)))
+              (cond
+               ((zerop count)
+                (format "Error: old_entry was not found in %s. Re-read the memory file and pass exact text to update, or omit old_entry to append a new dated entry."
+                        (abbreviate-file-name path)))
+               ((> count 1)
+                (format "Error: old_entry matched %d times in %s. Provide more exact surrounding text so the update is unambiguous."
+                        count (abbreviate-file-name path)))
+               (t
+                (goto-char (point-min))
+                (search-forward old-entry nil t)
+                (replace-match (my/gptel--format-memory-entry entry) t t)
+                (setq candidate (buffer-string))
+                (if (> (length (string-trim candidate)) my/gptel--memory-file-max-chars)
+                    (my/gptel--memory-cap-refusal path (length (string-trim candidate)) operation)
+                  (let ((dir (file-name-directory path))
+                        (coding-system-for-write 'utf-8-unix))
+                    (when (and dir (not (file-directory-p dir)))
+                      (make-directory dir t))
+                    (with-temp-file path
+                      (insert candidate)))
+                  (my/gptel--format-tool-result
+                   "remember"
+                   `((scope . ,scope)
+                     (operation . ,operation)
+                     (target . ,(abbreviate-file-name path))
+                     (chars . ,(length (string-trim candidate)))
+                     (cap_chars . ,my/gptel--memory-file-max-chars))
+                   (format "Updated curated %s memory in %s."
+                           scope (abbreviate-file-name path))
+                   "Use remember for small durable facts/preferences only; summarize or prune if the memory approaches the cap.")))))))
+         (t
+          (setq candidate
+                (concat (if (string-empty-p existing)
+                            ""
+                          (concat (string-remove-suffix "\n" existing) "\n"))
+                        (my/gptel--format-memory-entry entry)))
+          (if (> (length (string-trim candidate)) my/gptel--memory-file-max-chars)
+              (my/gptel--memory-cap-refusal path (length (string-trim candidate)) operation)
+            (let ((dir (file-name-directory path))
+                  (coding-system-for-write 'utf-8-unix))
+              (when (and dir (not (file-directory-p dir)))
+                (make-directory dir t))
+              (with-temp-file path
+                (insert candidate)))
+            (my/gptel--format-tool-result
+             "remember"
+             `((scope . ,scope)
+               (operation . ,operation)
+               (target . ,(abbreviate-file-name path))
+               (chars . ,(length (string-trim candidate)))
+               (cap_chars . ,my/gptel--memory-file-max-chars))
+             (format "Appended curated %s memory to %s."
+                     scope (abbreviate-file-name path))
+             "Use remember for small durable facts/preferences only; summarize or prune if the memory approaches the cap.")))))
+    (error (format "Error updating memory: %s" (error-message-string err)))))
+
+(defun my/gptel--skill-files ()
+  "Return saved gptel skill markdown files under `my/gptel--skills-directory'."
+  (when (file-directory-p my/gptel--skills-directory)
+    (directory-files-recursively my/gptel--skills-directory "\\.md\\'")))
+
+(defun my/gptel--skill-slug (title)
+  "Return a filesystem-safe skill slug derived from TITLE."
+  (let* ((title (downcase (string-trim (or title ""))))
+         (slug (replace-regexp-in-string "[^[:alnum:]]+" "-" title))
+         (slug (replace-regexp-in-string "\`-+\|-+\'" "" slug)))
+    (unless (and slug (not (string-empty-p slug)))
+      (error "title must contain at least one alphanumeric character"))
+    slug))
+
+(defun my/gptel--skill-path-for-title (title)
+  "Return target skill path for TITLE."
+  (expand-file-name (concat (my/gptel--skill-slug title) ".md")
+                    my/gptel--skills-directory))
+
+(defun my/gptel--skill-resolve-path (name-or-file)
+  "Resolve NAME-OR-FILE to a saved skill path under the skills directory."
+  (let* ((name (string-trim (or name-or-file "")))
+         (filename (file-name-nondirectory name))
+         (filename (if (string-suffix-p ".md" filename)
+                       filename
+                     (concat (my/gptel--skill-slug filename) ".md")))
+         (path (expand-file-name filename my/gptel--skills-directory))
+         (root (file-name-as-directory
+                (file-truename (expand-file-name my/gptel--skills-directory)))))
+    (unless (file-readable-p path)
+      (error "skill not found: %s" (abbreviate-file-name path)))
+    (let ((truename (file-truename path)))
+      (unless (string-prefix-p root truename)
+        (error "skill path must stay under %s" (abbreviate-file-name root))))
+    path))
+
+(defun my/gptel--skill-section-summary (section text)
+  "Return first non-empty line under markdown SECTION in TEXT, or nil."
+  (with-temp-buffer
+    (insert text)
+    (goto-char (point-min))
+    (when (re-search-forward (format "^## %s[[:space:]]*$" (regexp-quote section)) nil t)
+      (let ((start (point))
+            (end (or (save-excursion
+                       (when (re-search-forward "^## " nil t)
+                         (match-beginning 0)))
+                     (point-max))))
+        (goto-char start)
+        (catch 'summary
+          (while (< (point) end)
+            (let ((line (string-trim (buffer-substring-no-properties
+                                      (line-beginning-position)
+                                      (line-end-position)))))
+              (unless (or (string-empty-p line)
+                          (string-prefix-p "#" line))
+                (throw 'summary line)))
+            (forward-line 1))
+          nil)))))
+
+(defun my/gptel--skill-title-from-text (path text)
+  "Return skill title from TEXT, falling back to PATH basename."
+  (if (string-match (rx string-start "# " (group (+ not-newline))) text)
+      (match-string 1 text)
+    (file-name-base path)))
+
+(defun my/gptel--list-skills (&optional max-skills)
+  "Return a bounded list of saved procedural skills."
+  (condition-case err
+      (let* ((files (sort (or (my/gptel--skill-files) nil) #'string<))
+             (limit (min 100 (max 1 (round (or max-skills 25)))))
+             (shown (cl-subseq files 0 (min (length files) limit)))
+             (entries
+              (mapcar
+               (lambda (path)
+                 (with-temp-buffer
+                   (insert-file-contents-literally path nil 0 2000)
+                   (let* ((text (buffer-string))
+                          (title (my/gptel--skill-title-from-text path text))
+                          (when-to-use (or (my/gptel--skill-section-summary "When to use" text)
+                                           "(no trigger summary)")))
+                     (format "- %s (%s): %s"
+                             title
+                             (file-name-nondirectory path)
+                             (truncate-string-to-width when-to-use 180 nil nil t)))))
+               shown)))
+        (my/gptel--format-tool-result
+         "list_skills"
+         `((target . ,(abbreviate-file-name my/gptel--skills-directory))
+           (skill_count . ,(length files))
+           (shown_count . ,(length shown))
+           (max_skills . ,limit))
+         (if entries
+             (format "Saved procedural skills%s:\n%s"
+                     (if (> (length files) limit)
+                         (format " (showing first %d of %d)" limit (length files))
+                       "")
+                     (mapconcat #'identity entries "\n"))
+           (format "No saved procedural skills found in %s."
+                   (abbreviate-file-name my/gptel--skills-directory)))
+         "Use search_skills for a keyword/regex query, load_skill for one relevant file, or save_skill after completing a reusable procedure."))
+    (error (format "Error listing skills: %s" (error-message-string err)))))
+
+(defun my/gptel--search-skills (query &optional max-matches)
+  "Search saved skills for QUERY and return bounded line snippets."
+  (condition-case err
+      (let ((query (string-trim (or query "")))
+            (limit (min 100 (max 1 (round (or max-matches 25)))))
+            (matches nil)
+            (match-count 0)
+            (files (sort (or (my/gptel--skill-files) nil) #'string<)))
+        (when (string-empty-p query)
+          (error "query must not be empty"))
+        (dolist (path files)
+          (with-temp-buffer
+            (insert-file-contents-literally path)
+            (goto-char (point-min))
+            (while (re-search-forward query nil t)
+              (setq match-count (1+ match-count))
+              (when (<= match-count limit)
+                (let ((line (string-trim
+                             (buffer-substring-no-properties
+                              (line-beginning-position)
+                              (line-end-position)))))
+                  (push (format "%s:%d: %s"
+                                (file-name-nondirectory path)
+                                (line-number-at-pos)
+                                (truncate-string-to-width line 220 nil nil t))
+                        matches))))))
+        (my/gptel--format-tool-result
+         "search_skills"
+         `((target . ,(abbreviate-file-name my/gptel--skills-directory))
+           (query . ,query)
+           (file_count . ,(length files))
+           (match_count . ,match-count)
+           (shown_count . ,(length matches))
+           (max_matches . ,limit))
+         (if matches
+             (format "Found %d skill match%s for %S%s:\n%s"
+                     match-count
+                     (if (= match-count 1) "" "es")
+                     query
+                     (if (> match-count limit)
+                         (format " (showing first %d)" limit)
+                       "")
+                     (mapconcat #'identity (nreverse matches) "\n"))
+           (format "No saved skills matched %S." query))
+         "Use load_skill with a reported file name to retrieve one bounded skill body."))
+    (error (format "Error searching skills: %s" (error-message-string err)))))
+
+(defun my/gptel--load-skill (name-or-file &optional max-chars)
+  "Load one saved procedural skill by NAME-OR-FILE with a bounded body."
+  (condition-case err
+      (let* ((path (my/gptel--skill-resolve-path name-or-file))
+             (requested (and max-chars (round max-chars)))
+             (hard-max (* 2 my/gptel--skill-load-max-chars))
+             (cap (min hard-max (max 1 (or requested my/gptel--skill-load-max-chars))))
+             text total shown truncated)
+        (with-temp-buffer
+          (insert-file-contents-literally path)
+          (setq text (string-trim (buffer-string)))
+          (setq total (length text))
+          (setq truncated (> total cap))
+          (setq shown (if truncated (substring text 0 cap) text)))
+        (my/gptel--format-tool-result
+         "load_skill"
+         `((target . ,(abbreviate-file-name path))
+           (skill_chars . ,total)
+           (skill_cap_chars . ,cap)
+           (skill_truncated . ,(if truncated "yes" "no")))
+         (concat shown
+                 (when truncated
+                   "\n\n[Skill truncated: load a narrower or more concise skill, or prune the saved skill file.]"))
+         "Use the loaded procedure as guidance, not proof; verify against the current project before acting."))
+    (error (format "Error loading skill: %s" (error-message-string err)))))
+
+(defun my/gptel--save-skill (title when-to-use steps verification caveats &optional replace-existing)
+  "Save a procedural skill markdown file with a consistent minimal format."
+  (condition-case err
+      (let* ((title (string-trim (or title "")))
+             (when-to-use (string-trim (or when-to-use "")))
+             (steps (string-trim (or steps "")))
+             (verification (string-trim (or verification "")))
+             (caveats (string-trim (or caveats "")))
+             (path (my/gptel--skill-path-for-title title))
+             (body (format "# %s\n\nSaved: %s\n\n## When to use\n%s\n\n## Steps\n%s\n\n## Verification\n%s\n\n## Caveats\n%s\n"
+                           title
+                           (format-time-string "%Y-%m-%d")
+                           when-to-use
+                           steps
+                           verification
+                           caveats)))
+        (cond
+         ((or (string-empty-p title)
+              (string-empty-p when-to-use)
+              (string-empty-p steps)
+              (string-empty-p verification)
+              (string-empty-p caveats))
+          "Error: title, when_to_use, steps, verification, and caveats are all required for a maintainable skill.")
+         ((> (length body) my/gptel--skill-file-max-chars)
+          (format "Error: skill is %d chars, over the per-skill cap of %d. Summarize the procedure and remove raw transcripts/tool output before saving."
+                  (length body) my/gptel--skill-file-max-chars))
+         ((and (file-exists-p path) (not replace-existing))
+          (format "Error: skill already exists at %s. Load it first and pass replace_existing=true only if replacing the whole concise procedure is intentional."
+                  (abbreviate-file-name path)))
+         (t
+          (make-directory (file-name-directory path) t)
+          (let ((coding-system-for-write 'utf-8-unix))
+            (with-temp-file path
+              (insert body)))
+          (my/gptel--format-tool-result
+           "save_skill"
+           `((target . ,(abbreviate-file-name path))
+             (chars . ,(length body))
+             (cap_chars . ,my/gptel--skill-file-max-chars)
+             (replaced . ,(if replace-existing "yes" "no")))
+           (format "Saved procedural skill '%s' to %s."
+                   title (abbreviate-file-name path))
+           "Use search_skills/list_skills/load_skill to retrieve this procedure later; use remember for durable facts or preferences instead."))))
+    (error (format "Error saving skill: %s" (error-message-string err)))))
 
 (defun my/gptel--memory-context-string ()
   "Return bounded persistent memory context for agentic system prompts."
@@ -1951,9 +2399,10 @@ WORKFLOW:
 2. Use read_file to read (full file first; paginate with start-line/end-line only for re-reads).
 3. Use show_buffer_context to zoom in on a specific line range.
 4. Use search_buffer_text and search_project for cross-referencing symbols.
-5. Use git_status / git_diff to understand recent changes.
-6. If a tool returns :TOOL_OUTPUT_REF:, use search_tool_output or bounded fetch_tool_output ranges to inspect it; never ask for a full raw replay.
-7. Use verify_task for final diagnostics when a concrete target is available, or check_parens / buffer_diagnostics for exploratory static analysis.
+5. Use list_skills/search_skills/load_skill when a reusable procedural guide may apply; skills are procedures, not factual memory.
+6. Use git_status / git_diff to understand recent changes.
+7. If a tool returns :TOOL_OUTPUT_REF:, use search_tool_output or bounded fetch_tool_output ranges to inspect it; never ask for a full raw replay.
+8. Use verify_task for final diagnostics when a concrete target is available, or check_parens / buffer_diagnostics for exploratory static analysis.
 
 PARALLELIZE: when reads are independent (e.g. reading several files), issue them in a single message.
 
@@ -1988,9 +2437,11 @@ WORKFLOW:
    - Use exact old_str replacement only as a fallback when hashline tags are unavailable.
    - In fallback mode, old_str must uniquely match the target text; pass replace_all=true only when intentionally replacing every occurrence.
 6. If a tool returns :TOOL_OUTPUT_REF:, use search_tool_output or bounded fetch_tool_output ranges to inspect it; never ask for a full raw replay.
-7. Before declaring completion, call verify_task on the edited buffer/file and get PASS. If no meaningful automated check exists, call verify_task with skip_reason and report SKIPPED honestly.
-8. Use check_parens / byte_compile_file / buffer_diagnostics for narrower follow-up diagnostics when verify_task fails or more detail is needed.
-9. Use git_status / git_diff to review your changes before finishing.
+7. Use list_skills/search_skills/load_skill when a reusable procedural guide may apply; use save_skill only after completing a reusable workflow worth distilling.
+8. Use remember only for confirmed small durable facts/preferences; never store secrets, raw tool output, transcripts, or speculation.
+9. Before declaring completion, call verify_task on the edited buffer/file and get PASS. If no meaningful automated check exists, call verify_task with skip_reason and report SKIPPED honestly.
+10. Use check_parens / byte_compile_file / buffer_diagnostics for narrower follow-up diagnostics when verify_task fails or more detail is needed.
+11. Use git_status / git_diff to review your changes before finishing.
 
 PARALLELIZE: when reads are independent, issue them in a single message.
 
@@ -2022,14 +2473,16 @@ WORKFLOW:
    - In hashline mode, old_str can be the empty string.
    - Use exact old_str replacement only as a fallback when hashline tags are unavailable.
 6. If a tool returns :TOOL_OUTPUT_REF:, use search_tool_output or bounded fetch_tool_output ranges to inspect it; never ask for a full raw replay.
-7. Before declaring completion, call verify_task on the edited buffer/file and get PASS. If no meaningful automated check exists, call verify_task with skip_reason and report SKIPPED honestly.
-8. Use check_parens / byte_compile_file / buffer_diagnostics for narrower follow-up diagnostics when verify_task fails or more detail is needed.
-9. Reserve run_shell_command for commands that genuinely need an external process:
+7. Use list_skills/search_skills/load_skill when a reusable procedural guide may apply; use save_skill only after completing a reusable workflow worth distilling.
+8. Use remember only for confirmed small durable facts/preferences; never store secrets, raw tool output, transcripts, or speculation.
+9. Before declaring completion, call verify_task on the edited buffer/file and get PASS. If no meaningful automated check exists, call verify_task with skip_reason and report SKIPPED honestly.
+10. Use check_parens / byte_compile_file / buffer_diagnostics for narrower follow-up diagnostics when verify_task fails or more detail is needed.
+11. Reserve run_shell_command for commands that genuinely need an external process:
    tests, builds, linters/formatters, package managers, one-off system inspection,
    or git operations not covered by git_status/git_diff.
    NEVER use run_shell_command for ls/find/tree/pwd/cat/head/tail/sed/grep/rg-style work:
    use list_project_files / read_file / show_buffer_context / search_project / search_buffer_text.
-10. Use git_status / git_diff to review your changes before finishing.
+12. Use git_status / git_diff to review your changes before finishing.
 
 PARALLELIZE: when operations are independent, issue them in a single message.
 
@@ -2050,6 +2503,7 @@ PARALLELIZE: when operations are independent, issue them in a single message.
   :tools '("read_file" "show_buffer_context" "search_buffer_text"
            "search_project" "list_project_files" "list_buffers"
            "fetch_tool_output" "search_tool_output"
+           "list_skills" "search_skills" "load_skill"
            "git_status" "git_diff" "buffer_diagnostics" "check_parens"
            "verify_task"))
 
@@ -2065,8 +2519,10 @@ PARALLELIZE: when operations are independent, issue them in a single message.
   :tools '("read_file" "show_buffer_context" "search_buffer_text"
            "search_project" "list_project_files" "list_buffers"
            "fetch_tool_output" "search_tool_output"
+           "list_skills" "search_skills" "load_skill"
            "delegate_agent"
-            "open_file" "edit_buffer" "save_buffer"
+           "remember" "save_skill"
+           "open_file" "edit_buffer" "save_buffer"
            "create_file" "indent_region"
            "check_parens" "byte_compile_file" "buffer_diagnostics"
            "verify_task"
