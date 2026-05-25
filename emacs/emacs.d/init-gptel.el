@@ -1043,6 +1043,85 @@ fresh gptel request with no inherited gptel context."
 
 ;; --- Agentic preset helpers ---
 
+(defvar-local my/gptel-prompt-size-guard-enabled nil
+  "Non-nil means `gptel-request' checks prompt size before dispatch.
+Agentic presets enable this buffer-locally; ordinary chat notebooks can leave
+it nil or set it nil to opt out.")
+
+(defcustom my/gptel--prompt-size-soft-chars 120000
+  "Approximate prompt size where agentic gptel requests warn before sending."
+  :type 'integer
+  :group 'gptel)
+
+(defcustom my/gptel--prompt-size-hard-chars 240000
+  "Approximate prompt size where agentic gptel requests abort before sending."
+  :type 'integer
+  :group 'gptel)
+
+(defun my/gptel--agent-preset-preflight-setup ()
+  "Enable agentic preflight guardrails for the current gptel buffer."
+  (setq-local my/gptel-prompt-size-guard-enabled t))
+
+(defun my/gptel--agent-edit-preflight-setup ()
+  "Enable edit-agent setup hooks for the current gptel buffer."
+  (my/gptel--agent-preset-preflight-setup)
+  (my/gptel--update-subagent-tool-enum))
+
+(defun my/gptel--string-size (value)
+  "Return an approximate character size for VALUE."
+  (cond
+   ((null value) 0)
+   ((stringp value) (length value))
+   ((functionp value)
+    (my/gptel--string-size
+     (condition-case nil
+         (funcall value)
+       (error nil))))
+   (t (length (format "%S" value)))))
+
+(defun my/gptel--request-prompt-size (prompt args)
+  "Estimate the character size of a pending gptel request.
+PROMPT and ARGS are the arguments received by `gptel-request'."
+  (let* ((buffer (or (plist-get args :buffer) (current-buffer)))
+         (system (if (plist-member args :system)
+                     (plist-get args :system)
+                   gptel--system-message))
+         (context (plist-get args :context)))
+    (+ (my/gptel--string-size system)
+       (my/gptel--string-size context)
+       (if prompt
+           (my/gptel--string-size prompt)
+         (with-current-buffer buffer
+           (if (use-region-p)
+               (- (region-end) (region-beginning))
+             (- (or (plist-get args :position) (point)) (point-min))))))))
+
+(defun my/gptel--prompt-size-warning (size threshold kind)
+  "Return actionable prompt-size warning text for SIZE, THRESHOLD, and KIND."
+  (format "%s gptel prompt-size guard: estimated request is ~%d chars (threshold %d). To avoid provider-side token runaway, narrow the context, start a fresh chat, use Org topic/branching, reduce messages-to-send, or remove diagnostic/tool transcript dumps before retrying."
+          kind size threshold))
+
+(defun my/gptel--prompt-size-preflight (prompt &rest args)
+  "Warn or abort oversized agentic gptel requests before provider dispatch."
+  (let ((buffer (or (plist-get args :buffer) (current-buffer))))
+    (when (buffer-live-p buffer)
+      (with-current-buffer buffer
+        (when my/gptel-prompt-size-guard-enabled
+          (let ((size (my/gptel--request-prompt-size prompt args)))
+            (cond
+             ((>= size my/gptel--prompt-size-hard-chars)
+              (user-error "%s"
+                          (my/gptel--prompt-size-warning
+                           size my/gptel--prompt-size-hard-chars "Hard abort")))
+             ((>= size my/gptel--prompt-size-soft-chars)
+              (let ((warning (my/gptel--prompt-size-warning
+                              size my/gptel--prompt-size-soft-chars "Warning")))
+                (unless (yes-or-no-p (concat warning "\n\nSend anyway? "))
+                  (user-error "%s" warning)))))))))))
+
+(advice-remove 'gptel-request #'my/gptel--prompt-size-preflight)
+(advice-add 'gptel-request :before #'my/gptel--prompt-size-preflight)
+
 (defun my/gptel--project-context-string ()
   "Return a formatted project-context block for agentic system prompts.
 Injected into system messages at request-send time via the preset lambda."
@@ -1146,6 +1225,7 @@ PARALLELIZE: when operations are independent, issue them in a single message.
 
 (gptel-make-preset 'agent-read
   :description "Read-only agent: search, read, plan, review. No edits, no shell."
+  :pre #'my/gptel--agent-preset-preflight-setup
   :backend "Claude"
   :model 'claude-sonnet-4-6
   :system (lambda ()
@@ -1158,7 +1238,7 @@ PARALLELIZE: when operations are independent, issue them in a single message.
 
 (gptel-make-preset 'agent-edit
   :description "Full-edit agent: read, modify buffers, create files, verify. No shell."
-  :pre #'my/gptel--update-subagent-tool-enum
+  :pre #'my/gptel--agent-edit-preflight-setup
   :backend "Claude"
   :model 'claude-sonnet-4-6
   :system (lambda ()
