@@ -2,7 +2,7 @@
 # This file should be symlinked to ~/.bash_profile
 #
 # Created on: Sometime in 2021
-# Last Updated: Sun 17 May 2026
+# Last Updated: Thu 21 May 2026
 # Updated by: gopeterjun@naver.com
 #
 # Note: MacOS behavior around `.bash_profile` is different from
@@ -28,6 +28,7 @@ export PATH="$HOME/.local/bin:$HOME/bin:$HOME/Documents/repos/encrypted/dotfiles
 
 eval "$(/opt/homebrew/bin/brew shellenv)"
 eval "$(pyenv init --path)"
+eval "$(fnm env --use-on-cd --shell bash)"  # fast node manager
 
 if [ -f ~/.bashrc ]; then
   # SC override is to quiet the warning about following path to source
