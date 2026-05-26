@@ -2743,7 +2743,33 @@ Injected into system messages at request-send time via the preset lambda."
 (defconst my/gptel--agent-read-system
   "You are an Emacs coding assistant in read-only research mode.
 
-TOOLS: search, read, and analyse only -- no edits, no shell.
+TOOLS: slim read-only preset -- scoped search/read plus git review. No edits,
+no shell, no broad tool inventory.
+
+TOOL SELECTION: prefer the native Emacs/project tools. They are faster, keep
+context compact, and avoid wasting tokens on shell transcript boilerplate.
+
+If this task needs broad file maps, buffer diagnostics, skills, memory, tool
+output side-car navigation, or full Beads list/search, switch to the
+`agent-read-full' preset intentionally.
+
+WORKFLOW:
+1. Use search_project with a specific regex and optional dir/file-glob to find likely files.
+2. Use read_file to inspect exact file ranges; paginate with start-line/end-line for re-reads.
+3. Use beads_show_issue only when the user already supplied a specific issue id.
+4. Use git_status / git_diff when the task is about current changes.
+5. If you cannot proceed without a heavier tool, say which full preset/tool is needed instead of improvising.
+
+PARALLELIZE: when reads are independent (e.g. reading several files), issue them in a single message.
+
+[project_context]"
+  "System prompt for the `agent-read' preset.")
+
+(defconst my/gptel--agent-read-full-system
+  "You are an Emacs coding assistant in broad read-only research mode.
+
+TOOLS: search, read, analyse, skills, Beads, and git review only -- no edits,
+no shell.
 
 TOOL SELECTION: prefer the native Emacs/project tools. They are faster, keep
 context compact, and avoid wasting tokens on shell transcript boilerplate.
@@ -2761,12 +2787,56 @@ WORKFLOW:
 PARALLELIZE: when reads are independent (e.g. reading several files), issue them in a single message.
 
 [project_context]"
-  "System prompt for the `agent-read' preset.")
+  "System prompt for the `agent-read-full' preset.")
 
 (defconst my/gptel--agent-edit-system
   "You are an Emacs coding assistant operating directly on the user's open buffers.
 
-TOOLS: native Emacs file/search/edit tools only -- no shell.
+TOOLS: slim edit preset -- scoped search/read/edit/verify plus git review.
+No shell, delegation, skills, memory, diagnostics, full-file overwrite, or new
+file creation.
+
+TOOL SELECTION: prefer the native Emacs/project tools. They are faster, keep
+context compact, and avoid wasting tokens on shell transcript boilerplate.
+
+If this task needs creating files, buffer diagnostics, delegation, skills,
+memory, Beads list/search, tool-output side-car navigation, or other heavy
+tools, switch to `agent-edit-full' intentionally. If it needs arbitrary shell,
+switch to `agent-shell'.
+
+CRITICAL: edit_buffer auto-saves the buffer after each edit.  In this slim
+preset, leave no_save unset/false; switch to `agent-edit-full' if you need to
+batch several edits before one explicit save.
+
+FULL-FILE WRITES: do not rewrite existing files wholesale.  For existing
+files, use open_file plus edit_buffer hashline edits.  This slim preset cannot
+create brand-new files; switch to `agent-edit-full' when new files are
+intentionally required.
+
+WORKFLOW:
+1. Use search_project with a specific regex and optional dir/file-glob to find likely files.
+2. Use read_file (full file first!) before editing; re-read a narrower range when needed.
+3. Use open_file to load a file into a live buffer; pass the returned buffer name to edit_buffer.
+4. Prefer edit_buffer hashline edits: copy start_line/end_line tags like `42:abc` from read_file output and put the replacement in new_str.
+   - Hashline edits verify the current line hash, recover nearby shifted lines, and fail safely with refreshed context if stale.
+   - For single-line edits, pass start_line only; for ranges, pass both start_line and end_line.
+   - In hashline mode, old_str can be the empty string.
+   - Use exact old_str replacement only as a fallback when hashline tags are unavailable.
+   - In fallback mode, old_str must uniquely match the target text; pass replace_all=true only when intentionally replacing every occurrence.
+5. Before declaring completion, call verify_task on the edited buffer/file and get PASS. If no meaningful automated check exists, call verify_task with skip_reason and report SKIPPED honestly.
+6. Use git_status / git_diff to review your changes before finishing.
+7. If a needed step is impossible with this slim tool set, stop and state which full preset/tool is required.
+
+PARALLELIZE: when reads are independent, issue them in a single message.
+
+[project_context]"
+  "System prompt for the `agent-edit' preset.")
+
+(defconst my/gptel--agent-edit-full-system
+  "You are an Emacs coding assistant operating directly on the user's open buffers.
+
+TOOLS: full native Emacs file/search/edit tools plus delegation, Beads,
+skills, memory, diagnostics, and git review -- no shell.
 
 TOOL SELECTION: prefer the native Emacs/project tools. They are faster, keep
 context compact, and avoid wasting tokens on shell transcript boilerplate.
@@ -2800,7 +2870,7 @@ WORKFLOW:
 PARALLELIZE: when reads are independent, issue them in a single message.
 
 [project_context]"
-  "System prompt for the `agent-edit' preset.")
+  "System prompt for the `agent-edit-full' preset.")
 
 (defconst my/gptel--agent-shell-system
   "You are an Emacs coding assistant with full shell access.
@@ -2845,8 +2915,45 @@ PARALLELIZE: when operations are independent, issue them in a single message.
 
 ;; --- Agentic presets ---
 
+(defconst my/gptel--agent-read-slim-tools
+  '("search_project" "read_file"
+    "beads_show_issue"
+    "git_status" "git_diff")
+  "Slim `agent-read' tool roster. Keep under 8 tools for token-cheap sessions.")
+
+(defconst my/gptel--agent-edit-slim-tools
+  '("search_project" "read_file"
+    "open_file" "edit_buffer" "verify_task"
+    "git_status" "git_diff")
+  "Slim `agent-edit' tool roster. Keep under 8 tools for token-cheap sessions.")
+
+(defconst my/gptel--agent-read-full-tools
+  '("read_file" "show_buffer_context" "search_buffer_text"
+    "search_project" "list_project_files" "list_buffers"
+    "fetch_tool_output" "search_tool_output"
+    "beads_list_issues" "beads_show_issue" "beads_ready_issues"
+    "list_skills" "search_skills" "load_skill"
+    "git_status" "git_diff" "buffer_diagnostics" "check_parens"
+    "verify_task")
+  "Broad read-only `agent-read-full' tool roster for intentional heavy sessions.")
+
+(defconst my/gptel--agent-edit-full-tools
+  '("read_file" "show_buffer_context" "search_buffer_text"
+    "search_project" "list_project_files" "list_buffers"
+    "fetch_tool_output" "search_tool_output"
+    "beads_list_issues" "beads_show_issue" "beads_ready_issues"
+    "list_skills" "search_skills" "load_skill"
+    "delegate_agent"
+    "remember" "save_skill"
+    "open_file" "edit_buffer" "save_buffer"
+    "create_file" "indent_region"
+    "check_parens" "byte_compile_file" "buffer_diagnostics"
+    "verify_task"
+    "git_status" "git_diff")
+  "Broad edit `agent-edit-full' tool roster for intentional heavy sessions.")
+
 (gptel-make-preset 'agent-read
-  :description "Read-only agent: search, read, plan, review. No edits, no shell."
+  :description "Slim read-only agent: scoped search/read and git review. No edits, no shell."
   :pre #'my/gptel--agent-preset-preflight-setup
   :backend "Claude"
   :model 'claude-sonnet-4-6
@@ -2854,16 +2961,21 @@ PARALLELIZE: when operations are independent, issue them in a single message.
             (string-replace "[project_context]"
                             (my/gptel--agent-context-string)
                             my/gptel--agent-read-system))
-  :tools '("read_file" "show_buffer_context" "search_buffer_text"
-           "search_project" "list_project_files" "list_buffers"
-           "fetch_tool_output" "search_tool_output"
-           "beads_list_issues" "beads_show_issue" "beads_ready_issues"
-           "list_skills" "search_skills" "load_skill"
-           "git_status" "git_diff" "buffer_diagnostics" "check_parens"
-           "verify_task"))
+  :tools my/gptel--agent-read-slim-tools)
+
+(gptel-make-preset 'agent-read-full
+  :description "Full read-only agent: broad search/read, Beads, skills, diagnostics, and git review."
+  :pre #'my/gptel--agent-preset-preflight-setup
+  :backend "Claude"
+  :model 'claude-sonnet-4-6
+  :system (lambda ()
+            (string-replace "[project_context]"
+                            (my/gptel--agent-context-string)
+                            my/gptel--agent-read-full-system))
+  :tools my/gptel--agent-read-full-tools)
 
 (gptel-make-preset 'agent-edit
-  :description "Full-edit agent: read, modify buffers, create files, verify. No shell."
+  :description "Slim edit agent: scoped search/read/edit/verify. No shell or heavy helpers."
   :pre #'my/gptel--agent-edit-preflight-setup
   :backend "Claude"
   :model 'claude-sonnet-4-6
@@ -2871,22 +2983,22 @@ PARALLELIZE: when operations are independent, issue them in a single message.
             (string-replace "[project_context]"
                             (my/gptel--agent-context-string)
                             my/gptel--agent-edit-system))
-  :tools '("read_file" "show_buffer_context" "search_buffer_text"
-           "search_project" "list_project_files" "list_buffers"
-           "fetch_tool_output" "search_tool_output"
-           "beads_list_issues" "beads_show_issue" "beads_ready_issues"
-           "list_skills" "search_skills" "load_skill"
-           "delegate_agent"
-           "remember" "save_skill"
-           "open_file" "edit_buffer" "save_buffer"
-           "create_file" "indent_region"
-           "check_parens" "byte_compile_file" "buffer_diagnostics"
-           "verify_task"
-           "git_status" "git_diff"))
+  :tools my/gptel--agent-edit-slim-tools)
+
+(gptel-make-preset 'agent-edit-full
+  :description "Full edit agent: read, modify buffers, create files, delegate, use skills/Beads, verify. No shell."
+  :pre #'my/gptel--agent-edit-preflight-setup
+  :backend "Claude"
+  :model 'claude-sonnet-4-6
+  :system (lambda ()
+            (string-replace "[project_context]"
+                            (my/gptel--agent-context-string)
+                            my/gptel--agent-edit-full-system))
+  :tools my/gptel--agent-edit-full-tools)
 
 (gptel-make-preset 'agent-shell
   :description "Shell-capable agent: full edit plus arbitrary shell commands."
-  :parents 'agent-edit
+  :parents 'agent-edit-full
   :system (lambda ()
             (string-replace "[project_context]"
                             (my/gptel--agent-context-string)
