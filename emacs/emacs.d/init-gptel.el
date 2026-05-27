@@ -145,7 +145,7 @@ On error, return a formatted error message using ERROR-LABEL."
 Signals an error if no matching buffer is found."
   (or (get-buffer name-or-path)
       (find-buffer-visiting (expand-file-name name-or-path))
-      (error "No buffer for '%s'.  Use open_file to open it first." name-or-path)))
+      (error "No buffer for '%s'. Use buffer_edit operation=open to open it first." name-or-path)))
 
 (defun my/gptel--render-hashed-lines (label start-line end-line)
   "Render the current buffer with line numbers + 3-char content hash.
@@ -203,7 +203,7 @@ Signals an error if no matching buffer is found."
   "Parse TAG of the form N:HHH for LABEL and return (LINE . HASH)."
   (unless (and (stringp tag)
                (string-match-p (rx string-start (+ digit) ":" (+ hex-digit) string-end) tag))
-    (error "%s must be a line tag like '42:abc', copied from read_file output" label))
+    (error "%s must be a line tag like '42:abc', copied from workspace operation=read_file output" label))
   (let ((parts (split-string tag ":")))
     (cons (string-to-number (car parts)) (downcase (cadr parts)))))
 
@@ -279,8 +279,9 @@ error string instead of replacing.  Returns a result string."
 
 (defun my/gptel--buffer-edit-hashline (buffer start-line end-line new-str)
   "Replace hash-anchored START-LINE..END-LINE in BUFFER with NEW-STR.
-START-LINE and END-LINE are read_file tags like \"42:abc\".  If a tag has
-shifted, scan a small nearby window for the same hash before editing."
+START-LINE and END-LINE are workspace operation=read_file tags like
+\"42:abc\".  If a tag has shifted, scan a small nearby window for the same
+hash before editing."
   (let* ((start-result (my/gptel--resolve-hashline-tag start-line "start_line"))
          (end-tag (if (and end-line (not (string-empty-p end-line)))
                       end-line
@@ -309,7 +310,7 @@ shifted, scan a small nearby window for the same hash before editing."
   "Insert TEXT verbatim in BUFFER at START-LINE.
 POSITION should be \"before\" or \"after\"; defaults to \"before\".
 TEXT is inserted exactly as provided -- no indentation adjustment.
-Use the indent_region tool afterwards if reformatting is needed.
+Use buffer_edit operation=indent afterwards if reformatting is needed.
 Assumes current buffer is the target buffer.  Returns a result string."
   (let* ((start-line (and start-line (round start-line)))
          (total-lines (count-lines (point-min) (point-max))))
@@ -721,9 +722,17 @@ The body is capped to MAX-CHARS, TOOL's specific cap, or
 
 ;; custom tools for use in 'gptel' mode
 
+(defconst my/gptel--beads-source-roots
+  (mapcar #'expand-file-name
+          '("~/Documents/repos/personal/beads.el"
+            "~/Documents/repos/personal/beads.el-gojun077"
+            "~/Documents/repos/personal/beads-turbo.el"))
+  "Candidate checkouts containing beads.el, used by the Beads gptel tool.")
+
 (defconst my/gptel--beads-source-root
-  (expand-file-name "~/Documents/repos/personal/beads.el-gojun077")
-  "Checkout containing beads.el, used by the Beads gptel tools.")
+  (or (seq-find #'file-directory-p my/gptel--beads-source-roots)
+      (car my/gptel--beads-source-roots))
+  "Selected checkout containing beads.el, used by the Beads gptel tool.")
 
 (defun my/gptel--ensure-beads-client ()
   "Ensure the beads.el client API is available."
@@ -834,541 +843,379 @@ The body is capped to MAX-CHARS, TOOL's specific cap, or
       (setq filters (plist-put filters :limit limit)))
     filters))
 
+(defun my/gptel--beads-list-issues (&optional project-root status priority type assignee labels limit all)
+  "Return compact Beads issue summaries for PROJECT-ROOT and filters."
+  (condition-case err
+      (my/gptel--beads-with-project
+       project-root
+       (lambda ()
+         (let* ((filters (my/gptel--beads-filter-plist
+                          status priority type assignee labels limit all))
+                (issues (my/gptel--beads-normalize-sequence
+                         (beads-client-list filters)))
+                (shown issues))
+           (my/gptel--format-tool-result
+            "beads_list_issues"
+            `((project_root . ,default-directory)
+              (issue_count . ,(length issues))
+              (shown_count . ,(length shown)))
+            (if issues
+                (mapconcat #'my/gptel--beads-issue-summary shown "\n")
+              "No issues matched.")
+            "Use beads operation=show with an issue id for full details."))))
+    (error (format "Error listing Beads issues: %s" (error-message-string err)))))
 
-(gptel-make-tool
- :name "beads_list_issues"
- :function (lambda (&optional project-root status priority type assignee labels limit all)
-             (condition-case err
-                 (my/gptel--beads-with-project
-                  project-root
-                  (lambda ()
-                    (let* ((filters (my/gptel--beads-filter-plist
-                                     status priority type assignee labels limit all))
-                           (issues (my/gptel--beads-normalize-sequence
-                                    (beads-client-list filters)))
-                           (shown issues))
-                      (my/gptel--format-tool-result
-                       "beads_list_issues"
-                       `((project_root . ,default-directory)
-                         (issue_count . ,(length issues))
-                         (shown_count . ,(length shown)))
-                       (if issues
-                           (mapconcat #'my/gptel--beads-issue-summary shown "\n")
-                         "No issues matched.")
-                       "Use beads_show_issue with an issue id for full details."))))
-               (error (format "Error listing Beads issues: %s" (error-message-string err)))))
- :description "List Beads issues via beads.el's in-process client, not by shelling out to bd. Returns compact one-line issue summaries. PROJECT_ROOT defaults to the current project/default-directory; set ALL to include closed issues when supported."
- :args (list '(:name "project_root"
-                     :type "string"
-                     :description "Optional Beads project root containing .beads/. Defaults to current project/default-directory.")
-             '(:name "status"
-                     :type "string"
-                     :description "Optional status filter, e.g. open, in_progress, closed.")
-             '(:name "priority"
-                     :type "number"
-                     :description "Optional priority filter.")
-             '(:name "type"
-                     :type "string"
-                     :description "Optional issue type filter, e.g. task, bug, epic.")
-             '(:name "assignee"
-                     :type "string"
-                     :description "Optional assignee filter.")
-             '(:name "labels"
-                     :type "string"
-                     :description "Optional labels filter, as accepted by beads.el/bd.")
-             '(:name "limit"
-                     :type "number"
-                     :description "Optional maximum number of issues to return.")
-             '(:name "all"
-                     :type "boolean"
-                     :description "When true, request the complete list including closed issues, where backend supports it."))
- :include nil
- :category "beads")
+(defun my/gptel--beads-show-issue (id &optional project-root)
+  "Return one Beads issue ID from PROJECT-ROOT."
+  (condition-case err
+      (my/gptel--beads-with-project
+       project-root
+       (lambda ()
+         (let ((issue (beads-client-show id)))
+           (my/gptel--format-tool-result
+            "beads_show_issue"
+            `((project_root . ,default-directory)
+              (issue_id . ,id))
+            (my/gptel--beads-issue-detail issue)
+            "Use beads operation=list/search/ready to find related or next issues."))))
+    (error (format "Error showing Beads issue '%s': %s" id (error-message-string err)))))
 
-(gptel-make-tool
- :name "beads_show_issue"
- :function (lambda (id &optional project-root)
-             (condition-case err
-                 (my/gptel--beads-with-project
-                  project-root
-                  (lambda ()
-                    (let ((issue (beads-client-show id)))
-                      (my/gptel--format-tool-result
-                       "beads_show_issue"
-                       `((project_root . ,default-directory)
-                         (issue_id . ,id))
-                       (my/gptel--beads-issue-detail issue)
-                       "Use beads_list_issues to find related or next issues."))))
-               (error (format "Error showing Beads issue '%s': %s" id (error-message-string err)))))
- :description "Show one Beads issue by ID via beads.el's in-process client, not by shelling out to bd. Returns key fields and long-text sections when present."
- :args (list '(:name "id"
-                     :type "string"
-                     :description "Beads issue ID, e.g. pj_gtd_org-non.")
-             '(:name "project_root"
-                     :type "string"
-                     :description "Optional Beads project root containing .beads/. Defaults to current project/default-directory."))
- :include nil
- :category "beads")
+(defun my/gptel--beads-ready-issues (&optional project-root assignee priority limit)
+  "Return unblocked/ready Beads issues for PROJECT-ROOT and filters."
+  (condition-case err
+      (my/gptel--beads-with-project
+       project-root
+       (lambda ()
+         (let* ((filters (let (plist)
+                           (when assignee (setq plist (plist-put plist :assignee assignee)))
+                           (when priority (setq plist (plist-put plist :priority priority)))
+                           (when limit (setq plist (plist-put plist :limit limit)))
+                           plist))
+                (issues (my/gptel--beads-normalize-sequence
+                         (beads-client-ready filters))))
+           (my/gptel--format-tool-result
+            "beads_ready_issues"
+            `((project_root . ,default-directory)
+              (issue_count . ,(length issues)))
+            (if issues
+                (mapconcat #'my/gptel--beads-issue-summary issues "\n")
+              "No ready issues matched.")
+            "Use beads operation=show with an issue id for full details."))))
+    (error (format "Error listing ready Beads issues: %s" (error-message-string err)))))
 
-(gptel-make-tool
- :name "beads_ready_issues"
- :function (lambda (&optional project-root assignee priority limit)
-             (condition-case err
-                 (my/gptel--beads-with-project
-                  project-root
-                  (lambda ()
-                    (let* ((filters (let (plist)
-                                      (when assignee (setq plist (plist-put plist :assignee assignee)))
-                                      (when priority (setq plist (plist-put plist :priority priority)))
-                                      (when limit (setq plist (plist-put plist :limit limit)))
-                                      plist))
-                           (issues (my/gptel--beads-normalize-sequence
-                                    (beads-client-ready filters))))
-                      (my/gptel--format-tool-result
-                       "beads_ready_issues"
-                       `((project_root . ,default-directory)
-                         (issue_count . ,(length issues)))
-                       (if issues
-                           (mapconcat #'my/gptel--beads-issue-summary issues "\n")
-                         "No ready issues matched.")
-                       "Use beads_show_issue with an issue id for full details."))))
-               (error (format "Error listing ready Beads issues: %s" (error-message-string err)))))
- :description "List unblocked/ready Beads issues via beads.el's in-process client, not by shelling out to bd."
- :args (list '(:name "project_root"
-                     :type "string"
-                     :description "Optional Beads project root containing .beads/. Defaults to current project/default-directory.")
-             '(:name "assignee"
-                     :type "string"
-                     :description "Optional assignee filter.")
-             '(:name "priority"
-                     :type "number"
-                     :description "Optional priority filter.")
-             '(:name "limit"
-                     :type "number"
-                     :description "Optional maximum number of ready issues to return."))
- :include nil
- :category "beads")
-
-
-
-(gptel-make-tool
- :name "remember"
- :function (lambda (scope entry &optional old-entry)
-             (my/gptel--remember scope entry old-entry))
- :description "Append or update one small curated persistent-memory fact/preference in the configured project or user memory file. This mutates durable agent state, so use only for intentional memory updates -- never for secrets, raw tool output, chat transcripts, or speculative notes. Omitting OLD_ENTRY appends a dated bullet; passing OLD_ENTRY replaces that exact text with a new dated bullet. Refuses writes that would exceed the same bounded-memory cap used for prompt injection, with an actionable summarize/prune message."
- :args (list '(:name "scope"
-                     :type "string"
-                     :enum ["project" "user"]
-                     :description "Memory file to update: project writes PROJECT_ROOT/MEMORY.md; user writes the configured user memory file.")
-             '(:name "entry"
-                     :type "string"
-                     :description "One concise durable fact or preference to remember. Keep it small and curated; do not pass transcripts, raw command output, secrets, or uncertainty.")
-             '(:name "old_entry"
-                     :type "string"
-                     :description "Optional exact existing text to replace. Omit or pass empty string to append a new dated entry."))
- :confirm t
- :category "memory")
-
-(gptel-make-tool
- :name "list_skills"
- :function (lambda (&optional max-skills)
-             (my/gptel--list-skills max-skills))
- :description "List available procedural gptel skills from the configured skills directory. Read-only and bounded: returns file names, titles, and short 'when to use' hints rather than dumping full skill files. Use search_skills or load_skill for targeted retrieval."
- :args (list '(:name "max_skills"
-                     :type "number"
-                     :description "Maximum skills to list. Defaults to 25; hard maximum 100."))
- :include nil
- :category "skills")
-
-(gptel-make-tool
- :name "search_skills"
- :function (lambda (query &optional max-matches)
-             (my/gptel--search-skills query max-matches))
- :description "Search procedural gptel skill files with a bounded regex query and return matching line snippets. Use this to find relevant saved procedures without loading the whole directory."
- :args (list '(:name "query"
-               :type "string"
-               :description "Regex query to search within saved skill markdown files.")
-             '(:name "max_matches"
-               :type "number"
-               :description "Maximum matching lines to return. Defaults to 25; hard maximum 100."))
- :include nil
- :category "skills")
-
-(gptel-make-tool
- :name "load_skill"
- :function (lambda (name-or-file &optional max-chars)
-             (my/gptel--load-skill name-or-file max-chars))
- :description "Load one procedural gptel skill file by slug/file name, with a character cap and truncation metadata. Use after list_skills/search_skills identifies a relevant skill."
- :args (list '(:name "name_or_file"
-               :type "string"
-               :description "Skill slug or markdown file name under the configured skills directory, e.g. 'deploy-k3s-node' or 'deploy-k3s-node.md'.")
-             '(:name "max_chars"
-               :type "number"
-               :description "Maximum skill body characters to return. Defaults to configured cap; hard maximum is twice that cap."))
- :include nil
- :category "skills")
-
-(gptel-make-tool
- :name "save_skill"
- :function (lambda (title when-to-use steps verification caveats &optional replace-existing)
-             (my/gptel--save-skill title when-to-use steps verification caveats replace-existing))
- :description "Save a concise procedural skill as a markdown guide in the configured gptel skills directory. This mutates durable agent procedure state and requires confirmation. Use for reusable workflows, not one-off facts/preferences (use remember for those), secrets, raw tool output, or transcripts."
- :args (list '(:name "title"
-               :type "string"
-               :description "Short skill title. Used to derive the markdown filename.")
-             '(:name "when_to_use"
-               :type "string"
-               :description "Concise trigger conditions for using this skill.")
-             '(:name "steps"
-               :type "string"
-               :description "Reusable procedural steps. Keep concise; summarize rather than paste transcripts.")
-             '(:name "verification"
-               :type "string"
-               :description "How to verify the procedure succeeded.")
-             '(:name "caveats"
-               :type "string"
-               :description "Important constraints, safety notes, or known failure modes.")
-             '(:name "replace_existing"
-               :type "boolean"
-               :description "When true, replace an existing skill file with the same slug. Default false refuses to overwrite."))
- :confirm t
- :category "skills")
-
-(gptel-make-tool
- :name "fetch_tool_output"
- :function (lambda (id start-line end-line)
-             (condition-case err
-                 (let* ((result (my/gptel--read-stored-output-lines id start-line end-line))
-                        (path (alist-get 'path result))
-                        (total-lines (alist-get 'total_lines result))
-                        (range (alist-get 'range result))
-                        (text (alist-get 'text result)))
-                   (my/gptel--format-tool-result
-                    "fetch_tool_output"
-                    `((target . ,id)
-                      (range . ,range)
-                      (total_lines . ,total-lines)
-                      (object_path . ,(abbreviate-file-name path)))
-                    (if (string-empty-p text)
-                        (format "No stored output lines in requested range %s (total lines: %d)."
-                                range total-lines)
-                      (format "Stored tool output %s, lines %s of %d:\n%s"
-                              id range total-lines text))
-                    "Call fetch_tool_output with a different bounded start-line/end-line range, or search_tool_output for a specific pattern."))
-               (error (format "Error fetching stored tool output: %s"
-                              (error-message-string err)))))
- :description "Fetch a bounded line range from a stored gptel tool-output reference. Requires sha256 ID plus explicit 1-based inclusive start/end lines; there is no unrestricted full-output fetch."
- :args (list '(:name "id"
-               :type "string"
-               :description "Stored output id from :TOOL_OUTPUT_REF:, e.g. sha256:<hash>.")
-             '(:name "start-line"
-               :type "number"
-               :description "First line to fetch (1-based, inclusive). Required.")
-             '(:name "end-line"
-               :type "number"
-               :description "Last line to fetch (1-based, inclusive). Required; keep ranges small."))
- :include nil
- :category "emacs")
-
-(gptel-make-tool
- :name "search_tool_output"
- :function (lambda (id pattern &optional max-matches)
-             (condition-case err
-                 (let* ((path (my/gptel--tool-output-object-path id))
-                        (max-matches (min 100 (max 1 (round (or max-matches 25)))))
-                        (matches nil)
-                        (match-count 0)
-                        (total-lines 0))
-                   (when (string-empty-p pattern)
-                     (error "pattern must not be empty"))
-                   (with-temp-buffer
-                     (insert-file-contents path)
-                     (setq total-lines (count-lines (point-min) (point-max)))
-                     (goto-char (point-min))
-                     (while (re-search-forward pattern nil t)
-                       (setq match-count (1+ match-count))
-                       (when (<= match-count max-matches)
-                         (let ((line-num (line-number-at-pos))
-                               (line (string-trim
-                                      (buffer-substring-no-properties
-                                       (line-beginning-position)
-                                       (line-end-position)))))
-                           (push (format "Line %d: %s" line-num line) matches)))))
-                   (my/gptel--format-tool-result
-                    "search_tool_output"
-                    `((target . ,id)
-                      (query . ,pattern)
-                      (match_count . ,match-count)
-                      (shown_count . ,(length matches))
-                      (max_matches . ,max-matches)
-                      (total_lines . ,total-lines)
-                      (object_path . ,(abbreviate-file-name path)))
-                    (if matches
-                        (format "Found %d match%s for %S in stored output %s%s:\n%s"
-                                match-count
-                                (if (= match-count 1) "" "es")
-                                pattern id
-                                (if (> match-count max-matches)
-                                    (format " (showing first %d)" max-matches)
-                                  "")
-                                (mapconcat #'identity (nreverse matches) "\n"))
-                      (format "No matches for %S in stored output %s." pattern id))
-                    "Use fetch_tool_output around a reported line number, or rerun search_tool_output with a more specific pattern/max-matches."))
-               (error (format "Error searching stored tool output: %s"
-                              (error-message-string err)))))
- :description "Search within a stored gptel tool-output reference and return capped matching line snippets. Requires a regex pattern and caps results to max-matches (default 25, hard max 100); use fetch_tool_output for bounded context around hits."
- :args (list '(:name "id"
-               :type "string"
-               :description "Stored output id from :TOOL_OUTPUT_REF:, e.g. sha256:<hash>.")
-             '(:name "pattern"
-               :type "string"
-               :description "Regex pattern to search within the stored output.")
-             '(:name "max-matches"
-               :type "number"
-               :description "Maximum matches to return (default 25, hard maximum 100)."))
- :include nil
- :category "emacs")
-
-(gptel-make-tool
- :name "edit_buffer"
- :function (lambda (buffer old-str new-str &optional replace-all no-save start-line end-line)
-             (condition-case err
-                 (with-current-buffer (my/gptel--resolve-buffer buffer)
-                   (let ((result (if (and start-line (not (string-empty-p start-line)))
-                                     (my/gptel--buffer-edit-hashline buffer start-line end-line new-str)
-                                   (my/gptel--buffer-edit-string buffer old-str new-str replace-all))))
-                     (when (and (not no-save)
-                                (not (string-prefix-p "Error:" result))
-                                (buffer-file-name)
-                                (buffer-modified-p))
-                       (save-buffer)
-                       (setq result (concat result " (saved)")))
-                     result))
-               (error (format "Error in edit_buffer: %s" (error-message-string err)))))
- :description "Edit an Emacs buffer, then auto-save if the buffer visits a file. Preferred mode: pass START_LINE and optional END_LINE as hashline tags from read_file output, e.g. `42:abc`, and NEW_STR as the replacement text. The tool verifies the current line hashes before editing, scans nearby lines if tags shifted, and refuses stale/ambiguous tags with fresh context. Fallback mode: omit START_LINE and replace exact OLD_STR with NEW_STR; OLD_STR must be unique unless REPLACE_ALL is true."
- :args (list '(:name "buffer"
-               :type "string"
-               :description "Buffer name or file path.  Use list_buffers to find valid names.")
-             '(:name "old_str"
-               :type "string"
-               :description "Fallback exact text to replace when start_line is omitted. Use the empty string in hashline mode. Whitespace and newlines must match exactly. Must be unique unless replace_all is true.")
-             '(:name "new_str"
-               :type "string"
-               :description "Replacement text. In hashline mode, this replaces the entire tagged line/range. Use the empty string to delete.")
-             '(:name "replace_all"
-               :type "boolean"
-               :description "Fallback exact-text mode only: when true, replace every occurrence of old_str. Default: false (error if old_str matches more than once).")
-             '(:name "no_save"
-               :type "boolean"
-               :description "When true, skip the automatic save.  Default: false (changes are saved immediately if the buffer visits a file).")
-             '(:name "start_line"
-               :type "string"
-               :description "Preferred hashline edit anchor copied from read_file output, e.g. `42:abc`. When set, old_str is ignored.")
-             '(:name "end_line"
-               :type "string"
-               :description "Optional ending hashline tag for a multi-line replacement. Defaults to start_line."))
- :confirm t
- :category "emacs")
-
-
-(gptel-make-tool
- :name "show_buffer_context"
- :function (lambda (buffer line-number &optional context-lines)
-             (let ((line-number (round line-number))
-                   (context-lines (and context-lines (round context-lines))))
-               (my/gptel--with-buffer-safety (my/gptel--resolve-buffer buffer) "showing context"
-                 (my/gptel--ensure-readable-buffer "show_buffer_context")
-                 (save-excursion
-                   (let* ((context-size (or context-lines 5))
-                          (total-lines (count-lines (point-min) (point-max)))
-                          (start-line (max 1 (- line-number context-size)))
-                          (end-line (min total-lines (+ line-number context-size)))
-                          (lines '()))
-                     (goto-char (point-min))
-                     (forward-line (1- start-line))
-                     (dotimes (i (1+ (- end-line start-line)))
-                       (let ((current-line-num (+ start-line i))
-                             (line-content (buffer-substring-no-properties
-                                            (line-beginning-position)
-                                            (line-end-position))))
-                         (push (format "%s%d: %s"
-                                       (if (= current-line-num line-number) ">>> " "    ")
-                                       current-line-num
-                                       line-content) lines))
-                       (forward-line 1))
-                     (my/gptel--format-tool-result
-                      "show_buffer_context"
-                      `((target . ,buffer)
-                        (line . ,line-number)
-                        (range . ,(format "%d-%d" start-line end-line))
-                        (total_lines . ,total-lines))
-                      (format "Context around line %d in buffer '%s' (lines %d-%d of %d):\n%s"
-                              line-number buffer start-line end-line total-lines
-                              (mapconcat 'identity (nreverse lines) "\n"))
-                      "Call show_buffer_context with a smaller context-lines value, or read_file with start-line/end-line for a precise range."))))))
- :description "Show the lines around a specific line number in a buffer, with the target line marked.  Useful for understanding code structure and indentation before editing."
- :args (list '(:name "buffer"
-               :type "string"
-               :description "The name of the buffer to examine.")
-             '(:name "line-number"
-               :type "number"
-               :description "The line number to show context around (1-based).")
-             '(:name "context-lines"
-               :type "number"
-               :description "Number of lines before and after to show (default: 5)."))
- :include nil
- :category "emacs")
-
-(gptel-make-tool
- :name "search_buffer_text"
- :function (lambda (buffer search-text)
-             (my/gptel--with-buffer-safety (my/gptel--resolve-buffer buffer) "searching buffer"
-               (my/gptel--ensure-readable-buffer "search_buffer_text")
-               (save-excursion
-                 (if (string-empty-p search-text)
-                     "Error: search-text must not be empty."
-                   (goto-char (point-min))
-                   (let ((matches '())
-                         (count 0)
-                         (max-show 50))
-                     (while (search-forward search-text nil t)
-                       (setq count (1+ count))
-                       (when (<= count max-show)
-                         (let ((line-num (line-number-at-pos))
-                               (line-content (string-trim (thing-at-point 'line t))))
-                           (push (format "Line %d: %s" line-num line-content) matches))))
-                     (my/gptel--format-tool-result
-                      "search_buffer_text"
-                      `((target . ,buffer)
-                        (query . ,search-text)
-                        (match_count . ,count)
-                        (shown_count . ,(length matches)))
-                      (if matches
-                          (format "Found %d occurrence%s of '%s' in buffer '%s'%s:\n%s"
-                                  count
-                                  (if (= count 1) "" "s")
-                                  search-text buffer
-                                  (if (> count max-show)
-                                      (format " (showing first %d)" max-show)
-                                    "")
-                                  (mapconcat 'identity (nreverse matches) "\n"))
-                        (format "Text '%s' not found in buffer '%s'" search-text buffer))
-                      "If shown_count is lower than match_count, refine search-text or use show_buffer_context around a reported line."))))))
- :description "Search for text in a buffer and return all matching line numbers and content.  Useful before editing to confirm the target text exists and is unique."
- :args (list '(:name "buffer"
-               :type "string"
-               :description "The name of the buffer to search in.")
-             '(:name "search-text"
-               :type "string"
-               :description "The text to search for (e.g., a function name or key phrase)."))
- :include nil
- :category "emacs")
-
-(gptel-make-tool
- :name "save_buffer"
- :function (lambda (buffer)
-             (my/gptel--with-buffer-safety (my/gptel--resolve-buffer buffer) "saving buffer"
-               (if (buffer-file-name)
-                   (progn
-                     (save-buffer)
-                     (format "Saved buffer '%s' to file: %s" buffer (buffer-file-name)))
-                 (format "Buffer '%s' is not associated with a file. Use overwrite_file to save it to a path." buffer))))
- :description "Save buffer changes to disk.  edit_buffer auto-saves after each edit, so this is mainly needed when batching multiple edits with no_save=true before a single save."
- :args (list '(:name "buffer"
-               :type "string"
-               :description "The name of the buffer to save."))
- :confirm t
- :category "emacs")
-
-(gptel-make-tool
- :name "read_file"
-  :description "[READ-ONLY] Native Emacs file reader. Use this instead of shell commands like cat/head/tail/sed for inspecting file contents. Opens a file in Emacs and returns its contents with each line prefixed by `N:HHH|' (line number plus short content hash). By default returns the first 2000 lines; pass START-LINE and/or END-LINE to paginate through larger files."
-  :args (list '(:name "path"
-                :type "string"
-                :description "Path to the file (e.g. ~/notes/todo.txt).")
-              '(:name "start-line"
-                :type "number"
-                :description "First line to return (1-based, inclusive).  Defaults to 1.")
-              '(:name "end-line"
-                :type "number"
-                :description "Last line to return (1-based, inclusive).  Defaults to start-line + 1999 (a 2000-line window)."))
- :function (lambda (path &optional start-line end-line)
-             (condition-case err
-                 (let ((existing (get-file-buffer path))
-                       (buf (find-file-noselect path)))
-                   (unwind-protect
-                       (with-current-buffer buf
-                         (my/gptel--ensure-readable-buffer "read_file")
-                         (let* ((total (count-lines (point-min) (point-max)))
-                                (start-line (and start-line (round start-line)))
-                                (end-line (and end-line (round end-line)))
-                                (start (max 1 (or start-line 1)))
-                                (requested-end (or end-line (+ start 1999)))
-                                (end (min total requested-end)))
-                           (my/gptel--format-tool-result
-                            "read_file"
-                            `((target . ,(abbreviate-file-name (expand-file-name path)))
-                              (range . ,(if (zerop total) "0-0" (format "%d-%d" start end)))
-                              (total_lines . ,total)
-                              (requested_end . ,requested-end))
-                            (my/gptel--render-hashed-lines path start-line end-line)
-                            "Call read_file again with start-line/end-line for the next page or a narrower range.")))
-                     (unless existing
-                       (kill-buffer buf))))
-               (error (format "Error reading file '%s': %s" path (error-message-string err)))))
- :include nil
- :category "filesystem")
-
-(gptel-make-tool
- :name "open_file"
- :function (lambda (path)
-             (condition-case err
-                 (let* ((expanded (expand-file-name path))
-                        (buf (find-file-noselect expanded)))
-                   (format "Opened '%s' in buffer: %s" expanded (buffer-name buf)))
-               (error (format "Error opening file '%s': %s" path (error-message-string err)))))
- :description "Open a file in Emacs and return its buffer name.  Unlike read_file, the buffer is kept alive so you can edit it with edit_buffer.  Pass the returned buffer name to edit_buffer, save_buffer, etc."
- :args (list '(:name "path"
-               :type "string"
-               :description "Path to the file to open (relative or absolute)."))
- :include nil
- :category "filesystem")
-
-(gptel-make-tool
- :name "list_buffers"
- :function (lambda ()
-             (let* ((bufs (seq-filter
-                           (lambda (b)
-                             (not (string-prefix-p " " (buffer-name b))))
-                           (buffer-list)))
-                    (max-show 100)
-                    (entries
-                     (mapcar (lambda (buf)
-                               (with-current-buffer buf
-                                 (format "  %-35s  %-20s  %7d bytes  %s"
-                                         (buffer-name)
-                                         (symbol-name major-mode)
-                                         (buffer-size)
-                                         (or (buffer-file-name) "(no file)"))))
-                             bufs)))
-               (my/gptel--format-tool-result
-                "list_buffers"
-                `((buffer_count . ,(length entries))
-                  (shown_count . ,(min (length entries) max-show)))
-                (format "%d buffer%s%s:\n%s"
-                        (length entries)
-                        (if (= (length entries) 1) "" "s")
-                        (if (> (length entries) max-show)
+(defun my/gptel--beads-search-issues (query &optional project-root status priority type assignee labels limit all)
+  "Search Beads issue summaries/details for literal QUERY."
+  (condition-case err
+      (my/gptel--beads-with-project
+       project-root
+       (lambda ()
+         (when (or (null query) (string-empty-p (string-trim query)))
+           (error "query must not be empty"))
+         (let* ((filters (my/gptel--beads-filter-plist
+                          status priority type assignee labels nil all))
+                (issues (my/gptel--beads-normalize-sequence
+                         (beads-client-list filters)))
+                (pattern (regexp-quote (downcase (string-trim query))))
+                (matches (seq-filter
+                          (lambda (issue)
+                            (string-match-p
+                             pattern
+                             (downcase
+                              (string-join
+                               (delq nil
+                                     (list (my/gptel--beads-issue-summary issue)
+                                           (my/gptel--beads-format-scalar
+                                            (my/gptel--beads-field issue 'description))
+                                           (my/gptel--beads-format-scalar
+                                            (my/gptel--beads-field issue 'design))
+                                           (my/gptel--beads-format-scalar
+                                            (my/gptel--beads-field issue 'notes))))
+                               "\n"))))
+                          issues))
+                (max-show (min 100 (max 1 (round (or limit 50)))))
+                (shown (cl-subseq matches 0 (min (length matches) max-show))))
+           (my/gptel--format-tool-result
+            "beads_list_issues"
+            `((project_root . ,default-directory)
+              (query . ,query)
+              (issue_count . ,(length issues))
+              (match_count . ,(length matches))
+              (shown_count . ,(length shown))
+              (max_matches . ,max-show))
+            (if matches
+                (format "Found %d matching Beads issue%s for %S%s:\n%s"
+                        (length matches)
+                        (if (= (length matches) 1) "" "s")
+                        query
+                        (if (> (length matches) max-show)
                             (format " (showing first %d)" max-show)
                           "")
-                        (mapconcat #'identity
-                                   (cl-subseq entries 0 (min (length entries) max-show))
-                                   "\n"))
-                "Use a specific buffer name with show_buffer_context, search_buffer_text, or buffer_diagnostics.")))
- :description "List all visible Emacs buffers with their name, major mode, size, and associated file path.  Use this to find the exact buffer name to pass to edit_buffer and similar tools.  Buffer names and file paths are both accepted by any tool with a 'buffer' argument."
- :args '()
- :include nil
- :category "emacs")
+                        (mapconcat #'my/gptel--beads-issue-summary shown "\n"))
+              (format "No Beads issues matched %S." query))
+            "Use beads operation=show with an issue id for full details."))))
+    (error (format "Error searching Beads issues: %s" (error-message-string err)))))
+
+(defun my/gptel--beads-tool (operation &optional project-root id query status priority type assignee labels limit all)
+  "Dispatch Beads OPERATION behind one gptel tool declaration."
+  (pcase operation
+    ("list" (my/gptel--beads-list-issues project-root status priority type assignee labels limit all))
+    ("show" (if (and id (not (string-empty-p id)))
+                (my/gptel--beads-show-issue id project-root)
+              "Error: beads operation=show requires id."))
+    ("ready" (my/gptel--beads-ready-issues project-root assignee priority limit))
+    ("search" (my/gptel--beads-search-issues query project-root status priority type assignee labels limit all))
+    (_ "Error: beads operation must be one of: list, show, ready, search.")))
+
+(defun my/gptel--knowledge-tool (operation &optional scope entry old-entry name-or-file query title when-to-use steps verification caveats max-skills max-matches max-chars replace-existing)
+  "Dispatch persistent-memory and skill OPERATION behind one tool declaration."
+  (pcase operation
+    ("remember" (my/gptel--remember scope entry old-entry))
+    ("list_skills" (my/gptel--list-skills max-skills))
+    ("search_skills" (my/gptel--search-skills query max-matches))
+    ("load_skill" (my/gptel--load-skill name-or-file max-chars))
+    ("save_skill" (my/gptel--save-skill title when-to-use steps verification caveats replace-existing))
+    (_ "Error: knowledge operation must be one of: remember, list_skills, search_skills, load_skill, save_skill.")))
+
+(defun my/gptel--knowledge-confirm-p (operation &rest _)
+  "Return non-nil when knowledge OPERATION mutates durable state."
+  (member operation '("remember" "save_skill")))
+
+(defun my/gptel--fetch-tool-output (id start-line end-line)
+  "Fetch a bounded line range from stored tool output ID."
+  (condition-case err
+      (let* ((result (my/gptel--read-stored-output-lines id start-line end-line))
+             (path (alist-get 'path result))
+             (total-lines (alist-get 'total_lines result))
+             (range (alist-get 'range result))
+             (text (alist-get 'text result)))
+        (my/gptel--format-tool-result
+         "fetch_tool_output"
+         `((target . ,id)
+           (range . ,range)
+           (total_lines . ,total-lines)
+           (object_path . ,(abbreviate-file-name path)))
+         (if (string-empty-p text)
+             (format "No stored output lines in requested range %s (total lines: %d)."
+                     range total-lines)
+           (format "Stored tool output %s, lines %s of %d:\n%s"
+                   id range total-lines text))
+         "Call tool_output operation=fetch with a different bounded start-line/end-line range, or operation=search for a specific pattern."))
+    (error (format "Error fetching stored tool output: %s"
+                   (error-message-string err)))))
+
+(defun my/gptel--search-tool-output (id pattern &optional max-matches)
+  "Search within stored tool output ID for regex PATTERN."
+  (condition-case err
+      (let* ((path (my/gptel--tool-output-object-path id))
+             (max-matches (min 100 (max 1 (round (or max-matches 25)))))
+             (matches nil)
+             (match-count 0)
+             (total-lines 0))
+        (when (string-empty-p pattern)
+          (error "pattern must not be empty"))
+        (with-temp-buffer
+          (insert-file-contents path)
+          (setq total-lines (count-lines (point-min) (point-max)))
+          (goto-char (point-min))
+          (while (re-search-forward pattern nil t)
+            (setq match-count (1+ match-count))
+            (when (<= match-count max-matches)
+              (let ((line-num (line-number-at-pos))
+                    (line (string-trim
+                           (buffer-substring-no-properties
+                            (line-beginning-position)
+                            (line-end-position)))))
+                (push (format "Line %d: %s" line-num line) matches)))))
+        (my/gptel--format-tool-result
+         "search_tool_output"
+         `((target . ,id)
+           (query . ,pattern)
+           (match_count . ,match-count)
+           (shown_count . ,(length matches))
+           (max_matches . ,max-matches)
+           (total_lines . ,total-lines)
+           (object_path . ,(abbreviate-file-name path)))
+         (if matches
+             (format "Found %d match%s for %S in stored output %s%s:\n%s"
+                     match-count
+                     (if (= match-count 1) "" "es")
+                     pattern id
+                     (if (> match-count max-matches)
+                         (format " (showing first %d)" max-matches)
+                       "")
+                     (mapconcat #'identity (nreverse matches) "\n"))
+           (format "No matches for %S in stored output %s." pattern id))
+         "Use tool_output operation=fetch around a reported line number, or rerun operation=search with a more specific pattern/max-matches."))
+    (error (format "Error searching stored tool output: %s"
+                   (error-message-string err)))))
+
+(defun my/gptel--tool-output-tool (operation id &optional start-line end-line pattern max-matches)
+  "Dispatch stored tool-output OPERATION behind one tool declaration."
+  (pcase operation
+    ("fetch" (my/gptel--fetch-tool-output id start-line end-line))
+    ("search" (my/gptel--search-tool-output id pattern max-matches))
+    (_ "Error: tool_output operation must be one of: fetch, search.")))
+
+(defun my/gptel--edit-buffer (buffer old-str new-str &optional replace-all no-save start-line end-line)
+  "Edit BUFFER using hashline or exact string replacement."
+  (condition-case err
+      (with-current-buffer (my/gptel--resolve-buffer buffer)
+        (let ((result (if (and start-line (not (string-empty-p start-line)))
+                          (my/gptel--buffer-edit-hashline buffer start-line end-line new-str)
+                        (my/gptel--buffer-edit-string buffer old-str new-str replace-all))))
+          (when (and (not no-save)
+                     (not (string-prefix-p "Error:" result))
+                     (buffer-file-name)
+                     (buffer-modified-p))
+            (save-buffer)
+            (setq result (concat result " (saved)")))
+          result))
+    (error (format "Error in edit_buffer: %s" (error-message-string err)))))
+
+
+(defun my/gptel--show-buffer-context (buffer line-number &optional context-lines)
+  "Show CONTEXT-LINES around LINE-NUMBER in BUFFER."
+  (let ((line-number (round line-number))
+        (context-lines (and context-lines (round context-lines))))
+    (my/gptel--with-buffer-safety (my/gptel--resolve-buffer buffer) "showing context"
+      (my/gptel--ensure-readable-buffer "show_buffer_context")
+      (save-excursion
+        (let* ((context-size (or context-lines 5))
+               (total-lines (count-lines (point-min) (point-max)))
+               (start-line (max 1 (- line-number context-size)))
+               (end-line (min total-lines (+ line-number context-size)))
+               (lines '()))
+          (goto-char (point-min))
+          (forward-line (1- start-line))
+          (dotimes (i (1+ (- end-line start-line)))
+            (let ((current-line-num (+ start-line i))
+                  (line-content (buffer-substring-no-properties
+                                 (line-beginning-position)
+                                 (line-end-position))))
+              (push (format "%s%d: %s"
+                            (if (= current-line-num line-number) ">>> " "    ")
+                            current-line-num
+                            line-content) lines))
+            (forward-line 1))
+          (my/gptel--format-tool-result
+           "show_buffer_context"
+           `((target . ,buffer)
+             (line . ,line-number)
+             (range . ,(format "%d-%d" start-line end-line))
+             (total_lines . ,total-lines))
+           (format "Context around line %d in buffer '%s' (lines %d-%d of %d):\n%s"
+                   line-number buffer start-line end-line total-lines
+                   (mapconcat 'identity (nreverse lines) "\n"))
+           "Call buffer_inspect operation=context with a smaller context-lines value, or workspace operation=read_file with start-line/end-line for a precise range."))))))
+
+(defun my/gptel--search-buffer-text (buffer search-text)
+  "Search for literal SEARCH-TEXT in BUFFER."
+  (my/gptel--with-buffer-safety (my/gptel--resolve-buffer buffer) "searching buffer"
+    (my/gptel--ensure-readable-buffer "search_buffer_text")
+    (save-excursion
+      (if (string-empty-p search-text)
+          "Error: search-text must not be empty."
+        (goto-char (point-min))
+        (let ((matches '())
+              (count 0)
+              (max-show 50))
+          (while (search-forward search-text nil t)
+            (setq count (1+ count))
+            (when (<= count max-show)
+              (let ((line-num (line-number-at-pos))
+                    (line-content (string-trim (thing-at-point 'line t))))
+                (push (format "Line %d: %s" line-num line-content) matches))))
+          (my/gptel--format-tool-result
+           "search_buffer_text"
+           `((target . ,buffer)
+             (query . ,search-text)
+             (match_count . ,count)
+             (shown_count . ,(length matches)))
+           (if matches
+               (format "Found %d occurrence%s of '%s' in buffer '%s'%s:\n%s"
+                       count
+                       (if (= count 1) "" "s")
+                       search-text buffer
+                       (if (> count max-show)
+                           (format " (showing first %d)" max-show)
+                         "")
+                       (mapconcat 'identity (nreverse matches) "\n"))
+             (format "Text '%s' not found in buffer '%s'" search-text buffer))
+           "If shown_count is lower than match_count, refine search-text or use buffer_inspect operation=context around a reported line."))))))
+
+(defun my/gptel--save-buffer (buffer)
+  "Save BUFFER to its visited file."
+  (my/gptel--with-buffer-safety (my/gptel--resolve-buffer buffer) "saving buffer"
+    (if (buffer-file-name)
+        (progn
+          (save-buffer)
+          (format "Saved buffer '%s' to file: %s" buffer (buffer-file-name)))
+      (format "Buffer '%s' is not associated with a file. Use file_write operation=overwrite to save it to a path." buffer))))
+
+(defun my/gptel--read-file (path &optional start-line end-line)
+  "Read PATH with hashline tags and bounded pagination."
+  (condition-case err
+      (let ((existing (get-file-buffer path))
+            (buf (find-file-noselect path)))
+        (unwind-protect
+            (with-current-buffer buf
+              (my/gptel--ensure-readable-buffer "read_file")
+              (let* ((total (count-lines (point-min) (point-max)))
+                     (start-line (and start-line (round start-line)))
+                     (end-line (and end-line (round end-line)))
+                     (start (max 1 (or start-line 1)))
+                     (requested-end (or end-line (+ start 1999)))
+                     (end (min total requested-end)))
+                (my/gptel--format-tool-result
+                 "read_file"
+                 `((target . ,(abbreviate-file-name (expand-file-name path)))
+                   (range . ,(if (zerop total) "0-0" (format "%d-%d" start end)))
+                   (total_lines . ,total)
+                   (requested_end . ,requested-end))
+                 (my/gptel--render-hashed-lines path start-line end-line)
+                 "Call workspace operation=read_file again with start-line/end-line for the next page or a narrower range.")))
+          (unless existing
+            (kill-buffer buf))))
+    (error (format "Error reading file '%s': %s" path (error-message-string err)))))
+
+(defun my/gptel--open-file (path)
+  "Open PATH in Emacs and return its buffer name."
+  (condition-case err
+      (let* ((expanded (expand-file-name path))
+             (buf (find-file-noselect expanded)))
+        (format "Opened '%s' in buffer: %s" expanded (buffer-name buf)))
+    (error (format "Error opening file '%s': %s" path (error-message-string err)))))
+
+(defun my/gptel--list-buffers ()
+  "List visible Emacs buffers compactly."
+  (let* ((bufs (seq-filter
+                (lambda (b)
+                  (not (string-prefix-p " " (buffer-name b))))
+                (buffer-list)))
+         (max-show 100)
+         (entries
+          (mapcar (lambda (buf)
+                    (with-current-buffer buf
+                      (format "  %-35s  %-20s  %7d bytes  %s"
+                              (buffer-name)
+                              (symbol-name major-mode)
+                              (buffer-size)
+                              (or (buffer-file-name) "(no file)"))))
+                  bufs)))
+    (my/gptel--format-tool-result
+     "list_buffers"
+     `((buffer_count . ,(length entries))
+       (shown_count . ,(min (length entries) max-show)))
+     (format "%d buffer%s%s:\n%s"
+             (length entries)
+             (if (= (length entries) 1) "" "s")
+             (if (> (length entries) max-show)
+                 (format " (showing first %d)" max-show)
+               "")
+             (mapconcat #'identity
+                        (cl-subseq entries 0 (min (length entries) max-show))
+                        "\n"))
+     "Use a specific buffer name with buffer_inspect or buffer_edit operations.")))
 
 (gptel-make-tool
  :name "run_shell_command"
@@ -1398,429 +1245,359 @@ The body is capped to MAX-CHARS, TOOL's specific cap, or
 LAST RESORT ONLY. Do NOT use this for routine project navigation, file inspection, or text search.
 
 Use native Emacs tools instead:
-  - ls/find/tree/pwd-style file discovery -> list_project_files
-  - cat/head/tail/sed-style file reading -> read_file or show_buffer_context
-  - grep/rg/find+xargs-style text search -> search_project or search_buffer_text
-  - git status/diff -> git_status / git_diff
+  - ls/find/tree/pwd-style file discovery -> workspace operation=list_files
+  - cat/head/tail/sed-style file reading -> workspace operation=read_file or buffer_inspect operation=context
+  - grep/rg/find+xargs-style text search -> workspace operation=search_project or buffer_inspect operation=search
+  - git status/diff -> git operation=status/diff
 
-Reserve this tool for commands that genuinely need an external process: tests, builds, linters/formatters, package managers, one-off system inspection, or git operations not covered by git_status/git_diff."
+Reserve this tool for commands that genuinely need an external process: tests, builds, linters/formatters, package managers, one-off system inspection, or git operations not covered by the git dispatcher."
  :args (list '(:name "command"
                :type "string"
-               :description "External command to execute. Before using this, prefer list_project_files/read_file/search_project/show_buffer_context/search_buffer_text/git_status/git_diff when they can answer the question."))
+               :description "External command to execute. Before using this, prefer workspace/buffer_inspect/git dispatchers when they can answer the question."))
  :confirm t
  :include nil
  :category "shell")
 
 
-(gptel-make-tool
- :name "indent_region"
- :function (lambda (buffer start-line end-line)
-             (let ((start-line (round start-line))
-                   (end-line (round end-line)))
-               (my/gptel--with-buffer-safety (my/gptel--resolve-buffer buffer) "indenting region"
-                 (let ((total-lines (count-lines (point-min) (point-max))))
-                   (cond
-                    ((or (< start-line 1)
-                         (> end-line total-lines)
-                         (> start-line end-line))
-                     (format "Error: Invalid line range %d-%d (total lines: %d)"
-                             start-line end-line total-lines))
-                    (t
-                     (save-excursion
-                       (goto-char (point-min))
-                       (forward-line (1- start-line))
-                       (let ((start (point)))
-                         (forward-line (- end-line start-line))
-                         (end-of-line)
-                         (indent-region start (point))))
-                     (format "Indented lines %d-%d in buffer '%s' using %s rules"
-                             start-line end-line buffer major-mode)))))))
- :description "Re-indent lines START-LINE through END-LINE in BUFFER using the buffer's major-mode indentation logic (calls `indent-region').  Use AFTER edit_buffer if inserted code needs reformatting.  Note: indentation is the major mode's interpretation, which may differ from what you wrote -- re-read the buffer afterwards to confirm."
- :args (list '(:name "buffer"
-               :type "string"
-               :description "Name of the buffer to re-indent.")
-             '(:name "start-line"
-               :type "number"
-               :description "First line of the region to indent (1-based, inclusive).")
-             '(:name "end-line"
-               :type "number"
-               :description "Last line of the region to indent (1-based, inclusive)."))
- :confirm t
- :category "emacs")
+(defun my/gptel--indent-region (buffer start-line end-line)
+  "Re-indent BUFFER between START-LINE and END-LINE."
+  (let ((start-line (round start-line))
+        (end-line (round end-line)))
+    (my/gptel--with-buffer-safety (my/gptel--resolve-buffer buffer) "indenting region"
+      (let ((total-lines (count-lines (point-min) (point-max))))
+        (cond
+         ((or (< start-line 1)
+              (> end-line total-lines)
+              (> start-line end-line))
+          (format "Error: Invalid line range %d-%d (total lines: %d)"
+                  start-line end-line total-lines))
+         (t
+          (save-excursion
+            (goto-char (point-min))
+            (forward-line (1- start-line))
+            (let ((start (point)))
+              (forward-line (- end-line start-line))
+              (end-of-line)
+              (indent-region start (point))))
+          (format "Indented lines %d-%d in buffer '%s' using %s rules"
+                  start-line end-line buffer major-mode)))))))
 
-(gptel-make-tool
- :name "check_parens"
- :function (lambda (buffer)
-             (condition-case err
-                 (with-current-buffer (my/gptel--resolve-buffer buffer)
-                   (save-excursion
-                     (check-parens))
-                   (format "Parentheses and expressions are balanced in buffer '%s'." buffer))
-               (error (format "Unbalanced parentheses detected in buffer '%s': %s"
-                              buffer (error-message-string err)))))
- :description "Checks the specified buffer for unbalanced parentheses. This function verifies that all parentheses, brackets, and quotes are correctly matched according to the buffer's syntax rules. It returns a success message if balanced, or an error if an imbalance is found."
- :args (list '(:name "buffer"
-               :type "string"
-               :description "The name of the buffer to check."))
- :category "emacs")
+(defun my/gptel--check-parens (buffer)
+  "Check BUFFER for balanced parentheses and expressions."
+  (condition-case err
+      (with-current-buffer (my/gptel--resolve-buffer buffer)
+        (save-excursion
+          (check-parens))
+        (format "Parentheses and expressions are balanced in buffer '%s'." buffer))
+    (error (format "Unbalanced parentheses detected in buffer '%s': %s"
+                   buffer (error-message-string err)))))
 
 
-(gptel-make-tool
- :name "byte_compile_file"
- :description "Byte-compile an Emacs Lisp file to check for syntax errors. Returns a success message or the compilation log on failure."
- :args (list '(:name "filename" :type "string" :description "The path to the Emacs Lisp file to compile."))
- :function (lambda (filename)
-             (condition-case err
-                 (progn
-                   (unless (file-exists-p filename)
-                     (error "File not found: %s" filename))
-                   (with-current-buffer (get-buffer-create "*Compile-Log*")
-                     (let ((inhibit-read-only t))
-                       (erase-buffer)))
-                   (if (byte-compile-file filename)
-                       (format "Successfully compiled '%s' with no errors." filename)
-                     (let ((log-output (with-current-buffer (get-buffer "*Compile-Log*")
-                                         (buffer-string))))
-                       (format "Compilation of '%s' failed. Errors:\n%s" filename log-output))))
-               (error (format "An error occurred while trying to compile '%s': %s"
-                              filename (error-message-string err)))))
- :confirm t
- :category "emacs")
+(defun my/gptel--byte-compile-file (filename)
+  "Byte-compile Emacs Lisp FILENAME and return a compact result."
+  (condition-case err
+      (progn
+        (unless (file-exists-p filename)
+          (error "File not found: %s" filename))
+        (with-current-buffer (get-buffer-create "*Compile-Log*")
+          (let ((inhibit-read-only t))
+            (erase-buffer)))
+        (if (byte-compile-file filename)
+            (format "Successfully compiled '%s' with no errors." filename)
+          (let ((log-output (with-current-buffer (get-buffer "*Compile-Log*")
+                              (buffer-string))))
+            (format "Compilation of '%s' failed. Errors:\n%s" filename log-output))))
+    (error (format "An error occurred while trying to compile '%s': %s"
+                   filename (error-message-string err)))))
 
-(gptel-make-tool
- :name "search_project"
- :function (lambda (pattern &optional dir file-glob case-sensitive)
-             (condition-case err
-                 (let* ((rg (executable-find "rg"))
-                        (search-dir (or dir
-                                        (condition-case nil
-                                            (projectile-project-root)
-                                          (error default-directory))))
-                        (expanded-dir (expand-file-name search-dir)))
-                   (cond
-                    ((not rg)
-                     "Error: ripgrep ('rg') is not installed or not on PATH.")
-                    ((not (file-directory-p expanded-dir))
-                     (format "Error: directory does not exist: %s" expanded-dir))
-                    (t
-                     (let* ((args (append
-                                   (list "--line-number" "--no-heading" "--color=never" "--follow" "--no-messages"
-                                         (if case-sensitive "--case-sensitive" "--ignore-case"))
-                                   (when file-glob (list "--glob" file-glob))
-                                   (list "--" pattern expanded-dir)))
-                            (exit-status nil)
-                            (output (with-temp-buffer
-                                      (setq exit-status
-                                            (apply #'call-process rg nil t nil args))
-                                      (buffer-string)))
-                            (trimmed (string-trim output)))
-                       (cond
-                        ((and (= exit-status 1) (string-empty-p trimmed))
-                         (my/gptel--format-tool-result
-                          "search_project"
-                          `((target . ,(abbreviate-file-name search-dir))
-                            (query . ,pattern)
-                            (file_glob . ,file-glob)
-                            (exit_code . ,exit-status)
-                            (match_count . 0)
-                            (shown_count . 0))
-                          (format "No matches for '%s' in %s"
-                                  pattern (abbreviate-file-name search-dir))
-                          "Broaden the pattern or adjust file-glob/dir if needed."))
-                        ((not (string-empty-p trimmed))
-                         (let ((lines (split-string trimmed "\n" t))
-                               (max-show 50))
-                           (my/gptel--format-tool-result
-                            "search_project"
-                            `((target . ,(abbreviate-file-name search-dir))
-                              (query . ,pattern)
-                              (file_glob . ,file-glob)
-                              (exit_code . ,exit-status)
-                              (match_count . ,(length lines))
-                              (shown_count . ,(min (length lines) max-show)))
-                            (format "Found %d match%s for '%s' in %s%s:\n%s"
-                                    (length lines)
-                                    (if (= (length lines) 1) "" "es")
-                                    pattern
-                                    (abbreviate-file-name search-dir)
-                                    (if (> (length lines) max-show)
-                                        (format " (showing first %d)" max-show)
-                                      "")
-                                    (mapconcat 'identity
-                                               (cl-subseq lines 0 (min (length lines) max-show))
-                                               "\n"))
-                            "If shown_count is lower than match_count, narrow dir/file-glob or use a more specific pattern.")))
-                        ((not (zerop exit-status))
-                         (my/gptel--format-tool-result
-                          "search_project"
-                          `((target . ,(abbreviate-file-name search-dir))
-                            (query . ,pattern)
-                            (file_glob . ,file-glob)
-                            (exit_code . ,exit-status))
-                          (format "Error: rg exited with status %d."
-                                  exit-status)
-                          "Check the regex pattern, directory, and file-glob."))
-                        (t
-                         (my/gptel--format-tool-result
-                          "search_project"
-                          `((target . ,(abbreviate-file-name search-dir))
-                            (query . ,pattern)
-                            (file_glob . ,file-glob)
-                            (exit_code . ,exit-status)
-                            (match_count . 0)
-                            (shown_count . 0))
-                          (format "No matches for '%s' in %s"
-                                  pattern (abbreviate-file-name search-dir))
-                          "Broaden the pattern or adjust file-glob/dir if needed.")))))))
-               (error (format "Error searching project: %s" (error-message-string err)))))
- :description "Search for a regex pattern across project files without invoking run_shell_command. Use this instead of grep/rg/find+xargs shell commands. Respects .gitignore via ripgrep. Returns matching lines with file path and line number."
- :args (list '(:name "pattern"
-               :type "string"
-               :description "Regex pattern to search for (ripgrep syntax).")
-             '(:name "dir"
-               :type "string"
-               :description "Directory to search in (default: projectile project root or current directory).")
-             '(:name "file-glob"
-               :type "string"
-               :description "Optional file type filter (e.g. '*.el', '*.{ts,tsx}').")
-             '(:name "case-sensitive"
-               :type "boolean"
-               :description "Set to true for case-sensitive search (default: case-insensitive)."))
- :include nil
- :category "search")
+(defun my/gptel--search-project (pattern &optional dir file-glob case-sensitive)
+  "Search project files for ripgrep PATTERN."
+  (condition-case err
+      (let* ((rg (executable-find "rg"))
+             (search-dir (or dir
+                             (condition-case nil
+                                 (projectile-project-root)
+                               (error default-directory))))
+             (expanded-dir (expand-file-name search-dir)))
+        (cond
+         ((not rg)
+          "Error: ripgrep ('rg') is not installed or not on PATH.")
+         ((not (file-directory-p expanded-dir))
+          (format "Error: directory does not exist: %s" expanded-dir))
+         (t
+          (let* ((args (append
+                        (list "--line-number" "--no-heading" "--color=never" "--follow" "--no-messages"
+                              (if case-sensitive "--case-sensitive" "--ignore-case"))
+                        (when file-glob (list "--glob" file-glob))
+                        (list "--" pattern expanded-dir)))
+                 (exit-status nil)
+                 (output (with-temp-buffer
+                           (setq exit-status
+                                 (apply #'call-process rg nil t nil args))
+                           (buffer-string)))
+                 (trimmed (string-trim output)))
+            (cond
+             ((and (= exit-status 1) (string-empty-p trimmed))
+              (my/gptel--format-tool-result
+               "search_project"
+               `((target . ,(abbreviate-file-name search-dir))
+                 (query . ,pattern)
+                 (file_glob . ,file-glob)
+                 (exit_code . ,exit-status)
+                 (match_count . 0)
+                 (shown_count . 0))
+               (format "No matches for '%s' in %s"
+                       pattern (abbreviate-file-name search-dir))
+               "Broaden the pattern or adjust file-glob/dir if needed."))
+             ((not (string-empty-p trimmed))
+              (let ((lines (split-string trimmed "\n" t))
+                    (max-show 50))
+                (my/gptel--format-tool-result
+                 "search_project"
+                 `((target . ,(abbreviate-file-name search-dir))
+                   (query . ,pattern)
+                   (file_glob . ,file-glob)
+                   (exit_code . ,exit-status)
+                   (match_count . ,(length lines))
+                   (shown_count . ,(min (length lines) max-show)))
+                 (format "Found %d match%s for '%s' in %s%s:\n%s"
+                         (length lines)
+                         (if (= (length lines) 1) "" "es")
+                         pattern
+                         (abbreviate-file-name search-dir)
+                         (if (> (length lines) max-show)
+                             (format " (showing first %d)" max-show)
+                           "")
+                         (mapconcat 'identity
+                                    (cl-subseq lines 0 (min (length lines) max-show))
+                                    "\n"))
+                 "If shown_count is lower than match_count, narrow dir/file-glob or use a more specific pattern.")))
+             ((not (zerop exit-status))
+              (my/gptel--format-tool-result
+               "search_project"
+               `((target . ,(abbreviate-file-name search-dir))
+                 (query . ,pattern)
+                 (file_glob . ,file-glob)
+                 (exit_code . ,exit-status))
+               (format "Error: rg exited with status %d."
+                       exit-status)
+               "Check the regex pattern, directory, and file-glob."))
+             (t
+              (my/gptel--format-tool-result
+               "search_project"
+               `((target . ,(abbreviate-file-name search-dir))
+                 (query . ,pattern)
+                 (file_glob . ,file-glob)
+                 (exit_code . ,exit-status)
+                 (match_count . 0)
+                 (shown_count . 0))
+               (format "No matches for '%s' in %s"
+                       pattern (abbreviate-file-name search-dir))
+               "Broaden the pattern or adjust file-glob/dir if needed.")))))))
+    (error (format "Error searching project: %s" (error-message-string err)))))
 
-(gptel-make-tool
- :name "list_project_files"
- :function (lambda (&optional pattern dir)
-             (condition-case err
-                 (let* ((root (or dir
-                                  (condition-case nil
-                                      (projectile-project-root)
-                                    (error default-directory))))
-                        (all-files
-                         (condition-case nil
-                             (projectile-project-files root)
-                           (error
-                            (directory-files-recursively root ".*" t))))
-                        (filtered
-                         (if pattern
-                             (seq-filter (lambda (f) (string-match-p pattern f)) all-files)
-                           all-files))
-                        (max-show 100))
-                   (my/gptel--format-tool-result
-                    "list_project_files"
-                    `((target . ,(abbreviate-file-name root))
-                      (pattern . ,pattern)
-                      (file_count . ,(length filtered))
-                      (shown_count . ,(min (length filtered) max-show)))
-                    (if (null filtered)
-                        (format "No files found in %s%s"
-                                (abbreviate-file-name root)
-                                (if pattern (format " matching '%s'" pattern) ""))
-                      (format "%d file%s in %s%s:\n%s"
-                              (length filtered)
-                              (if (= (length filtered) 1) "" "s")
-                              (abbreviate-file-name root)
-                              (if (> (length filtered) max-show)
-                                  (format " (showing first %d)" max-show)
-                                "")
-                              (mapconcat 'identity
-                                         (cl-subseq filtered 0 (min (length filtered) max-show))
-                                         "\n")))
-                    "If shown_count is lower than file_count, pass a narrower pattern or dir."))
-               (error (format "Error listing files: %s" (error-message-string err)))))
- :description "List files in the project using native Emacs/projectile APIs, optionally filtered by a regex pattern. Use this instead of ls/find/tree shell commands. Respects .gitignore when projectile is available."
- :args (list '(:name "pattern"
-               :type "string"
-               :description "Optional regex to filter filenames (e.g. '\\.el$', 'src/').")
-             '(:name "dir"
-               :type "string"
-               :description "Directory to list (default: projectile project root or current directory)."))
- :include nil
- :category "search")
+(defun my/gptel--list-project-files (&optional pattern dir)
+  "List project files optionally matching regex PATTERN."
+  (condition-case err
+      (let* ((root (or dir
+                       (condition-case nil
+                           (projectile-project-root)
+                         (error default-directory))))
+             (all-files
+              (condition-case nil
+                  (projectile-project-files root)
+                (error
+                 (directory-files-recursively root ".*" t))))
+             (filtered
+              (if pattern
+                  (seq-filter (lambda (f) (string-match-p pattern f)) all-files)
+                all-files))
+             (max-show 100))
+        (my/gptel--format-tool-result
+         "list_project_files"
+         `((target . ,(abbreviate-file-name root))
+           (pattern . ,pattern)
+           (file_count . ,(length filtered))
+           (shown_count . ,(min (length filtered) max-show)))
+         (if (null filtered)
+             (format "No files found in %s%s"
+                     (abbreviate-file-name root)
+                     (if pattern (format " matching '%s'" pattern) ""))
+           (format "%d file%s in %s%s:\n%s"
+                   (length filtered)
+                   (if (= (length filtered) 1) "" "s")
+                   (abbreviate-file-name root)
+                   (if (> (length filtered) max-show)
+                       (format " (showing first %d)" max-show)
+                     "")
+                   (mapconcat 'identity
+                              (cl-subseq filtered 0 (min (length filtered) max-show))
+                              "\n")))
+         "If shown_count is lower than file_count, pass a narrower pattern or dir."))
+    (error (format "Error listing files: %s" (error-message-string err)))))
 
-(gptel-make-tool
- :name "create_file"
- :function (lambda (path content)
-             (condition-case err
-                 (let ((expanded (expand-file-name path)))
-                   (when (file-exists-p expanded)
-                     (error "File already exists: %s. Use open_file plus edit_buffer hashline edits for existing files." expanded))
-                   (let ((dir (file-name-directory expanded)))
-                     (when (and dir (not (file-directory-p dir)))
-                       (mkdir dir t)))
-                   (with-temp-file expanded
-                     (insert content))
-                   (format "Created %s (%d bytes)" expanded (length content)))
-               (error (format "Error creating file '%s': %s" path (error-message-string err)))))
- :description "Create a new file only. Errors if the file already exists; for existing files, use open_file plus edit_buffer hashline edits instead of rewriting the whole file. Creates parent directories as needed."
- :args (list '(:name "path"
-               :type "string"
-               :description "File path to create (relative or absolute).")
-             '(:name "content"
-               :type "string"
-               :description "Content to write to the new file."))
- :confirm t
- :category "filesystem")
+(defun my/gptel--workspace-tool (operation &optional path start-line end-line pattern dir file-glob case-sensitive)
+  "Dispatch read-only workspace OPERATION behind one tool declaration."
+  (pcase operation
+    ("read_file" (my/gptel--read-file path start-line end-line))
+    ("search_project" (my/gptel--search-project pattern dir file-glob case-sensitive))
+    ("list_files" (my/gptel--list-project-files pattern dir))
+    (_ "Error: workspace operation must be one of: read_file, search_project, list_files.")))
 
-(gptel-make-tool
- :name "overwrite_file"
- :function (lambda (path content)
-             (condition-case err
-                 (let ((expanded (expand-file-name path)))
-                   (let ((dir (file-name-directory expanded)))
-                     (when (and dir (not (file-directory-p dir)))
-                       (mkdir dir t)))
-                   (with-temp-file expanded
-                     (insert content))
-                   (format "Wrote %s (%d bytes)" expanded (length content)))
-               (error (format "Error writing file '%s': %s" path (error-message-string err)))))
- :description "Exceptional escape hatch: overwrite a whole file with new content, replacing it entirely. This tool is intentionally excluded from default agent presets. Prefer open_file plus edit_buffer hashline edits for existing files, and create_file for new files. Only use overwrite_file when a user explicitly asks for a full rewrite or when replacing a generated/disposable file after reading the current file and confirming that a full replacement is safer than a targeted edit. Creates parent directories if needed."
- :args (list '(:name "path"
-               :type "string"
-               :description "File path to write (relative or absolute).")
-             '(:name "content"
-               :type "string"
-               :description "Full content to write to the file."))
- :confirm t
- :category "filesystem")
+(defun my/gptel--create-file (path content)
+  "Create new file PATH with CONTENT."
+  (condition-case err
+      (let ((expanded (expand-file-name path)))
+        (when (file-exists-p expanded)
+          (error "File already exists: %s. Use buffer_edit operation=open plus operation=edit hashline edits for existing files." expanded))
+        (let ((dir (file-name-directory expanded)))
+          (when (and dir (not (file-directory-p dir)))
+            (mkdir dir t)))
+        (with-temp-file expanded
+          (insert content))
+        (format "Created %s (%d bytes)" expanded (length content)))
+    (error (format "Error creating file '%s': %s" path (error-message-string err)))))
 
-(gptel-make-tool
- :name "git_status"
- :function (lambda ()
-             (require 'magit-git)
-             (condition-case err
-                 (let ((output (with-temp-buffer
-                                 (magit-git-insert "status" "--porcelain=v1")
-                                 (buffer-string))))
-                   (if (string-empty-p (string-trim output))
-                       (my/gptel--format-tool-result
-                        "git_status"
-                        '((target . "current git repository")
-                          (entry_count . 0))
-                        "Working tree clean. No staged, unstaged, or untracked changes."
-                        "Use git_diff only if you need to verify a specific path.")
-                     (let* ((trimmed (string-trim output))
-                            (lines (split-string trimmed "\n" t)))
-                       (my/gptel--format-tool-result
-                        "git_status"
-                        `((target . "current git repository")
-                          (entry_count . ,(length lines)))
-                        (format "```\n%s\n```" trimmed)
-                        "Use git_diff with staged/path arguments to inspect the relevant changes."))))
-               (error (format "Error getting git status: %s" (error-message-string err)))))
- :description "Show git status in porcelain format. See https://git-scm.com/docs/git-status#_porcelain_format_format for key."
- :args nil
- :include nil
- :category "git")
+(defun my/gptel--overwrite-file (path content)
+  "Overwrite PATH with CONTENT."
+  (condition-case err
+      (let ((expanded (expand-file-name path)))
+        (let ((dir (file-name-directory expanded)))
+          (when (and dir (not (file-directory-p dir)))
+            (mkdir dir t)))
+        (with-temp-file expanded
+          (insert content))
+        (format "Wrote %s (%d bytes)" expanded (length content)))
+    (error (format "Error writing file '%s': %s" path (error-message-string err)))))
 
-(gptel-make-tool
- :name "git_diff"
- :function (lambda (&optional staged path)
-             (require 'magit-git)
-             (condition-case err
-                 (let* ((args `("diff"
-                                ,@(when staged '("--staged"))
-                                ,@(when path (list "--" path))))
-                        (output (with-temp-buffer
-                                  (apply #'magit-git-insert args)
-                                  (buffer-string))))
-                   (if (string-empty-p (string-trim output))
-                       (my/gptel--format-tool-result
-                        "git_diff"
-                        `((target . ,(or path "current git repository"))
-                          (staged . ,(if staged "yes" "no"))
-                          (diff_chars . 0)
-                          (file_count . 0))
-                        (format "No %schanges%s."
-                                (if staged "staged " "")
-                                (if path (format " for %s" path) ""))
-                        "No follow-up needed unless you want a different staged/path scope.")
-                     (let* ((trimmed (string-trim output))
-                            (file-count (with-temp-buffer
-                                          (insert trimmed)
-                                          (goto-char (point-min))
-                                          (cl-loop while (re-search-forward "^diff --git " nil t)
-                                                   count 1))))
-                       (my/gptel--format-tool-result
-                        "git_diff"
-                        `((target . ,(or path "current git repository"))
-                          (staged . ,(if staged "yes" "no"))
-                          (diff_chars . ,(length trimmed))
-                          (file_count . ,file-count))
-                        (format "```diff\n%s\n```" trimmed)
-                        "If truncated, call git_diff with a narrower path or staged scope."))))
-               (error (format "Error getting git diff: %s" (error-message-string err)))))
- :description "Show git diff of unstaged changes (or staged if STAGED is non-nil). Optionally limit to PATH."
- :args (list '(:name "staged"
-               :type "boolean"
-               :description "Show staged changes instead of unstaged.")
-             '(:name "path"
-               :type "string"
-               :description "Limit diff to a specific file or directory."))
- :include nil
- :category "git")
+(defun my/gptel--file-write-tool (operation path content)
+  "Dispatch mutating file-write OPERATION behind one tool declaration."
+  (pcase operation
+    ("create" (my/gptel--create-file path content))
+    ("overwrite" (my/gptel--overwrite-file path content))
+    (_ "Error: file_write operation must be one of: create, overwrite.")))
 
-(gptel-make-tool
- :name "buffer_diagnostics"
- :function (lambda (buffer)
-             (my/gptel--with-buffer-safety (my/gptel--resolve-buffer buffer) "checking diagnostics"
-               (my/gptel--ensure-readable-buffer "buffer_diagnostics")
-               (cond
-                ((not (bound-and-true-p flymake-mode))
-                 (my/gptel--format-tool-result
-                  "buffer_diagnostics"
-                  `((target . ,buffer)
-                    (flymake_active . "no")
-                    (diagnostic_count . 0))
-                  (format "flymake-mode is not active in buffer '%s'." buffer)
-                  "Enable flymake-mode or run a file-specific validator if diagnostics are needed."))
-                ((null (flymake-diagnostics))
-                 (my/gptel--format-tool-result
-                  "buffer_diagnostics"
-                  `((target . ,buffer)
-                    (flymake_active . "yes")
-                    (diagnostic_count . 0))
-                  (format "No diagnostics in buffer '%s'." buffer)
-                  "No follow-up needed unless the buffer changed; rerun after edits."))
-                (t
-                 (let* ((diags (flymake-diagnostics))
-                        (grouped (seq-group-by #'flymake-diagnostic-type diags))
-                        (severity-counts
-                         (mapconcat (lambda (group)
-                                      (format "%s=%d" (car group) (length (cdr group))))
-                                    grouped ", ")))
-                   (my/gptel--format-tool-result
-                    "buffer_diagnostics"
-                    `((target . ,buffer)
-                      (flymake_active . "yes")
-                      (diagnostic_count . ,(length diags))
-                      (severity_counts . ,severity-counts))
-                    (format "%d diagnostic%s in '%s':%s"
-                            (length diags)
-                            (if (= (length diags) 1) "" "s")
-                            buffer
+(defun my/gptel--git-status ()
+  "Show git status in porcelain format."
+  (require 'magit-git)
+  (condition-case err
+      (let ((output (with-temp-buffer
+                      (magit-git-insert "status" "--porcelain=v1")
+                      (buffer-string))))
+        (if (string-empty-p (string-trim output))
+            (my/gptel--format-tool-result
+             "git_status"
+             '((target . "current git repository")
+               (entry_count . 0))
+             "Working tree clean. No staged, unstaged, or untracked changes."
+             "Use git operation=diff only if you need to verify a specific path.")
+          (let* ((trimmed (string-trim output))
+                 (lines (split-string trimmed "\n" t)))
+            (my/gptel--format-tool-result
+             "git_status"
+             `((target . "current git repository")
+               (entry_count . ,(length lines)))
+             (format "```\n%s\n```" trimmed)
+             "Use git operation=diff with staged/path arguments to inspect the relevant changes."))))
+    (error (format "Error getting git status: %s" (error-message-string err)))))
+
+(defun my/gptel--git-diff (&optional staged path)
+  "Show git diff, optionally STAGED and limited to PATH."
+  (require 'magit-git)
+  (condition-case err
+      (let* ((args `("diff"
+                     ,@(when staged '("--staged"))
+                     ,@(when path (list "--" path))))
+             (output (with-temp-buffer
+                       (apply #'magit-git-insert args)
+                       (buffer-string))))
+        (if (string-empty-p (string-trim output))
+            (my/gptel--format-tool-result
+             "git_diff"
+             `((target . ,(or path "current git repository"))
+               (staged . ,(if staged "yes" "no"))
+               (diff_chars . 0)
+               (file_count . 0))
+             (format "No %schanges%s."
+                     (if staged "staged " "")
+                     (if path (format " for %s" path) ""))
+             "No follow-up needed unless you want a different staged/path scope.")
+          (let* ((trimmed (string-trim output))
+                 (file-count (with-temp-buffer
+                               (insert trimmed)
+                               (goto-char (point-min))
+                               (cl-loop while (re-search-forward "^diff --git " nil t)
+                                        count 1))))
+            (my/gptel--format-tool-result
+             "git_diff"
+             `((target . ,(or path "current git repository"))
+               (staged . ,(if staged "yes" "no"))
+               (diff_chars . ,(length trimmed))
+               (file_count . ,file-count))
+             (format "```diff\n%s\n```" trimmed)
+             "If truncated, call git operation=diff with a narrower path or staged scope."))))
+    (error (format "Error getting git diff: %s" (error-message-string err)))))
+
+(defun my/gptel--git-tool (operation &optional staged path)
+  "Dispatch git OPERATION behind one tool declaration."
+  (pcase operation
+    ("status" (my/gptel--git-status))
+    ("diff" (my/gptel--git-diff staged path))
+    (_ "Error: git operation must be one of: status, diff.")))
+
+(defun my/gptel--buffer-diagnostics (buffer)
+  "Show Flymake diagnostics for BUFFER."
+  (my/gptel--with-buffer-safety (my/gptel--resolve-buffer buffer) "checking diagnostics"
+    (my/gptel--ensure-readable-buffer "buffer_diagnostics")
+    (cond
+     ((not (bound-and-true-p flymake-mode))
+      (my/gptel--format-tool-result
+       "buffer_diagnostics"
+       `((target . ,buffer)
+         (flymake_active . "no")
+         (diagnostic_count . 0))
+       (format "flymake-mode is not active in buffer '%s'." buffer)
+       "Enable flymake-mode or run a file-specific validator if diagnostics are needed."))
+     ((null (flymake-diagnostics))
+      (my/gptel--format-tool-result
+       "buffer_diagnostics"
+       `((target . ,buffer)
+         (flymake_active . "yes")
+         (diagnostic_count . 0))
+       (format "No diagnostics in buffer '%s'." buffer)
+       "No follow-up needed unless the buffer changed; rerun after edits."))
+     (t
+      (let* ((diags (flymake-diagnostics))
+             (grouped (seq-group-by #'flymake-diagnostic-type diags))
+             (severity-counts
+              (mapconcat (lambda (group)
+                           (format "%s=%d" (car group) (length (cdr group))))
+                         grouped ", ")))
+        (my/gptel--format-tool-result
+         "buffer_diagnostics"
+         `((target . ,buffer)
+           (flymake_active . "yes")
+           (diagnostic_count . ,(length diags))
+           (severity_counts . ,severity-counts))
+         (format "%d diagnostic%s in '%s':%s"
+                 (length diags)
+                 (if (= (length diags) 1) "" "s")
+                 buffer
+                 (mapconcat
+                  (lambda (group)
+                    (format "\n\n[%s]\n%s"
+                            (car group)
                             (mapconcat
-                             (lambda (group)
-                               (format "\n\n[%s]\n%s"
-                                       (car group)
-                                       (mapconcat
-                                        (lambda (d)
-                                          (format "  Line %d: %s"
-                                                  (line-number-at-pos
-                                                   (flymake-diagnostic-beg d))
-                                                  (flymake-diagnostic-text d)))
-                                        (cdr group)
-                                        "\n")))
-                             grouped
-                             ""))
-                    "Use show_buffer_context around a diagnostic line, then edit and rerun buffer_diagnostics."))))))
- :description "Show flymake diagnostics (errors, warnings, notes) for a buffer, grouped by severity. Requires flymake-mode to be active in the buffer."
- :args (list '(:name "buffer"
-               :type "string"
-               :description "The name of the buffer to check diagnostics for."))
- :include nil
- :category "emacs")
+                             (lambda (d)
+                               (format "  Line %d: %s"
+                                       (line-number-at-pos
+                                        (flymake-diagnostic-beg d))
+                                       (flymake-diagnostic-text d)))
+                             (cdr group)
+                             "\n")))
+                  grouped
+                  ""))
+         "Use buffer_inspect operation=context around a diagnostic line, then edit and rerun diagnostics."))))))
 
 (defun my/gptel--verify-flymake-summary ()
   "Return a verification entry summarizing Flymake diagnostics in current buffer."
@@ -1922,7 +1699,7 @@ Reserve this tool for commands that genuinely need an external process: tests, b
            `((status . ,status))
            (format "Verification %s.\n%s"
                    status (my/gptel--format-verification-entries entries))
-           "Call verify_task with the edited buffer/file, or pass skip_reason when no meaningful check exists.")))
+           "Call buffer_inspect operation=verify with the edited buffer/file, or pass skip_reason when no meaningful check exists.")))
        (t
         (let* ((expanded (expand-file-name target))
                (existing (or (get-buffer target)
@@ -1954,7 +1731,7 @@ Reserve this tool for commands that genuinely need an external process: tests, b
                                 (error (list :fail (format "Byte compilation errored: %s"
                                                            (error-message-string compile-err)))))
                               entries))
-                    (push '(:skip "Target is not an Emacs Lisp file; skipped check_parens and byte_compile_file.")
+                    (push '(:skip "Target is not an Emacs Lisp file; skipped buffer_inspect operations check_parens and byte_compile.")
                           entries))
                   (push (my/gptel--verify-flymake-summary) entries)
                   (let* ((entries (nreverse entries))
@@ -1970,7 +1747,7 @@ Reserve this tool for commands that genuinely need an external process: tests, b
                              (my/gptel--format-verification-entries entries))
                      (pcase status
                        ("PASS" "You may report task completion with this verification result.")
-                       ("FAIL" "Fix the failing check, then rerun verify_task before reporting completion.")
+                       ("FAIL" "Fix the failing check, then rerun buffer_inspect operation=verify before reporting completion.")
                        (_ "If no meaningful check exists, report completion with the skipped verification reason."))))))
             (unless existing
               (kill-buffer buf))))))
@@ -1979,20 +1756,180 @@ Reserve this tool for commands that genuinely need an external process: tests, b
             `((status . "FAIL")
               (target . ,target))
             (format "Verification FAIL.\nFAIL: %s" (error-message-string err))
-            "Fix the issue or call verify_task with a valid target before reporting completion."))))
+            "Fix the issue or call buffer_inspect operation=verify with a valid target before reporting completion."))))
+
+(defun my/gptel--buffer-inspect-tool (operation &optional buffer line-number context-lines search-text filename target skip-reason)
+  "Dispatch read-only buffer inspection and verification OPERATION."
+  (pcase operation
+    ("list_buffers" (my/gptel--list-buffers))
+    ("context" (my/gptel--show-buffer-context buffer line-number context-lines))
+    ("search" (my/gptel--search-buffer-text buffer search-text))
+    ("diagnostics" (my/gptel--buffer-diagnostics buffer))
+    ("check_parens" (my/gptel--check-parens buffer))
+    ("byte_compile" (my/gptel--byte-compile-file filename))
+    ("verify" (my/gptel--verify-task target skip-reason))
+    (_ "Error: buffer_inspect operation must be one of: list_buffers, context, search, diagnostics, check_parens, byte_compile, verify.")))
+
+(defun my/gptel--buffer-edit-tool (operation &optional path buffer old-str new-str replace-all no-save start-line end-line indent-start-line indent-end-line)
+  "Dispatch buffer edit OPERATION behind one tool declaration."
+  (pcase operation
+    ("open" (my/gptel--open-file path))
+    ("edit" (my/gptel--edit-buffer buffer old-str new-str replace-all no-save start-line end-line))
+    ("save" (my/gptel--save-buffer buffer))
+    ("indent" (my/gptel--indent-region buffer indent-start-line indent-end-line))
+    (_ "Error: buffer_edit operation must be one of: open, edit, save, indent.")))
+
+(defun my/gptel--buffer-edit-confirm-p (operation &rest _)
+  "Return non-nil when buffer-edit OPERATION mutates a buffer/file."
+  (member operation '("edit" "save" "indent")))
+
+(defconst my/gptel--deprecated-dispatched-tool-names
+  '("beads_list_issues" "beads_show_issue" "beads_ready_issues"
+    "remember"
+    "list_skills" "search_skills" "load_skill" "save_skill"
+    "fetch_tool_output" "search_tool_output"
+    "read_file" "show_buffer_context" "search_buffer_text" "list_buffers"
+    "search_project" "list_project_files"
+    "open_file" "edit_buffer" "save_buffer" "indent_region"
+    "create_file" "overwrite_file"
+    "git_status" "git_diff"
+    "buffer_diagnostics" "check_parens" "byte_compile_file" "verify_task")
+  "Old per-operation gptel tool names now hidden behind dispatcher tools.")
+
+(defun my/gptel--unregister-tools (names)
+  "Remove tool NAMES from `gptel--known-tools' when reloading this config."
+  (setq gptel--known-tools
+        (delq nil
+              (mapcar
+               (lambda (category)
+                 (let ((tools (seq-remove (lambda (entry)
+                                            (member (car entry) names))
+                                          (cdr category))))
+                   (when tools (cons (car category) tools))))
+               gptel--known-tools))))
+
+(my/gptel--unregister-tools my/gptel--deprecated-dispatched-tool-names)
 
 (gptel-make-tool
- :name "verify_task"
- :function #'my/gptel--verify-task
- :description "Run the appropriate final verification for an edited buffer/file before declaring a task complete. For Emacs Lisp files this checks balanced expressions and byte-compiles the file, and it includes Flymake diagnostics when active. Returns compact PASS/FAIL/SKIPPED-with-reason. Pass skip_reason only when no meaningful automated check applies."
- :args (list '(:name "target"
-               :type "string"
-               :description "Buffer name or file path to verify, usually the edited file.")
-             '(:name "skip_reason"
-               :type "string"
-               :description "Optional explicit reason to return SKIPPED when no meaningful automated verification exists. Do not use this for edited Emacs Lisp files."))
+ :name "beads"
+ :function #'my/gptel--beads-tool
+ :description "Read Beads issues via beads.el's in-process client, not by shelling out to bd. OPERATION selects list, show, ready, or literal keyword search. Returns compact summaries by default; use operation=show with id for full detail."
+ :args (list '(:name "operation" :type "string" :enum ["list" "show" "ready" "search"] :description "Beads operation to run: list filtered issues, show one id, ready unblocked issues, or search issue summary/details.")
+             '(:name "project_root" :type "string" :description "Optional Beads project root containing .beads/. Defaults to current project/default-directory.")
+             '(:name "id" :type "string" :description "Issue id for operation=show, e.g. pj_gtd_org-kv1.1.")
+             '(:name "query" :type "string" :description "Literal keyword query for operation=search.")
+             '(:name "status" :type "string" :description "Optional status filter for list/search, e.g. open, in_progress, closed.")
+             '(:name "priority" :type "number" :description "Optional priority filter.")
+             '(:name "type" :type "string" :description "Optional issue type filter, e.g. task, bug, epic.")
+             '(:name "assignee" :type "string" :description "Optional assignee filter for list/search/ready.")
+             '(:name "labels" :type "string" :description "Optional labels filter, as accepted by beads.el/bd.")
+             '(:name "limit" :type "number" :description "Optional maximum number of issues/results to return.")
+             '(:name "all" :type "boolean" :description "When true, include closed issues where the backend supports it."))
+ :include nil
+ :category "beads")
+
+(gptel-make-tool
+ :name "knowledge"
+ :function #'my/gptel--knowledge-tool
+ :description "Dispatcher for procedural skills and small durable agent memory. Read-only operations are list_skills, search_skills, and load_skill. Mutating operations remember and save_skill require confirmation; use only for intentional durable state, never secrets or raw transcripts."
+ :args (list '(:name "operation" :type "string" :enum ["list_skills" "search_skills" "load_skill" "remember" "save_skill"] :description "Knowledge operation to run.")
+             '(:name "scope" :type "string" :enum ["project" "user"] :description "For operation=remember: memory file to update.")
+             '(:name "entry" :type "string" :description "For operation=remember: one concise durable fact/preference to remember.")
+             '(:name "old_entry" :type "string" :description "For operation=remember: optional exact existing text to replace.")
+             '(:name "name_or_file" :type "string" :description "For operation=load_skill: skill slug or markdown file name.")
+             '(:name "query" :type "string" :description "For operation=search_skills: regex query over saved skill files.")
+             '(:name "title" :type "string" :description "For operation=save_skill: short skill title.")
+             '(:name "when_to_use" :type "string" :description "For operation=save_skill: concise trigger conditions.")
+             '(:name "steps" :type "string" :description "For operation=save_skill: reusable procedural steps.")
+             '(:name "verification" :type "string" :description "For operation=save_skill: how to verify success.")
+             '(:name "caveats" :type "string" :description "For operation=save_skill: important constraints or known failure modes.")
+             '(:name "max_skills" :type "number" :description "For operation=list_skills: maximum skills to list. Defaults to 25; hard maximum 100.")
+             '(:name "max_matches" :type "number" :description "For operation=search_skills: maximum matching lines. Defaults to 25; hard maximum 100.")
+             '(:name "max_chars" :type "number" :description "For operation=load_skill: maximum skill body characters to return.")
+             '(:name "replace_existing" :type "boolean" :description "For operation=save_skill: replace an existing skill file with the same slug."))
+ :confirm #'my/gptel--knowledge-confirm-p
+ :category "knowledge")
+
+(gptel-make-tool
+ :name "tool_output"
+ :function #'my/gptel--tool-output-tool
+ :description "Fetch or search bounded ranges from stored gptel tool-output side-car references. Requires a sha256 id from :TOOL_OUTPUT_REF:. There is no unrestricted full-output fetch."
+ :args (list '(:name "operation" :type "string" :enum ["fetch" "search"] :description "Use fetch for explicit line ranges, search for regex snippets.")
+             '(:name "id" :type "string" :description "Stored output id, e.g. sha256:<hash>.")
+             '(:name "start-line" :type "number" :description "For operation=fetch: first line to fetch (1-based, inclusive).")
+             '(:name "end-line" :type "number" :description "For operation=fetch: last line to fetch (1-based, inclusive).")
+             '(:name "pattern" :type "string" :description "For operation=search: regex pattern to search within stored output.")
+             '(:name "max-matches" :type "number" :description "For operation=search: maximum matches to return (default 25, hard maximum 100)."))
  :include nil
  :category "emacs")
+
+(gptel-make-tool
+ :name "workspace"
+ :function #'my/gptel--workspace-tool
+ :description "Read-only project/file workspace dispatcher. Use operation=read_file instead of cat/head/tail/sed, operation=search_project instead of grep/rg shell commands, and operation=list_files instead of ls/find/tree."
+ :args (list '(:name "operation" :type "string" :enum ["read_file" "search_project" "list_files"] :description "Workspace operation to run.")
+             '(:name "path" :type "string" :description "For operation=read_file: file path to read.")
+             '(:name "start-line" :type "number" :description "For operation=read_file: first line to return (1-based, inclusive).")
+             '(:name "end-line" :type "number" :description "For operation=read_file: last line to return (1-based, inclusive).")
+             '(:name "pattern" :type "string" :description "For operation=search_project: ripgrep regex; for operation=list_files: optional filename regex filter.")
+             '(:name "dir" :type "string" :description "Directory to search/list. Defaults to projectile project root or current directory.")
+             '(:name "file-glob" :type "string" :description "For operation=search_project: optional ripgrep glob, e.g. '*.el' or '*.{ts,tsx}'.")
+             '(:name "case-sensitive" :type "boolean" :description "For operation=search_project: true for case-sensitive search; default is case-insensitive."))
+ :include nil
+ :category "workspace")
+
+(gptel-make-tool
+ :name "buffer_inspect"
+ :function #'my/gptel--buffer-inspect-tool
+ :description "Read-only Emacs buffer inspection and verification dispatcher. It can list buffers, show context, search within one buffer, report Flymake diagnostics, check parens, byte-compile an elisp file, or run final verification."
+ :args (list '(:name "operation" :type "string" :enum ["list_buffers" "context" "search" "diagnostics" "check_parens" "byte_compile" "verify"] :description "Buffer inspection operation to run.")
+             '(:name "buffer" :type "string" :description "Buffer name or file path for context/search/diagnostics/check_parens.")
+             '(:name "line-number" :type "number" :description "For operation=context: target line number (1-based).")
+             '(:name "context-lines" :type "number" :description "For operation=context: lines before/after to show (default 5).")
+             '(:name "search-text" :type "string" :description "For operation=search: literal text to search within the buffer.")
+             '(:name "filename" :type "string" :description "For operation=byte_compile: Emacs Lisp file path to compile.")
+             '(:name "target" :type "string" :description "For operation=verify: buffer name or file path to verify, usually the edited file.")
+             '(:name "skip_reason" :type "string" :description "For operation=verify: explicit reason to return SKIPPED when no meaningful check exists."))
+ :include nil
+ :category "emacs")
+
+(gptel-make-tool
+ :name "buffer_edit"
+ :function #'my/gptel--buffer-edit-tool
+ :description "Mutating Emacs buffer dispatcher. Use operation=open to keep a file buffer alive, operation=edit for hashline or exact-text edits, operation=save after no_save edits, and operation=indent to run major-mode indentation. edit auto-saves visited files unless no_save is true."
+ :args (list '(:name "operation" :type "string" :enum ["open" "edit" "save" "indent"] :description "Buffer edit operation to run.")
+             '(:name "path" :type "string" :description "For operation=open: file path to open.")
+             '(:name "buffer" :type "string" :description "Buffer name or file path for edit/save/indent.")
+             '(:name "old_str" :type "string" :description "For operation=edit fallback mode: exact text to replace when start_line is omitted.")
+             '(:name "new_str" :type "string" :description "For operation=edit: replacement text; in hashline mode replaces the tagged line/range.")
+             '(:name "replace_all" :type "boolean" :description "For operation=edit fallback mode: replace every old_str occurrence.")
+             '(:name "no_save" :type "boolean" :description "For operation=edit: skip automatic save; default false.")
+             '(:name "start_line" :type "string" :description "For operation=edit: preferred hashline anchor from workspace read_file output, e.g. `42:abc`.")
+             '(:name "end_line" :type "string" :description "For operation=edit: optional ending hashline tag for a multi-line replacement.")
+             '(:name "indent_start_line" :type "number" :description "For operation=indent: first line of region to indent (1-based, inclusive).")
+             '(:name "indent_end_line" :type "number" :description "For operation=indent: last line of region to indent (1-based, inclusive)."))
+ :confirm #'my/gptel--buffer-edit-confirm-p
+ :category "emacs")
+
+(gptel-make-tool
+ :name "file_write"
+ :function #'my/gptel--file-write-tool
+ :description "Mutating file writer dispatcher. operation=create creates a new file and refuses to clobber; operation=overwrite replaces a whole file and is an exceptional escape hatch. Prefer buffer_edit hashline edits for existing files."
+ :args (list '(:name "operation" :type "string" :enum ["create" "overwrite"] :description "File write operation to run.")
+             '(:name "path" :type "string" :description "File path to create or overwrite.")
+             '(:name "content" :type "string" :description "Full content to write."))
+ :confirm t
+ :category "filesystem")
+
+(gptel-make-tool
+ :name "git"
+ :function #'my/gptel--git-tool
+ :description "Git review dispatcher for status and diff. operation=status returns porcelain status; operation=diff returns unstaged or staged diff and can be limited to a path."
+ :args (list '(:name "operation" :type "string" :enum ["status" "diff"] :description "Git operation to run.")
+             '(:name "staged" :type "boolean" :description "For operation=diff: show staged changes instead of unstaged.")
+             '(:name "path" :type "string" :description "For operation=diff: limit diff to a specific file or directory."))
+ :include nil
+ :category "git")
 
 (defconst my/gptel--subagent-preset-prefix "agent-"
   "Preset-name prefix used to expose gptel presets as sub-agents.")
@@ -2494,7 +2431,7 @@ append ENTRY as a dated memory bullet."
                      (mapconcat #'identity entries "\n"))
            (format "No saved procedural skills found in %s."
                    (abbreviate-file-name my/gptel--skills-directory)))
-         "Use search_skills for a keyword/regex query, load_skill for one relevant file, or save_skill after completing a reusable procedure."))
+         "Use knowledge operation=search_skills for a keyword/regex query, operation=load_skill for one relevant file, or operation=save_skill after completing a reusable procedure."))
     (error (format "Error listing skills: %s" (error-message-string err)))))
 
 (defun my/gptel--search-skills (query &optional max-matches)
@@ -2541,7 +2478,7 @@ append ENTRY as a dated memory bullet."
                        "")
                      (mapconcat #'identity (nreverse matches) "\n"))
            (format "No saved skills matched %S." query))
-         "Use load_skill with a reported file name to retrieve one bounded skill body."))
+         "Use knowledge operation=load_skill with a reported file name to retrieve one bounded skill body."))
     (error (format "Error searching skills: %s" (error-message-string err)))))
 
 (defun my/gptel--load-skill (name-or-file &optional max-chars)
@@ -2612,7 +2549,7 @@ append ENTRY as a dated memory bullet."
              (replaced . ,(if replace-existing "yes" "no")))
            (format "Saved procedural skill '%s' to %s."
                    title (abbreviate-file-name path))
-           "Use search_skills/list_skills/load_skill to retrieve this procedure later; use remember for durable facts or preferences instead."))))
+           "Use knowledge operations search_skills/list_skills/load_skill to retrieve this procedure later; use operation=remember for durable facts or preferences instead."))))
     (error (format "Error saving skill: %s" (error-message-string err)))))
 
 (defun my/gptel--memory-context-string ()
@@ -2714,7 +2651,7 @@ append ENTRY as a dated memory bullet."
                                   (my/gptel--project-awareness-file-map-section root)))))
     (when sections
       (concat "<project-awareness>\n"
-              "Deterministic bounded hints only; use read_file/search_project for authoritative details.\n\n"
+              "Deterministic bounded hints only; use workspace operation=read_file/search_project for authoritative details.\n\n"
               (mapconcat #'identity sections "\n\n")
               "\n</project-awareness>"))))
 
@@ -2749,15 +2686,15 @@ no shell, no broad tool inventory.
 TOOL SELECTION: prefer the native Emacs/project tools. They are faster, keep
 context compact, and avoid wasting tokens on shell transcript boilerplate.
 
-If this task needs broad file maps, buffer diagnostics, skills, memory, tool
-output side-car navigation, or full Beads list/search, switch to the
+If this task needs broad file maps, buffer diagnostics, skills/memory,
+tool-output side-car navigation, or full Beads list/search, switch to the
 `agent-read-full' preset intentionally.
 
 WORKFLOW:
-1. Use search_project with a specific regex and optional dir/file-glob to find likely files.
-2. Use read_file to inspect exact file ranges; paginate with start-line/end-line for re-reads.
-3. Use beads_show_issue only when the user already supplied a specific issue id.
-4. Use git_status / git_diff when the task is about current changes.
+1. Use workspace operation=search_project with a specific regex and optional dir/file-glob to find likely files.
+2. Use workspace operation=read_file to inspect exact file ranges; paginate with start-line/end-line for re-reads.
+3. Use beads operation=show only when the user already supplied a specific issue id.
+4. Use git operation=status/diff when the task is about current changes.
 5. If you cannot proceed without a heavier tool, say which full preset/tool is needed instead of improvising.
 
 PARALLELIZE: when reads are independent (e.g. reading several files), issue them in a single message.
@@ -2768,21 +2705,21 @@ PARALLELIZE: when reads are independent (e.g. reading several files), issue them
 (defconst my/gptel--agent-read-full-system
   "You are an Emacs coding assistant in broad read-only research mode.
 
-TOOLS: search, read, analyse, skills, Beads, and git review only -- no edits,
-no shell.
+TOOLS: workspace read/search, buffer inspection, skills, Beads, tool-output
+navigation, and git review only -- no edits, no shell.
 
 TOOL SELECTION: prefer the native Emacs/project tools. They are faster, keep
 context compact, and avoid wasting tokens on shell transcript boilerplate.
 
 WORKFLOW:
-1. Use list_project_files or search_project to discover relevant files.
-2. Use read_file to read (full file first; paginate with start-line/end-line only for re-reads).
-3. Use show_buffer_context to zoom in on a specific line range.
-4. Use search_buffer_text and search_project for cross-referencing symbols.
-5. Use list_skills/search_skills/load_skill when a reusable procedural guide may apply; skills are procedures, not factual memory.
-6. Use git_status / git_diff to understand recent changes.
-7. If a tool returns :TOOL_OUTPUT_REF:, use search_tool_output or bounded fetch_tool_output ranges to inspect it; never ask for a full raw replay.
-8. Use verify_task for final diagnostics when a concrete target is available, or check_parens / buffer_diagnostics for exploratory static analysis.
+1. Use workspace operation=list_files/search_project to discover relevant files.
+2. Use workspace operation=read_file to read (full file first; paginate with start-line/end-line only for re-reads).
+3. Use buffer_inspect operation=context to zoom in on a specific line range.
+4. Use buffer_inspect operation=search and workspace operation=search_project for cross-referencing symbols.
+5. Use knowledge operation=list_skills/search_skills/load_skill when a reusable procedural guide may apply; skills are procedures, not factual memory.
+6. Use git operation=status/diff to understand recent changes.
+7. If a tool returns :TOOL_OUTPUT_REF:, use tool_output operation=search or bounded operation=fetch ranges to inspect it; never ask for a full raw replay.
+8. Use buffer_inspect operation=verify for final diagnostics when a concrete target is available, or operations check_parens/diagnostics for exploratory static analysis.
 
 PARALLELIZE: when reads are independent (e.g. reading several files), issue them in a single message.
 
@@ -2793,38 +2730,38 @@ PARALLELIZE: when reads are independent (e.g. reading several files), issue them
   "You are an Emacs coding assistant operating directly on the user's open buffers.
 
 TOOLS: slim edit preset -- scoped search/read/edit/verify plus git review.
-No shell, delegation, skills, memory, diagnostics, full-file overwrite, or new
-file creation.
+No shell, delegation, skills, memory, full-file overwrite, or new file
+creation.
 
 TOOL SELECTION: prefer the native Emacs/project tools. They are faster, keep
 context compact, and avoid wasting tokens on shell transcript boilerplate.
 
-If this task needs creating files, buffer diagnostics, delegation, skills,
-memory, Beads list/search, tool-output side-car navigation, or other heavy
+If this task needs creating files, delegation, skills, memory, Beads
+list/search, tool-output side-car navigation, or other heavy
 tools, switch to `agent-edit-full' intentionally. If it needs arbitrary shell,
 switch to `agent-shell'.
 
-CRITICAL: edit_buffer auto-saves the buffer after each edit.  In this slim
+CRITICAL: buffer_edit operation=edit auto-saves the buffer after each edit.  In this slim
 preset, leave no_save unset/false; switch to `agent-edit-full' if you need to
 batch several edits before one explicit save.
 
 FULL-FILE WRITES: do not rewrite existing files wholesale.  For existing
-files, use open_file plus edit_buffer hashline edits.  This slim preset cannot
+files, use buffer_edit operation=open plus operation=edit hashline edits.  This slim preset cannot
 create brand-new files; switch to `agent-edit-full' when new files are
 intentionally required.
 
 WORKFLOW:
-1. Use search_project with a specific regex and optional dir/file-glob to find likely files.
-2. Use read_file (full file first!) before editing; re-read a narrower range when needed.
-3. Use open_file to load a file into a live buffer; pass the returned buffer name to edit_buffer.
-4. Prefer edit_buffer hashline edits: copy start_line/end_line tags like `42:abc` from read_file output and put the replacement in new_str.
+1. Use workspace operation=search_project with a specific regex and optional dir/file-glob to find likely files.
+2. Use workspace operation=read_file (full file first!) before editing; re-read a narrower range when needed.
+3. Use buffer_edit operation=open to load a file into a live buffer; pass the returned buffer name to operation=edit.
+4. Prefer buffer_edit operation=edit hashline edits: copy start_line/end_line tags like `42:abc` from workspace read_file output and put the replacement in new_str.
    - Hashline edits verify the current line hash, recover nearby shifted lines, and fail safely with refreshed context if stale.
    - For single-line edits, pass start_line only; for ranges, pass both start_line and end_line.
    - In hashline mode, old_str can be the empty string.
    - Use exact old_str replacement only as a fallback when hashline tags are unavailable.
    - In fallback mode, old_str must uniquely match the target text; pass replace_all=true only when intentionally replacing every occurrence.
-5. Before declaring completion, call verify_task on the edited buffer/file and get PASS. If no meaningful automated check exists, call verify_task with skip_reason and report SKIPPED honestly.
-6. Use git_status / git_diff to review your changes before finishing.
+5. Before declaring completion, call buffer_inspect operation=verify on the edited buffer/file and get PASS. If no meaningful automated check exists, pass skip_reason and report SKIPPED honestly.
+6. Use git operation=status/diff to review your changes before finishing.
 7. If a needed step is impossible with this slim tool set, stop and state which full preset/tool is required.
 
 PARALLELIZE: when reads are independent, issue them in a single message.
@@ -2841,31 +2778,32 @@ skills, memory, diagnostics, and git review -- no shell.
 TOOL SELECTION: prefer the native Emacs/project tools. They are faster, keep
 context compact, and avoid wasting tokens on shell transcript boilerplate.
 
-CRITICAL: edit_buffer auto-saves the buffer after each edit (unless
-no_save=true).  Use save_buffer explicitly only when deliberately batching
+CRITICAL: buffer_edit operation=edit auto-saves the buffer after each edit
+(unless no_save=true). Use buffer_edit operation=save explicitly only when deliberately batching
 several no_save=true edits before a single save.
 
 FULL-FILE WRITES: do not rewrite existing files wholesale.  For existing
-files, use open_file plus edit_buffer hashline edits.  create_file is only for
-brand-new files and refuses to clobber existing paths.
+files, use buffer_edit operation=open plus operation=edit hashline edits.
+file_write operation=create is only for brand-new files and refuses to clobber
+existing paths.
 
 WORKFLOW:
-1. Use list_project_files or search_project to discover relevant files.
-2. Use read_file (full file first!) or show_buffer_context before editing.
+1. Use workspace operation=list_files/search_project to discover relevant files.
+2. Use workspace operation=read_file (full file first!) or buffer_inspect operation=context before editing.
 3. Use delegate_agent with subagent_type=agent-read for independent, context-cheap research.
-4. Use open_file to load a file into a live buffer; pass the returned buffer name to edit_buffer.
-5. Prefer edit_buffer hashline edits: copy start_line/end_line tags like `42:abc` from read_file output and put the replacement in new_str.
+4. Use buffer_edit operation=open to load a file into a live buffer; pass the returned buffer name to operation=edit.
+5. Prefer buffer_edit operation=edit hashline edits: copy start_line/end_line tags like `42:abc` from workspace read_file output and put the replacement in new_str.
    - Hashline edits verify the current line hash, recover nearby shifted lines, and fail safely with refreshed context if stale.
    - For single-line edits, pass start_line only; for ranges, pass both start_line and end_line.
    - In hashline mode, old_str can be the empty string.
    - Use exact old_str replacement only as a fallback when hashline tags are unavailable.
    - In fallback mode, old_str must uniquely match the target text; pass replace_all=true only when intentionally replacing every occurrence.
-6. If a tool returns :TOOL_OUTPUT_REF:, use search_tool_output or bounded fetch_tool_output ranges to inspect it; never ask for a full raw replay.
-7. Use list_skills/search_skills/load_skill when a reusable procedural guide may apply; use save_skill only after completing a reusable workflow worth distilling.
-8. Use remember only for confirmed small durable facts/preferences; never store secrets, raw tool output, transcripts, or speculation.
-9. Before declaring completion, call verify_task on the edited buffer/file and get PASS. If no meaningful automated check exists, call verify_task with skip_reason and report SKIPPED honestly.
-10. Use check_parens / byte_compile_file / buffer_diagnostics for narrower follow-up diagnostics when verify_task fails or more detail is needed.
-11. Use git_status / git_diff to review your changes before finishing.
+6. If a tool returns :TOOL_OUTPUT_REF:, use tool_output operation=search or bounded operation=fetch ranges to inspect it; never ask for a full raw replay.
+7. Use knowledge operation=list_skills/search_skills/load_skill when a reusable procedural guide may apply; use operation=save_skill only after completing a reusable workflow worth distilling.
+8. Use knowledge operation=remember only for confirmed small durable facts/preferences; never store secrets, raw tool output, transcripts, or speculation.
+9. Before declaring completion, call buffer_inspect operation=verify on the edited buffer/file and get PASS. If no meaningful automated check exists, pass skip_reason and report SKIPPED honestly.
+10. Use buffer_inspect operation=check_parens/byte_compile/diagnostics for narrower follow-up diagnostics when verification fails or more detail is needed.
+11. Use git operation=status/diff to review your changes before finishing.
 
 PARALLELIZE: when reads are independent, issue them in a single message.
 
@@ -2879,34 +2817,35 @@ TOOL SELECTION: native Emacs tools are the default. They are faster, keep
 context compact, and avoid wasting tokens on shell transcript boilerplate.
 Do not shell out for routine file discovery, file reading, or text search.
 
-CRITICAL: edit_buffer auto-saves the buffer after each edit (unless
-no_save=true).  Use save_buffer explicitly only when deliberately batching
+CRITICAL: buffer_edit operation=edit auto-saves the buffer after each edit
+(unless no_save=true). Use buffer_edit operation=save explicitly only when deliberately batching
 several no_save=true edits before a single save.
 
 FULL-FILE WRITES: do not rewrite existing files wholesale.  For existing
-files, use open_file plus edit_buffer hashline edits.  create_file is only for
-brand-new files and refuses to clobber existing paths.
+files, use buffer_edit operation=open plus operation=edit hashline edits.
+file_write operation=create is only for brand-new files and refuses to clobber
+existing paths.
 
 WORKFLOW:
-1. Use list_project_files or search_project to discover relevant files.
-2. Use read_file (full file first!) or show_buffer_context before editing.
+1. Use workspace operation=list_files/search_project to discover relevant files.
+2. Use workspace operation=read_file (full file first!) or buffer_inspect operation=context before editing.
 3. Use delegate_agent with subagent_type=agent-read for independent, context-cheap research.
-4. Use open_file to load a file into a live buffer; pass the returned buffer name to edit_buffer.
-5. Prefer edit_buffer hashline edits: copy start_line/end_line tags like `42:abc` from read_file output and put the replacement in new_str.
+4. Use buffer_edit operation=open to load a file into a live buffer; pass the returned buffer name to operation=edit.
+5. Prefer buffer_edit operation=edit hashline edits: copy start_line/end_line tags like `42:abc` from workspace read_file output and put the replacement in new_str.
    - Hashline edits verify the current line hash, recover nearby shifted lines, and fail safely with refreshed context if stale.
    - In hashline mode, old_str can be the empty string.
    - Use exact old_str replacement only as a fallback when hashline tags are unavailable.
-6. If a tool returns :TOOL_OUTPUT_REF:, use search_tool_output or bounded fetch_tool_output ranges to inspect it; never ask for a full raw replay.
-7. Use list_skills/search_skills/load_skill when a reusable procedural guide may apply; use save_skill only after completing a reusable workflow worth distilling.
-8. Use remember only for confirmed small durable facts/preferences; never store secrets, raw tool output, transcripts, or speculation.
-9. Before declaring completion, call verify_task on the edited buffer/file and get PASS. If no meaningful automated check exists, call verify_task with skip_reason and report SKIPPED honestly.
-10. Use check_parens / byte_compile_file / buffer_diagnostics for narrower follow-up diagnostics when verify_task fails or more detail is needed.
+6. If a tool returns :TOOL_OUTPUT_REF:, use tool_output operation=search or bounded operation=fetch ranges to inspect it; never ask for a full raw replay.
+7. Use knowledge operation=list_skills/search_skills/load_skill when a reusable procedural guide may apply; use operation=save_skill only after completing a reusable workflow worth distilling.
+8. Use knowledge operation=remember only for confirmed small durable facts/preferences; never store secrets, raw tool output, transcripts, or speculation.
+9. Before declaring completion, call buffer_inspect operation=verify on the edited buffer/file and get PASS. If no meaningful automated check exists, pass skip_reason and report SKIPPED honestly.
+10. Use buffer_inspect operation=check_parens/byte_compile/diagnostics for narrower follow-up diagnostics when verification fails or more detail is needed.
 11. Reserve run_shell_command for commands that genuinely need an external process:
    tests, builds, linters/formatters, package managers, one-off system inspection,
-   or git operations not covered by git_status/git_diff.
+   or git operations not covered by git operation=status/diff.
    NEVER use run_shell_command for ls/find/tree/pwd/cat/head/tail/sed/grep/rg-style work:
-   use list_project_files / read_file / show_buffer_context / search_project / search_buffer_text.
-12. Use git_status / git_diff to review your changes before finishing.
+   use workspace / buffer_inspect operations instead.
+12. Use git operation=status/diff to review your changes before finishing.
 
 PARALLELIZE: when operations are independent, issue them in a single message.
 
@@ -2916,40 +2855,22 @@ PARALLELIZE: when operations are independent, issue them in a single message.
 ;; --- Agentic presets ---
 
 (defconst my/gptel--agent-read-slim-tools
-  '("search_project" "read_file"
-    "beads_show_issue"
-    "git_status" "git_diff")
+  '("workspace" "beads" "git")
   "Slim `agent-read' tool roster. Keep under 8 tools for token-cheap sessions.")
 
 (defconst my/gptel--agent-edit-slim-tools
-  '("search_project" "read_file"
-    "open_file" "edit_buffer" "verify_task"
-    "git_status" "git_diff")
+  '("workspace" "buffer_edit" "buffer_inspect" "git")
   "Slim `agent-edit' tool roster. Keep under 8 tools for token-cheap sessions.")
 
 (defconst my/gptel--agent-read-full-tools
-  '("read_file" "show_buffer_context" "search_buffer_text"
-    "search_project" "list_project_files" "list_buffers"
-    "fetch_tool_output" "search_tool_output"
-    "beads_list_issues" "beads_show_issue" "beads_ready_issues"
-    "list_skills" "search_skills" "load_skill"
-    "git_status" "git_diff" "buffer_diagnostics" "check_parens"
-    "verify_task")
+  '("workspace" "buffer_inspect" "tool_output"
+    "beads" "knowledge" "git")
   "Broad read-only `agent-read-full' tool roster for intentional heavy sessions.")
 
 (defconst my/gptel--agent-edit-full-tools
-  '("read_file" "show_buffer_context" "search_buffer_text"
-    "search_project" "list_project_files" "list_buffers"
-    "fetch_tool_output" "search_tool_output"
-    "beads_list_issues" "beads_show_issue" "beads_ready_issues"
-    "list_skills" "search_skills" "load_skill"
-    "delegate_agent"
-    "remember" "save_skill"
-    "open_file" "edit_buffer" "save_buffer"
-    "create_file" "indent_region"
-    "check_parens" "byte_compile_file" "buffer_diagnostics"
-    "verify_task"
-    "git_status" "git_diff")
+  '("workspace" "buffer_inspect" "tool_output"
+    "beads" "knowledge" "delegate_agent"
+    "buffer_edit" "file_write" "git")
   "Broad edit `agent-edit-full' tool roster for intentional heavy sessions.")
 
 (gptel-make-preset 'agent-read
@@ -3012,12 +2933,12 @@ PARALLELIZE: when operations are independent, issue them in a single message.
   :system "You are a code reviewer.
 
 WORKFLOW:
-1. Start by calling `git_status` to see the working-tree state.
-2. Call `git_diff` (and `git_diff` with staged=true if anything is staged) to fetch the actual changes -- do NOT wait for the user to paste output.
-3. Issue independent git_status / git_diff calls in parallel in a single message when possible.
-4. If git_diff returns :TOOL_OUTPUT_REF:, use search_tool_output or bounded fetch_tool_output ranges to inspect the relevant stored diff.
+1. Start by calling git operation=status to see the working-tree state.
+2. Call git operation=diff (and staged=true if anything is staged) to fetch the actual changes -- do NOT wait for the user to paste output.
+3. Issue independent git calls in parallel in a single message when possible.
+4. If git diff returns :TOOL_OUTPUT_REF:, use tool_output operation=search or bounded operation=fetch ranges to inspect the relevant stored diff.
 5. Then provide concise, actionable feedback: what changed, what looks risky, what's missing (tests, docs, edge cases)."
-  :tools '("git_status" "git_diff" "fetch_tool_output" "search_tool_output"))
+  :tools '("git" "tool_output"))
 
 (my/gptel--update-subagent-tool-enum)
 
