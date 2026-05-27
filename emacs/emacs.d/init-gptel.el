@@ -425,6 +425,9 @@ Assumes current buffer is the target buffer.  Returns a result string."
     ("git_status" . 10000)
     ("git_diff" . 12000)
     ("buffer_diagnostics" . 12000)
+    ("check_parens" . 4000)
+    ("byte_compile_file" . 12000)
+    ("verify_task" . 12000)
     ("fetch_tool_output" . 12000)
     ("search_tool_output" . 12000)
     ("beads_list_issues" . 12000)
@@ -1489,11 +1492,25 @@ Reserve this tool for commands that genuinely need an external process: tests, b
         (with-current-buffer (get-buffer-create "*Compile-Log*")
           (let ((inhibit-read-only t))
             (erase-buffer)))
-        (if (byte-compile-file filename)
-            (format "Successfully compiled '%s' with no errors." filename)
-          (let ((log-output (with-current-buffer (get-buffer "*Compile-Log*")
+        (let* ((result (byte-compile-file filename))
+               (log-output (string-trim
+                            (with-current-buffer (get-buffer "*Compile-Log*")
                               (buffer-string))))
-            (format "Compilation of '%s' failed. Errors:\n%s" filename log-output))))
+               (status (if result "PASS" "FAIL")))
+          (my/gptel--format-tool-result
+           "byte_compile_file"
+           `((target . ,(abbreviate-file-name (expand-file-name filename)))
+             (status . ,status)
+             (log_chars . ,(length log-output)))
+           (if result
+               (if (string-empty-p log-output)
+                   (format "Byte compilation PASS for '%s' with no compile log output." filename)
+                 (format "Byte compilation PASS for '%s' with compile log output:\n%s"
+                         filename log-output))
+             (if (string-empty-p log-output)
+                 (format "Byte compilation FAIL for '%s' with no compile log output." filename)
+               (format "Byte compilation FAIL for '%s':\n%s" filename log-output)))
+           "If output is truncated or stored, fix the first reported error/warning, rerun byte_compile, or use buffer_inspect operation=verify for the final check.")))
     (error (format "An error occurred while trying to compile '%s': %s"
                    filename (error-message-string err)))))
 
@@ -1678,14 +1695,24 @@ Reserve this tool for commands that genuinely need an external process: tests, b
                (entry_count . 0))
              "Working tree clean. No staged, unstaged, or untracked changes."
              "Use git operation=diff only if you need to verify a specific path.")
-          (let* ((trimmed (string-trim output))
-                 (lines (split-string trimmed "\n" t)))
+          (let* ((trimmed (string-trim-right output))
+                 (lines (split-string trimmed "\n" t))
+                 (max-show 100)
+                 (shown (cl-subseq lines 0 (min (length lines) max-show))))
             (my/gptel--format-tool-result
              "git_status"
              `((target . "current git repository")
-               (entry_count . ,(length lines)))
-             (format "```\n%s\n```" trimmed)
-             "Use git operation=diff with staged/path arguments to inspect the relevant changes."))))
+               (entry_count . ,(length lines))
+               (shown_count . ,(length shown))
+               (max_entries . ,max-show))
+             (format "%d git status entr%s%s:\n```\n%s\n```"
+                     (length lines)
+                     (if (= (length lines) 1) "y" "ies")
+                     (if (> (length lines) max-show)
+                         (format " (showing first %d)" max-show)
+                       "")
+                     (mapconcat #'identity shown "\n"))
+             "Use git operation=diff with staged/path arguments to inspect the relevant changes; if status was truncated, narrow the task to a path or handle the shown entries first."))))
     (error (format "Error getting git status: %s" (error-message-string err)))))
 
 (defun my/gptel--git-diff (&optional staged path)
@@ -1755,7 +1782,10 @@ Reserve this tool for commands that genuinely need an external process: tests, b
        "No follow-up needed unless the buffer changed; rerun after edits."))
      (t
       (let* ((diags (flymake-diagnostics))
+             (max-show 50)
+             (shown-diags (cl-subseq diags 0 (min (length diags) max-show)))
              (grouped (seq-group-by #'flymake-diagnostic-type diags))
+             (shown-grouped (seq-group-by #'flymake-diagnostic-type shown-diags))
              (severity-counts
               (mapconcat (lambda (group)
                            (format "%s=%d" (car group) (length (cdr group))))
@@ -1765,11 +1795,16 @@ Reserve this tool for commands that genuinely need an external process: tests, b
          `((target . ,buffer)
            (flymake_active . "yes")
            (diagnostic_count . ,(length diags))
+           (shown_count . ,(length shown-diags))
+           (max_diagnostics . ,max-show)
            (severity_counts . ,severity-counts))
-         (format "%d diagnostic%s in '%s':%s"
+         (format "%d diagnostic%s in '%s'%s:%s"
                  (length diags)
                  (if (= (length diags) 1) "" "s")
                  buffer
+                 (if (> (length diags) max-show)
+                     (format " (showing first %d)" max-show)
+                   "")
                  (mapconcat
                   (lambda (group)
                     (format "\n\n[%s]\n%s"
@@ -1782,9 +1817,9 @@ Reserve this tool for commands that genuinely need an external process: tests, b
                                        (flymake-diagnostic-text d)))
                              (cdr group)
                              "\n")))
-                  grouped
+                  shown-grouped
                   ""))
-         "Use buffer_inspect operation=context around a diagnostic line, then edit and rerun diagnostics."))))))
+         "Use buffer_inspect operation=context around a diagnostic line, then edit and rerun diagnostics; if shown_count is lower than diagnostic_count, fix the shown diagnostics first or use a narrower validator."))))))
 
 (defun my/gptel--verify-flymake-summary ()
   "Return a verification entry summarizing Flymake diagnostics in current buffer."
