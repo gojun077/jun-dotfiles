@@ -3,7 +3,7 @@
 ;; .emacs for MacOS
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Mon 04 May 2026
+;; Last Updated: Wed 27 May 2026
 ;;
 ;; This config file is for Emacs 30 and above on Apple Silicon
 ;;; Code:
@@ -21,8 +21,9 @@
   :defer t)
 (use-package beads
   :straight nil
-  :load-path ("~/Documents/repos/personal/beads.el/lisp"
-              "~/Documents/repos/personal/beads.el/vendor/vui.el"))
+  :load-path ("~/Documents/repos/personal/beads-turbo.el/lisp"
+              "~/Documents/repos/personal/beads-turbo.el/vendor/vui.el"
+              "~/Documents/repos/personal/beads-turbo.el/vendor/mysql.el"))
 (use-package blacken
   :straight t
   :defer t)
