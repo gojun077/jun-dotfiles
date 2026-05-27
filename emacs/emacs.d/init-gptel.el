@@ -192,6 +192,29 @@ Signals an error if no matching buffer is found."
 (defconst my/gptel--hashline-displacement-window 20
   "Number of nearby lines to scan when a hashline tag has shifted.")
 
+(defconst my/gptel--hashline-stale-context-radius 3
+  "Number of lines around a stale hashline target to include in errors.
+The resolver may scan a wider window for safe automatic recovery, but stale
+failure output stays intentionally small to avoid replaying large context
+blocks into gptel transcripts.")
+
+(defun my/gptel--stale-hashline-context-range (target-line total)
+  "Return (START . END) for compact context around TARGET-LINE of TOTAL."
+  (let* ((line (min total (max 1 target-line)))
+         (start (max 1 (- line my/gptel--hashline-stale-context-radius)))
+         (end (min total (+ line my/gptel--hashline-stale-context-radius))))
+    (cons start end)))
+
+(defun my/gptel--stale-hashline-reread-hint (target-line total)
+  "Return concise retry guidance for a stale hashline near TARGET-LINE."
+  (if (zerop total)
+      "No edit was made. The buffer is now empty; re-read it and retry with fresh hashline tags."
+    (let* ((range (my/gptel--stale-hashline-context-range target-line total))
+           (start (car range))
+           (end (cdr range)))
+      (format "No edit was made. Re-read a narrow range around the stale line (workspace operation=read_file start-line=%d end-line=%d), then retry with fresh hashline tags."
+              start end))))
+
 (defun my/gptel--hash-line (line)
   "Return the 3-character hash for LINE used in hashline tool output."
   (substring (md5 (string-trim line)) 0 3))
@@ -225,6 +248,10 @@ Signals an error if no matching buffer is found."
          (scan-start (max 1 (- target-line my/gptel--hashline-displacement-window)))
          (scan-end (min total (+ target-line my/gptel--hashline-displacement-window)))
          (matches nil))
+    (unless (and (>= target-line 1) (<= target-line total))
+      (error "%s tag %s points to line %d, but the buffer now has %d line%s. %s"
+             label tag target-line total (if (= total 1) "" "s")
+             (my/gptel--stale-hashline-reread-hint target-line total)))
     (my/gptel--goto-line-checked target-line total)
     (if (string= (my/gptel--current-line-hash) target-hash)
         (list target-line nil)
@@ -242,14 +269,20 @@ Signals an error if no matching buffer is found."
        ((= (length matches) 1)
         (list (car matches) t))
        ((> (length matches) 1)
-        (error "%s tag %s no longer matches line %d, and hash %s appears multiple times nearby at lines %s. Re-read a narrower range before editing."
-               label tag target-line target-hash (mapconcat #'number-to-string matches ", ")))
+        (error "%s tag %s no longer matches line %d, and hash %s appears multiple times nearby at lines %s. %s"
+               label tag target-line target-hash
+               (mapconcat #'number-to-string matches ", ")
+               (my/gptel--stale-hashline-reread-hint target-line total)))
        (t
-        (error "%s tag %s no longer matches line %d, and hash %s was not found within +/- %d lines. Re-read and retry with fresh tags.\n\n%s"
-               label tag target-line target-hash my/gptel--hashline-displacement-window
-               (my/gptel--render-hashed-lines
-                (format "Current context around stale tag %s" tag)
-                scan-start scan-end)))))))
+        (let* ((context-range (my/gptel--stale-hashline-context-range target-line total))
+               (context-start (car context-range))
+               (context-end (cdr context-range)))
+          (error "%s tag %s no longer matches line %d, and hash %s was not found within +/- %d lines. %s\n\n%s"
+                 label tag target-line target-hash my/gptel--hashline-displacement-window
+                 (my/gptel--stale-hashline-reread-hint target-line total)
+                 (my/gptel--render-hashed-lines
+                  (format "Current bounded context around stale tag %s" tag)
+                  context-start context-end))))))))
 
 (defun my/gptel--buffer-edit-string (buffer old-str new-str replace-all)
   "Replace OLD-STR with NEW-STR in current buffer (named BUFFER).
