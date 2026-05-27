@@ -1,6 +1,6 @@
 ;;; init-gptel.el --- GPTel configuration (extracted from emacs_asahi)  -*- lexical-binding: t; -*-
 ; Created on: Sat 13 Sep 2025
-; Last Updated: Mon 25 May 2026
+; Last Updated: Wed 27 May 2026
 
 ;;; GPTel specific configurations ;;;
 ;;
@@ -2043,6 +2043,46 @@ fresh gptel request with no inherited gptel context."
 Agentic presets enable this buffer-locally; ordinary chat notebooks can leave
 it nil or set it nil to opt out.")
 
+(defvar-local my/gptel--yolo-saved-confirm-tool-calls nil
+  "Saved `gptel-confirm-tool-calls' state while `my/gptel-yolo-mode' is on.
+The value is a cons cell (HAD-LOCAL . VALUE), or nil when YOLO mode has not
+saved state in the current buffer.")
+
+(define-minor-mode my/gptel-yolo-mode
+  "Run gptel tool calls in this buffer without confirmation prompts.
+
+This is intentionally opt-in and buffer-local.  Enable it for disposable
+agent/sub-agent sessions where manual y/n approval loops are more expensive
+than per-tool confirmation safety.  It only sets `gptel-confirm-tool-calls' to
+nil; tool implementations and their runtime safety checks still run."
+  :init-value nil
+  :lighter " YOLO"
+  :group 'gptel
+  (if my/gptel-yolo-mode
+      (progn
+        (unless my/gptel--yolo-saved-confirm-tool-calls
+          (setq-local my/gptel--yolo-saved-confirm-tool-calls
+                      (cons (local-variable-p 'gptel-confirm-tool-calls
+                                              (current-buffer))
+                            gptel-confirm-tool-calls)))
+        (setq-local gptel-confirm-tool-calls nil))
+    (when my/gptel--yolo-saved-confirm-tool-calls
+      (if (car my/gptel--yolo-saved-confirm-tool-calls)
+          (setq-local gptel-confirm-tool-calls
+                      (cdr my/gptel--yolo-saved-confirm-tool-calls))
+        (kill-local-variable 'gptel-confirm-tool-calls))
+      (kill-local-variable 'my/gptel--yolo-saved-confirm-tool-calls))))
+
+(defcustom my/gptel-agent-yolo-mode nil
+  "Non-nil means agentic gptel presets enable `my/gptel-yolo-mode'.
+
+Default nil preserves gptel's normal per-tool confirmations.  Set this with
+`setq' only when agent-* sessions and delegated sub-agents should run tools
+without approval prompts.  For one buffer/session, use `my/gptel-yolo-mode'
+instead."
+  :type 'boolean
+  :group 'gptel)
+
 (defcustom my/gptel--prompt-size-soft-chars 120000
   "Approximate prompt size where agentic gptel requests warn before sending."
   :type 'integer
@@ -2055,7 +2095,9 @@ it nil or set it nil to opt out.")
 
 (defun my/gptel--agent-preset-preflight-setup ()
   "Enable agentic preflight guardrails for the current gptel buffer."
-  (setq-local my/gptel-prompt-size-guard-enabled t))
+  (setq-local my/gptel-prompt-size-guard-enabled t)
+  (when my/gptel-agent-yolo-mode
+    (my/gptel-yolo-mode 1)))
 
 (defun my/gptel--agent-edit-preflight-setup ()
   "Enable edit-agent setup hooks for the current gptel buffer."
