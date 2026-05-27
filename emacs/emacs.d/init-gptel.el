@@ -2990,7 +2990,9 @@ WORKFLOW:
    - In hashline mode, old_str can be the empty string.
    - Use exact old_str replacement only as a fallback when hashline tags are unavailable.
    - In fallback mode, old_str must uniquely match the target text; pass replace_all=true only when intentionally replacing every occurrence.
-5. Before declaring completion, call buffer_inspect operation=verify on the edited buffer/file and get PASS. If no meaningful automated check exists, pass skip_reason and report SKIPPED honestly.
+5. Batch coherent edits first, then run the narrowest useful verification once before declaring completion: call buffer_inspect operation=verify on the edited buffer/file and get PASS. If no meaningful automated check exists, pass skip_reason and report SKIPPED honestly.
+   - Do not run check_parens/byte_compile after every intermediate edit; that wastes turns and transcript space.
+   - Verify earlier only when the result will directly guide the next edit, such as uncertain syntax, an unclear stale-edit recovery, or debugging a failing check.
 6. Use git operation=status/diff to review your changes before finishing.
 7. If a needed step is impossible with this slim tool set, stop and state which full preset/tool is required.
 
@@ -3031,8 +3033,10 @@ WORKFLOW:
 6. If a tool returns :TOOL_OUTPUT_REF:, use tool_output operation=search or bounded operation=fetch ranges to inspect it; never ask for a full raw replay.
 7. Use knowledge operation=list_skills/search_skills/load_skill when a reusable procedural guide may apply; use operation=save_skill only after completing a reusable workflow worth distilling.
 8. Use knowledge operation=remember only for confirmed small durable facts/preferences; never store secrets, raw tool output, transcripts, or speculation.
-9. Before declaring completion, call buffer_inspect operation=verify on the edited buffer/file and get PASS. If no meaningful automated check exists, pass skip_reason and report SKIPPED honestly.
-10. Use buffer_inspect operation=check_parens/byte_compile/diagnostics for narrower follow-up diagnostics when verification fails or more detail is needed.
+9. Batch coherent edits first, then run the narrowest useful verification once before declaring completion: call buffer_inspect operation=verify on the edited buffer/file and get PASS. If no meaningful automated check exists, pass skip_reason and report SKIPPED honestly.
+   - Do not run check_parens/byte_compile after every intermediate edit; that wastes turns and transcript space.
+   - Verify earlier only when the result will directly guide the next edit, such as uncertain syntax, an unclear stale-edit recovery, or debugging a failing check.
+10. Use buffer_inspect operation=check_parens/byte_compile/diagnostics for narrower follow-up diagnostics when verification fails, when early feedback will directly inform the next edit, or when more detail is needed.
 11. Use git operation=status/diff to review your changes before finishing.
 
 PARALLELIZE: when reads are independent, issue them in a single message.
@@ -3068,8 +3072,10 @@ WORKFLOW:
 6. If a tool returns :TOOL_OUTPUT_REF:, use tool_output operation=search or bounded operation=fetch ranges to inspect it; never ask for a full raw replay.
 7. Use knowledge operation=list_skills/search_skills/load_skill when a reusable procedural guide may apply; use operation=save_skill only after completing a reusable workflow worth distilling.
 8. Use knowledge operation=remember only for confirmed small durable facts/preferences; never store secrets, raw tool output, transcripts, or speculation.
-9. Before declaring completion, call buffer_inspect operation=verify on the edited buffer/file and get PASS. If no meaningful automated check exists, pass skip_reason and report SKIPPED honestly.
-10. Use buffer_inspect operation=check_parens/byte_compile/diagnostics for narrower follow-up diagnostics when verification fails or more detail is needed.
+9. Batch coherent edits first, then run the narrowest useful verification once before declaring completion: call buffer_inspect operation=verify on the edited buffer/file and get PASS. If no meaningful automated check exists, pass skip_reason and report SKIPPED honestly.
+   - Do not run check_parens/byte_compile after every intermediate edit; that wastes turns and transcript space.
+   - Verify earlier only when the result will directly guide the next edit, such as uncertain syntax, an unclear stale-edit recovery, or debugging a failing check.
+10. Use buffer_inspect operation=check_parens/byte_compile/diagnostics for narrower follow-up diagnostics when verification fails, when early feedback will directly inform the next edit, or when more detail is needed.
 11. Reserve run_shell_command for commands that genuinely need an external process:
    tests, builds, linters/formatters, package managers, one-off system inspection,
    or git operations not covered by git operation=status/diff.
