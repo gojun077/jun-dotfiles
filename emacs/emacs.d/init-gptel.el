@@ -23,6 +23,8 @@
 (declare-function beads-client-ready "beads-client" (&optional filters))
 (declare-function byte-compile-dest-file "bytecomp" (filename))
 
+(defvar beads-dolt-sql-list-lite)
+
 (setq gptel-default-mode 'org-mode)
 
 ;; Configure Anthropic Claude
@@ -392,6 +394,10 @@ Assumes current buffer is the target buffer.  Returns a result string."
     ("buffer_diagnostics" . 12000)
     ("fetch_tool_output" . 12000)
     ("search_tool_output" . 12000)
+    ("beads_list_issues" . 12000)
+    ("beads_ready_issues" . 12000)
+    ("beads_search_issues" . 12000)
+    ("beads_show_issue" . 16000)
     ("remember" . 4000)
     ("list_skills" . 8000)
     ("search_skills" . 12000)
@@ -734,6 +740,12 @@ The body is capped to MAX-CHARS, TOOL's specific cap, or
       (car my/gptel--beads-source-roots))
   "Selected checkout containing beads.el, used by the Beads gptel tool.")
 
+(defconst my/gptel--beads-default-page-size 50
+  "Default number of Beads issue summaries returned by list-like tools.")
+
+(defconst my/gptel--beads-max-page-size 100
+  "Maximum Beads issue summaries returned by one list-like tool call.")
+
 (defun my/gptel--ensure-beads-client ()
   "Ensure the beads.el client API is available."
   (let ((lisp-dir (expand-file-name "lisp" my/gptel--beads-source-root)))
@@ -776,16 +788,76 @@ The body is capped to MAX-CHARS, TOOL's specific cap, or
   (cond
    ((null value) "")
    ((eq value t) "true")
-   ((eq value :json-false) "false")
+   ((memq value '(:json-false :false)) "false")
    ((stringp value) value)
    ((numberp value) (number-to-string value))
    (t (format "%s" value))))
+
+(defun my/gptel--beads-truthy-p (value)
+  "Return non-nil when VALUE is a non-false JSON/gptel boolean value."
+  (and value (not (memq value '(:json-false :false)))))
 
 (defun my/gptel--beads-format-list (value)
   "Format VALUE as a comma-separated list."
   (mapconcat #'my/gptel--beads-format-scalar
              (my/gptel--beads-normalize-sequence value)
              ", "))
+
+(defun my/gptel--beads-split-filter (value)
+  "Split comma-separated Beads filter VALUE into non-empty strings."
+  (when (and (stringp value) (not (string-empty-p (string-trim value))))
+    (seq-filter
+     (lambda (part) (not (string-empty-p part)))
+     (mapcar #'string-trim (split-string value "," t)))))
+
+(defun my/gptel--beads-labels-match-p (issue labels)
+  "Return non-nil when ISSUE has every comma-separated label in LABELS."
+  (let ((wanted (my/gptel--beads-split-filter labels)))
+    (or (null wanted)
+        (let ((present (mapcar #'my/gptel--beads-format-scalar
+                               (my/gptel--beads-normalize-sequence
+                                (my/gptel--beads-field issue 'labels)))))
+          (seq-every-p (lambda (label)
+                         (member label present))
+                       wanted)))))
+
+(defun my/gptel--beads-priority-match-p (issue priority)
+  "Return non-nil when ISSUE matches optional PRIORITY."
+  (or (null priority)
+      (let ((issue-priority (my/gptel--beads-field issue 'priority)))
+        (if (and (numberp priority) (numberp issue-priority))
+            (= (round priority) (round issue-priority))
+          (string= (my/gptel--beads-format-scalar priority)
+                   (my/gptel--beads-format-scalar issue-priority))))))
+
+(defun my/gptel--beads-issue-matches-p (issue status priority type assignee labels all)
+  "Return non-nil when ISSUE matches the Beads list/search filters."
+  (let* ((issue-status (downcase (my/gptel--beads-format-scalar
+                                  (my/gptel--beads-field issue 'status))))
+         (statuses (mapcar #'downcase (my/gptel--beads-split-filter status)))
+         (issue-type (downcase (my/gptel--beads-format-scalar
+                                (or (my/gptel--beads-field issue 'type)
+                                    (my/gptel--beads-field issue 'issue_type)))))
+         (wanted-type (and (stringp type) (downcase (string-trim type))))
+         (issue-assignee (my/gptel--beads-format-scalar
+                          (my/gptel--beads-field issue 'assignee))))
+    (and (or statuses (my/gptel--beads-truthy-p all)
+             (not (string= issue-status "closed")))
+         (or (null statuses) (member issue-status statuses))
+         (my/gptel--beads-priority-match-p issue priority)
+         (or (null wanted-type) (string-empty-p wanted-type)
+             (string= issue-type wanted-type))
+         (or (null assignee) (string-empty-p assignee)
+             (string= issue-assignee assignee))
+         (my/gptel--beads-labels-match-p issue labels))))
+
+(defun my/gptel--beads-filter-issues (issues status priority type assignee labels all)
+  "Return ISSUES matching list/search filters."
+  (seq-filter
+   (lambda (issue)
+     (my/gptel--beads-issue-matches-p
+      issue status priority type assignee labels all))
+   issues))
 
 (defun my/gptel--beads-issue-summary (issue)
   "Return one compact line summarizing ISSUE."
@@ -825,10 +897,11 @@ The body is capped to MAX-CHARS, TOOL's specific cap, or
                    sections))
      "\n")))
 
-(defun my/gptel--beads-filter-plist (status priority type assignee labels limit all)
+(defun my/gptel--beads-filter-plist (status priority type assignee labels all)
   "Build a beads-client filter plist from scalar tool arguments."
   (let (filters)
-    (when all (setq filters (plist-put filters :all t)))
+    (when (my/gptel--beads-truthy-p all)
+      (setq filters (plist-put filters :all t)))
     (when (and status (not (string-empty-p status)))
       (setq filters (plist-put filters :status status)))
     (when priority
@@ -839,30 +912,110 @@ The body is capped to MAX-CHARS, TOOL's specific cap, or
       (setq filters (plist-put filters :assignee assignee)))
     (when (and labels (not (string-empty-p labels)))
       (setq filters (plist-put filters :labels labels)))
-    (when limit
-      (setq filters (plist-put filters :limit limit)))
     filters))
 
-(defun my/gptel--beads-list-issues (&optional project-root status priority type assignee labels limit all)
+(defun my/gptel--beads-ready-filter-plist (assignee priority)
+  "Build a beads-client ready filter plist from scalar tool arguments."
+  (let ((filters (list :limit 0)))
+    (when (and assignee (not (string-empty-p assignee)))
+      (setq filters (plist-put filters :assignee assignee)))
+    (when priority
+      (setq filters (plist-put filters :priority priority)))
+    filters))
+
+(defun my/gptel--beads-list-raw (filters &optional include-details)
+  "Return Beads issues for FILTERS, optionally asking SQL list for DETAILS."
+  (my/gptel--beads-normalize-sequence
+   (if (and include-details (boundp 'beads-dolt-sql-list-lite))
+       (let ((beads-dolt-sql-list-lite nil))
+         (beads-client-list filters))
+     (beads-client-list filters))))
+
+(defun my/gptel--beads-page-size (limit)
+  "Return a safe Beads page size from LIMIT."
+  (min my/gptel--beads-max-page-size
+       (max 1 (round (or limit my/gptel--beads-default-page-size)))))
+
+(defun my/gptel--beads-page-offset (offset)
+  "Return a safe zero-based Beads page OFFSET."
+  (max 0 (round (or offset 0))))
+
+(defun my/gptel--beads-page (items limit offset)
+  "Return pagination metadata for ITEMS using LIMIT and OFFSET."
+  (let* ((page-size (my/gptel--beads-page-size limit))
+         (page-offset (my/gptel--beads-page-offset offset))
+         (total (length items))
+         (end (min total (+ page-offset page-size)))
+         (shown (when (< page-offset total)
+                  (cl-subseq items page-offset end))))
+    (list :items shown
+          :total total
+          :offset page-offset
+          :limit page-size
+          :end end
+          :next-offset (when (< end total) end))))
+
+(defun my/gptel--beads-format-page (heading page formatter empty-message)
+  "Format PAGE of Beads issues using HEADING, FORMATTER and EMPTY-MESSAGE."
+  (let ((total (plist-get page :total))
+        (offset (plist-get page :offset))
+        (end (plist-get page :end))
+        (next-offset (plist-get page :next-offset))
+        (shown (plist-get page :items)))
+    (cond
+     ((zerop total) empty-message)
+     ((null shown)
+      (format "Offset %d is past the last result (%d total). Retry with offset=0 or a smaller offset."
+              offset total))
+     (t
+      (format "%s (showing %d-%d of %d%s):\n%s"
+              heading
+              (1+ offset)
+              end
+              total
+              (if next-offset
+                  (format "; next offset=%d" next-offset)
+                "")
+              (mapconcat formatter shown "\n"))))))
+
+(defun my/gptel--beads-next-hint (operation page)
+  "Return next-step guidance for Beads OPERATION and pagination PAGE."
+  (if-let ((next-offset (plist-get page :next-offset)))
+      (format "More results available; repeat beads operation=%s with offset=%d and limit=%d, or narrow filters/search. Use operation=show with an issue id for full details."
+              operation next-offset (plist-get page :limit))
+    "Use beads operation=show with an issue id for full details."))
+
+(defun my/gptel--beads-page-metadata (page)
+  "Return compact metadata entries for pagination PAGE."
+  `((issue_count . ,(plist-get page :total))
+    (shown_count . ,(length (plist-get page :items)))
+    (offset . ,(plist-get page :offset))
+    (limit . ,(plist-get page :limit))
+    (has_more . ,(if (plist-get page :next-offset) "yes" "no"))
+    (next_offset . ,(plist-get page :next-offset))))
+
+(defun my/gptel--beads-list-issues (&optional project-root status priority type assignee labels limit all offset)
   "Return compact Beads issue summaries for PROJECT-ROOT and filters."
   (condition-case err
       (my/gptel--beads-with-project
        project-root
        (lambda ()
          (let* ((filters (my/gptel--beads-filter-plist
-                          status priority type assignee labels limit all))
-                (issues (my/gptel--beads-normalize-sequence
-                         (beads-client-list filters)))
-                (shown issues))
+                          status priority type assignee labels all))
+                (issues (my/gptel--beads-filter-issues
+                         (my/gptel--beads-list-raw filters)
+                         status priority type assignee labels all))
+                (page (my/gptel--beads-page issues limit offset)))
            (my/gptel--format-tool-result
             "beads_list_issues"
             `((project_root . ,default-directory)
-              (issue_count . ,(length issues))
-              (shown_count . ,(length shown)))
-            (if issues
-                (mapconcat #'my/gptel--beads-issue-summary shown "\n")
-              "No issues matched.")
-            "Use beads operation=show with an issue id for full details."))))
+              ,@(my/gptel--beads-page-metadata page))
+            (my/gptel--beads-format-page
+             "Beads issues"
+             page
+             #'my/gptel--beads-issue-summary
+             "No issues matched.")
+            (my/gptel--beads-next-hint "list" page)))))
     (error (format "Error listing Beads issues: %s" (error-message-string err)))))
 
 (defun my/gptel--beads-show-issue (id &optional project-root)
@@ -880,30 +1033,47 @@ The body is capped to MAX-CHARS, TOOL's specific cap, or
             "Use beads operation=list/search/ready to find related or next issues."))))
     (error (format "Error showing Beads issue '%s': %s" id (error-message-string err)))))
 
-(defun my/gptel--beads-ready-issues (&optional project-root assignee priority limit)
+(defun my/gptel--beads-ready-issues (&optional project-root assignee priority limit offset)
   "Return unblocked/ready Beads issues for PROJECT-ROOT and filters."
   (condition-case err
       (my/gptel--beads-with-project
        project-root
        (lambda ()
-         (let* ((filters (let (plist)
-                           (when assignee (setq plist (plist-put plist :assignee assignee)))
-                           (when priority (setq plist (plist-put plist :priority priority)))
-                           (when limit (setq plist (plist-put plist :limit limit)))
-                           plist))
+         (let* ((filters (my/gptel--beads-ready-filter-plist assignee priority))
                 (issues (my/gptel--beads-normalize-sequence
-                         (beads-client-ready filters))))
+                         (beads-client-ready filters)))
+                (shown-issues (my/gptel--beads-filter-issues
+                               issues nil priority nil assignee nil t))
+                (page (my/gptel--beads-page shown-issues limit offset)))
            (my/gptel--format-tool-result
             "beads_ready_issues"
             `((project_root . ,default-directory)
-              (issue_count . ,(length issues)))
-            (if issues
-                (mapconcat #'my/gptel--beads-issue-summary issues "\n")
-              "No ready issues matched.")
-            "Use beads operation=show with an issue id for full details."))))
+              ,@(my/gptel--beads-page-metadata page))
+            (my/gptel--beads-format-page
+             "Ready Beads issues"
+             page
+             #'my/gptel--beads-issue-summary
+             "No ready issues matched.")
+            (my/gptel--beads-next-hint "ready" page)))))
     (error (format "Error listing ready Beads issues: %s" (error-message-string err)))))
 
-(defun my/gptel--beads-search-issues (query &optional project-root status priority type assignee labels limit all)
+(defun my/gptel--beads-issue-search-text (issue)
+  "Return searchable summary/detail text for ISSUE."
+  (string-join
+   (delq nil
+         (list (my/gptel--beads-issue-summary issue)
+               (my/gptel--beads-format-scalar
+                (my/gptel--beads-field issue 'description))
+               (my/gptel--beads-format-scalar
+                (my/gptel--beads-field issue 'design))
+               (my/gptel--beads-format-scalar
+                (or (my/gptel--beads-field issue 'acceptance_criteria)
+                    (my/gptel--beads-field issue 'acceptance)))
+               (my/gptel--beads-format-scalar
+                (my/gptel--beads-field issue 'notes))))
+   "\n"))
+
+(defun my/gptel--beads-search-issues (query &optional project-root status priority type assignee labels limit all offset)
   "Search Beads issue summaries/details for literal QUERY."
   (condition-case err
       (my/gptel--beads-with-project
@@ -912,58 +1082,42 @@ The body is capped to MAX-CHARS, TOOL's specific cap, or
          (when (or (null query) (string-empty-p (string-trim query)))
            (error "query must not be empty"))
          (let* ((filters (my/gptel--beads-filter-plist
-                          status priority type assignee labels nil all))
-                (issues (my/gptel--beads-normalize-sequence
-                         (beads-client-list filters)))
+                          status priority type assignee labels all))
+                (issues (my/gptel--beads-filter-issues
+                         (my/gptel--beads-list-raw filters t)
+                         status priority type assignee labels all))
                 (pattern (regexp-quote (downcase (string-trim query))))
                 (matches (seq-filter
                           (lambda (issue)
                             (string-match-p
                              pattern
-                             (downcase
-                              (string-join
-                               (delq nil
-                                     (list (my/gptel--beads-issue-summary issue)
-                                           (my/gptel--beads-format-scalar
-                                            (my/gptel--beads-field issue 'description))
-                                           (my/gptel--beads-format-scalar
-                                            (my/gptel--beads-field issue 'design))
-                                           (my/gptel--beads-format-scalar
-                                            (my/gptel--beads-field issue 'notes))))
-                               "\n"))))
+                             (downcase (my/gptel--beads-issue-search-text issue))))
                           issues))
-                (max-show (min 100 (max 1 (round (or limit 50)))))
-                (shown (cl-subseq matches 0 (min (length matches) max-show))))
+                (page (my/gptel--beads-page matches limit offset)))
            (my/gptel--format-tool-result
-            "beads_list_issues"
+            "beads_search_issues"
             `((project_root . ,default-directory)
               (query . ,query)
-              (issue_count . ,(length issues))
-              (match_count . ,(length matches))
-              (shown_count . ,(length shown))
-              (max_matches . ,max-show))
-            (if matches
-                (format "Found %d matching Beads issue%s for %S%s:\n%s"
-                        (length matches)
-                        (if (= (length matches) 1) "" "s")
-                        query
-                        (if (> (length matches) max-show)
-                            (format " (showing first %d)" max-show)
-                          "")
-                        (mapconcat #'my/gptel--beads-issue-summary shown "\n"))
-              (format "No Beads issues matched %S." query))
-            "Use beads operation=show with an issue id for full details."))))
+              (searched_issue_count . ,(length issues))
+              (match_count . ,(plist-get page :total))
+              ,@(my/gptel--beads-page-metadata page))
+            (my/gptel--beads-format-page
+             (format "Matching Beads issues for %S" query)
+             page
+             #'my/gptel--beads-issue-summary
+             (format "No Beads issues matched %S." query))
+            (my/gptel--beads-next-hint "search" page)))))
     (error (format "Error searching Beads issues: %s" (error-message-string err)))))
 
-(defun my/gptel--beads-tool (operation &optional project-root id query status priority type assignee labels limit all)
+(defun my/gptel--beads-tool (operation &optional project-root id query status priority type assignee labels limit all offset)
   "Dispatch Beads OPERATION behind one gptel tool declaration."
   (pcase operation
-    ("list" (my/gptel--beads-list-issues project-root status priority type assignee labels limit all))
+    ("list" (my/gptel--beads-list-issues project-root status priority type assignee labels limit all offset))
     ("show" (if (and id (not (string-empty-p id)))
                 (my/gptel--beads-show-issue id project-root)
               "Error: beads operation=show requires id."))
-    ("ready" (my/gptel--beads-ready-issues project-root assignee priority limit))
-    ("search" (my/gptel--beads-search-issues query project-root status priority type assignee labels limit all))
+    ("ready" (my/gptel--beads-ready-issues project-root assignee priority limit offset))
+    ("search" (my/gptel--beads-search-issues query project-root status priority type assignee labels limit all offset))
     (_ "Error: beads operation must be one of: list, show, ready, search.")))
 
 (defun my/gptel--knowledge-tool (operation &optional scope entry old-entry name-or-file query title when-to-use steps verification caveats max-skills max-matches max-chars replace-existing)
@@ -1813,7 +1967,7 @@ Reserve this tool for commands that genuinely need an external process: tests, b
 (gptel-make-tool
  :name "beads"
  :function #'my/gptel--beads-tool
- :description "Read Beads issues via beads.el's in-process client, not by shelling out to bd. OPERATION selects list, show, ready, or literal keyword search. Returns compact summaries by default; use operation=show with id for full detail."
+ :description "Read Beads issues via beads.el's in-process client, not by shelling out to bd. OPERATION selects list, show, ready, or literal keyword search. List-like operations return one bounded page of compact summaries; use operation=show with id for full detail."
  :args (list '(:name "operation" :type "string" :enum ["list" "show" "ready" "search"] :description "Beads operation to run: list filtered issues, show one id, ready unblocked issues, or search issue summary/details.")
              '(:name "project_root" :type "string" :description "Optional Beads project root containing .beads/. Defaults to current project/default-directory.")
              '(:name "id" :type "string" :description "Issue id for operation=show, e.g. pj_gtd_org-kv1.1.")
@@ -1823,8 +1977,9 @@ Reserve this tool for commands that genuinely need an external process: tests, b
              '(:name "type" :type "string" :description "Optional issue type filter, e.g. task, bug, epic.")
              '(:name "assignee" :type "string" :description "Optional assignee filter for list/search/ready.")
              '(:name "labels" :type "string" :description "Optional labels filter, as accepted by beads.el/bd.")
-             '(:name "limit" :type "number" :description "Optional maximum number of issues/results to return.")
-             '(:name "all" :type "boolean" :description "When true, include closed issues where the backend supports it."))
+             '(:name "limit" :type "number" :description "Optional page size for list/search/ready. Defaults to 50 and is capped at 100.")
+             '(:name "all" :type "boolean" :description "When true, include closed issues in list/search results.")
+             '(:name "offset" :type "number" :description "Optional zero-based result offset for the next list/search/ready page."))
  :include nil
  :category "beads")
 
