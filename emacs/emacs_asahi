@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Fri 01 May 2026
+;; Last Updated: Sun 07 Jun 2026
 ;;
 ;; These configs are for Emacs 30.1 and higher.
 ;;; Code:
@@ -35,15 +35,11 @@
 (use-package ansible
   :straight t
   :defer t)
-;; (use-package beads
-;;   :straight (:type git
-;;              :host codeberg
-;;              :repo "ctietze/beads.el"
-;;              :branch "upgrade"))
 (use-package beads
   :straight nil
-  :load-path ("/home/jundora/Documents/repos/personal/beads.el-gojun077/lisp"
-              "/home/jundora/.emacs.d/straight/build/vui"))
+  :load-path ("/home/jundora/Documents/repos/personal/beads-turbo.el/lisp"
+              "/home/jundora/Documents/repos/persona/beads-turbo.el/vendor/vui.el"
+              "/home/jundora/Documents/repos/persona/beads-turbo.el/vendor/mysql.el"))
 (use-package blacken
   :straight t
   :defer t)

@@ -34,9 +34,9 @@
         "/home/jundora/.local/bin/dolt": {
             "path": "/home/jundora/.local/bin/dolt",
             "remote_name": "dolt",
-            "version": "v2.0.6",
-            "hash": "447d86e96ab26e622695227c02262cd01248c223650272bc79ad92de77807f52",
-            "url": "https://github.com/dolthub/dolt/releases/tag/v2.0.6",
+            "version": "v2.1.4",
+            "hash": "0c07d99098168e6f73939d675e5116215da52ba01719ab92f3dc2498f078a22c",
+            "url": "https://github.com/dolthub/dolt/releases/tag/v2.1.4",
             "provider": "github",
             "package_path": "dolt-linux-arm64/bin/dolt",
             "pinned": false
@@ -94,9 +94,9 @@
         "/home/jundora/.local/bin/k9s": {
             "path": "/home/jundora/.local/bin/k9s",
             "remote_name": "k9s",
-            "version": "v0.50.18",
-            "hash": "c7a73f1e8b5fa1e4d311cd420fa3450f98bbc37d5295077aeac1e8486ff39aa7",
-            "url": "https://github.com/derailed/k9s/releases/tag/v0.50.18",
+            "version": "v0.51.0",
+            "hash": "92ed2bc895004d08d080d08a9cff9e85d38603e6a34a8df15761481de7533801",
+            "url": "https://github.com/derailed/k9s/releases/tag/v0.51.0",
             "provider": "github",
             "package_path": "k9s",
             "pinned": false
