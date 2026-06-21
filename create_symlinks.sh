@@ -294,6 +294,9 @@ case "$HOSTNAME" in
       # WezTerm
       create_sym "$HOME/.wezterm.lua"   "$DOTFILES/macOS/wezterm-mac.lua"
 
+      # AeroSpace
+      create_sym "$HOME/.aerospace.toml" "$DOTFILES/macOS/aerospace.toml"
+
       # Starship prompt
       create_sym "$HOME/.config/starship.toml" "$DOTFILES/starship_macbookpro.toml"
     else
