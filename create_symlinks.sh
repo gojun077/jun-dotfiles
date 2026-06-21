@@ -7,7 +7,7 @@
 # Encrypted dotfiles (SSH keys, gitconfig, authinfo, etc.) are managed
 # separately by create_symlinks_enc.sh in the dotfiles-enc repo.
 #
-# Last updated: Sun 19 Apr 2026
+# Last updated: Sun 21 Jun 2026
 
 set -euo pipefail
 
@@ -20,8 +20,10 @@ DOTFILES="$HOME/dotfiles"
 create_sym()
 {
   # Create a symlink from $1 (link path) -> $2 (target file)
-  # - If $1 exists as a non-symlink file, back it up as $1.old
-  # - If $1 is already a symlink (even broken), skip
+  # - If $1 already points to $2, skip
+  # - If $1 exists but points elsewhere or is a non-symlink path,
+  #   back it up as $1.old
+  #   (or $1.old.<timestamp> if a previous backup exists)
   # - If parent dir of $1 doesn't exist, create it
   #
   # USAGE: create_sym <link_path> <target_path>
@@ -30,13 +32,28 @@ create_sym()
   local TARGET="$2"
 
   if [[ -L "$LINK" ]]; then
-    printf "[skip] %s is already a symlink\n" "$LINK"
-    return 0
+    local CURRENT_TARGET
+    CURRENT_TARGET=$(readlink "$LINK")
+    if [[ "$CURRENT_TARGET" = "$TARGET" ]]; then
+      printf "[skip] %s already points to %s\n" "$LINK" "$TARGET"
+      return 0
+    fi
   fi
 
-  if [[ -f "$LINK" ]]; then
-    mv -f "$LINK" "${LINK}.old"
-    printf "[backup] %s -> %s.old\n" "$LINK" "$LINK"
+  if [[ -e "$LINK" || -L "$LINK" ]]; then
+    local BACKUP="${LINK}.old"
+    if [[ -e "$BACKUP" || -L "$BACKUP" ]]; then
+      local STAMP
+      STAMP=$(date +%Y%m%d%H%M%S)
+      BACKUP="${LINK}.old.${STAMP}"
+      local N=1
+      while [[ -e "$BACKUP" || -L "$BACKUP" ]]; do
+        BACKUP="${LINK}.old.${STAMP}.${N}"
+        N=$((N + 1))
+      done
+    fi
+    mv -f "$LINK" "$BACKUP"
+    printf "[backup] %s -> %s\n" "$LINK" "$BACKUP"
   fi
 
   local LINKDIR
@@ -263,11 +280,19 @@ case "$HOSTNAME" in
       # Emacs
       create_sym "$HOME/.emacs"        "$DOTFILES/emacs/emacs_mac"
       mkdir -p "$HOME/.emacs.d"
+      create_sym "$HOME/.emacs.d/early-init.el"     "$DOTFILES/emacs/emacs.d/asahi_early-init.el"
+      create_sym "$HOME/.emacs.d/init-gptel.el"     "$DOTFILES/emacs/emacs.d/init-gptel.el"
+      create_sym "$HOME/.emacs.d/init-org.el"       "$DOTFILES/emacs/emacs.d/init-org-macos.el"
+      create_sym "$HOME/.emacs.d/init-projectile.el" "$DOTFILES/emacs/emacs.d/init-projectile.el"
+      create_sym "$HOME/.emacs.d/init-ui-macos.el"  "$DOTFILES/emacs/emacs.d/init-ui-macos.el"
       create_sym "$HOME/.emacs.d/init-yasnippet.el" "$DOTFILES/emacs/emacs.d/init-yasnippet.el"
       create_sym "$HOME/.emacs.d/snippets"          "$DOTFILES/emacs/emacs.d/snippets"
 
       # Tmux
       create_sym "$HOME/.tmux.conf"    "$DOTFILES/tmux/tmux-macos.conf"
+
+      # WezTerm
+      create_sym "$HOME/.wezterm.lua"   "$DOTFILES/macOS/wezterm-mac.lua"
 
       # Starship prompt
       create_sym "$HOME/.config/starship.toml" "$DOTFILES/starship_macbookpro.toml"
