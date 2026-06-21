@@ -297,6 +297,9 @@ case "$HOSTNAME" in
       # AeroSpace
       create_sym "$HOME/.aerospace.toml" "$DOTFILES/macOS/aerospace.toml"
 
+      # vim
+      create_sym "$HOME/.vimrc" "$DOTFILES/macOS/vimrc_mac"
+
       # Starship prompt
       create_sym "$HOME/.config/starship.toml" "$DOTFILES/starship_macbookpro.toml"
     else
