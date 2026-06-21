@@ -361,6 +361,9 @@ fi
 if command -v mc &>/dev/null && [[ -f "$DOTFILES/mc.ini" ]]; then
   mkdir -p "$HOME/.config/mc"
   create_sym "$HOME/.config/mc/ini" "$DOTFILES/mc.ini"
+  mkdir -p "$HOME/.local/share/mc/skins"
+  create_sym "$HOME/.local/share/mc/skins" \
+    "$HOME/Documents/local_build/midnight-commander/skins/dracula256.ini"
 fi
 
 # Lynx
