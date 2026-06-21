@@ -371,6 +371,20 @@ if command -v lynx &>/dev/null && [[ -f "$DOTFILES/.lynxrc" ]]; then
   create_sym "$HOME/.lynxrc" "$DOTFILES/.lynxrc"
 fi
 
+# macOS applications
+if [[ "$(uname -s)" = "Darwin" ]]; then
+  # Tailscale.app command-line entry point
+  TAILSCALE_APP_BIN="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
+  if [[ -x "$TAILSCALE_APP_BIN" ]]; then
+    create_sym "$HOME/.local/bin/tailscale" "$TAILSCALE_APP_BIN"
+  fi
+
+  # Topgrade
+  if command -v topgrade &>/dev/null && [[ -f "$DOTFILES/macOS/topgrade_work_macos.toml" ]]; then
+    create_sym "$HOME/.config/topgrade.toml" "$DOTFILES/macOS/topgrade_work_macos.toml"
+  fi
+fi
+
 
 # =========================================================================
 # System-level symlinks (require elevated permissions)
