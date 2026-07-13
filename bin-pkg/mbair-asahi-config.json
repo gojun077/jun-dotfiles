@@ -14,9 +14,9 @@
         "/home/jundora/.local/bin/bluetuith": {
             "path": "/home/jundora/.local/bin/bluetuith",
             "remote_name": "bluetuith",
-            "version": "v0.2.6",
-            "hash": "a53b6f97128b50ebaf8f9526049e79b44133fac705c28a5f20381d931440f7d2",
-            "url": "https://github.com/bluetuith-org/bluetuith/releases/tag/v0.2.6",
+            "version": "v0.2.7",
+            "hash": "b73340ba2f8e6aaff3c7121119d623c805d9f2e352bcfc89f4d7c40b8d748506",
+            "url": "https://github.com/bluetuith-org/bluetuith/releases/tag/v0.2.7",
             "provider": "github",
             "package_path": "bluetuith",
             "pinned": false
@@ -24,9 +24,9 @@
         "/home/jundora/.local/bin/dolt": {
             "path": "/home/jundora/.local/bin/dolt",
             "remote_name": "dolt",
-            "version": "v2.1.9",
-            "hash": "b3dd3ef1a65e7f5f358cb604e506c965c675837bc07fcd22883dfacf453cbf1f",
-            "url": "https://github.com/dolthub/dolt/releases/tag/v2.1.9",
+            "version": "v2.1.10",
+            "hash": "7d6153428f8698e91d6fb7e9b7baf2dea352b22abb7a63d44327be9cccb0b112",
+            "url": "https://github.com/dolthub/dolt/releases/tag/v2.1.10",
             "provider": "github",
             "package_path": "dolt-linux-arm64/bin/dolt",
             "pinned": false
