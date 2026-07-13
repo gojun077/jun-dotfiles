@@ -3,12 +3,13 @@
     "bins": {
         "/home/jundora/.local/bin/bin": {
             "path": "/home/jundora/.local/bin/bin",
-            "remote_name": "bin_0.26.0_linux_arm64",
-            "version": "v0.26.0",
-            "hash": "c308bc42b88495028fffb2a256f71218c7d468dacca2970d173b5c6cffad48cb",
-            "url": "https://github.com/marcosnils/bin/releases/tag/v0.26.0",
+            "remote_name": "bin_0.28.0_linux_arm64",
+            "version": "v0.28.0",
+            "hash": "2c8cafbbfaf5a354a92fa6bf5553d786b3ce132a2fc5274435982837db3ac224",
+            "url": "https://github.com/marcosnils/bin/releases/tag/v0.28.0",
             "provider": "github",
             "package_path": "",
+            "selected_asset": "",
             "pinned": false
         },
         "/home/jundora/.local/bin/bluetuith": {
@@ -19,6 +20,7 @@
             "url": "https://github.com/bluetuith-org/bluetuith/releases/tag/v0.2.7",
             "provider": "github",
             "package_path": "bluetuith",
+            "selected_asset": "",
             "pinned": false
         },
         "/home/jundora/.local/bin/dolt": {
@@ -29,6 +31,7 @@
             "url": "https://github.com/dolthub/dolt/releases/tag/v2.1.10",
             "provider": "github",
             "package_path": "dolt-linux-arm64/bin/dolt",
+            "selected_asset": "",
             "pinned": false
         },
         "/home/jundora/.local/bin/duckdb": {
@@ -39,16 +42,18 @@
             "url": "https://github.com/duckdb/duckdb/releases/tag/v1.5.4",
             "provider": "github",
             "package_path": "",
+            "selected_asset": "",
             "pinned": false
         },
         "/home/jundora/.local/bin/gh": {
             "path": "/home/jundora/.local/bin/gh",
             "remote_name": "gh",
-            "version": "v2.95.0",
-            "hash": "706b030846db08d0dac0392d6f74416e0bbf0d9ac5ecbd54c9046305c10eac59",
-            "url": "https://github.com/cli/cli/releases/tag/v2.95.0",
+            "version": "v2.96.0",
+            "hash": "f903d2fa04ae78ee8f8df0186364d0b92f078d2720053941a47e0a3beaef54f0",
+            "url": "https://github.com/cli/cli/releases/tag/v2.96.0",
             "provider": "github",
-            "package_path": "gh_2.95.0_linux_arm64/bin/gh",
+            "package_path": "gh_2.96.0_linux_arm64/bin/gh",
+            "selected_asset": "gh_2.96.0_linux_arm64.tar.gz",
             "pinned": false
         },
         "/home/jundora/.local/bin/git-filter-repo": {
@@ -59,6 +64,7 @@
             "url": "https://github.com/newren/git-filter-repo/releases",
             "provider": "github",
             "package_path": "git-filter-repo-2.47.0/git-filter-repo",
+            "selected_asset": "",
             "pinned": false
         },
         "/home/jundora/.local/bin/gitleaks": {
@@ -69,6 +75,7 @@
             "url": "https://github.com/gitleaks/gitleaks/releases",
             "provider": "github",
             "package_path": "gitleaks",
+            "selected_asset": "",
             "pinned": false
         },
         "/home/jundora/.local/bin/k3s": {
@@ -79,6 +86,7 @@
             "url": "https://github.com/k3s-io/k3s/releases/tag/v1.36.2%2Bk3s1",
             "provider": "github",
             "package_path": "",
+            "selected_asset": "",
             "pinned": false
         },
         "/home/jundora/.local/bin/k9s": {
@@ -89,16 +97,18 @@
             "url": "https://github.com/derailed/k9s/releases/tag/v0.51.0",
             "provider": "github",
             "package_path": "k9s",
+            "selected_asset": "",
             "pinned": false
         },
         "/home/jundora/.local/bin/yt-dlp": {
             "path": "/home/jundora/.local/bin/yt-dlp",
             "remote_name": "yt-dlp_linux_aarch64",
-            "version": "2026.06.09",
-            "hash": "cabd246445bdfde0eda0dfe68bbe90354be83f3fdbbf077df11a2ea55f41cdbd",
-            "url": "https://github.com/yt-dlp/yt-dlp/releases/tag/2026.06.09",
+            "version": "2026.07.04",
+            "hash": "b6ce97646773070d7a7ffd6bbbdcaecb47c48483909c54c915bf08a7a9b5e0b1",
+            "url": "https://github.com/yt-dlp/yt-dlp/releases/tag/2026.07.04",
             "provider": "github",
             "package_path": "",
+            "selected_asset": "yt-dlp_linux_aarch64",
             "pinned": false
         }
     }
