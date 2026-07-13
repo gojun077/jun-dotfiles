@@ -7,6 +7,8 @@
 #
 # These settings are sourced by the login shell
 
+export TERM=xterm-256color
+
 if [ -f ~/.bashrc ]; then
   # SC override is to quiet the warning about following path to source
   # shellcheck disable=SC1091
@@ -36,5 +38,4 @@ ssh-agent -D -a "$SSH_AUTH_SOCK" > /dev/null
 
 # NOTE: if GNOME keyring is installed, you must deactivate its ssh component
 # otw it will overwrite SSH_AUTH_SOCK above
-export TERM=xterm-256color
 export EDITOR="emacsclient -nw"
