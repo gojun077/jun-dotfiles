@@ -25,6 +25,17 @@ shopt -s checkwinsize
 # use starship customizable prompt
 # curl -sS https://starship.rs/install.sh | sh
 eval "$($HOME/.local/bin/starship init bash)"
+
+# Configure GNU ls colors for directories, symlinks, executables, and other
+# special file types. Use ~/.dircolors when present, otherwise system defaults.
+if command -v dircolors >/dev/null 2>&1; then
+  if [[ -r "$HOME/.dircolors" ]]; then
+    eval "$(dircolors -b "$HOME/.dircolors")"
+  else
+    eval "$(dircolors -b)"
+  fi
+fi
+
 source ~/.bash_aliases
 # Only show output if this is an interactive shell
 if [[ $- == *i* ]]; then
