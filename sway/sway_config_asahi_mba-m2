@@ -5,7 +5,7 @@
 # Read `man 5 sway` for a complete reference.
 # Created on: 29 Jun 2024
 # Created by: gojun077@gmail.com
-# Last Updated: Tue 17 Feb 2026
+# Last Updated: Mon 13 Jul 2026
 
 
 ### Variables
@@ -49,8 +49,9 @@ output eDP-1 resolution 2560x1600 scale 1.5 position 0 0
 # below monitor is for home office (TFG32F16VQ Beihai Century) (right)
 output "Beihai Century Joint Innovation Technology Co.,Ltd TFG32F16VQ Unknown" resolution 1920x1080@60Hz position 1728 0
 
-# below monitor is for home office (right)
-#output HDMI-A-1 resolution 1920x1080@60Hz position 1706 0
+# below monitor is for LG 4K 31" monitor (right)
+output "LG Electronics LG HDR 4K 402NTLEB5152" resolution 3840x2160@60Hz scale 1.5 position 1728 0
+
 #
 ### Output configuration
 #

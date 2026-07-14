@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-
+#
 # Original path to file: ~/.bash_aliases
 # bash_aliases_macos
 # Created on: Sometime in 2021?
-# Last Updated: Wed 01 July 2026
+# Last Updated: Tue 14 Jul 2026
 
 # enable color support of ls and also add handy aliases
 alias ls='ls --color=auto'
