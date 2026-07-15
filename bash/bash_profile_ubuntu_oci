@@ -3,7 +3,7 @@
 #
 # Created on: 29 Jul 2024
 # Created by: gopeterjun@naver.com
-# Last Updated: 18 Dec 2024
+# Last Updated: 15 Jul 2026
 #
 # These settings are sourced by the login shell
 
@@ -37,4 +37,4 @@ fi
 
 # NOTE: if GNOME keyring is installed, you must deactivate its ssh component
 # otw it will overwrite SSH_AUTH_SOCK above
-export EDITOR="emacsclient -nw"
+export EDITOR="vim"
