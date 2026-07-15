@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-
+#
 # Original path to file: ~/.bash_aliases
 # bash_aliases_macos
 # Created on: Sometime in 2021?
-# Last Updated: Sun 10 May 2026
+# Last Updated: Tue 14 Jul 2026
 
 # enable color support of ls and also add handy aliases
 alias ls='ls --color=auto'
@@ -17,7 +17,6 @@ alias vi='vim'
 alias ㅊㅇ='cd'
 alias 니='ls'
 alias screen="/opt/homebrew/bin/screen"
-alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
 alias enox="/opt/homebrew/bin/emacsclient -nw"
 
 # A simple dictation wrapper for whisper.cpp

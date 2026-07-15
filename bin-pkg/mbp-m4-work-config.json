@@ -3,10 +3,10 @@
     "bins": {
         "/Users/peter.junkoh/.local/bin/bin": {
             "path": "/Users/peter.junkoh/.local/bin/bin",
-            "remote_name": "bin_0.26.0_darwin_arm64",
-            "version": "v0.26.0",
-            "hash": "97be992bee0265be2810f2f3b7624c68a1c14b39966b10eee63fbeee0cc7ef2e",
-            "url": "https://github.com/marcosnils/bin/releases/tag/v0.26.0",
+            "remote_name": "bin_0.28.0_darwin_arm64",
+            "version": "v0.28.0",
+            "hash": "0965610fd80f70d817d3c3d471cd1e412c02d05505386b919071fd6555b140a9",
+            "url": "https://github.com/marcosnils/bin/releases/tag/v0.28.0",
             "provider": "github",
             "package_path": "",
             "pinned": false
@@ -14,21 +14,11 @@
         "/Users/peter.junkoh/.local/bin/dolt": {
             "path": "/Users/peter.junkoh/.local/bin/dolt",
             "remote_name": "dolt",
-            "version": "v2.1.7",
-            "hash": "ef794d6dacb98d31b3364bea04b1088550076de12451a288eb667043c884e743",
-            "url": "https://github.com/dolthub/dolt/releases/tag/v2.1.7",
+            "version": "v2.1.10",
+            "hash": "d66d5938e7e660ed5efb2d59e4b1704ec20509f4f742e68cdb3667a8d362ad13",
+            "url": "https://github.com/dolthub/dolt/releases/tag/v2.1.10",
             "provider": "github",
             "package_path": "dolt-darwin-arm64/bin/dolt",
-            "pinned": false
-        },
-        "/Users/peter.junkoh/.local/bin/notion": {
-            "path": "/Users/peter.junkoh/.local/bin/notion",
-            "remote_name": "notion",
-            "version": "v0.7.0",
-            "hash": "da9f3a20c18f57127d5456f446d9a1e105fe6646aabc844886c5fca973256660",
-            "url": "https://github.com/4ier/notion-cli/releases/tag/v0.7.0",
-            "provider": "github",
-            "package_path": "notion",
             "pinned": false
         },
         "/Users/peter.junkoh/.local/bin/slackcli": {
