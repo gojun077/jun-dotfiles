@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # create symlinks for public dotfiles from ~/dotfiles
 # Do NOT run as root, as this will cause the $HOME variable to default
 # to '/root' instead of ~/username and cause $USER to become 'root'
@@ -7,7 +7,7 @@
 # Encrypted dotfiles (SSH keys, gitconfig, authinfo, etc.) are managed
 # separately by create_symlinks_enc.sh in the dotfiles-enc repo.
 #
-# Last updated: Sun 21 Jun 2026
+# Last updated: Wed 15 Jul 2026
 
 set -euo pipefail
 

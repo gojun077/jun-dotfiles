@@ -26,12 +26,12 @@
         "/home/jundora/.local/bin/dolt": {
             "path": "/home/jundora/.local/bin/dolt",
             "remote_name": "dolt",
-            "version": "v2.1.10",
-            "hash": "7d6153428f8698e91d6fb7e9b7baf2dea352b22abb7a63d44327be9cccb0b112",
-            "url": "https://github.com/dolthub/dolt/releases/tag/v2.1.10",
+            "version": "v2.1.11",
+            "hash": "e0a6ce7c7ead6cab8b8d9a151aebb62ddedec9307403c0c6ba9ca2c81237a633",
+            "url": "https://github.com/dolthub/dolt/releases/tag/v2.1.11",
             "provider": "github",
             "package_path": "dolt-linux-arm64/bin/dolt",
-            "selected_asset": "",
+            "selected_asset": "dolt-linux-arm64.tar.gz",
             "pinned": false
         },
         "/home/jundora/.local/bin/duckdb": {
