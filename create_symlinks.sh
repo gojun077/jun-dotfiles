@@ -214,7 +214,7 @@ case "$HOSTNAME" in
   # -----------------------------------------------------------------------
   # Ubuntu OCI (Oracle Cloud Infrastructure)
   # -----------------------------------------------------------------------
-  ubuntu-oci|ubuntu_oci)
+  pj-arm64-ampere|ubuntu-oci|ubuntu_oci)
     # Bash
     create_sym "$HOME/.bashrc"         "$DOTFILES/bash/bashrc_ubuntu_oci"
     create_sym "$HOME/.bash_profile"   "$DOTFILES/bash/bash_profile_ubuntu_oci"
@@ -222,6 +222,12 @@ case "$HOSTNAME" in
 
     # Emacs
     create_sym "$HOME/.emacs"          "$DOTFILES/emacs/emacs_ubuntu_oci"
+
+    # Gmail archive
+    create_sym "$HOME/.config/systemd/user/gmail-archive-sync.service" \
+               "$DOTFILES/systemd/user/gmail-archive-sync.service"
+    create_sym "$HOME/.config/systemd/user/gmail-archive-sync.timer" \
+               "$DOTFILES/systemd/user/gmail-archive-sync.timer"
     ;;
 
   # -----------------------------------------------------------------------

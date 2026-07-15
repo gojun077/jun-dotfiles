@@ -1,0 +1,12 @@
+[Unit]
+Description=Pull Gmail archive and update the notmuch index
+Documentation=man:mbsync(1) man:notmuch-new(1)
+ConditionPathIsDirectory=/data/mail/gmail
+
+[Service]
+Type=oneshot
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+UMask=0077
+ExecStart=/usr/bin/mbsync gmail
+ExecStart=/usr/bin/notmuch new
+TimeoutStartSec=15min
