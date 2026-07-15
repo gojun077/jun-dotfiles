@@ -262,6 +262,11 @@
   (message "Warning: Could not load init-org.el - check if file exists in %s"
            user-emacs-directory))
 
+;; Load remote notmuch mail configuration
+(unless (load (expand-file-name "init-notmuch.el" user-emacs-directory) t t)
+  (message "Warning: Could not load init-notmuch.el - check if file exists in %s"
+           user-emacs-directory))
+
 ;; Load YASnippet configuration
 (unless (load (expand-file-name "init-yasnippet.el" user-emacs-directory) t t)
   (message "Warning: Could not load init-yasnippet.el - check if file exists in %s"

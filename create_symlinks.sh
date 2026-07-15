@@ -152,9 +152,13 @@ case "$HOSTNAME" in
     mkdir -p "$HOME/.emacs.d"
     create_sym "$HOME/.emacs.d/early-init.el" "$DOTFILES/emacs/emacs.d/asahi_early-init.el"
     create_sym "$HOME/.emacs.d/init-gptel.el" "$DOTFILES/emacs/emacs.d/init-gptel.el"
+    create_sym "$HOME/.emacs.d/init-notmuch.el" "$DOTFILES/emacs/emacs.d/init-notmuch.el"
     create_sym "$HOME/.emacs.d/init-org.el"   "$DOTFILES/emacs/emacs.d/init-org.el"
     create_sym "$HOME/.emacs.d/init-yasnippet.el" "$DOTFILES/emacs/emacs.d/init-yasnippet.el"
     create_sym "$HOME/.emacs.d/snippets"          "$DOTFILES/emacs/emacs.d/snippets"
+
+    # Mail
+    create_sym "$HOME/.local/bin/notmuch-remote" "$DOTFILES/bin/notmuch-remote"
 
     # Tmux
     create_sym "$HOME/.tmux.conf"      "$DOTFILES/tmux/tmux-argo.conf"
@@ -282,11 +286,15 @@ case "$HOSTNAME" in
       mkdir -p "$HOME/.emacs.d"
       create_sym "$HOME/.emacs.d/early-init.el"     "$DOTFILES/emacs/emacs.d/asahi_early-init.el"
       create_sym "$HOME/.emacs.d/init-gptel.el"     "$DOTFILES/emacs/emacs.d/init-gptel.el"
+      create_sym "$HOME/.emacs.d/init-notmuch.el"   "$DOTFILES/emacs/emacs.d/init-notmuch.el"
       create_sym "$HOME/.emacs.d/init-org.el"       "$DOTFILES/emacs/emacs.d/init-org-macos.el"
       create_sym "$HOME/.emacs.d/init-projectile.el" "$DOTFILES/emacs/emacs.d/init-projectile.el"
       create_sym "$HOME/.emacs.d/init-ui-macos.el"  "$DOTFILES/emacs/emacs.d/init-ui-macos.el"
       create_sym "$HOME/.emacs.d/init-yasnippet.el" "$DOTFILES/emacs/emacs.d/init-yasnippet.el"
       create_sym "$HOME/.emacs.d/snippets"          "$DOTFILES/emacs/emacs.d/snippets"
+
+      # Mail
+      create_sym "$HOME/.local/bin/notmuch-remote" "$DOTFILES/bin/notmuch-remote"
 
       # Tmux
       create_sym "$HOME/.tmux.conf"    "$DOTFILES/tmux/tmux-macos.conf"

@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+printf -v args ' %q' "$@"
+exec ssh ocloud-arm "exec notmuch${args}"
