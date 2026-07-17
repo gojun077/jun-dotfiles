@@ -1,10 +1,10 @@
 [Unit]
-Description=Pull, locally archive, and back up Gmail (safe mode)
+Description=Back up notmuch metadata (not live Xapian files)
 ConditionPathIsDirectory=/data/mail/gmail
 
 [Service]
 Type=oneshot
 Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin
 UMask=0077
-ExecStart=%h/.local/bin/gmail-archive sync
+ExecStart=%h/.local/bin/gmail-archive backup-notmuch
 TimeoutStartSec=30min

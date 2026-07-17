@@ -224,10 +224,15 @@ case "$HOSTNAME" in
     create_sym "$HOME/.emacs"          "$DOTFILES/emacs/emacs_ubuntu_oci"
 
     # Gmail archive
+    create_sym "$HOME/.local/bin/gmail-archive" "$DOTFILES/bin/gmail-archive"
     create_sym "$HOME/.config/systemd/user/gmail-archive-sync.service" \
                "$DOTFILES/systemd/user/gmail-archive-sync.service"
     create_sym "$HOME/.config/systemd/user/gmail-archive-sync.timer" \
                "$DOTFILES/systemd/user/gmail-archive-sync.timer"
+    create_sym "$HOME/.config/systemd/user/gmail-notmuch-backup.service" \
+               "$DOTFILES/systemd/user/gmail-notmuch-backup.service"
+    create_sym "$HOME/.config/systemd/user/gmail-notmuch-backup.timer" \
+               "$DOTFILES/systemd/user/gmail-notmuch-backup.timer"
     ;;
 
   # -----------------------------------------------------------------------

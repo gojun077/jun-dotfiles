@@ -1,0 +1,371 @@
+#!/usr/bin/env python3
+"""Durably archive mbsync's Gmail All Mail copies before optional UID MOVE.
+
+The default ``sync`` is deliberately non-destructive.  Gmail changes require
+the explicit ``--move-gmail`` switch and are made only after remote backup
+verification.  Message bodies and OAuth tokens are never logged.
+"""
+
+import argparse
+import contextlib
+import email.parser
+import fcntl
+import hashlib
+import imaplib
+import json
+import os
+from pathlib import Path
+import re
+import shlex
+import socket
+import sqlite3
+import stat
+import subprocess
+import sys
+from datetime import datetime, timezone
+
+ROOT = Path(os.environ.get("GMAIL_ARCHIVE_ROOT", "/data/mail/gmail"))
+ARCHIVE = ROOT / "archive"
+DB = Path(os.environ.get("GMAIL_ARCHIVE_DB", str(ROOT / ".gmail-archive.sqlite3")))
+LOCK = Path(os.environ.get("GMAIL_ARCHIVE_LOCK", str(Path(os.environ.get("XDG_RUNTIME_DIR", "/tmp")) / "gmail-archive.lock")))
+REMOTE = "argonaut"
+REMOTE_MAIL = "/tier3/backup/pj-arm64-ampere/gmail/"
+REMOTE_NOTMUCH = "/tier3/backup/pj-arm64-ampere/notmuch/"
+
+SCHEMA = """
+CREATE TABLE IF NOT EXISTS messages (
+ id INTEGER PRIMARY KEY, requested_at TEXT NOT NULL, source_rel TEXT NOT NULL UNIQUE,
+ archive_rel TEXT NOT NULL UNIQUE, near_uid INTEGER NOT NULL, far_uid INTEGER NOT NULL,
+ source_uidvalidity INTEGER NOT NULL, message_id TEXT, x_gm_msgid TEXT, size INTEGER NOT NULL,
+ sha256 TEXT NOT NULL, backup_verified_at TEXT, state TEXT NOT NULL, attempts INTEGER NOT NULL DEFAULT 0,
+ last_error TEXT, UNIQUE(source_uidvalidity, far_uid));
+CREATE TABLE IF NOT EXISTS deletion_intents (
+ message_ref TEXT PRIMARY KEY, refreshed_at TEXT NOT NULL);
+"""
+
+def now():
+    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+
+def run(argv, *, input_data=None, capture=False, cwd=None):
+    """Run an argv-only subprocess, raising a concise error on failure."""
+    return subprocess.run(argv, input=input_data, check=True, cwd=cwd,
+                          stdout=subprocess.PIPE if capture else None,
+                          stderr=subprocess.PIPE if capture else None)
+
+def connect(readonly=False):
+    con = sqlite3.connect(f"file:{DB}?mode=ro" if readonly else DB,
+                          uri=readonly, timeout=30)
+    con.row_factory = sqlite3.Row
+    con.execute("PRAGMA foreign_keys=ON")
+    if not readonly:
+        con.execute("PRAGMA journal_mode=WAL")
+        con.execute("PRAGMA synchronous=FULL")
+    return con
+
+@contextlib.contextmanager
+def locked():
+    LOCK.parent.mkdir(parents=True, exist_ok=True)
+    with LOCK.open("a") as fh:
+        fcntl.flock(fh, fcntl.LOCK_EX)
+        yield
+
+def sha(path):
+    h = hashlib.sha256()
+    with path.open("rb") as fh:
+        for block in iter(lambda: fh.read(1024 * 1024), b""):
+            h.update(block)
+    return h.hexdigest()
+
+def fsync_dir(path):
+    fd = os.open(path, os.O_RDONLY | os.O_DIRECTORY)
+    try: os.fsync(fd)
+    finally: os.close(fd)
+
+def cmd_init(_args):
+    for part in ("cur", "new", "tmp"):
+        (ARCHIVE / part).mkdir(parents=True, exist_ok=True)
+    DB.parent.mkdir(parents=True, exist_ok=True)
+    with connect() as con: con.executescript(SCHEMA)
+    run(["notmuch", "config", "set", "search.exclude_tags", "deleted"])
+    print(f"initialized {DB}")
+
+def state_file():
+    path = ROOT / "[Gmail]" / "All Mail" / ".mbsyncstate"
+    st = path.lstat()
+    if not stat.S_ISREG(st.st_mode):
+        raise RuntimeError(f"mbsync state is not a regular file: {path}")
+    return path
+
+def parse_state(path):
+    """Return UIDVALIDITY and near->far UID mapping from an mbsync state file."""
+    validity = None
+    mapping = {}
+    for line in path.read_text(errors="strict").splitlines():
+        m = re.match(r"(?:Far)?UidValidity\s+(\d+)$", line, re.I)
+        if m: validity = int(m.group(1))
+        m = re.fullmatch(r"(\d+)\s+(\d+)(?:\s+(\S*))?", line)
+        if m:
+            far, near = int(m.group(1)), int(m.group(2))
+            if near in mapping and mapping[near] != far:
+                raise RuntimeError(f"conflicting far UIDs for near UID {near}")
+            mapping[near] = far
+    if validity is None:
+        raise RuntimeError("source UIDVALIDITY absent from .mbsyncstate")
+    return validity, mapping
+
+def headers(path):
+    with path.open("rb") as fh:
+        msg = email.parser.BytesParser().parse(fh, headersonly=True)
+    return msg.get("Message-ID")
+
+def project_tag(message_id, add=(), remove=()):
+    if not message_id or "\n" in message_id:
+        return
+    terms = [*("+" + x for x in add), *("-" + x for x in remove)]
+    run(["notmuch", "tag", *terms, "--", f"id:{message_id}"])
+
+def project_best_effort(message_id, add=(), remove=()):
+    try:
+        project_tag(message_id, add, remove)
+    except (OSError, subprocess.CalledProcessError) as exc:
+        print(f"gmail-archive: warning: notmuch projection failed: {exc}", file=sys.stderr)
+
+def refresh_deletions(con):
+    out = run(["notmuch", "search", "--output=messages", "tag:deleted"], capture=True).stdout
+    stamp = now()
+    con.execute("DELETE FROM deletion_intents")
+    con.executemany("INSERT INTO deletion_intents VALUES (?,?)",
+                    ((x.decode("utf-8", "surrogateescape"), stamp) for x in out.splitlines()))
+
+def archive_batch(con, limit):
+    uidvalidity, mapping = parse_state(state_file())
+    files = []
+    for box in ("cur", "new"):
+        for p in sorted((state_file().parent / box).iterdir()):
+            m = re.search(r",U=(\d+)(?:,|:|$)", p.name)
+            if m and stat.S_ISREG(p.lstat().st_mode) and int(m.group(1)) in mapping:
+                files.append((p, int(m.group(1))))
+    done = 0
+    for src, near in files:
+        if done >= limit: break
+        rel = src.relative_to(ROOT).as_posix()
+        if con.execute("SELECT 1 FROM messages WHERE source_uidvalidity=? AND far_uid=?",
+                       (uidvalidity, mapping[near])).fetchone(): continue
+        dest = ARCHIVE / src.parent.name / src.name
+        digest, size = sha(src), src.stat().st_size
+        if dest.exists():
+            ds = dest.lstat()
+            if not stat.S_ISREG(ds.st_mode) or ds.st_size != size or sha(dest) != digest:
+                raise RuntimeError(f"archive collision (left untouched): {dest}")
+        else:
+            os.link(src, dest)
+            fsync_dir(dest.parent)
+        con.execute("INSERT INTO messages(requested_at,source_rel,archive_rel,near_uid,far_uid,source_uidvalidity,message_id,size,sha256,state) VALUES(?,?,?,?,?,?,?,?,?,?)",
+                    (now(), rel, dest.relative_to(ARCHIVE).as_posix(), near, mapping[near], uidvalidity,
+                     headers(src), size, digest, "ARCHIVED"))
+        con.commit()
+        project_best_effort(headers(src), add=("archive-pending",))
+        done += 1
+
+VERIFY_CODE = """import sys,json,os,hashlib,stat
+root=os.path.realpath(sys.argv[1])
+for x in json.load(sys.stdin):
+ rel=None
+ try:
+  rel=x['path']; p=os.path.join(root,rel)
+  if not isinstance(rel,str) or os.path.isabs(rel) or '..' in rel.split('/'): raise ValueError()
+  st=os.lstat(p)
+  if not stat.S_ISREG(st.st_mode) or os.path.commonpath((root,os.path.realpath(p))) != root: raise ValueError()
+  h=hashlib.sha256()
+  with open(p,'rb') as f:
+   for b in iter(lambda:f.read(1048576),b''): h.update(b)
+  ok=st.st_size==x['size'] and h.hexdigest()==x['sha256']
+ except Exception: ok=False
+ print(json.dumps({'path':rel,'ok':ok},separators=(',',':')))
+"""
+
+def remote_verify(root, expected):
+    command = shlex.join(["python3", "-c", VERIFY_CODE, root])
+    output = run(["ssh", REMOTE, command], input_data=json.dumps(expected).encode(),
+                 capture=True).stdout.splitlines()
+    wanted = {x["path"] for x in expected}
+    if len(wanted) != len(expected):
+        raise RuntimeError("duplicate expected verification path")
+    seen = set()
+    for line in output:
+        try: record = json.loads(line)
+        except (ValueError, TypeError) as exc: raise RuntimeError("malformed remote verification response") from exc
+        if (not isinstance(record, dict) or set(record) != {"path", "ok"} or
+                record["path"] not in wanted or record["path"] in seen or record["ok"] is not True):
+            raise RuntimeError("invalid remote verification response")
+        seen.add(record["path"])
+    if seen != wanted:
+        raise RuntimeError("incomplete remote verification response")
+
+def backup_rows(con):
+    rows = con.execute("SELECT * FROM messages WHERE state IN ('ARCHIVED','ERROR') AND backup_verified_at IS NULL").fetchall()
+    if not rows: return
+    payload = b"".join(os.fsencode(r["archive_rel"]) + b"\0" for r in rows)
+    run(["rsync", "-a", "--from0", "--files-from=-", "--relative", "./", f"{REMOTE}:{REMOTE_MAIL}"],
+        input_data=payload, cwd=ARCHIVE)
+    expected = [{"path": r["archive_rel"], "size": r["size"], "sha256": r["sha256"]} for r in rows]
+    remote_verify(REMOTE_MAIL, expected)
+    for r in rows:
+        con.execute("UPDATE messages SET state='BACKUP_VERIFIED',backup_verified_at=?,last_error=NULL WHERE id=?", (now(), r["id"]))
+    con.commit()
+    for r in rows:
+        project_best_effort(r["message_id"], add=("gmail-trash-pending",), remove=("archive-pending", "archive-error"))
+
+def require_ok(result, operation):
+    typ, data = result
+    if typ != "OK": raise RuntimeError(f"IMAP {operation} failed")
+    return data
+
+def fetch_identity(data, far_uid):
+    metadata, literal = b"", None
+    for item in data or ():
+        if isinstance(item, tuple) and len(item) == 2: metadata += item[0]; literal = item[1]
+        elif isinstance(item, bytes): metadata += item
+    uid = re.search(rb"(?:^|[ (])UID (\d+)(?:[ )]|$)", metadata)
+    gm = re.search(rb"X-GM-MSGID (\d+)", metadata)
+    if not uid or int(uid.group(1)) != far_uid or not gm or literal is None:
+        raise RuntimeError("FETCH did not return exact UID identity")
+    mid = email.parser.BytesParser().parsebytes(literal, headersonly=True).get("Message-ID")
+    return gm.group(1).decode(), mid
+
+def staging_path(near_uid):
+    matches = []
+    for box in ("cur", "new"):
+        for path in (ROOT / "[Gmail]" / "All Mail" / box).iterdir():
+            match = re.search(r",U=(\d+)(?:,|:|$)", path.name)
+            if match and int(match.group(1)) == near_uid: matches.append(path)
+    if len(matches) > 1: raise RuntimeError("multiple staging files for near UID")
+    return matches[0] if matches else None
+
+def checked_regular(path, label):
+    st = path.lstat()
+    if not stat.S_ISREG(st.st_mode): raise RuntimeError(f"{label} is not a regular non-symlink file")
+    return st
+
+def imap_move(con, limit):
+    token = run(["oama", "access", "gojun077@gmail.com"], capture=True).stdout.decode().strip()
+    auth = f"user=gojun077@gmail.com\1auth=Bearer {token}\1\1".encode()
+    im = imaplib.IMAP4_SSL("imap.gmail.com")
+    try:
+        im.authenticate("XOAUTH2", lambda _: auth)
+        if b"MOVE" not in im.capabilities: raise RuntimeError("server lacks MOVE capability")
+        query = "SELECT * FROM messages WHERE state='BACKUP_VERIFIED' OR (state='ERROR' AND backup_verified_at IS NOT NULL) ORDER BY id LIMIT ?"
+        for r in con.execute(query, (limit,)).fetchall():
+            try:
+                require_ok(im.select('"[Gmail]/All Mail"', readonly=False), "SELECT All Mail")
+                uv = int(im.response("UIDVALIDITY")[1][0])
+                if uv != r["source_uidvalidity"]: raise RuntimeError("UIDVALIDITY changed")
+                typ, data = im.uid("FETCH", str(r["far_uid"]), "(UID X-GM-MSGID BODY.PEEK[HEADER.FIELDS (MESSAGE-ID)])")
+                if typ != "OK": raise RuntimeError("IMAP FETCH failed")
+                try: gm_id, fetched_mid = fetch_identity(data, r["far_uid"])
+                except RuntimeError:
+                    if not r["x_gm_msgid"]: raise
+                    require_ok(im.select('"[Gmail]/Trash"', readonly=True), "SELECT Trash")
+                    if require_ok(im.uid("SEARCH", None, "X-GM-MSGID", r["x_gm_msgid"]), "SEARCH Trash")[0]:
+                        gm_id = r["x_gm_msgid"]
+                    else: raise RuntimeError("source absent and prior MOVE not found in Trash")
+                else:
+                    normalize = lambda value: value.strip().lower() if value else None
+                    if normalize(fetched_mid) != normalize(r["message_id"]): raise RuntimeError("Message-ID mismatch")
+                    con.execute("UPDATE messages SET x_gm_msgid=? WHERE id=?", (gm_id, r["id"])); con.commit()
+                    require_ok(im.uid("MOVE", str(r["far_uid"]), '"[Gmail]/Trash"'), "MOVE")
+                require_ok(im.select('"[Gmail]/All Mail"', readonly=True), "SELECT All Mail")
+                source_absent = require_ok(im.uid("SEARCH", None, f"UID {r['far_uid']}"), "SEARCH All Mail")[0] == b""
+                require_ok(im.select('"[Gmail]/Trash"', readonly=True), "SELECT Trash")
+                trash_present = bool(require_ok(im.uid("SEARCH", None, "X-GM-MSGID", gm_id), "SEARCH Trash")[0])
+                if not (source_absent and trash_present): raise RuntimeError("MOVE not proven")
+                arc = ARCHIVE / r["archive_rel"]
+                aa = checked_regular(arc, "archive")
+                if aa.st_size != r["size"] or sha(arc) != r["sha256"]: raise RuntimeError("archive safety check failed")
+                src = staging_path(r["near_uid"])
+                if src is not None:
+                    ss = checked_regular(src, "staging file")
+                    if ss.st_size != r["size"] or ((ss.st_dev, ss.st_ino) != (aa.st_dev, aa.st_ino) and sha(src) != r["sha256"]): raise RuntimeError("staging file safety check failed")
+                    src.unlink(); fsync_dir(src.parent)
+                con.execute("UPDATE messages SET state='FINALIZED',x_gm_msgid=?,last_error=NULL WHERE id=?", (gm_id, r["id"])); con.commit()
+                project_best_effort(r["message_id"], remove=("archive-pending", "gmail-trash-pending", "archive-error"))
+            except Exception as exc:
+                con.execute("UPDATE messages SET state='ERROR',attempts=attempts+1,last_error=? WHERE id=?", (str(exc), r["id"])); con.commit()
+                project_best_effort(r["message_id"], add=("archive-error",))
+        run(["notmuch", "new"])
+    finally: im.logout()
+
+def cmd_sync(args):
+    with locked(), connect() as con:
+        run(["mbsync", "gmail:[Gmail]/All Mail"]); run(["notmuch", "new"])
+        refresh_deletions(con); archive_batch(con, args.limit)
+        try: backup_rows(con)
+        except Exception as exc:
+            rows = con.execute("SELECT id,message_id FROM messages WHERE state IN ('ARCHIVED','ERROR') AND backup_verified_at IS NULL").fetchall()
+            con.executemany("UPDATE messages SET state='ERROR',attempts=attempts+1,last_error=? WHERE id=?",
+                            ((str(exc), row["id"]) for row in rows)); con.commit()
+            for row in rows: project_best_effort(row["message_id"], add=("archive-error",))
+            raise
+        if args.move_gmail: imap_move(con, args.move_limit)
+
+def cmd_status(_args):
+    with connect(readonly=True) as con:
+        for row in con.execute("SELECT state,count(*) n FROM messages GROUP BY state ORDER BY state"):
+            print(f"{row['state']}: {row['n']}")
+        print("deletion-intents:", con.execute("SELECT count(*) FROM deletion_intents").fetchone()[0])
+
+def cmd_backup_notmuch(_args):
+    with locked():
+        directory = ROOT / "state-backups"; directory.mkdir(parents=True, exist_ok=True)
+        stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        paths = [directory / f"notmuch-{stamp}.dump.gz", directory / f"notmuch-{stamp}.sqlite3"]
+        temps = [Path(str(path) + f".tmp-{os.getpid()}") for path in paths]
+        try:
+            with temps[0].open("wb") as out:
+                subprocess.run(["notmuch", "dump", "--gzip", "--include=config,properties,tags"], stdout=out, check=True)
+                out.flush(); os.fsync(out.fileno())
+            with connect(readonly=True) as source, sqlite3.connect(temps[1]) as target:
+                source.backup(target); target.commit()
+            with temps[1].open("rb") as snapshot: os.fsync(snapshot.fileno())
+            for temp, path in zip(temps, paths): os.replace(temp, path)
+            fsync_dir(directory)
+            probe = [{"path": path.name, "size": path.stat().st_size, "sha256": sha(path)} for path in paths]
+            hostdir = socket.gethostname().split(".")[0]
+            run(["rsync", "-a", "--mkpath", *(str(path) for path in paths),
+                 f"{REMOTE}:{REMOTE_NOTMUCH}{hostdir}/"])
+            remote_verify(REMOTE_NOTMUCH + hostdir, probe)
+            complete = []
+            for dump in sorted(directory.glob("notmuch-????????T??????Z.dump.gz")):
+                database = directory / dump.name.replace(".dump.gz", ".sqlite3")
+                if database.is_file(): complete.append((dump, database))
+            for pair in complete[:-7]:
+                for path in pair: path.unlink()
+            fsync_dir(directory)
+        finally:
+            for temp in temps:
+                try: temp.unlink()
+                except FileNotFoundError: pass
+
+def positive(value):
+    number = int(value)
+    if number <= 0: raise argparse.ArgumentTypeError("must be a positive integer")
+    return number
+
+def main():
+    p = argparse.ArgumentParser(description="Durable Gmail archive (safe mode unless --move-gmail is explicit)")
+    sub = p.add_subparsers(dest="command", required=True)
+    sub.add_parser("init", help="create local schema/directories and configure notmuch").set_defaults(func=cmd_init)
+    s = sub.add_parser("sync", help="sync, archive and verify backup; never MOVE by default")
+    s.add_argument("--limit", type=positive, default=100, help="maximum new messages (default: 100)")
+    s.add_argument("--move-gmail", action="store_true", help="explicitly MOVE verified exact UIDs to Gmail Trash")
+    s.add_argument("--move-limit", type=positive, default=100, help="maximum Gmail moves (default: 100)")
+    s.set_defaults(func=cmd_sync)
+    sub.add_parser("status", help="show local journal counts (read-only)").set_defaults(func=cmd_status)
+    sub.add_parser("backup-notmuch", help="dump metadata, upload, verify, retain latest seven").set_defaults(func=cmd_backup_notmuch)
+    args = p.parse_args()
+    try: args.func(args)
+    except (OSError, sqlite3.Error, subprocess.CalledProcessError, RuntimeError) as exc:
+        print(f"gmail-archive: {exc}", file=sys.stderr); return 1
+    return 0
+
+if __name__ == "__main__": raise SystemExit(main())
