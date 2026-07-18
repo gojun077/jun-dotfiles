@@ -3,13 +3,13 @@
     "bins": {
         "/home/jundora/.local/bin/bin": {
             "path": "/home/jundora/.local/bin/bin",
-            "remote_name": "bin_0.28.0_linux_arm64",
-            "version": "v0.28.0",
-            "hash": "2c8cafbbfaf5a354a92fa6bf5553d786b3ce132a2fc5274435982837db3ac224",
-            "url": "https://github.com/marcosnils/bin/releases/tag/v0.28.0",
+            "remote_name": "bin_0.29.0_linux_arm64",
+            "version": "v0.29.0",
+            "hash": "422d7964c80fe9fda9ce594e2789bb662298cfc2320e79c82b5c0b2a685d4f15",
+            "url": "https://github.com/marcosnils/bin/releases/tag/v0.29.0",
             "provider": "github",
             "package_path": "",
-            "selected_asset": "",
+            "selected_asset": "bin_0.29.0_linux_arm64",
             "pinned": false
         },
         "/home/jundora/.local/bin/bluetuith": {
@@ -26,9 +26,9 @@
         "/home/jundora/.local/bin/dolt": {
             "path": "/home/jundora/.local/bin/dolt",
             "remote_name": "dolt",
-            "version": "v2.1.11",
-            "hash": "e0a6ce7c7ead6cab8b8d9a151aebb62ddedec9307403c0c6ba9ca2c81237a633",
-            "url": "https://github.com/dolthub/dolt/releases/tag/v2.1.11",
+            "version": "v2.2.1",
+            "hash": "bd16c14fe82a8b11e396d28c48f82379be55f9694491b3ae5cb6ac3cc6604e7e",
+            "url": "https://github.com/dolthub/dolt/releases/tag/v2.2.1",
             "provider": "github",
             "package_path": "dolt-linux-arm64/bin/dolt",
             "selected_asset": "dolt-linux-arm64.tar.gz",
