@@ -316,13 +316,17 @@ def cmd_status(_args):
 
 def cmd_backup_notmuch(_args):
     with locked():
+        if not DB.is_file():
+            raise RuntimeError(f"journal missing: run gmail-archive init first ({DB})")
         directory = ROOT / "state-backups"; directory.mkdir(parents=True, exist_ok=True)
         stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
         paths = [directory / f"notmuch-{stamp}.dump.gz", directory / f"notmuch-{stamp}.sqlite3"]
         temps = [Path(str(path) + f".tmp-{os.getpid()}") for path in paths]
         try:
             with temps[0].open("wb") as out:
-                subprocess.run(["notmuch", "dump", "--gzip", "--include=config,properties,tags"], stdout=out, check=True)
+                # notmuch 0.38 accepts --include once per metadata kind; its
+                # default already includes config, properties, and tags.
+                subprocess.run(["notmuch", "dump", "--gzip"], stdout=out, check=True)
                 out.flush(); os.fsync(out.fileno())
             with connect(readonly=True) as source, sqlite3.connect(temps[1]) as target:
                 source.backup(target); target.commit()
