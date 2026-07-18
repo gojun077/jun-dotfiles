@@ -253,8 +253,11 @@ def imap_move(con, limit):
     im = imaplib.IMAP4_SSL("imap.gmail.com")
     try:
         im.authenticate("XOAUTH2", lambda _: auth)
-        if b"MOVE" not in im.capabilities: raise RuntimeError("server lacks MOVE capability")
+        capability_data = require_ok(im.capability(), "CAPABILITY")
+        capabilities = set(b" ".join(capability_data or ()).decode("ascii").upper().split())
+        if "MOVE" not in capabilities: raise RuntimeError("server lacks MOVE capability")
         query = "SELECT * FROM messages WHERE state='BACKUP_VERIFIED' OR (state='ERROR' AND backup_verified_at IS NOT NULL) ORDER BY id LIMIT ?"
+        failures = 0
         for r in con.execute(query, (limit,)).fetchall():
             try:
                 require_ok(im.select('"[Gmail]/All Mail"', readonly=False), "SELECT All Mail")
@@ -290,9 +293,12 @@ def imap_move(con, limit):
                 con.execute("UPDATE messages SET state='FINALIZED',x_gm_msgid=?,last_error=NULL WHERE id=?", (gm_id, r["id"])); con.commit()
                 project_best_effort(r["message_id"], remove=("archive-pending", "gmail-trash-pending", "archive-error"))
             except Exception as exc:
+                failures += 1
                 con.execute("UPDATE messages SET state='ERROR',attempts=attempts+1,last_error=? WHERE id=?", (str(exc), r["id"])); con.commit()
                 project_best_effort(r["message_id"], add=("archive-error",))
         run(["notmuch", "new"])
+        if failures:
+            raise RuntimeError(f"{failures} Gmail MOVE operation(s) failed; inspect gmail-archive status")
     finally: im.logout()
 
 def cmd_sync(args):
