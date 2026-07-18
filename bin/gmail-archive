@@ -22,6 +22,7 @@ import sqlite3
 import stat
 import subprocess
 import sys
+import time
 from datetime import datetime, timezone
 
 ROOT = Path(os.environ.get("GMAIL_ARCHIVE_ROOT", "/data/mail/gmail"))
@@ -51,6 +52,16 @@ def run(argv, *, input_data=None, capture=False, cwd=None):
     return subprocess.run(argv, input=input_data, check=True, cwd=cwd,
                           stdout=subprocess.PIPE if capture else None,
                           stderr=subprocess.PIPE if capture else None)
+
+@contextlib.contextmanager
+def timed(label):
+    """Report wall-clock phase duration without exposing message data."""
+    started = time.monotonic()
+    try:
+        yield
+    finally:
+        elapsed = time.monotonic() - started
+        print(f"gmail-archive: timing {label}: {elapsed:.3f}s", file=sys.stderr)
 
 def connect(readonly=False):
     con = sqlite3.connect(f"file:{DB}?mode=ro" if readonly else DB,
@@ -206,10 +217,12 @@ def backup_rows(con):
     rows = con.execute("SELECT * FROM messages WHERE state IN ('ARCHIVED','ERROR') AND backup_verified_at IS NULL").fetchall()
     if not rows: return
     payload = b"".join(os.fsencode(r["archive_rel"]) + b"\0" for r in rows)
-    run(["rsync", "-a", "--from0", "--files-from=-", "--relative", "./", f"{REMOTE}:{REMOTE_MAIL}"],
-        input_data=payload, cwd=ARCHIVE)
+    with timed(f"rsync {len(rows)} archive file(s)"):
+        run(["rsync", "-a", "--from0", "--files-from=-", "--relative", "./", f"{REMOTE}:{REMOTE_MAIL}"],
+            input_data=payload, cwd=ARCHIVE)
     expected = [{"path": r["archive_rel"], "size": r["size"], "sha256": r["sha256"]} for r in rows]
-    remote_verify(REMOTE_MAIL, expected)
+    with timed(f"verify {len(rows)} remote archive file(s)"):
+        remote_verify(REMOTE_MAIL, expected)
     for r in rows:
         con.execute("UPDATE messages SET state='BACKUP_VERIFIED',backup_verified_at=?,last_error=NULL WHERE id=?", (now(), r["id"]))
     con.commit()
@@ -250,37 +263,53 @@ def checked_regular(path, label):
 def imap_move(con, limit):
     token = run(["oama", "access", "gojun077@gmail.com"], capture=True).stdout.decode().strip()
     auth = f"user=gojun077@gmail.com\1auth=Bearer {token}\1\1".encode()
+    imap_timings = {}
+    imap_counts = {}
+
+    def imap_call(label, function, *args, **kwargs):
+        started = time.monotonic()
+        try:
+            return function(*args, **kwargs)
+        finally:
+            imap_timings[label] = imap_timings.get(label, 0.0) + time.monotonic() - started
+            imap_counts[label] = imap_counts.get(label, 0) + 1
+
     im = imaplib.IMAP4_SSL("imap.gmail.com")
     try:
-        im.authenticate("XOAUTH2", lambda _: auth)
-        capability_data = require_ok(im.capability(), "CAPABILITY")
+        imap_call("authenticate", im.authenticate, "XOAUTH2", lambda _: auth)
+        capability_data = require_ok(imap_call("capability", im.capability), "CAPABILITY")
         capabilities = set(b" ".join(capability_data or ()).decode("ascii").upper().split())
         if "MOVE" not in capabilities: raise RuntimeError("server lacks MOVE capability")
         query = "SELECT * FROM messages WHERE state='BACKUP_VERIFIED' OR (state='ERROR' AND backup_verified_at IS NOT NULL) ORDER BY id LIMIT ?"
         failures = 0
         for r in con.execute(query, (limit,)).fetchall():
             try:
-                require_ok(im.select('"[Gmail]/All Mail"', readonly=False), "SELECT All Mail")
+                require_ok(imap_call("select", im.select, '"[Gmail]/All Mail"', readonly=False), "SELECT All Mail")
                 uv = int(im.response("UIDVALIDITY")[1][0])
                 if uv != r["source_uidvalidity"]: raise RuntimeError("UIDVALIDITY changed")
-                typ, data = im.uid("FETCH", str(r["far_uid"]), "(UID X-GM-MSGID BODY.PEEK[HEADER.FIELDS (MESSAGE-ID)])")
+                typ, data = imap_call("fetch", im.uid, "FETCH", str(r["far_uid"]),
+                                      "(UID X-GM-MSGID BODY.PEEK[HEADER.FIELDS (MESSAGE-ID)])")
                 if typ != "OK": raise RuntimeError("IMAP FETCH failed")
                 try: gm_id, fetched_mid = fetch_identity(data, r["far_uid"])
                 except RuntimeError:
                     if not r["x_gm_msgid"]: raise
-                    require_ok(im.select('"[Gmail]/Trash"', readonly=True), "SELECT Trash")
-                    if require_ok(im.uid("SEARCH", None, "X-GM-MSGID", r["x_gm_msgid"]), "SEARCH Trash")[0]:
+                    require_ok(imap_call("select", im.select, '"[Gmail]/Trash"', readonly=True), "SELECT Trash")
+                    if require_ok(imap_call("search", im.uid, "SEARCH", None, "X-GM-MSGID",
+                                            r["x_gm_msgid"]), "SEARCH Trash")[0]:
                         gm_id = r["x_gm_msgid"]
                     else: raise RuntimeError("source absent and prior MOVE not found in Trash")
                 else:
                     normalize = lambda value: value.strip().lower() if value else None
                     if normalize(fetched_mid) != normalize(r["message_id"]): raise RuntimeError("Message-ID mismatch")
                     con.execute("UPDATE messages SET x_gm_msgid=? WHERE id=?", (gm_id, r["id"])); con.commit()
-                    require_ok(im.uid("MOVE", str(r["far_uid"]), '"[Gmail]/Trash"'), "MOVE")
-                require_ok(im.select('"[Gmail]/All Mail"', readonly=True), "SELECT All Mail")
-                source_absent = require_ok(im.uid("SEARCH", None, f"UID {r['far_uid']}"), "SEARCH All Mail")[0] == b""
-                require_ok(im.select('"[Gmail]/Trash"', readonly=True), "SELECT Trash")
-                trash_present = bool(require_ok(im.uid("SEARCH", None, "X-GM-MSGID", gm_id), "SEARCH Trash")[0])
+                    require_ok(imap_call("move", im.uid, "MOVE", str(r["far_uid"]),
+                                         '"[Gmail]/Trash"'), "MOVE")
+                require_ok(imap_call("select", im.select, '"[Gmail]/All Mail"', readonly=True), "SELECT All Mail")
+                source_absent = require_ok(imap_call("search", im.uid, "SEARCH", None,
+                                                     f"UID {r['far_uid']}"), "SEARCH All Mail")[0] == b""
+                require_ok(imap_call("select", im.select, '"[Gmail]/Trash"', readonly=True), "SELECT Trash")
+                trash_present = bool(require_ok(imap_call("search", im.uid, "SEARCH", None,
+                                                          "X-GM-MSGID", gm_id), "SEARCH Trash")[0])
                 if not (source_absent and trash_present): raise RuntimeError("MOVE not proven")
                 arc = ARCHIVE / r["archive_rel"]
                 aa = checked_regular(arc, "archive")
@@ -299,20 +328,38 @@ def imap_move(con, limit):
         run(["notmuch", "new"])
         if failures:
             raise RuntimeError(f"{failures} Gmail MOVE operation(s) failed; inspect gmail-archive status")
-    finally: im.logout()
+    finally:
+        try:
+            imap_call("logout", im.logout)
+        finally:
+            for label in ("authenticate", "capability", "select", "fetch", "move", "search", "logout"):
+                if label in imap_timings:
+                    print(f"gmail-archive: timing IMAP {label}: {imap_timings[label]:.3f}s "
+                          f"({imap_counts[label]} call(s))",
+                          file=sys.stderr)
 
 def cmd_sync(args):
     with locked(), connect() as con:
-        run(["mbsync", "gmail:[Gmail]/All Mail"]); run(["notmuch", "new"])
-        refresh_deletions(con); archive_batch(con, args.limit)
-        try: backup_rows(con)
+        with timed("mbsync All Mail"):
+            run(["mbsync", "gmail:[Gmail]/All Mail"])
+        with timed("notmuch new before archive"):
+            run(["notmuch", "new"])
+        with timed("refresh deletion intents"):
+            refresh_deletions(con)
+        with timed(f"archive up to {args.limit} message(s)"):
+            archive_batch(con, args.limit)
+        try:
+            with timed("archive backup transaction"):
+                backup_rows(con)
         except Exception as exc:
             rows = con.execute("SELECT id,message_id FROM messages WHERE state IN ('ARCHIVED','ERROR') AND backup_verified_at IS NULL").fetchall()
             con.executemany("UPDATE messages SET state='ERROR',attempts=attempts+1,last_error=? WHERE id=?",
                             ((str(exc), row["id"]) for row in rows)); con.commit()
             for row in rows: project_best_effort(row["message_id"], add=("archive-error",))
             raise
-        if args.move_gmail: imap_move(con, args.move_limit)
+        if args.move_gmail:
+            with timed(f"Gmail MOVE up to {args.move_limit} message(s)"):
+                imap_move(con, args.move_limit)
 
 def cmd_status(_args):
     with connect(readonly=True) as con:
