@@ -234,6 +234,9 @@ def require_ok(result, operation):
     if typ != "OK": raise RuntimeError(f"IMAP {operation} failed")
     return data
 
+class ImapSessionFailure(RuntimeError):
+    """An IMAP connection failure that makes the remaining batch unsafe."""
+
 def fetch_identity(data, far_uid):
     metadata, literal = b"", None
     for item in data or ():
@@ -246,14 +249,42 @@ def fetch_identity(data, far_uid):
     mid = email.parser.BytesParser().parsebytes(literal, headersonly=True).get("Message-ID")
     return gm.group(1).decode(), mid
 
-def staging_path(near_uid):
-    matches = []
+def index_staging_paths(rows):
+    """Index candidate near UIDs with one pass over the staging Maildir."""
+    candidates = {}
+    for row in rows:
+        near_uid = row["near_uid"]
+        if near_uid in candidates:
+            raise RuntimeError(f"duplicate candidate near UID {near_uid} "
+                               f"(rows {candidates[near_uid]} and {row['id']})")
+        candidates[near_uid] = row["id"]
+    paths = {}
     for box in ("cur", "new"):
         for path in (ROOT / "[Gmail]" / "All Mail" / box).iterdir():
             match = re.search(r",U=(\d+)(?:,|:|$)", path.name)
-            if match and int(match.group(1)) == near_uid: matches.append(path)
-    if len(matches) > 1: raise RuntimeError("multiple staging files for near UID")
-    return matches[0] if matches else None
+            if not match:
+                continue
+            near_uid = int(match.group(1))
+            if near_uid not in candidates:
+                continue
+            if near_uid in paths:
+                raise RuntimeError(f"multiple staging files for near UID {near_uid}")
+            paths[near_uid] = path
+    return paths
+
+def search_uids(data):
+    """Parse a successful IMAP SEARCH response into numeric UIDs."""
+    uids = set()
+    for chunk in data or ():
+        if chunk is None:
+            continue
+        if not isinstance(chunk, bytes):
+            raise RuntimeError("malformed IMAP SEARCH response")
+        for token in chunk.split():
+            if not token.isdigit():
+                raise RuntimeError("non-numeric UID in IMAP SEARCH response")
+            uids.add(int(token))
+    return uids
 
 def checked_regular(path, label):
     st = path.lstat()
@@ -261,76 +292,125 @@ def checked_regular(path, label):
     return st
 
 def imap_move(con, limit):
-    token = run(["oama", "access", "gojun077@gmail.com"], capture=True).stdout.decode().strip()
+    query = "SELECT * FROM messages WHERE (state='BACKUP_VERIFIED' OR (state='ERROR' AND backup_verified_at IS NOT NULL)) ORDER BY id LIMIT ?"
+    rows = con.execute(query, (limit,)).fetchall()
+    if not rows:
+        return
+    with timed(f"index staging paths for {len(rows)} message(s)"):
+        staging_paths = index_staging_paths(rows)
+
+    with timed("OAuth access token"):
+        token = run(["oama", "access", "gojun077@gmail.com"], capture=True).stdout.decode().strip()
     auth = f"user=gojun077@gmail.com\1auth=Bearer {token}\1\1".encode()
     imap_timings = {}
     imap_counts = {}
+    session_errors = (imaplib.IMAP4.abort, imaplib.IMAP4.readonly, EOFError, OSError)
 
     def imap_call(label, function, *args, **kwargs):
         started = time.monotonic()
         try:
-            return function(*args, **kwargs)
+            try:
+                return function(*args, **kwargs)
+            except session_errors as exc:
+                raise ImapSessionFailure(f"IMAP session failed during {label}: {exc}") from exc
         finally:
             imap_timings[label] = imap_timings.get(label, 0.0) + time.monotonic() - started
             imap_counts[label] = imap_counts.get(label, 0) + 1
 
-    im = imaplib.IMAP4_SSL("imap.gmail.com")
+    def mark_error(row, exc):
+        con.execute("UPDATE messages SET state='ERROR',attempts=attempts+1,last_error=? WHERE id=?",
+                    (str(exc), row["id"]))
+        con.commit()
+        project_best_effort(row["message_id"], add=("archive-error",))
+
+    with timed("IMAP TLS connection"):
+        im = imaplib.IMAP4_SSL("imap.gmail.com")
     try:
         imap_call("authenticate", im.authenticate, "XOAUTH2", lambda _: auth)
         capability_data = require_ok(imap_call("capability", im.capability), "CAPABILITY")
         capabilities = set(b" ".join(capability_data or ()).decode("ascii").upper().split())
         if "MOVE" not in capabilities: raise RuntimeError("server lacks MOVE capability")
-        query = "SELECT * FROM messages WHERE state='BACKUP_VERIFIED' OR (state='ERROR' AND backup_verified_at IS NOT NULL) ORDER BY id LIMIT ?"
+        require_ok(imap_call("select", im.select, '"[Gmail]/All Mail"', readonly=False),
+                   "SELECT All Mail")
+        uidvalidity = int(im.response("UIDVALIDITY")[1][0])
+        if any(row["source_uidvalidity"] != uidvalidity for row in rows):
+            raise RuntimeError("UIDVALIDITY changed")
+
         failures = 0
-        for r in con.execute(query, (limit,)).fetchall():
+        moved = []
+        for r in rows:
             try:
-                require_ok(imap_call("select", im.select, '"[Gmail]/All Mail"', readonly=False), "SELECT All Mail")
-                uv = int(im.response("UIDVALIDITY")[1][0])
-                if uv != r["source_uidvalidity"]: raise RuntimeError("UIDVALIDITY changed")
                 typ, data = imap_call("fetch", im.uid, "FETCH", str(r["far_uid"]),
                                       "(UID X-GM-MSGID BODY.PEEK[HEADER.FIELDS (MESSAGE-ID)])")
                 if typ != "OK": raise RuntimeError("IMAP FETCH failed")
-                try: gm_id, fetched_mid = fetch_identity(data, r["far_uid"])
-                except RuntimeError:
-                    if not r["x_gm_msgid"]: raise
-                    require_ok(imap_call("select", im.select, '"[Gmail]/Trash"', readonly=True), "SELECT Trash")
-                    if require_ok(imap_call("search", im.uid, "SEARCH", None, "X-GM-MSGID",
-                                            r["x_gm_msgid"]), "SEARCH Trash")[0]:
-                        gm_id = r["x_gm_msgid"]
-                    else: raise RuntimeError("source absent and prior MOVE not found in Trash")
+                fetch_error = None
+                try:
+                    gm_id, fetched_mid = fetch_identity(data, r["far_uid"])
+                except RuntimeError as exc:
+                    fetch_error = exc
                 else:
                     normalize = lambda value: value.strip().lower() if value else None
                     if normalize(fetched_mid) != normalize(r["message_id"]): raise RuntimeError("Message-ID mismatch")
-                    con.execute("UPDATE messages SET x_gm_msgid=? WHERE id=?", (gm_id, r["id"])); con.commit()
+                    if r["x_gm_msgid"] and gm_id != r["x_gm_msgid"]:
+                        raise RuntimeError("X-GM-MSGID mismatch")
+                    if not r["x_gm_msgid"]:
+                        con.execute("UPDATE messages SET x_gm_msgid=? WHERE id=?", (gm_id, r["id"]))
+                        con.commit()
                     require_ok(imap_call("move", im.uid, "MOVE", str(r["far_uid"]),
                                          '"[Gmail]/Trash"'), "MOVE")
-                require_ok(imap_call("select", im.select, '"[Gmail]/All Mail"', readonly=True), "SELECT All Mail")
-                source_absent = require_ok(imap_call("search", im.uid, "SEARCH", None,
-                                                     f"UID {r['far_uid']}"), "SEARCH All Mail")[0] == b""
-                require_ok(imap_call("select", im.select, '"[Gmail]/Trash"', readonly=True), "SELECT Trash")
-                trash_present = bool(require_ok(imap_call("search", im.uid, "SEARCH", None,
-                                                          "X-GM-MSGID", gm_id), "SEARCH Trash")[0])
-                if not (source_absent and trash_present): raise RuntimeError("MOVE not proven")
+
+                source_uids = search_uids(require_ok(
+                    imap_call("search", im.uid, "SEARCH", None, f"UID {r['far_uid']}"),
+                    "SEARCH All Mail"))
+                if source_uids - {r["far_uid"]}:
+                    raise RuntimeError("unexpected UID in All Mail search response")
+                if source_uids:
+                    if fetch_error:
+                        raise fetch_error
+                    raise RuntimeError("MOVE source absence not proven")
+                if fetch_error:
+                    if not r["x_gm_msgid"]:
+                        raise fetch_error
+                    gm_id = r["x_gm_msgid"]
+                moved.append((r, gm_id))
+            except ImapSessionFailure:
+                raise
+            except Exception as exc:
+                failures += 1
+                mark_error(r, exc)
+
+        if moved:
+            require_ok(imap_call("select", im.select, '"[Gmail]/Trash"', readonly=True),
+                       "SELECT Trash")
+        for r, gm_id in moved:
+            try:
+                trash_uids = search_uids(require_ok(
+                    imap_call("search", im.uid, "SEARCH", None, "X-GM-MSGID", gm_id),
+                    "SEARCH Trash"))
+                if not trash_uids:
+                    raise RuntimeError("MOVE destination presence not proven")
                 arc = ARCHIVE / r["archive_rel"]
                 aa = checked_regular(arc, "archive")
                 if aa.st_size != r["size"] or sha(arc) != r["sha256"]: raise RuntimeError("archive safety check failed")
-                src = staging_path(r["near_uid"])
+                src = staging_paths.get(r["near_uid"])
                 if src is not None:
                     ss = checked_regular(src, "staging file")
                     if ss.st_size != r["size"] or ((ss.st_dev, ss.st_ino) != (aa.st_dev, aa.st_ino) and sha(src) != r["sha256"]): raise RuntimeError("staging file safety check failed")
                     src.unlink(); fsync_dir(src.parent)
                 con.execute("UPDATE messages SET state='FINALIZED',x_gm_msgid=?,last_error=NULL WHERE id=?", (gm_id, r["id"])); con.commit()
                 project_best_effort(r["message_id"], remove=("archive-pending", "gmail-trash-pending", "archive-error"))
+            except ImapSessionFailure:
+                raise
             except Exception as exc:
                 failures += 1
-                con.execute("UPDATE messages SET state='ERROR',attempts=attempts+1,last_error=? WHERE id=?", (str(exc), r["id"])); con.commit()
-                project_best_effort(r["message_id"], add=("archive-error",))
+                mark_error(r, exc)
         run(["notmuch", "new"])
         if failures:
             raise RuntimeError(f"{failures} Gmail MOVE operation(s) failed; inspect gmail-archive status")
     finally:
         try:
-            imap_call("logout", im.logout)
+            with contextlib.suppress(ImapSessionFailure):
+                imap_call("logout", im.logout)
         finally:
             for label in ("authenticate", "capability", "select", "fetch", "move", "search", "logout"):
                 if label in imap_timings:
