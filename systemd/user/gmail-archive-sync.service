@@ -1,10 +1,10 @@
 [Unit]
-Description=Pull, locally archive, and back up Gmail (safe mode)
+Description=Pull, archive, back up, and move Gmail messages to Trash
 ConditionPathIsDirectory=/data/mail/gmail
 
 [Service]
 Type=oneshot
 Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin
 UMask=0077
-ExecStart=%h/.local/bin/gmail-archive sync
+ExecStart=%h/.local/bin/gmail-archive sync --limit 100 --move-gmail --move-limit 100
 TimeoutStartSec=30min
