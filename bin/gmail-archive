@@ -33,6 +33,7 @@ DB = Path(os.environ.get("GMAIL_ARCHIVE_DB", str(ROOT / ".gmail-archive.sqlite3"
 LOCK = Path(os.environ.get("GMAIL_ARCHIVE_LOCK", str(Path(os.environ.get("XDG_RUNTIME_DIR", "/tmp")) / "gmail-archive.lock")))
 REMOTE = "argonaut"
 REMOTE_MAIL = "/tier3/backup/pj-arm64-ampere/gmail/"
+REMOTE_ARCHIVE = REMOTE_MAIL + "archive/"
 REMOTE_NOTMUCH = "/tier3/backup/pj-arm64-ampere/notmuch/"
 
 SCHEMA = """
@@ -220,11 +221,11 @@ def backup_rows(con):
     if not rows: return
     payload = b"".join(os.fsencode(r["archive_rel"]) + b"\0" for r in rows)
     with timed(f"rsync {len(rows)} archive file(s)"):
-        run(["rsync", "-a", "--from0", "--files-from=-", "--relative", "./", f"{REMOTE}:{REMOTE_MAIL}"],
+        run(["rsync", "-a", "--from0", "--files-from=-", "--relative", "./", f"{REMOTE}:{REMOTE_ARCHIVE}"],
             input_data=payload, cwd=ARCHIVE)
     expected = [{"path": r["archive_rel"], "size": r["size"], "sha256": r["sha256"]} for r in rows]
     with timed(f"verify {len(rows)} remote archive file(s)"):
-        remote_verify(REMOTE_MAIL, expected)
+        remote_verify(REMOTE_ARCHIVE, expected)
     for r in rows:
         con.execute("UPDATE messages SET state='BACKUP_VERIFIED',backup_verified_at=?,last_error=NULL WHERE id=?", (now(), r["id"]))
     con.commit()
