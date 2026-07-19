@@ -23,6 +23,8 @@ import stat
 import subprocess
 import sys
 import time
+import urllib.error
+import urllib.request
 from datetime import datetime, timezone
 
 ROOT = Path(os.environ.get("GMAIL_ARCHIVE_ROOT", "/data/mail/gmail"))
@@ -31,6 +33,7 @@ DB = Path(os.environ.get("GMAIL_ARCHIVE_DB", str(ROOT / ".gmail-archive.sqlite3"
 LOCK = Path(os.environ.get("GMAIL_ARCHIVE_LOCK", str(Path(os.environ.get("XDG_RUNTIME_DIR", "/tmp")) / "gmail-archive.lock")))
 REMOTE = "argonaut"
 REMOTE_MAIL = "/tier3/backup/pj-arm64-ampere/gmail/"
+REMOTE_ARCHIVE = REMOTE_MAIL + "archive/"
 REMOTE_NOTMUCH = "/tier3/backup/pj-arm64-ampere/notmuch/"
 
 SCHEMA = """
@@ -218,11 +221,11 @@ def backup_rows(con):
     if not rows: return
     payload = b"".join(os.fsencode(r["archive_rel"]) + b"\0" for r in rows)
     with timed(f"rsync {len(rows)} archive file(s)"):
-        run(["rsync", "-a", "--from0", "--files-from=-", "--relative", "./", f"{REMOTE}:{REMOTE_MAIL}"],
+        run(["rsync", "-a", "--from0", "--files-from=-", "--relative", "./", f"{REMOTE}:{REMOTE_ARCHIVE}"],
             input_data=payload, cwd=ARCHIVE)
     expected = [{"path": r["archive_rel"], "size": r["size"], "sha256": r["sha256"]} for r in rows]
     with timed(f"verify {len(rows)} remote archive file(s)"):
-        remote_verify(REMOTE_MAIL, expected)
+        remote_verify(REMOTE_ARCHIVE, expected)
     for r in rows:
         con.execute("UPDATE messages SET state='BACKUP_VERIFIED',backup_verified_at=?,last_error=NULL WHERE id=?", (now(), r["id"]))
     con.commit()
@@ -236,6 +239,12 @@ def require_ok(result, operation):
 
 class ImapSessionFailure(RuntimeError):
     """An IMAP connection failure that makes the remaining batch unsafe."""
+
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    """Keep the OAuth bearer token on the fixed Gmail API origin."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
 
 def fetch_identity(data, far_uid):
     metadata, literal = b"", None
@@ -286,6 +295,48 @@ def search_uids(data):
             uids.add(int(token))
     return uids
 
+def gmail_api_message_absent(gm_id, token, opener=None):
+    """Return whether Gmail's API reports this exact X-GM-MSGID not found."""
+    if not isinstance(gm_id, str) or not re.fullmatch(r"[1-9][0-9]*", gm_id):
+        raise RuntimeError("invalid X-GM-MSGID for Gmail API lookup")
+    value = int(gm_id, 10)
+    if value > 2**64 - 1:
+        raise RuntimeError("X-GM-MSGID exceeds unsigned 64-bit range")
+    api_id = format(value, "x")
+    url = f"https://gmail.googleapis.com/gmail/v1/users/me/messages/{api_id}?format=minimal"
+    request = urllib.request.Request(url, headers={
+        "Accept": "application/json",
+        "Authorization": f"Bearer {token}",
+    })
+    opener = opener or urllib.request.build_opener(NoRedirect)
+    try:
+        response = opener.open(request, timeout=15)
+    except urllib.error.HTTPError as exc:
+        body = exc.read(65537)
+        if exc.code != 404 or len(body) > 65536:
+            raise RuntimeError(f"Gmail API lookup failed with HTTP {exc.code}") from exc
+        try:
+            payload = json.loads(body)
+            code = payload["error"]["code"]
+        except (KeyError, TypeError, ValueError) as parse_error:
+            raise RuntimeError("malformed Gmail API 404 response") from parse_error
+        if code != 404:
+            raise RuntimeError("contradictory Gmail API 404 response")
+        return True
+    except (urllib.error.URLError, TimeoutError, OSError) as exc:
+        raise RuntimeError("Gmail API lookup failed") from exc
+    with response:
+        body = response.read(65537)
+        if response.getcode() != 200 or len(body) > 65536:
+            raise RuntimeError("unexpected Gmail API response")
+    try:
+        payload = json.loads(body)
+    except (TypeError, ValueError) as exc:
+        raise RuntimeError("malformed Gmail API response") from exc
+    if not isinstance(payload, dict) or payload.get("id") != api_id:
+        raise RuntimeError("Gmail API identity mismatch")
+    return False
+
 def checked_regular(path, label):
     st = path.lstat()
     if not stat.S_ISREG(st.st_mode): raise RuntimeError(f"{label} is not a regular non-symlink file")
@@ -304,6 +355,8 @@ def imap_move(con, limit):
     auth = f"user=gojun077@gmail.com\1auth=Bearer {token}\1\1".encode()
     imap_timings = {}
     imap_counts = {}
+    api_timing = 0.0
+    api_counts = {"present": 0, "not_found": 0, "error": 0}
     session_errors = (imaplib.IMAP4.abort, imaplib.IMAP4.readonly, EOFError, OSError)
 
     def imap_call(label, function, *args, **kwargs):
@@ -322,6 +375,19 @@ def imap_move(con, limit):
                     (str(exc), row["id"]))
         con.commit()
         project_best_effort(row["message_id"], add=("archive-error",))
+
+    def api_absent(gm_id):
+        nonlocal api_timing
+        started = time.monotonic()
+        try:
+            absent = gmail_api_message_absent(gm_id, token)
+        except Exception:
+            api_counts["error"] += 1
+            raise
+        finally:
+            api_timing += time.monotonic() - started
+        api_counts["not_found" if absent else "present"] += 1
+        return absent
 
     with timed("IMAP TLS connection"):
         im = imaplib.IMAP4_SSL("imap.gmail.com")
@@ -387,7 +453,7 @@ def imap_move(con, limit):
                 trash_uids = search_uids(require_ok(
                     imap_call("search", im.uid, "SEARCH", None, "X-GM-MSGID", gm_id),
                     "SEARCH Trash"))
-                if not trash_uids:
+                if not trash_uids and not api_absent(gm_id):
                     raise RuntimeError("MOVE destination presence not proven")
                 arc = ARCHIVE / r["archive_rel"]
                 aa = checked_regular(arc, "archive")
@@ -417,6 +483,10 @@ def imap_move(con, limit):
                     print(f"gmail-archive: timing IMAP {label}: {imap_timings[label]:.3f}s "
                           f"({imap_counts[label]} call(s))",
                           file=sys.stderr)
+            if sum(api_counts.values()):
+                print(f"gmail-archive: timing Gmail API lookup: {api_timing:.3f}s "
+                      f"({api_counts['present']} present, {api_counts['not_found']} not found, "
+                      f"{api_counts['error']} error)", file=sys.stderr)
 
 def cmd_sync(args):
     with locked(), connect() as con:
