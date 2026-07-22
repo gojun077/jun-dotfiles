@@ -233,6 +233,10 @@ case "$HOSTNAME" in
                "$DOTFILES/systemd/user/gmail-notmuch-backup.service"
     create_sym "$HOME/.config/systemd/user/gmail-notmuch-backup.timer" \
                "$DOTFILES/systemd/user/gmail-notmuch-backup.timer"
+    create_sym "$HOME/.config/systemd/user/gmail-archive-purge.service" \
+               "$DOTFILES/systemd/user/gmail-archive-purge.service"
+    create_sym "$HOME/.config/systemd/user/gmail-archive-purge.timer" \
+               "$DOTFILES/systemd/user/gmail-archive-purge.timer"
     ;;
 
   # -----------------------------------------------------------------------

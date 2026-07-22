@@ -25,7 +25,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 ROOT = Path(os.environ.get("GMAIL_ARCHIVE_ROOT", "/data/mail/gmail"))
 ARCHIVE = ROOT / "archive"
@@ -45,7 +45,15 @@ CREATE TABLE IF NOT EXISTS messages (
  last_error TEXT, UNIQUE(source_uidvalidity, far_uid));
 CREATE TABLE IF NOT EXISTS deletion_intents (
  message_ref TEXT PRIMARY KEY, refreshed_at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS purge_requests (
+ message_id INTEGER PRIMARY KEY REFERENCES messages(id), requested_at TEXT NOT NULL,
+ eligible_at TEXT NOT NULL, state TEXT NOT NULL, remote_deleted_at TEXT,
+ local_deleted_at TEXT, attempts INTEGER NOT NULL DEFAULT 0, last_error TEXT);
 """
+
+PURGE_GRACE_DAYS = 30
+PURGE_MAX_MESSAGES = 100
+PURGE_MAX_BYTES = 1024 * 1024 * 1024
 
 def now():
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
@@ -74,6 +82,7 @@ def connect(readonly=False):
     if not readonly:
         con.execute("PRAGMA journal_mode=WAL")
         con.execute("PRAGMA synchronous=FULL")
+        con.executescript(SCHEMA)
     return con
 
 @contextlib.contextmanager
@@ -151,7 +160,50 @@ def refresh_deletions(con):
     con.executemany("INSERT INTO deletion_intents VALUES (?,?)",
                     ((x.decode("utf-8", "surrogateescape"), stamp) for x in out.splitlines()))
 
-def archive_batch(con, limit):
+    return current_deletion_paths()
+
+def current_deletion_paths():
+    """Return the current physical files for messages tagged deleted."""
+    out = run(["notmuch", "search", "--format=text0", "--output=files", "tag:deleted"],
+              capture=True).stdout
+    return {Path(os.fsdecode(path)) for path in out.split(b"\0") if path}
+
+def reconcile_purge_requests(con, deletion_paths):
+    """Create or cancel reversible purge requests from current Notmuch tags."""
+    deleted_rels = set()
+    for path in deletion_paths:
+        try:
+            deleted_rels.add(path.relative_to(ARCHIVE).as_posix())
+        except ValueError:
+            continue
+    stamp = now()
+    eligible = (datetime.now(timezone.utc) + timedelta(days=PURGE_GRACE_DAYS)).isoformat(
+        timespec="seconds")
+    rows = con.execute(
+        "SELECT m.id,m.archive_rel,m.message_id,p.state FROM messages m "
+        "LEFT JOIN purge_requests p ON p.message_id=m.id WHERE m.state='FINALIZED'").fetchall()
+    for row in rows:
+        if row["archive_rel"] in deleted_rels:
+            if row["state"] is None:
+                con.execute(
+                    "INSERT INTO purge_requests(message_id,requested_at,eligible_at,state) "
+                    "VALUES(?,?,?,'WAITING')", (row["id"], stamp, eligible))
+                project_best_effort(row["message_id"], add=("purge-pending",))
+            elif row["state"] == "CANCELED":
+                con.execute(
+                    "UPDATE purge_requests SET requested_at=?,eligible_at=?,state='WAITING',"
+                    "remote_deleted_at=NULL,local_deleted_at=NULL,attempts=0,last_error=NULL "
+                    "WHERE message_id=?", (stamp, eligible, row["id"]))
+                project_best_effort(row["message_id"], add=("purge-pending",),
+                                    remove=("purge-error",))
+        elif row["state"] == "WAITING":
+            con.execute("UPDATE purge_requests SET state='CANCELED',last_error=NULL WHERE message_id=?",
+                        (row["id"],))
+            project_best_effort(row["message_id"],
+                                remove=("purge-pending", "purge-error"))
+    con.commit()
+
+def archive_batch(con, limit, deletion_paths):
     uidvalidity, mapping = parse_state(state_file())
     files = []
     for box in ("cur", "new"):
@@ -159,6 +211,7 @@ def archive_batch(con, limit):
             m = re.search(r",U=(\d+)(?:,|:|$)", p.name)
             if m and stat.S_ISREG(p.lstat().st_mode) and int(m.group(1)) in mapping:
                 files.append((p, int(m.group(1))))
+    files.sort(key=lambda item: (item[0] not in deletion_paths, item[0]))
     done = 0
     for src, near in files:
         if done >= limit: break
@@ -198,6 +251,31 @@ for x in json.load(sys.stdin):
  print(json.dumps({'path':rel,'ok':ok},separators=(',',':')))
 """
 
+REMOTE_DELETE_CODE = """import sys,json,os,hashlib,stat
+root=os.path.realpath(sys.argv[1])
+for x in json.load(sys.stdin):
+ rel=None
+ try:
+  rel=x['path']; p=os.path.join(root,rel)
+  if not isinstance(rel,str) or os.path.isabs(rel) or '..' in rel.split('/'): raise ValueError()
+  if os.path.commonpath((root,os.path.realpath(p))) != root: raise ValueError()
+  try: st=os.lstat(p)
+  except FileNotFoundError:
+   if not x.get('allow_missing'): raise
+  else:
+   if not stat.S_ISREG(st.st_mode) or st.st_nlink != 1 or st.st_size != x['size']: raise ValueError()
+   h=hashlib.sha256()
+   with open(p,'rb') as f:
+    for b in iter(lambda:f.read(1048576),b''): h.update(b)
+   if h.hexdigest()!=x['sha256']: raise ValueError()
+   os.unlink(p); fd=os.open(os.path.dirname(p),os.O_RDONLY|os.O_DIRECTORY)
+   try: os.fsync(fd)
+   finally: os.close(fd)
+  ok=not os.path.lexists(p)
+ except Exception: ok=False
+ print(json.dumps({'path':rel,'ok':ok},separators=(',',':')))
+"""
+
 def remote_verify(root, expected):
     command = shlex.join(["python3", "-c", VERIFY_CODE, root])
     output = run(["ssh", REMOTE, command], input_data=json.dumps(expected).encode(),
@@ -215,6 +293,25 @@ def remote_verify(root, expected):
         seen.add(record["path"])
     if seen != wanted:
         raise RuntimeError("incomplete remote verification response")
+
+def remote_delete(root, expected):
+    """Delete exact verified remote files and require structured acknowledgement."""
+    command = shlex.join(["python3", "-c", REMOTE_DELETE_CODE, root])
+    output = run(["ssh", REMOTE, command], input_data=json.dumps(expected).encode(),
+                 capture=True).stdout.splitlines()
+    wanted = {x["path"] for x in expected}
+    seen = set()
+    for line in output:
+        try: record = json.loads(line)
+        except (ValueError, TypeError) as exc:
+            raise RuntimeError("malformed remote deletion response") from exc
+        if (not isinstance(record, dict) or set(record) != {"path", "ok"} or
+                record["path"] not in wanted or record["path"] in seen or
+                record["ok"] is not True):
+            raise RuntimeError("invalid remote deletion response")
+        seen.add(record["path"])
+    if seen != wanted:
+        raise RuntimeError("incomplete remote deletion response")
 
 def backup_rows(con):
     rows = con.execute("SELECT * FROM messages WHERE state IN ('ARCHIVED','ERROR') AND backup_verified_at IS NULL").fetchall()
@@ -495,9 +592,10 @@ def cmd_sync(args):
         with timed("notmuch new before archive"):
             run(["notmuch", "new"])
         with timed("refresh deletion intents"):
-            refresh_deletions(con)
+            deletion_paths = refresh_deletions(con)
+            reconcile_purge_requests(con, deletion_paths)
         with timed(f"archive up to {args.limit} message(s)"):
-            archive_batch(con, args.limit)
+            archive_batch(con, args.limit, deletion_paths)
         try:
             with timed("archive backup transaction"):
                 backup_rows(con)
@@ -511,11 +609,144 @@ def cmd_sync(args):
             with timed(f"Gmail MOVE up to {args.move_limit} message(s)"):
                 imap_move(con, args.move_limit)
 
+def purge_path(row):
+    rel = Path(row["archive_rel"])
+    if rel.is_absolute() or ".." in rel.parts:
+        raise RuntimeError("unsafe archive path in purge journal")
+    path = ARCHIVE / rel
+    if os.path.commonpath((str(ARCHIVE.resolve()), str(path.resolve()))) != str(ARCHIVE.resolve()):
+        raise RuntimeError("purge path escapes archive root")
+    return path
+
+def verify_local_purge_file(row):
+    path = purge_path(row)
+    st = checked_regular(path, "purge candidate")
+    if st.st_nlink != 1 or st.st_size != row["size"] or sha(path) != row["sha256"]:
+        raise RuntimeError("local purge candidate failed identity check")
+    return path
+
+def select_purge_rows(con, limit, max_bytes):
+    rows = con.execute(
+        "SELECT m.*,p.state purge_state,p.requested_at purge_requested_at,"
+        "p.eligible_at purge_eligible_at FROM purge_requests p "
+        "JOIN messages m ON m.id=p.message_id "
+        "WHERE (p.state='WAITING' AND p.eligible_at<=?) OR "
+        "p.state IN ('REMOTE_DELETE_STARTED','REMOTE_DELETED','LOCAL_DELETE_STARTED') "
+        "ORDER BY CASE p.state WHEN 'WAITING' THEN 1 ELSE 0 END,m.id", (now(),)).fetchall()
+    selected, total = [], 0
+    for row in rows:
+        if len(selected) >= limit or total + row["size"] > max_bytes:
+            continue
+        selected.append(row)
+        total += row["size"]
+    return selected, total
+
+def cancel_purge(con, row):
+    con.execute("UPDATE purge_requests SET state='CANCELED',last_error=NULL "
+                "WHERE message_id=? AND state='WAITING'", (row["id"],))
+    con.commit()
+    project_best_effort(row["message_id"], remove=("purge-pending", "purge-error"))
+
+def purge_one(con, row, token):
+    state = row["purge_state"]
+    path = purge_path(row)
+    if state == "WAITING":
+        if path not in current_deletion_paths():
+            cancel_purge(con, row)
+            return
+        if not row["x_gm_msgid"] or not gmail_api_message_absent(row["x_gm_msgid"], token):
+            raise RuntimeError("message is still present in Gmail")
+        verify_local_purge_file(row)
+        remote_verify(REMOTE_ARCHIVE, [{"path": row["archive_rel"], "size": row["size"],
+                                        "sha256": row["sha256"]}])
+        if path not in current_deletion_paths():
+            cancel_purge(con, row)
+            return
+        changed = con.execute(
+            "UPDATE purge_requests SET state='REMOTE_DELETE_STARTED',last_error=NULL "
+            "WHERE message_id=? AND state='WAITING'", (row["id"],))
+        if changed.rowcount != 1:
+            raise RuntimeError("purge request changed before irreversible transition")
+        con.commit()
+        state = "REMOTE_DELETE_STARTED"
+    if state == "REMOTE_DELETE_STARTED":
+        verify_local_purge_file(row)
+        remote_delete(REMOTE_ARCHIVE, [{"path": row["archive_rel"], "size": row["size"],
+                                        "sha256": row["sha256"], "allow_missing": True}])
+        con.execute("UPDATE purge_requests SET state='REMOTE_DELETED',remote_deleted_at=?,"
+                    "last_error=NULL WHERE message_id=?", (now(), row["id"]))
+        con.commit()
+        state = "REMOTE_DELETED"
+    if state == "REMOTE_DELETED":
+        verify_local_purge_file(row)
+        con.execute("UPDATE purge_requests SET state='LOCAL_DELETE_STARTED',last_error=NULL "
+                    "WHERE message_id=?", (row["id"],))
+        con.commit()
+        state = "LOCAL_DELETE_STARTED"
+    if state == "LOCAL_DELETE_STARTED":
+        if path.exists():
+            verify_local_purge_file(row)
+            path.unlink()
+            fsync_dir(path.parent)
+        if path.exists() or path.is_symlink():
+            raise RuntimeError("local purge candidate remains after unlink")
+        stamp = now()
+        con.execute("UPDATE purge_requests SET state='PURGED',local_deleted_at=?,last_error=NULL "
+                    "WHERE message_id=?", (stamp, row["id"]))
+        con.execute("UPDATE messages SET state='PURGED',last_error=NULL WHERE id=?", (row["id"],))
+        con.commit()
+        project_best_effort(row["message_id"], remove=("purge-pending", "purge-error"))
+
+def cmd_purge(args):
+    if args.limit > PURGE_MAX_MESSAGES:
+        raise RuntimeError(f"purge limit cannot exceed {PURGE_MAX_MESSAGES} messages")
+    if args.max_bytes > PURGE_MAX_BYTES:
+        raise RuntimeError(f"purge byte limit cannot exceed {PURGE_MAX_BYTES} bytes")
+    with locked(), connect() as con:
+        run(["notmuch", "new"])
+        deletion_paths = refresh_deletions(con)
+        reconcile_purge_requests(con, deletion_paths)
+        rows, total = select_purge_rows(con, args.limit, args.max_bytes)
+        for row in rows:
+            print(f"{row['id']}: {row['purge_state']} {row['size']} bytes "
+                  f"eligible {row['purge_eligible_at']} {row['archive_rel']}")
+        print(f"purge candidates: {len(rows)} message(s), {total} byte(s)")
+        if not args.apply or not rows:
+            if rows and not args.apply:
+                print("dry run: rerun with --apply to approve this bounded batch")
+            return
+        waiting = any(row["purge_state"] == "WAITING" for row in rows)
+        token = None
+        if waiting:
+            token = run(["oama", "access", "gojun077@gmail.com"], capture=True).stdout.decode().strip()
+        failures = 0
+        for row in rows:
+            try:
+                purge_one(con, row, token)
+            except Exception as exc:
+                failures += 1
+                con.execute("UPDATE purge_requests SET attempts=attempts+1,last_error=? "
+                            "WHERE message_id=?", (str(exc), row["id"]))
+                con.commit()
+                project_best_effort(row["message_id"], add=("purge-error",))
+                print(f"gmail-archive: purge row {row['id']} failed: {exc}", file=sys.stderr)
+        run(["notmuch", "new"])
+        if failures:
+            raise RuntimeError(f"{failures} purge operation(s) failed; inspect gmail-archive status")
+
 def cmd_status(_args):
     with connect(readonly=True) as con:
         for row in con.execute("SELECT state,count(*) n FROM messages GROUP BY state ORDER BY state"):
             print(f"{row['state']}: {row['n']}")
         print("deletion-intents:", con.execute("SELECT count(*) FROM deletion_intents").fetchone()[0])
+        exists = con.execute(
+            "SELECT 1 FROM sqlite_master WHERE type='table' AND name='purge_requests'").fetchone()
+        if exists:
+            for row in con.execute(
+                    "SELECT state,count(*) n FROM purge_requests GROUP BY state ORDER BY state"):
+                print(f"purge-{row['state'].lower()}:", row["n"])
+        else:
+            print("purge-schema: pending writable command")
 
 def cmd_backup_notmuch(_args):
     with locked():
@@ -567,6 +798,14 @@ def main():
     s.add_argument("--move-gmail", action="store_true", help="explicitly MOVE verified exact UIDs to Gmail Trash")
     s.add_argument("--move-limit", type=positive, default=100, help="maximum Gmail moves (default: 100)")
     s.set_defaults(func=cmd_sync)
+    purge = sub.add_parser("purge", help="list eligible permanent purges; requires --apply to delete")
+    purge.add_argument("--limit", type=positive, default=PURGE_MAX_MESSAGES,
+                       help=f"maximum messages (default: {PURGE_MAX_MESSAGES})")
+    purge.add_argument("--max-bytes", type=positive, default=PURGE_MAX_BYTES,
+                       help=f"maximum total bytes (default: {PURGE_MAX_BYTES})")
+    purge.add_argument("--apply", action="store_true",
+                       help="approve deletion of the exact bounded batch shown")
+    purge.set_defaults(func=cmd_purge)
     sub.add_parser("status", help="show local journal counts (read-only)").set_defaults(func=cmd_status)
     sub.add_parser("backup-notmuch", help="dump metadata, upload, verify, retain latest seven").set_defaults(func=cmd_backup_notmuch)
     args = p.parse_args()

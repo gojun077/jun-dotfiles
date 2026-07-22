@@ -1,0 +1,10 @@
+[Unit]
+Description=Report Gmail archive messages eligible for manually approved purge
+ConditionPathIsDirectory=/data/mail/gmail
+
+[Service]
+Type=oneshot
+Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin
+UMask=0077
+ExecStart=%h/.local/bin/gmail-archive purge --limit 100 --max-bytes 1073741824
+TimeoutStartSec=30min
