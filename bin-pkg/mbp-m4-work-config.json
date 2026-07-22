@@ -15,9 +15,9 @@
         "/Users/peter.junkoh/.local/bin/dolt": {
             "path": "/Users/peter.junkoh/.local/bin/dolt",
             "remote_name": "dolt",
-            "version": "v2.2.1",
-            "hash": "1a793bb704468871c11daf14c3bca2f6a8b34cc3ac547ff310f078ddc9097819",
-            "url": "https://github.com/dolthub/dolt/releases/tag/v2.2.1",
+            "version": "v2.2.2",
+            "hash": "904755304617a54a48e9f4b460df6f2b7e962a9e6eec755e3107bd1584919d9d",
+            "url": "https://github.com/dolthub/dolt/releases/tag/v2.2.2",
             "provider": "github",
             "package_path": "dolt-darwin-arm64/bin/dolt",
             "selected_asset": "dolt-darwin-arm64.tar.gz",
