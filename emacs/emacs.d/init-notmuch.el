@@ -12,7 +12,6 @@
 (declare-function notmuch-search-next-thread "notmuch")
 (declare-function notmuch-search-tag "notmuch" (tag-changes &optional beg end only-matched))
 (declare-function notmuch-show-seen-current-message "notmuch-show" (start end))
-(declare-function notmuch-show-next-open-message "notmuch-show" (&optional pop-at-end))
 (declare-function notmuch-show-tag-message "notmuch-show" (&rest tag-changes))
 (defvar notmuch-command)
 (defvar notmuch-fcc-dirs)
@@ -43,10 +42,14 @@
   (notmuch-search-next-thread))
 
 (defun pj/notmuch-show-delete-message ()
-  "Hide the current message with the `deleted' tag and advance."
+  "Tag the current message as deleted, quit, and refresh its search buffer."
   (interactive)
-  (notmuch-show-tag-message "+deleted")
-  (notmuch-show-next-open-message t))
+  (let ((parent-buffer notmuch-show-parent-buffer))
+    (notmuch-show-tag-message "+deleted")
+    (notmuch-bury-or-kill-this-buffer)
+    (when (buffer-live-p parent-buffer)
+      (switch-to-buffer parent-buffer)
+      (notmuch-search-refresh-view))))
 
 (defun pj/notmuch-show-quit-and-refresh ()
   "Mark the current message read, quit, and refresh its search buffer."
