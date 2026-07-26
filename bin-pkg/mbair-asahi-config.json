@@ -26,9 +26,9 @@
         "/home/jundora/.local/bin/dolt": {
             "path": "/home/jundora/.local/bin/dolt",
             "remote_name": "dolt",
-            "version": "v2.2.1",
-            "hash": "bd16c14fe82a8b11e396d28c48f82379be55f9694491b3ae5cb6ac3cc6604e7e",
-            "url": "https://github.com/dolthub/dolt/releases/tag/v2.2.1",
+            "version": "v2.2.2",
+            "hash": "40f612c2f7618089fdcd8d16b5b5a8546958139497c4f805a442e1a1f74092be",
+            "url": "https://github.com/dolthub/dolt/releases/tag/v2.2.2",
             "provider": "github",
             "package_path": "dolt-linux-arm64/bin/dolt",
             "selected_asset": "dolt-linux-arm64.tar.gz",
@@ -37,12 +37,12 @@
         "/home/jundora/.local/bin/duckdb": {
             "path": "/home/jundora/.local/bin/duckdb",
             "remote_name": "",
-            "version": "v1.5.4",
-            "hash": "513b573b5ad3a94ad2c0668b1ccefb5f281b6f7aa2a5e2ff057825473848e69a",
-            "url": "https://github.com/duckdb/duckdb/releases/tag/v1.5.4",
+            "version": "v1.5.5",
+            "hash": "9882c99a9804407de82c0edb1816d7667733d37d771a98eb23ad5f6a8d37acb1",
+            "url": "https://github.com/duckdb/duckdb/releases/tag/v1.5.5",
             "provider": "github",
             "package_path": "",
-            "selected_asset": "",
+            "selected_asset": "duckdb_cli-linux-arm64.gz",
             "pinned": false
         },
         "/home/jundora/.local/bin/gh": {
@@ -98,6 +98,17 @@
             "provider": "github",
             "package_path": "k9s",
             "selected_asset": "",
+            "pinned": false
+        },
+        "/home/jundora/.local/bin/kubernetes-mcp-server": {
+            "path": "/home/jundora/.local/bin/kubernetes-mcp-server",
+            "remote_name": "kubernetes-mcp-server-linux-arm64",
+            "version": "v0.0.65",
+            "hash": "5fad4dad9acb6dfd9bab9bf753027244a356a64c837095deb55b34322484ff52",
+            "url": "https://github.com/containers/kubernetes-mcp-server/releases",
+            "provider": "github",
+            "package_path": "",
+            "selected_asset": "kubernetes-mcp-server-linux-arm64",
             "pinned": false
         },
         "/home/jundora/.local/bin/yt-dlp": {
