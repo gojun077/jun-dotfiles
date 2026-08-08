@@ -3,13 +3,13 @@
     "bins": {
         "/home/jundora/.local/bin/bin": {
             "path": "/home/jundora/.local/bin/bin",
-            "remote_name": "bin_0.29.0_linux_arm64",
-            "version": "v0.29.0",
-            "hash": "422d7964c80fe9fda9ce594e2789bb662298cfc2320e79c82b5c0b2a685d4f15",
-            "url": "https://github.com/marcosnils/bin/releases/tag/v0.29.0",
+            "remote_name": "bin_0.29.1_linux_arm64",
+            "version": "v0.29.1",
+            "hash": "bf07c65837682499b484b68c9c7613fc6ffba3546f459f8f8043e7c884773dd6",
+            "url": "https://github.com/marcosnils/bin/releases/tag/v0.29.1",
             "provider": "github",
             "package_path": "",
-            "selected_asset": "bin_0.29.0_linux_arm64",
+            "selected_asset": "bin_0.29.1_linux_arm64",
             "pinned": false
         },
         "/home/jundora/.local/bin/bluetuith": {
@@ -26,9 +26,9 @@
         "/home/jundora/.local/bin/dolt": {
             "path": "/home/jundora/.local/bin/dolt",
             "remote_name": "dolt",
-            "version": "v2.2.2",
-            "hash": "40f612c2f7618089fdcd8d16b5b5a8546958139497c4f805a442e1a1f74092be",
-            "url": "https://github.com/dolthub/dolt/releases/tag/v2.2.2",
+            "version": "v2.2.3",
+            "hash": "f4a84e84165a6cbf6ce142d256cf2c782e89fe17469a7b2c7c0047c809c55ad7",
+            "url": "https://github.com/dolthub/dolt/releases/tag/v2.2.3",
             "provider": "github",
             "package_path": "dolt-linux-arm64/bin/dolt",
             "selected_asset": "dolt-linux-arm64.tar.gz",
@@ -48,12 +48,12 @@
         "/home/jundora/.local/bin/gh": {
             "path": "/home/jundora/.local/bin/gh",
             "remote_name": "gh",
-            "version": "v2.96.0",
-            "hash": "f903d2fa04ae78ee8f8df0186364d0b92f078d2720053941a47e0a3beaef54f0",
-            "url": "https://github.com/cli/cli/releases/tag/v2.96.0",
+            "version": "v2.97.0",
+            "hash": "ccbb0f14178faefac1cb0f336a853071fa63a1d0df23ef5ab7a304fe3859e082",
+            "url": "https://github.com/cli/cli/releases/tag/v2.97.0",
             "provider": "github",
-            "package_path": "gh_2.96.0_linux_arm64/bin/gh",
-            "selected_asset": "gh_2.96.0_linux_arm64.tar.gz",
+            "package_path": "gh_2.97.0_linux_arm64/bin/gh",
+            "selected_asset": "gh_2.97.0_linux_arm64.tar.gz",
             "pinned": false
         },
         "/home/jundora/.local/bin/git-filter-repo": {
@@ -81,12 +81,12 @@
         "/home/jundora/.local/bin/k3s": {
             "path": "/home/jundora/.local/bin/k3s",
             "remote_name": "k3s-arm64",
-            "version": "v1.36.2+k3s1",
-            "hash": "1dc5fc17f15c28fa0a3f011cee28ad613f918c3d967a426e5a05d43ddb239817",
-            "url": "https://github.com/k3s-io/k3s/releases/tag/v1.36.2%2Bk3s1",
+            "version": "v1.36.3+k3s1",
+            "hash": "c9a209103f480f163b7c6a56f00862b4481927b284dc29a3716bb70d886691a8",
+            "url": "https://github.com/k3s-io/k3s/releases/tag/v1.36.3%2Bk3s1",
             "provider": "github",
             "package_path": "",
-            "selected_asset": "",
+            "selected_asset": "k3s-arm64",
             "pinned": false
         },
         "/home/jundora/.local/bin/k9s": {
@@ -103,9 +103,9 @@
         "/home/jundora/.local/bin/kubernetes-mcp-server": {
             "path": "/home/jundora/.local/bin/kubernetes-mcp-server",
             "remote_name": "kubernetes-mcp-server-linux-arm64",
-            "version": "v0.0.65",
-            "hash": "5fad4dad9acb6dfd9bab9bf753027244a356a64c837095deb55b34322484ff52",
-            "url": "https://github.com/containers/kubernetes-mcp-server/releases",
+            "version": "v0.0.66",
+            "hash": "34c14a01ad084302c181848f84151bc25858f0818e273b4db1b72de726af1ee5",
+            "url": "https://github.com/containers/kubernetes-mcp-server/releases/tag/v0.0.66",
             "provider": "github",
             "package_path": "",
             "selected_asset": "kubernetes-mcp-server-linux-arm64",

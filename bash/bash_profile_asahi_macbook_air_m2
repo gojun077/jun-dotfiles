@@ -3,7 +3,7 @@
 #
 # Created on: 08 Sep 2024
 # Created by gojun077
-# Last Updated: Sat 14 Feb 2026
+# Last Updated: Sun 09 Aug 2026
 #
 # These settings are sourced by the login shell
 
@@ -17,6 +17,7 @@ GPG_TTY=$(tty)
 export GPG_TTY
 export GOROOT=/usr/local/go  # consider moving this to the system `bash_profile`
 export GOPATH=$HOME/go
+export LC_ALL=en_US.UTF-8
 export NVM_DIR="$HOME/.config/nvm"
 export PNPM_HOME="/home/jundora/.local/share/pnpm"
 export SSH_AUTH_SOCK="/run/user/1000/ssh-agent.socket"
