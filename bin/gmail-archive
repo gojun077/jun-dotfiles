@@ -35,6 +35,7 @@ REMOTE = "argonaut"
 REMOTE_MAIL = "/tier3/backup/pj-arm64-ampere/gmail/"
 REMOTE_ARCHIVE = REMOTE_MAIL + "archive/"
 REMOTE_NOTMUCH = "/tier3/backup/pj-arm64-ampere/notmuch/"
+MOVE_MAX_ATTEMPTS = 10
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS messages (
@@ -440,8 +441,10 @@ def checked_regular(path, label):
     return st
 
 def imap_move(con, limit):
-    query = "SELECT * FROM messages WHERE (state='BACKUP_VERIFIED' OR (state='ERROR' AND backup_verified_at IS NOT NULL)) ORDER BY id LIMIT ?"
-    rows = con.execute(query, (limit,)).fetchall()
+    query = ("SELECT * FROM messages WHERE (state='BACKUP_VERIFIED' OR "
+             "(state='ERROR' AND backup_verified_at IS NOT NULL AND attempts < ?)) "
+             "ORDER BY id LIMIT ?")
+    rows = con.execute(query, (MOVE_MAX_ATTEMPTS, limit)).fetchall()
     if not rows:
         return
     with timed(f"index staging paths for {len(rows)} message(s)"):
