@@ -1,6 +1,6 @@
 ;;; init-gptel.el --- GPTel configuration (extracted from emacs_asahi)  -*- lexical-binding: t; -*-
 ; Created on: Sat 13 Sep 2025
-; Last Updated: Wed 27 May 2026
+; Last Updated: Sun 02 Aug 2026
 
 ;;; GPTel specific configurations ;;;
 ;;
@@ -40,8 +40,7 @@
 (gptel-make-gemini "Gemini"
   :stream t
   :key gptel-api-key
-  :models '(gemini-3.1-pro-preview
-            gemini-3.5-flash))
+  :models '(gemini-3.6-flash))
 
 ;; Configure OpenAI subscription (OAuth)
 (gptel-make-openai-oauth "OpenAI-pro"
@@ -57,17 +56,12 @@
   :models '(deepseek-v4-pro
             deepseek-v4-flash))
 
-;; Configure Github Copilot Chat
-;; no API key; browser auth login required
-(gptel-make-gh-copilot "Copilot")
-
 ;; Configure xAI Grok
 ;; API key will be read from '~/.authinfo.gpg'
 (gptel-make-xai "xAI"
   :stream t
   :key gptel-api-key
-  :models '(grok-4.3
-            grok-4-1-fast))
+  :models '(grok-4.5))
 
 ;; Configure Alibaba Qwen3
 ;; API key will be read from '~/.authinfo.gpg'
@@ -87,15 +81,14 @@
   :key gptel-api-key
   :models '(openrouter/auto
             openrouter/free
-            anthropic/claude-opus-4.7
-            google/gemini-3.1-pro-preview
+            anthropic/claude-opus-5
+            google/gemini-3.6-flash
             minimax/minimax-m2.7
-            moonshotai/kimi-k2.6
-            openai/gpt-5.3-codex
-            openai/gpt-5.5-pro
-            x-ai/grok-4.20-beta
+            moonshotai/kimi-k3
+            openai/gpt-5.6-sol
+            x-ai/grok-4.5
             xiaomi/mimo-v2.5-pro
-            z-ai/glm-5.1))
+            z-ai/glm-5.2))
 
 
 ;; Helper functions for gptel custom tools
