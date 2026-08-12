@@ -14,7 +14,7 @@
 # Change default encoding to UTF8; equivalent to
 # screen -U
 defutf8 on
-8;39M
+
 ################
 #
 # Logging
