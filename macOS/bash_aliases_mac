@@ -3,7 +3,7 @@
 # Original path to file: ~/.bash_aliases
 # bash_aliases_macos
 # Created on: Sometime in 2021?
-# Last Updated: Tue 14 Jul 2026
+# Last Updated: Thu 27 Aug 2026
 
 # enable color support of ls and also add handy aliases
 alias ls='ls --color=auto'
@@ -18,6 +18,8 @@ alias ㅊㅇ='cd'
 alias 니='ls'
 alias screen="/opt/homebrew/bin/screen"
 alias enox="/opt/homebrew/bin/emacsclient -nw"
+# Show top-level beads epics only (exclude nested children epics)
+alias epics="bd list -t epic --no-parent --pretty -n 0"
 
 # A simple dictation wrapper for whisper.cpp
 dictate() {
