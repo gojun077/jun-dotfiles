@@ -57,3 +57,5 @@ font-size = 15
 cursor-style = "block"
 cursor-style-blink = true
 cursor-invert-fg-bg = true
+
+gtk-tabs-location = hidden

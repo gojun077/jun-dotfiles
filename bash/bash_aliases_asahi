@@ -15,6 +15,7 @@ alias ls='ls --color=auto'
 alias enox='emacsclient -nw'
 # Show top-level beads epics only (exclude nested children epics)
 alias epics="bd list -t epic --no-parent --pretty -n 0"
+alias mosh="LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 mosh"
 
 ansicat() {
   if [ -f "$1" ]; then
