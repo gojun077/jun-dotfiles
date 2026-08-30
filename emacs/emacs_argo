@@ -3,7 +3,7 @@
 ;; My .emacs for Argonaut running Fedora server
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Wed 22 Oct 2025
+;; Last Updated: Sun 30 Oct 2026
 ;;
 ;; These configs are for Emacs 30.1 and higher.
 ;;; Code:
@@ -31,15 +31,6 @@
   (require 'dockerfile-mode)
   :hook
   (dockerfile-mode-hook . flymake-hadolint-setup)
-  :defer t)
-(use-package efrit
-  :straight (:host github :repo "steveyegge/efrit")
-  :config
-  (require 'efrit)
-  (setq efrit-model "claude-sonnet-4-20250514")
-  (setq efrit-max-tokens 32768) ; max is 64000 for sonnet 4
-  (setq efrit-remote-queue-directory "~/.emacs.d/efrit-queue")
-  (setq efrit-remote-queue-max-concurrent 10)
   :defer t)
 (use-package exec-path-from-shell
   :straight t
