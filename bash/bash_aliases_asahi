@@ -2,7 +2,7 @@
 # bash_aliases_asahi
 # Created on: Apr 30 2024
 # Created by: gopeterjun@naver.com
-# Last Updated: Sat 23 May 2026
+# Last Updated: Sun 30 Aug 2026
 #
 # .bash_aliases for Asahi Linux intended to be sourced by .bashrc
 
@@ -13,6 +13,8 @@ alias hazip='curl https://icanhazip.com'
 alias ls='ls --color=auto'
 #alias chromium-browser='chromium-browser --ozone-platform=wayland --enable-wayland-ime'
 alias enox='emacsclient -nw'
+# Show top-level beads epics only (exclude nested children epics)
+alias epics="bd list -t epic --no-parent --pretty -n 0"
 
 ansicat() {
   if [ -f "$1" ]; then

@@ -4,7 +4,7 @@
 #
 # - Created on: Wed 24 Sep 2025
 # - Created by: gopeterjun@naver.com
-# - Last Updated: Wed 24 Sep 2025
+# - Last Updated: Sun 30 Aug 2026
 #
 # This is the configuration file for Ghostty.
 #
@@ -31,7 +31,7 @@
 # font-family = Iosevka
 # window-padding-x = 2
 font-family = Monofur Nerd Font Mono
-font-size = 14
+font-size = 15
 
 #
 # # Spacing around the equals sign does not matter.
@@ -54,5 +54,6 @@ font-size = 14
 # # Just for example:
 # resize-overlay-duration = 4s 200ms
 
-cursor-style = "bar"
+cursor-style = "block"
 cursor-style-blink = true
+cursor-invert-fg-bg = true

@@ -3,7 +3,7 @@
 #
 # Created on: 29 Jul 2024
 # Created by: gopeterjun@naver.com
-# Last Updated: 15 Jul 2026
+# Last Updated: Wed 12 Aug 2026
 #
 # These settings are sourced by the login shell
 
@@ -20,6 +20,8 @@ export GPG_TTY
 export GOROOT=/usr/local/go  # consider moving this to the system `bash_profile`
 export GOPATH="$HOME/go"
 export KUBECONFIG="$HOME/.kube/config"
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:$GOPATH/bin:$GOROOT/bin:$HOME/.local/bin:$HOME/bin"
 
@@ -38,3 +40,17 @@ fi
 # NOTE: if GNOME keyring is installed, you must deactivate its ssh component
 # otw it will overwrite SSH_AUTH_SOCK above
 export EDITOR="vim"
+
+# Packages to install
+# - fastfetch
+# - starship
+# - font-noto-color-emoji
+
+# Monofur font
+# https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Monofur.tar.xz
+# mkdir -p ~/.local/share/fonts/monofur
+# cd ~/.local/share/fonts/monofur
+# tar xvf Monofur.tar.xz
+# fc-cache -fv
+# fc-list | grep -i "Monofur"
+
