@@ -345,9 +345,12 @@
 ;;   GLOBAL VARIABLES
 ;;======================
 
+; comment out the block below on Linux if you have already enabled
+; =systemctl --user enable emacs.service=
 ; start emacs in server mode if daemon not already running
-(unless (or noninteractive (daemonp))
-  (server-mode 1))
+;(unless (or noninteractive (daemonp))
+;  (server-mode 1))
+
 ; confirmation 'yes/no' to 'y/n'
 (fset 'yes-or-no-p 'y-or-n-p)
 ; show col and line numbers
