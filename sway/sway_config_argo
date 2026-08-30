@@ -5,7 +5,7 @@
 # Read `man 5 sway` for a complete reference.
 # Created on: 21 Sep 2021
 # Created by: gojun077@gmail.com
-# Last Updated: Sun 18 May 2025
+# Last Updated: Sun 30 Aug 2026
 
 
 ### Variables
@@ -290,21 +290,12 @@ default_border pixel 3
 #
 # IME for CJK
 exec --no-startup-id fcitx5 -d -r # fcitx5 IME works with Wayland
-# Keybase KBFS mount
-exec --no-startup-id mkdir /run/user/1000/keybase/kbfs
-# Start kbfsfuse
-exec --no-startup-id kbfsfuse
-# Keybase GUI launch in Wayland mode
-exec --no-startup-id /opt/keybase/Keybase --ozone-platform=wayland
 # Clipboard for SwayWM
 exec wl-paste -t text --watch clipman store --no-persist --max-items=1024
-# Start emacs (`(server-mode 1)` is set in .emacs)
-exec emacs
-
 #
 # Custom Keyboard shortcuts/keybindings
 #
-bindsym $mod+Shift+b exec MOZ_ENABLE_WAYLAND=1 firefox  # FF runs in native Wayland!
+bindsym $mod+Shift+b exec firefox  # FF now runs in native Wayland!
 bindsym $mod+Shift+m exec emacs
 bindsym $mod+Shift+f exec nautilus
 bindsym $mod+Shift+p exec clipman pick  # view clipboard
