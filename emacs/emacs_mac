@@ -1,9 +1,9 @@
-; -*- mode: emacs-lisp -*-
+; -*- lexical-binding: t; mode: emacs-lisp -*-
 
 ;; .emacs for MacOS
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Wed 27 May 2026
+;; Last Updated: Mon 31 Aug 2026
 ;;
 ;; This config file is for Emacs 30 and above on Apple Silicon
 ;;; Code:
@@ -116,34 +116,7 @@
       (ruby . t)
       (shell . t)
       (sql . t))))
-; use my fork of org-trello
-(use-package org-trello
-  :straight (:host github
-             :repo "gojun077/org-trello"
-             :branch "disable-ot-indent"
-             :protocol ssh
-             :build (:not compile))
-  :defer t
-  :hook
-;; workaround for org-trello still holding onto "C-c o" keybinding
-  (org-trello-mode . (lambda ()
-                       (define-key org-trello-mode-map (kbd "C-c o") nil)))
-  (org-trello-mode . org-indent-mode))
 
-;; org-trello-ng - my new proj inspired by org-trello
-;; (use-package org-trello-ng
-;;   :straight (:host github
-;;              :repo "gojun077/org-trello-ng"
-;;              :branch "main"
-;;              :protocol ssh
-;;   :defer t))
-
-;; Keep org-indent-mode
-(with-eval-after-load 'org-trello
-  (advice-add 'org-trello-mode :after
-              (lambda (&rest _)
-                (when org-trello-mode
-                  (org-indent-mode 1)))))
 
 ;; Projectile for project management (also disables built-in project.el)
 (unless (load (expand-file-name "init-projectile.el" user-emacs-directory) t t)
@@ -301,9 +274,8 @@
    '("535a9d9aef8fcd962a71a73fce5ddf37edbc62859af6f9d57138207c55e3fc17"
      default))
  '(epg-gpg-program "/usr/local/MacGPG2/bin/gpg2")
- '(org-trello-current-prefix-keybinding "C-c t" nil (org-trello))
  '(package-selected-packages
-   '(org-trello exec-path-from-shell go-mode go-playground rainbow-delimiters
+   '(exec-path-from-shell go-mode go-playground rainbow-delimiters
                 magit smartparens web-mode yaml-mode racket-mode paredit
                 markdown-mode ansible))
  '(pdf-latex-command "xetex")
