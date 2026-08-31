@@ -156,6 +156,9 @@
   :defer t)
 (use-package visual-fill-column
   :straight t)
+(use-package vterm
+  :straight t
+  :ensure t)
 (use-package web-mode
   :straight t
   :defer t)
