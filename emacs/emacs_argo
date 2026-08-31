@@ -1,9 +1,9 @@
-; -*- mode: emacs-lisp -*-
+; -*- lexical-binding: t; mode: emacs-lisp -*-
 
 ;; My .emacs for Argonaut running Fedora server
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Sun 30 Aug 2026
+;; Last Updated: Mon 31 Aug 2026
 ;;
 ;; These configs are for Emacs 30.1 and higher.
 ;;; Code:
