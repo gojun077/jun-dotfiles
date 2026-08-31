@@ -3,7 +3,7 @@
 ;; My .emacs for Asahilinux Fedora Remix
 ;; Created on: 02 May 2024
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Sun 07 Jun 2026
+;; Last Updated: Sun 30 Aug 2026
 ;;
 ;; These configs are for Emacs 30.1 and higher.
 ;;; Code:
@@ -136,25 +136,6 @@
       (ruby . t)
       (shell . t)
       (sql . t))))
-; use my fork of org-trello
-(use-package org-trello
-  :straight (:host github
-             :repo "gojun077/org-trello"
-             :branch "disable-ot-indent"
-             :protocol ssh
-             :build (:not compile))
-  :defer t
-  :hook
-  ;; workaround for org-trello holding onto "C-c o" despite remap
-  (org-trello-mode . (lambda ()
-                       (define-key org-trello-mode-map (kbd "C-c o") nil))))
-
-;; Keep org-indent-mode
-(with-eval-after-load 'org-trello
-  (advice-add 'org-trello-mode :after
-              (lambda (&rest _)
-                (when org-trello-mode
-                  (org-indent-mode 1)))))
 
 ;; Projectile for project management (also disables built-in project.el)
 (unless (load (expand-file-name "init-projectile.el" user-emacs-directory) t t)
@@ -351,7 +332,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-trello-current-prefix-keybinding "C-c t" nil (org-trello))
  '(package-selected-packages
    '(go-mode yaml-mode web-mode go-playground smartparens ansible
              rainbow-delimiters racket-mode markdown-mode magit
@@ -365,9 +345,12 @@
 ;;   GLOBAL VARIABLES
 ;;======================
 
-; start emacs in server mode
-(unless noninteractive
-  (server-mode 1))
+; comment out the block below on Linux if you have already enabled
+; =systemctl --user enable emacs.service=
+; start emacs in server mode if daemon not already running
+;(unless (or noninteractive (daemonp))
+;  (server-mode 1))
+
 ; confirmation 'yes/no' to 'y/n'
 (fset 'yes-or-no-p 'y-or-n-p)
 ; show col and line numbers
