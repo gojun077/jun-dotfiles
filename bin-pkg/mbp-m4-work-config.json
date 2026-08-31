@@ -37,9 +37,9 @@
         "/Users/peter.junkoh/.local/bin/slackcli": {
             "path": "/Users/peter.junkoh/.local/bin/slackcli",
             "remote_name": "slackcli-macos-arm64",
-            "version": "v0.9.1",
-            "hash": "97ae797e6af8411e6bc6c909374c0ee058dea7de81eb5ee1c713933421963222",
-            "url": "https://github.com/shaharia-lab/slackcli/releases/tag/v0.9.1",
+            "version": "v0.10.0",
+            "hash": "5d53641ef20c0c865934df27d6d1643891ca63c354cb00437d3aeb84ff9eac3b",
+            "url": "https://github.com/shaharia-lab/slackcli/releases/tag/v0.10.0",
             "provider": "github",
             "package_path": "",
             "selected_asset": "slackcli-macos-arm64",
