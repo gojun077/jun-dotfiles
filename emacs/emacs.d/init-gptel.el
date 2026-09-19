@@ -43,9 +43,9 @@
   :models '(gemini-3.6-flash))
 
 ;; Configure OpenAI subscription (OAuth)
-(gptel-make-openai-oauth "OpenAI-pro"
-  :models '(gpt-5.3-codex
-            gpt-5.5))
+;;(gptel-make-openai-oauth "OpenAI-pro"
+;;  :models '(gpt-5.3-codex
+;;            gpt-5.5))
 
 ;; Configure Deepseek
 ;; API key will be read from '~/.authinfo.gpg'
