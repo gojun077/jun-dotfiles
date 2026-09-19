@@ -212,6 +212,19 @@ case "$HOSTNAME" in
     ;;
 
   # -----------------------------------------------------------------------
+  # Argonaut (Fedora x86_64 headless server)
+  # -----------------------------------------------------------------------
+  argonaut)
+    # Emacs
+    create_sym "$HOME/.emacs"          "$DOTFILES/emacs/emacs_argo"
+    mkdir -p "$HOME/.emacs.d"
+    create_sym "$HOME/.emacs.d/early-init.el" "$DOTFILES/emacs/emacs.d/asahi_early-init.el"
+    create_sym "$HOME/.emacs.d/init-gptel.el" "$DOTFILES/emacs/emacs.d/init-gptel.el"
+    create_sym "$HOME/.emacs.d/init-org.el"   "$DOTFILES/emacs/emacs.d/init-org.el"
+    create_sym "$HOME/.emacs.d/init-ui.el"    "$DOTFILES/emacs/emacs.d/init-ui.el"
+    ;;
+
+  # -----------------------------------------------------------------------
   # Ubuntu OCI (Oracle Cloud Infrastructure)
   # -----------------------------------------------------------------------
   pj-arm64-ampere|ubuntu-oci|ubuntu_oci)

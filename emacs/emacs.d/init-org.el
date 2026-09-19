@@ -1,8 +1,9 @@
-;;; init-org.el --- org configuration (extracted from emacs_asahi)
+;; -*- lexical-binding: t; -*-
+;; init-org.el --- org configuration (extracted from emacs_asahi)
 ; Original path to file: ~/.emacs.d/init-org.el
 ;
 ; Created on: Mon 15 Sep 2025
-; Last Updated: Sat 14 Mar 2026
+; Last Updated: Mon 31 Aug 2026
 ;
 ;------------------------------------------------------------
 ; org-mode settings

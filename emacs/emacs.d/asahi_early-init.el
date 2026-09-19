@@ -1,4 +1,4 @@
-; -*- mode: emacs-lisp -*-
+; -*- lexical-binding:t; mode: emacs-lisp -*-
 
 ;; 'early-init.el' for Asahilinux Fedora Remix
 ;; Created on: Sat 28 Jun 2025
