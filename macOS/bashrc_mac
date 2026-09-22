@@ -19,8 +19,7 @@ HISTSIZE=10000
 HISTFILESIZE=15000
 
 export EDITOR="/opt/homebrew/bin/emacsclient -nw"
-#export TERM=screen-256color
-export TERM=xterm-256color
+# Preserve the terminal type selected by Ghostty or tmux.
 
 eval "$(/opt/homebrew/bin/starship init bash)"
 # Only execute if this is an interactive shell
