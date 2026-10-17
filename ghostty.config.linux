@@ -24,6 +24,10 @@
 # reloaded while running; some only apply to new windows and others may require
 # a full restart to take effect.
 
+# Load ~/.bash_profile so tmux can inherit the initialized environment.
+# This matches WezTerm's default login-shell behavior.
+command = /usr/bin/bash -l
+
 # Config syntax crash course
 # ==========================
 # # The config file consists of simple key-value pairs,
