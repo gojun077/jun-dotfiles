@@ -5,7 +5,7 @@
 # Read `man 5 sway` for a complete reference.
 # Created on: 29 Jun 2024
 # Created by: gojun077@gmail.com
-# Last Updated: Sun 30 Aug 2026
+# Last Updated: Sun 18 Oct 2026
 
 
 ### Variables
@@ -159,15 +159,10 @@ input "1133:45938:Logi_K855_Keyboard" {
 # Moving around:
 #
     # Move your focus around
-    bindsym $mod+$left focus left
-    bindsym $mod+$down focus down
-    bindsym $mod+$up focus up
-    bindsym $mod+$right focus right
-    # Or use $mod+[up|down|left|right]
-    bindsym $mod+Left focus left
-    bindsym $mod+Down focus down
-    bindsym $mod+Up focus up
-    bindsym $mod+Right focus right
+    bindsym Ctrl+$left focus left
+    bindsym Ctrl+$down focus down
+    bindsym Ctrl+$up focus up
+    bindsym Ctrl+$right focus right
 
     # Move the focused window with the same, but add Shift
     bindsym $mod+Shift+$left move left
@@ -208,9 +203,9 @@ input "1133:45938:Logi_K855_Keyboard" {
     # Note: workspaces can have any name you want, not just numbers.
     # We just use 1-10 as the default.
 #
-    # Move between workspaces with default MacOS keychords
-    bindsym Ctrl+Left workspace prev
-    bindsym Ctrl+Right workspace next
+    # Move between workspaces
+    bindsym $mod+Left workspace prev
+    bindsym $mod+Right workspace next
 
 #
 # Layout stuff:
@@ -350,7 +345,6 @@ bindsym $mod+Shift+b exec chromium-browser
 bindsym $mod+Shift+m exec emacs
 bindsym $mod+Shift+f exec thunar
 bindsym $mod+Shift+p exec clipman pick -t wofi # view clipboard
-bindsym $mod+Shift+v exec code-insiders --ozone-platform=wayland
 # screenshot shortcut (select area)
 bindsym --release $mod+Shift+z exec 'grim -g "$(slurp)" - | swappy -f -'
 # refer to https://github.com/jtheoof/swappy for kbd shortcuts
@@ -364,3 +358,12 @@ include /etc/sway/config.d/*
 bindsym --release $mod+Shift+l exec 'swaylock -f -c 000000'
 # toggle Sway Notification Center controls
 bindsym $mod+Shift+n exec swaync-client -t -sw
+
+# macOS-Style Editing Shortcuts via wtype
+bindsym --to-code $mod+c exec wtype -k XF86Copy
+bindsym --to-code $mod+v exec wtype -k XF86Paste
+bindsym --to-code $mod+x exec wtype -k XF86Cut
+
+# keybindings using 'wtype' wayland virtual keyboard
+bindsym --to-code $mod+a exec wtype -M ctrl a -m ctrl
+bindsym --to-code $mod+f exec wtype -M ctrl f -m ctrl
