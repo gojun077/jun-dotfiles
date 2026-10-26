@@ -109,6 +109,16 @@ create_sym "$HOME/.vimrc"           "$DOTFILES/vimrc"
 create_sym "$HOME/.screenrc"        "$DOTFILES/screenrc"
 create_sym "$HOME/.shellcheckrc"    "$DOTFILES/shellcheckrc"
 
+# Ghostty (platform-specific configuration)
+case "$(uname -s)" in
+  Linux)
+    create_sym "$HOME/.config/ghostty/config" "$DOTFILES/ghostty.config.linux"
+    ;;
+  Darwin)
+    create_sym "$HOME/.config/ghostty/config" "$DOTFILES/ghostty.config"
+    ;;
+esac
+
 # Vim syntax ftplugins
 mkdir -p "$HOME/.vim/after/ftplugin"
 create_sym "$HOME/.vim/after/ftplugin/yaml.vim" "$DOTFILES/vim/yaml.vim"
@@ -176,8 +186,6 @@ case "$HOSTNAME" in
     # Terminals
     mkdir -p "$HOME/.config/alacritty"
     create_sym "$HOME/.config/alacritty/alacritty.toml" "$DOTFILES/alacritty.toml"
-    mkdir -p "$HOME/.config/ghostty"
-    create_sym "$HOME/.config/ghostty/config"   "$DOTFILES/ghostty.config.linux"
 
     # Starship prompt
     create_sym "$HOME/.config/starship.toml"     "$DOTFILES/starship_macbookair.toml"
@@ -196,16 +204,21 @@ case "$HOSTNAME" in
     ;;
 
   # -----------------------------------------------------------------------
-  # Argo (Fedora x86_64 workstation)
+  # Argo / Argonaut (same Fedora x86_64 headless server)
   # -----------------------------------------------------------------------
-  argo)
+  argo|argonaut)
     # Bash
     create_sym "$HOME/.bashrc"         "$DOTFILES/bash/bashrc_fedora_pi"
     create_sym "$HOME/.bash_profile"   "$DOTFILES/bash/bash_profile_fedora"
     create_sym "$HOME/.bash_aliases"   "$DOTFILES/bash/bash_aliases_fedora_pi"
 
     # Emacs
-    create_sym "$HOME/.emacs"          "$DOTFILES/emacs/emacs_fedora"
+    create_sym "$HOME/.emacs"          "$DOTFILES/emacs/emacs_argo"
+    mkdir -p "$HOME/.emacs.d"
+    create_sym "$HOME/.emacs.d/early-init.el" "$DOTFILES/emacs/emacs.d/asahi_early-init.el"
+    create_sym "$HOME/.emacs.d/init-gptel.el" "$DOTFILES/emacs/emacs.d/init-gptel.el"
+    create_sym "$HOME/.emacs.d/init-org.el"   "$DOTFILES/emacs/emacs.d/init-org.el"
+    create_sym "$HOME/.emacs.d/init-ui.el"    "$DOTFILES/emacs/emacs.d/init-ui.el"
 
     # Tmux
     create_sym "$HOME/.tmux.conf"      "$DOTFILES/tmux/tmux-argo.conf"

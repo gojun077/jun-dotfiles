@@ -5,7 +5,7 @@
 # Read `man 5 sway` for a complete reference.
 # Created on: 29 Jun 2024
 # Created by: gojun077@gmail.com
-# Last Updated: Thu 16 Jul 2026
+# Last Updated: Sun 18 Oct 2026
 
 
 ### Variables
@@ -13,12 +13,14 @@
 # Logo/Super/Hyper key. Use Mod1 for Alt.
 set $mod Mod4
 # Home row direction keys, like vim
-set $left h
-set $down j
-set $up k
-set $right l
+#set $left h
+#set $down j
+#set $up k
+#set $right l
+
+
 # Your preferred terminal emulator
-set $term "wezterm"
+set $term "ghostty"
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
@@ -159,21 +161,11 @@ input "1133:45938:Logi_K855_Keyboard" {
 # Moving around:
 #
     # Move your focus around
-    bindsym $mod+$left focus left
-    bindsym $mod+$down focus down
-    bindsym $mod+$up focus up
-    bindsym $mod+$right focus right
-    # Or use $mod+[up|down|left|right]
-    bindsym $mod+Left focus left
-    bindsym $mod+Down focus down
-    bindsym $mod+Up focus up
-    bindsym $mod+Right focus right
+    bindsym Ctrl+Left focus left
+    bindsym Ctrl+Down focus down
+    bindsym Ctrl+Up focus up
+    bindsym Ctrl+Right focus right
 
-    # Move the focused window with the same, but add Shift
-    bindsym $mod+Shift+$left move left
-    bindsym $mod+Shift+$down move down
-    bindsym $mod+Shift+$up move up
-    bindsym $mod+Shift+$right move right
     # Ditto, with arrow keys
     bindsym $mod+Shift+Left move left
     bindsym $mod+Shift+Down move down
@@ -208,9 +200,9 @@ input "1133:45938:Logi_K855_Keyboard" {
     # Note: workspaces can have any name you want, not just numbers.
     # We just use 1-10 as the default.
 #
-    # Move between workspaces with default MacOS keychords
-    bindsym Ctrl+Left workspace prev
-    bindsym Ctrl+Right workspace next
+    # Move between workspaces
+    bindsym $mod+Left workspace prev
+    bindsym $mod+Right workspace next
 
 #
 # Layout stuff:
@@ -257,12 +249,8 @@ mode "resize" {
     # right will grow the containers width
     # up will shrink the containers height
     # down will grow the containers height
-    bindsym $left resize shrink width 10px
-    bindsym $down resize grow height 10px
-    bindsym $up resize shrink height 10px
-    bindsym $right resize grow width 10px
 
-    # Ditto, with arrow keys
+    # with arrow keys
     bindsym Left resize shrink width 10px
     bindsym Down resize grow height 10px
     bindsym Up resize shrink height 10px
@@ -350,7 +338,6 @@ bindsym $mod+Shift+b exec chromium-browser
 bindsym $mod+Shift+m exec emacs
 bindsym $mod+Shift+f exec thunar
 bindsym $mod+Shift+p exec clipman pick -t wofi # view clipboard
-bindsym $mod+Shift+v exec code-insiders --ozone-platform=wayland
 # screenshot shortcut (select area)
 bindsym --release $mod+Shift+z exec 'grim -g "$(slurp)" - | swappy -f -'
 # refer to https://github.com/jtheoof/swappy for kbd shortcuts
@@ -364,3 +351,12 @@ include /etc/sway/config.d/*
 bindsym --release $mod+Shift+l exec 'swaylock -f -c 000000'
 # toggle Sway Notification Center controls
 bindsym $mod+Shift+n exec swaync-client -t -sw
+
+# macOS-Style Editing Shortcuts via wtype
+bindsym --to-code $mod+c exec wtype -k XF86Copy
+bindsym --to-code $mod+v exec wtype -k XF86Paste
+bindsym --to-code $mod+x exec wtype -k XF86Cut
+
+# keybindings using 'wtype' wayland virtual keyboard
+bindsym --to-code $mod+a exec wtype -M ctrl a -m ctrl
+bindsym --to-code $mod+f exec wtype -M ctrl f -m ctrl

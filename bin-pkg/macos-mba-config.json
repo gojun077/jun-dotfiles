@@ -3,31 +3,31 @@
     "bins": {
         "/opt/homebrew/bin/bin": {
             "path": "/opt/homebrew/bin/bin",
-            "remote_name": "bin_0.24.2_darwin_arm64",
-            "version": "v0.24.2",
-            "hash": "e49ac70cab086e95e4d7ee447ad7f9167888f80a95ad0a6869a22852b133ab8b",
-            "url": "https://github.com/marcosnils/bin/releases/tag/v0.24.2",
-            "provider": "",
+            "remote_name": "bin_0.29.1_darwin_arm64",
+            "version": "v0.29.1",
+            "hash": "4eef35fe94d57e78a708ed08c9ff230a2c52fd552dd877a4f51f15dc2e757308",
+            "url": "https://github.com/marcosnils/bin/releases/tag/v0.29.1",
+            "provider": "github",
             "package_path": "",
             "pinned": false
         },
         "/opt/homebrew/bin/codex": {
             "path": "/opt/homebrew/bin/codex",
-            "remote_name": "codex-aarch64-apple-darwin.dmg",
-            "version": "rust-v0.77.0",
-            "hash": "f1ded18f312556820bf6f97753e3ae87d4d105625c288d0eb2f411900dc44ead",
-            "url": "https://github.com/openai/codex/releases/tag/rust-v0.77.0",
+            "remote_name": "codex",
+            "version": "rust-v0.116.0",
+            "hash": "042ee6f4f4e63fcf36602922d096ac45d1bc31a0f6899aa394ea8593ada9c3dc",
+            "url": "https://github.com/openai/codex/releases/tag/rust-v0.116.0",
             "provider": "github",
-            "package_path": "",
+            "package_path": "package/vendor/aarch64-apple-darwin/codex/codex",
             "pinned": false
         },
         "/opt/homebrew/bin/k9s": {
             "path": "/opt/homebrew/bin/k9s",
             "remote_name": "k9s",
-            "version": "v0.50.16",
-            "hash": "33657e432d9fd1fcffe1ce74fdeca7b9cd91eec736af536c04a25a0070bc986a",
-            "url": "https://github.com/derailed/k9s/releases/tag/v0.50.16",
-            "provider": "",
+            "version": "v0.50.18",
+            "hash": "4a5f0141165a12da3c44f604bd445c08b7c7d9e69f8c04012688c199f2e6542f",
+            "url": "https://github.com/derailed/k9s/releases/tag/v0.50.18",
+            "provider": "github",
             "package_path": "k9s",
             "pinned": false
         }
