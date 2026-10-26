@@ -1,0 +1,25 @@
+# Ubuntu 26.04.1: additions to the packaged /etc/apparmor.d/mbsync profile.
+# Install and reload as documented in apparmor/README.md. This is an include,
+# not a standalone profile; do not replace the packaged profile with this file.
+
+# PassCmd invokes /bin/sh (resolved by AppArmor to /usr/bin/dash).
+# Keep the shell under the mbsync profile.
+/usr/bin/dash rix,
+
+# Trust only this root-owned OAuth helper to leave mbsync confinement.
+# Ux scrubs unsafe environment variables. oama and its GPG subprocesses run
+# unconfined, as when invoked directly, to use the existing token/GPG setup.
+/usr/local/bin/oama rUx,
+
+# Mirror the packaged ~/Mail Maildir permissions for the archive staging tree.
+# owner limits access to files/directories owned by the invoking user.
+owner /data/mail/gmail/ r,
+owner /data/mail/gmail/**/ rw,
+owner /data/mail/gmail/**/.mbsyncstate rw,
+owner /data/mail/gmail/**/.mbsyncstate.journal rw,
+owner /data/mail/gmail/**/.mbsyncstate.lock wk,
+owner /data/mail/gmail/**/.mbsyncstate.new rw,
+owner /data/mail/gmail/**/.uidvalidity rwk,
+owner /data/mail/gmail/**/cur/* rw,
+owner /data/mail/gmail/**/new/* rw,
+owner /data/mail/gmail/**/tmp/* rw,
