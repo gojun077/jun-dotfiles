@@ -7,7 +7,7 @@
 # Encrypted dotfiles (SSH keys, gitconfig, authinfo, etc.) are managed
 # separately by create_symlinks_enc.sh in the dotfiles-enc repo.
 #
-# Last updated: Wed 15 Jul 2026
+# Last updated: Tue 27 Oct 2026
 
 set -euo pipefail
 
@@ -326,6 +326,10 @@ case "$HOSTNAME" in
 
       # Tmux
       create_sym "$HOME/.tmux.conf"    "$DOTFILES/tmux/tmux-macos.conf"
+
+      # Rex multiplexer
+      mkdir -p "$HOME/.config/rex"
+      create_sym "$HOME/.config/rex/init.lua" "$DOTFILES/rex/init.lua"
 
       # WezTerm
       create_sym "$HOME/.wezterm.lua"   "$DOTFILES/macOS/wezterm-mac.lua"
