@@ -11,6 +11,22 @@
 -- Apply with:    rex config reload
 
 -- ============================================================================
+-- macOS Client Typography (Rex.app UserDefaults)
+-- ============================================================================
+-- Rex splits configuration between the server (init.lua: keybindings, actions,
+-- modes, hosts) and the macOS GUI client (com.superlogical.rex UserDefaults:
+-- font family, font size, cursor, themes).
+-- Ensure Monofur Nerd Font Mono (size 16, matching Ghostty) is set on macOS:
+rex.exec({
+  "/usr/bin/defaults", "write", "com.superlogical.rex",
+  "Workspace.terminalFontName", "-string", "Monofur Nerd Font Mono",
+})
+rex.exec({
+  "/usr/bin/defaults", "write", "com.superlogical.rex",
+  "Workspace.terminalFontPointSize", "-float", "16",
+})
+
+-- ============================================================================
 -- Tmux Muscle-Memory Keybindings (Prefix: Ctrl+B)
 -- ============================================================================
 

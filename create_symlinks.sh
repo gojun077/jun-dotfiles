@@ -330,6 +330,8 @@ case "$HOSTNAME" in
       # Rex multiplexer
       mkdir -p "$HOME/.config/rex"
       create_sym "$HOME/.config/rex/init.lua" "$DOTFILES/rex/init.lua"
+      defaults write com.superlogical.rex "Workspace.terminalFontName" -string "Monofur Nerd Font Mono"
+      defaults write com.superlogical.rex "Workspace.terminalFontPointSize" -float 16
 
       # WezTerm
       create_sym "$HOME/.wezterm.lua"   "$DOTFILES/macOS/wezterm-mac.lua"
