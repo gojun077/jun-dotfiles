@@ -2,7 +2,7 @@
 # This file should be symlinked to ~/.bash_profile
 #
 # Created on: Sometime in 2021
-# Last Updated: Tue 14 Jul 2026
+# Last Updated: Tue 27 Oct 2026
 # Updated by: gopeterjun@naver.com
 #
 # Note: MacOS behavior around `.bash_profile` is different from
@@ -17,7 +17,6 @@
 
 
 export GOPATH="/Users/$USER/go"
-export GPG_TTY="$(tty)"
 export HOMEBREW_PREFIX=/opt/homebrew
 export HOMEBREW_CELLAR=/opt/homebrew/Cellar
 export PYENV_ROOT="$HOME/.pyenv"
