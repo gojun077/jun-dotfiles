@@ -62,3 +62,11 @@ case ":$PATH:" in
   *) export PATH="$PNPM_HOME/bin:$PATH" ;;
 esac
 # pnpm end
+
+# Rex terminal multiplexer CLI and Bash completion
+if [[ -n "${REX_BIN_DIR:-}" ]]; then
+  export PATH="$REX_BIN_DIR:$PATH"
+  if [[ $- == *i* ]] && command -v rex >/dev/null 2>&1; then
+    eval "$(rex completion bash)"
+  fi
+fi
