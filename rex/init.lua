@@ -11,12 +11,83 @@
 -- Apply with:    rex config reload
 
 -- ============================================================================
--- macOS Client Typography (Rex.app UserDefaults)
+-- macOS Client Typography, Cursor & Ghostty Dark Theme (Rex.app UserDefaults)
 -- ============================================================================
 -- Rex splits configuration between the server (init.lua: keybindings, actions,
 -- modes, hosts) and the macOS GUI client (com.superlogical.rex UserDefaults:
--- font family, font size, cursor, themes).
--- Ensure Monofur Nerd Font Mono (size 16, matching Ghostty) is set on macOS:
+-- font family, font size, cursor, themes, appearance).
+-- Mirror ~/dotfiles/ghostty.config + Ghostty's default dark palette:
+
+local function hex_to_srgb_json(hex)
+  local h = hex:gsub("^#", "")
+  local r = tonumber(h:sub(1, 2), 16) / 255.0
+  local g = tonumber(h:sub(3, 4), 16) / 255.0
+  local b = tonumber(h:sub(5, 6), 16) / 255.0
+  return string.format(
+    '{"colorSpace":"srgb","red":%.8f,"green":%.8f,"blue":%.8f,"alpha":1}',
+    r, g, b
+  )
+end
+
+local function str_to_hex(s)
+  return (s:gsub(".", function(c)
+    return string.format("%02x", string.byte(c))
+  end))
+end
+
+-- Colors matching ~/dotfiles/ghostty.config + `ghostty +show-config --default`
+local ghostty_dark = {
+  id = "custom-ghostty-dark",
+  name = "Ghostty Default Dark",
+  background          = "#282c34",
+  foreground          = "#ffffff",
+  cursor              = "#ff2d95", -- cursor-color = #ff2d95 in ghostty.config
+  cursorText          = "#000000", -- cursor-text  = #000000 in ghostty.config
+  selectionBackground = "#3e4451",
+  selectionForeground = "#ffffff",
+  ansi = {
+    "#1d1f21", -- 0: black
+    "#cc6666", -- 1: red
+    "#b5bd68", -- 2: green
+    "#f0c674", -- 3: yellow
+    "#81a2be", -- 4: blue
+    "#b294bb", -- 5: magenta
+    "#8abeb7", -- 6: cyan
+    "#c5c8c6", -- 7: white
+    "#666666", -- 8: bright black
+    "#d54e53", -- 9: bright red
+    "#b9ca4a", -- 10: bright green
+    "#e7c547", -- 11: bright yellow
+    "#7aa6da", -- 12: bright blue
+    "#c397d8", -- 13: bright magenta
+    "#70c0b1", -- 14: bright cyan
+    "#eaeaea", -- 15: bright white
+  },
+}
+
+local ansi_json = {}
+for i, c in ipairs(ghostty_dark.ansi) do
+  ansi_json[i] = hex_to_srgb_json(c)
+end
+
+local custom_themes_json = string.format(
+  '[{"id":%q,"name":%q,"appearance":"dark","createdAt":783327600,'
+    .. '"source":{"ghosttyMigration":{}},'
+    .. '"palette":{"background":%s,"foreground":%s,"cursor":%s,"cursorText":%s,'
+    .. '"selectionBackground":%s,"selectionForeground":%s,'
+    .. '"ansi":[%s],"paletteGenerate":false,"paletteHarmonious":false}}]',
+  ghostty_dark.id,
+  ghostty_dark.name,
+  hex_to_srgb_json(ghostty_dark.background),
+  hex_to_srgb_json(ghostty_dark.foreground),
+  hex_to_srgb_json(ghostty_dark.cursor),
+  hex_to_srgb_json(ghostty_dark.cursorText),
+  hex_to_srgb_json(ghostty_dark.selectionBackground),
+  hex_to_srgb_json(ghostty_dark.selectionForeground),
+  table.concat(ansi_json, ",")
+)
+
+-- Typography (Monofur Nerd Font Mono, size 16)
 rex.exec({
   "/usr/bin/defaults", "write", "com.superlogical.rex",
   "Workspace.terminalFontName", "-string", "Monofur Nerd Font Mono",
@@ -24,6 +95,38 @@ rex.exec({
 rex.exec({
   "/usr/bin/defaults", "write", "com.superlogical.rex",
   "Workspace.terminalFontPointSize", "-float", "16",
+})
+
+-- Cursor & Option key (matching ghostty.config: block, no blink, left option as Alt)
+rex.exec({
+  "/usr/bin/defaults", "write", "com.superlogical.rex",
+  "Workspace.terminalCursorStyle", "-string", "block",
+})
+rex.exec({
+  "/usr/bin/defaults", "write", "com.superlogical.rex",
+  "Workspace.terminalCursorBlinkIntervalMilliseconds", "-int", "0",
+})
+rex.exec({
+  "/usr/bin/defaults", "write", "com.superlogical.rex",
+  "Workspace.terminalOptionKeyBehavior", "-string", "leftActsAsAlt",
+})
+
+-- Dark appearance & Ghostty custom theme palette
+rex.exec({
+  "/usr/bin/defaults", "write", "com.superlogical.rex",
+  "Workspace.customThemes", "-data", str_to_hex(custom_themes_json),
+})
+rex.exec({
+  "/usr/bin/defaults", "write", "com.superlogical.rex",
+  "Workspace.appearance", "-string", "dark",
+})
+rex.exec({
+  "/usr/bin/defaults", "write", "com.superlogical.rex",
+  "Workspace.darkThemeID", "-string", ghostty_dark.id,
+})
+rex.exec({
+  "/usr/bin/defaults", "write", "com.superlogical.rex",
+  "Workspace.darkUsesExtendedThemePalette", "-bool", "false",
 })
 
 -- ============================================================================

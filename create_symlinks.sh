@@ -332,6 +332,12 @@ case "$HOSTNAME" in
       create_sym "$HOME/.config/rex/init.lua" "$DOTFILES/rex/init.lua"
       defaults write com.superlogical.rex "Workspace.terminalFontName" -string "Monofur Nerd Font Mono"
       defaults write com.superlogical.rex "Workspace.terminalFontPointSize" -float 16
+      defaults write com.superlogical.rex "Workspace.terminalCursorStyle" -string "block"
+      defaults write com.superlogical.rex "Workspace.terminalCursorBlinkIntervalMilliseconds" -int 0
+      defaults write com.superlogical.rex "Workspace.terminalOptionKeyBehavior" -string "leftActsAsAlt"
+      defaults write com.superlogical.rex "Workspace.appearance" -string "dark"
+      defaults write com.superlogical.rex "Workspace.darkThemeID" -string "custom-ghostty-dark"
+      defaults write com.superlogical.rex "Workspace.darkUsesExtendedThemePalette" -bool false
 
       # WezTerm
       create_sym "$HOME/.wezterm.lua"   "$DOTFILES/macOS/wezterm-mac.lua"
