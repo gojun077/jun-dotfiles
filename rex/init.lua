@@ -58,10 +58,12 @@ rex.bind("ctrl+b>z", "pane.zoom")
 rex.bind("ctrl+b>x", "pane.close")
 
 -- ============================================================================
--- Remove Rex defaults that conflict with AeroSpace (~/.aerospace.toml)
+-- Remove Rex defaults that conflict with global macOS hotkeys
+-- (AeroSpace ~/.aerospace.toml, Maccy clipboard history)
 -- ============================================================================
--- AeroSpace registers global macOS hotkeys, so it wins these chords before
--- Rex.app sees them; the Rex defaults below are dead while AeroSpace runs.
+-- AeroSpace and Maccy register global macOS hotkeys, so they win these
+-- chords before Rex.app sees them; the Rex defaults below are dead while
+-- those apps run.
 -- Unbinding keeps the keymap honest (no bindings that silently resurrect
 -- if AeroSpace is off). Each action stays reachable via the Ctrl+B prefix
 -- above, except where noted. Spellings must match the defaults exactly
@@ -80,14 +82,21 @@ end
 rex.unbind("cmd+left")
 rex.unbind("cmd+right")
 
--- Cmd+Alt+Left/Right: AeroSpace `focus-monitor prev/next` vs Rex pane focus.
--- (Cmd+Alt+Up/Down have no AeroSpace counterpart and are kept.)
--- Ctrl+B arrows already cover pane focus.
+-- Cmd+Alt+arrows: AeroSpace `focus-monitor prev/next` (Left/Right) vs Rex
+-- pane focus. Up/Down have no AeroSpace counterpart, but are dropped too
+-- for consistency; Ctrl+B arrows already cover pane focus in all directions.
 rex.unbind("alt+cmd+left")
 rex.unbind("alt+cmd+right")
+rex.unbind("alt+cmd+up")
+rex.unbind("alt+cmd+down")
 
 -- Cmd+/: AeroSpace `layout tiles horizontal vertical` vs Rex sidebar toggle.
 rex.unbind("cmd+/")
+
+-- Shift+Cmd+P: Maccy clipboard history popup (global hotkey) vs Rex command
+-- palette (`client.palette.toggle`). Open the palette instead with:
+--   rex do client.palette.toggle
+rex.unbind("shift+cmd+p")
 
 -- Deliberately kept: Cmd+, (Rex Settings) -- no Ctrl+B replacement bound.
 
