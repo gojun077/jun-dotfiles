@@ -4,7 +4,7 @@
 --
 -- Created on: Tue 27 Oct 2026
 -- Created by: gopeterjun@naver.com
--- Last Updated: Tue 27 Oct 2026
+-- Last Updated: Wed 28 Oct 2026
 --
 -- Rex multiplexer configuration for macOS and Linux.
 -- Validate with: rex config check
@@ -56,6 +56,40 @@ rex.bind("ctrl+b>up", "pane.focus", { direction = "up" })
 rex.bind("ctrl+b>down", "pane.focus", { direction = "down" })
 rex.bind("ctrl+b>z", "pane.zoom")
 rex.bind("ctrl+b>x", "pane.close")
+
+-- ============================================================================
+-- Remove Rex defaults that conflict with AeroSpace (~/.aerospace.toml)
+-- ============================================================================
+-- AeroSpace registers global macOS hotkeys, so it wins these chords before
+-- Rex.app sees them; the Rex defaults below are dead while AeroSpace runs.
+-- Unbinding keeps the keymap honest (no bindings that silently resurrect
+-- if AeroSpace is off). Each action stays reachable via the Ctrl+B prefix
+-- above, except where noted. Spellings must match the defaults exactly
+-- (e.g. cmd+[Digit1] is the physical digit key, distinct from cmd+1).
+
+-- Cmd+0..9: AeroSpace `workspace N` vs Rex `client.tab.goto` for 1..9
+-- (Cmd+9 is Rex "last tab", index -1; Cmd+0 is Rex `client.font.reset`).
+-- Ctrl+B 1..9 / 0 already cover tab jumps; reset font instead with:
+--   rex do client.font.reset
+for i = 0, 9 do
+  rex.unbind("cmd+[Digit" .. i .. "]")
+end
+
+-- Cmd+Left/Right: AeroSpace `workspace prev/next` vs Rex sending Ctrl+A/E
+-- (just type Ctrl+A / Ctrl+E directly in the terminal).
+rex.unbind("cmd+left")
+rex.unbind("cmd+right")
+
+-- Cmd+Alt+Left/Right: AeroSpace `focus-monitor prev/next` vs Rex pane focus.
+-- (Cmd+Alt+Up/Down have no AeroSpace counterpart and are kept.)
+-- Ctrl+B arrows already cover pane focus.
+rex.unbind("alt+cmd+left")
+rex.unbind("alt+cmd+right")
+
+-- Cmd+/: AeroSpace `layout tiles horizontal vertical` vs Rex sidebar toggle.
+rex.unbind("cmd+/")
+
+-- Deliberately kept: Cmd+, (Rex Settings) -- no Ctrl+B replacement bound.
 
 -- Session switcher
 rex.bind("ctrl+b>s", "session.switch")
