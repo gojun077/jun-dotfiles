@@ -4,7 +4,7 @@
 --
 -- Created on: Tue 27 Oct 2026
 -- Created by: gopeterjun@naver.com
--- Last Updated: Wed 28 Oct 2026
+-- Last Updated: Thu 29 Oct 2026
 --
 -- Rex multiplexer configuration for macOS and Linux.
 -- Validate with: rex config check
@@ -143,9 +143,173 @@ for i = 1, 9 do
 end
 rex.bind("ctrl+b>0", "client.tab.goto", { index = 10 })
 
--- Create and rename tabs
-rex.bind("ctrl+b>c", "client.tab.new")
+-- ============================================================================
+-- Tmux-style `Ctrl+B '` + <num> + Enter to jump to arbitrarily large tab numbers
+-- ============================================================================
+-- Entering `Ctrl+B '` activates the exclusive `tab-jump` mode, accumulates
+-- typed digits (0..9, with Backspace to edit), and jumps to that tab index on
+-- Enter (or cancels on Escape / Ctrl+C / Ctrl+G).
+
+local tab_jump_buffers = {}
+
+local function tab_jump_key(ctx)
+  return (ctx and (ctx.session_id or ctx.client_id)) or "default"
+end
+
+rex.mode("tab-jump", { exclusive = true })
+
+rex.action{
+  name        = "tab_jump_start",
+  title       = "Jump to Tab by Number…",
+  category    = "Tab",
+  description = "Enter tab-jump mode: type a multi-digit tab number and press Enter.",
+  run         = function(ctx, args)
+    tab_jump_buffers[tab_jump_key(ctx)] = ""
+    rex.client.queue("client.mode.enter", { name = "tab-jump" })
+  end,
+}
+
+rex.action{
+  name        = "tab_jump_digit",
+  title       = "Tab Jump: Append Digit",
+  category    = "Tab",
+  args        = { digit = "string" },
+  run         = function(ctx, args)
+    local k = tab_jump_key(ctx)
+    local cur = tab_jump_buffers[k] or ""
+    tab_jump_buffers[k] = cur .. tostring(args.digit or "")
+    return { buffer = tab_jump_buffers[k] }
+  end,
+}
+
+rex.action{
+  name        = "tab_jump_backspace",
+  title       = "Tab Jump: Backspace",
+  category    = "Tab",
+  run         = function(ctx, args)
+    local k = tab_jump_key(ctx)
+    local cur = tab_jump_buffers[k] or ""
+    if #cur > 0 then
+      tab_jump_buffers[k] = cur:sub(1, -2)
+    end
+    return { buffer = tab_jump_buffers[k] }
+  end,
+}
+
+rex.action{
+  name        = "tab_jump_confirm",
+  title       = "Tab Jump: Confirm",
+  category    = "Tab",
+  run         = function(ctx, args)
+    local k = tab_jump_key(ctx)
+    local buf = tab_jump_buffers[k] or ""
+    tab_jump_buffers[k] = nil
+    rex.client.queue("client.mode.exit")
+    if buf == "" then
+      return
+    end
+    local idx = tonumber(buf)
+    if buf == "0" then
+      idx = 10
+    end
+    if idx and idx >= 1 then
+      rex.client.queue("client.tab.goto", { index = idx })
+      return { index = idx }
+    end
+  end,
+}
+
+rex.action{
+  name        = "tab_jump_cancel",
+  title       = "Tab Jump: Cancel",
+  category    = "Tab",
+  run         = function(ctx, args)
+    tab_jump_buffers[tab_jump_key(ctx)] = nil
+    rex.client.queue("client.mode.exit")
+  end,
+}
+
+rex.bind("ctrl+b>'", "tab_jump_start")
+for d = 0, 9 do
+  local digit = tostring(d)
+  rex.bind("tab-jump/" .. digit, "tab_jump_digit", { digit = digit })
+end
+rex.bind("tab-jump/backspace", "tab_jump_backspace")
+rex.bind("tab-jump/enter", "tab_jump_confirm")
+rex.bind("tab-jump/escape", "tab_jump_cancel")
+rex.bind("tab-jump/ctrl+c", "tab_jump_cancel")
+rex.bind("tab-jump/ctrl+g", "tab_jump_cancel")
+
+-- Format the Ctrl+B <num> prefix for a 1-indexed tab position
+-- (1..9 -> "1".."9", 10 -> "0", 11+ -> "11", "12", ...)
+local function tab_index_prefix(index)
+  if index == 10 then
+    return "0"
+  end
+  return tostring(index)
+end
+
+-- Ensure all existing windows in the current session have an up-to-date
+-- "<num>:<name>" prefix matching their current 1-based position.
+local function sync_session_tab_numbers(view)
+  if not view or not view.windows then
+    return 0
+  end
+  for i, w in ipairs(view.windows) do
+    local base = (w.label or ""):gsub("^%d+:", "")
+    if base == "" or base:match("^Window %x+$") then
+      base = "bash"
+    end
+    local expected = tab_index_prefix(i) .. ":" .. base
+    if w.label ~= expected then
+      rex.session.set_window_label{
+        window_id = w.window_id,
+        label = expected,
+      }
+    end
+  end
+  return #view.windows
+end
+
+rex.action{
+  name        = "tab_new_numbered",
+  title       = "New Numbered Tab",
+  category    = "Tab",
+  description = "Create a new shell tab prefixed with its Ctrl+B number index.",
+  run         = function(ctx, args)
+    local view, err = rex.session.view{}
+    if err ~= nil then error(err, 0) end
+    local count = sync_session_tab_numbers(view)
+    local next_idx = count + 1
+    local label = tab_index_prefix(next_idx) .. ":bash"
+    local w, new_err = rex.session.new_window{
+      window_label = label,
+      layout = rex.layout.block{
+        flavor = "com.superlogical.terminal.shell",
+      },
+    }
+    if new_err ~= nil then error(new_err, 0) end
+    return { window_id = w.window_id, label = label }
+  end,
+}
+
+rex.action{
+  name        = "tab_renumber",
+  title       = "Renumber Tabs",
+  category    = "Tab",
+  description = "Update all tab labels in the current session with their 1-indexed Ctrl+B number prefixes.",
+  run         = function(ctx, args)
+    local view, err = rex.session.view{}
+    if err ~= nil then error(err, 0) end
+    local count = sync_session_tab_numbers(view)
+    return { count = count }
+  end,
+}
+
+-- Create, rename, and renumber tabs
+rex.bind("ctrl+b>c", "tab_new_numbered")
 rex.bind("ctrl+b>,", "client.tab.rename")
+rex.bind("ctrl+b>r", "tab_renumber")
 
 -- Split panes: Ctrl+B % (right) and Ctrl+B " (down) on US layout
 rex.bind("ctrl+b>shift+5", "pane.split", { direction = "right" })
