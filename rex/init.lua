@@ -4,7 +4,7 @@
 --
 -- Created on: Tue 27 Oct 2026
 -- Created by: gopeterjun@naver.com
--- Last Updated: Wed 28 Oct 2026
+-- Last Updated: Sun 01 Nov 2026
 --
 -- Rex multiplexer configuration for macOS and Linux.
 -- Validate with: rex config check
@@ -142,6 +142,12 @@ for i = 1, 9 do
   rex.bind("ctrl+b>" .. i, "client.tab.goto", { index = i })
 end
 rex.bind("ctrl+b>0", "client.tab.goto", { index = 10 })
+
+-- Jump to 2-digit tab numbers (10..99) via Ctrl+B ' <tens><ones> (tmux C-b ')
+for i = 10, 99 do
+  local seq = tostring(i):gsub(".", ">%0")
+  rex.bind("ctrl+b>'" .. seq, "client.tab.goto", { index = i })
+end
 
 -- Create and rename tabs
 rex.bind("ctrl+b>c", "client.tab.new")
