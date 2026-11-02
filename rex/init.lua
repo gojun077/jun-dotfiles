@@ -4,7 +4,7 @@
 --
 -- Created on: Tue 27 Oct 2026
 -- Created by: gopeterjun@naver.com
--- Last Updated: Thu 29 Oct 2026
+-- Last Updated: Mon 02 Nov 2026
 --
 -- Rex multiplexer configuration for macOS and Linux.
 -- Validate with: rex config check
