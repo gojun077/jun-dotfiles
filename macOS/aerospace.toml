@@ -234,6 +234,10 @@ down = 'volume down'
 up = 'volume up'
 shift-down = ['volume set 0', 'mode main']
 
+[[on-window-detected]]
+if.app-id = 'com.superlogical.rex'
+run = 'move-node-to-workspace 5'
+
 [workspace-to-monitor-force-assignment]
 0 = 'main'
 1 = 'main'
