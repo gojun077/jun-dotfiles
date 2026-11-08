@@ -39,6 +39,7 @@ Unsuffixed files (e.g. `vimrc`, `screenrc`) are shared across platforms.
 | `waybar/` | Waybar status bar configs |
 | `vim/` | Vim ftplugin syntax files |
 | `xdg-mime/` | XDG mimeapps and .desktop files |
+| `asahi-games/` | Per-game shims and launch scripts for x86 games on Asahi (FEX + muvm) |
 
 ## Security Boundaries
 

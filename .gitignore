@@ -6,3 +6,4 @@
 .DS_Store
 .agent-shell
 .antigravitycli/
+*.so
