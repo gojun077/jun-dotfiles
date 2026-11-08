@@ -1,0 +1,143 @@
+#!/usr/bin/env python3
+"""Safely adopt an already-migrated Beads remote on a running Dolt server.
+
+Default: fetch and inspect only. See beads-schema-adopt.md for the runbook.
+"""
+
+import argparse
+import datetime
+import json
+import os
+from pathlib import Path
+import re
+import subprocess
+import sys
+import tempfile
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("workspace", type=Path)
+    parser.add_argument("--dolt-dir", type=Path, required=True)
+    parser.add_argument("--remote", default="origin")
+    parser.add_argument("--branch", default="main")
+    parser.add_argument("--apply", action="store_true", help="back up and fast-forward")
+    args = parser.parse_args()
+    workspace = args.workspace.expanduser().resolve(strict=True)
+    directory = args.dolt_dir.expanduser().resolve(strict=True)
+    for value in (args.remote, args.branch):
+        if not re.fullmatch(r"[A-Za-z0-9_][A-Za-z0-9_./-]*", value):
+            raise ValueError("Remote and branch must be plain names, not options or SQL")
+    if not (directory / ".dolt").is_dir():
+        raise ValueError("--dolt-dir must name the database, not the shared server root")
+    env = os.environ.copy()
+    for key in ("BD_ALLOW_MIGRATE", "BD_ALLOW_REMOTE_MIGRATE"):
+        if env.get(key):
+            raise ValueError(f"Unset {key}; this script must not run local migrations")
+    # Never inherit a database-directory hint for a different workspace.
+    env["BEADS_DOLT_CLI_DIR"] = str(directory)
+
+    def run(command, cwd=directory, capture=True):
+        print("+ " + " ".join(str(x) for x in command), flush=True)
+        command_env = env.copy()
+        if not any(str(part).startswith("--host=") for part in command):
+            command_env.pop("DOLT_CLI_PASSWORD", None)
+        result = subprocess.run(command, cwd=cwd, env=command_env, text=True,
+                                stdout=subprocess.PIPE if capture else None,
+                                check=False)
+        if result.returncode and result.stdout:
+            print(result.stdout, file=sys.stderr)
+        result.check_returncode()
+        return result.stdout
+
+    connection = json.loads(run(["bd", "dolt", "show", "--json"], workspace))
+    if connection.get("embedded") or not connection.get("connection_ok"):
+        raise ValueError("Requires a reachable server-mode workspace")
+    database = connection["database"]
+    # Explicit authentication avoids Dolt prompting in a non-interactive agent.
+    # Unlike bd, dolt does not read the Beads credentials file.
+    env.setdefault("DOLT_CLI_PASSWORD", env.get("BEADS_DOLT_PASSWORD", ""))
+    sql_command = ["dolt", "--host=" + connection["host"],
+                   "--port=" + str(connection["port"]),
+                   "--user=" + connection["user"], "--use-db=" + database]
+    if not connection.get("tls"):
+        sql_command.append("--no-tls")
+
+    def query(statement, implicit=False):
+        command = ["dolt"] if implicit else sql_command
+        output = run(command + ["sql", "-r", "json", "-q", statement])
+        return json.loads(output).get("rows", [])
+
+    identity_sql = "SELECT DATABASE() AS db, HASHOF('HEAD') AS head, ACTIVE_BRANCH() AS branch"
+
+    def state():
+        identity = query(identity_sql)[0]
+        implicit = query(identity_sql, implicit=True)[0]
+        if identity != implicit or identity["db"] != database:
+            raise ValueError("Dolt directory and Beads endpoint do not identify the same database/branch")
+        if identity["branch"] != args.branch:
+            raise ValueError("Active branch differs from --branch; refusing to switch branches")
+        if query("SELECT * FROM dolt_status"):
+            raise ValueError("Dirty working set: commit/reconcile it explicitly before adoption")
+        merge = query("SELECT * FROM dolt_merge_status")
+        if any(str(row.get("is_merging", "0")).lower() in ("1", "true") for row in merge):
+            raise ValueError("Merge already in progress")
+        return identity
+
+    before = state()
+    # Fetch works with git+ssh and DoltHub; it never merges the working branch.
+    run(["dolt", "fetch", args.remote], capture=False)
+    target = query(f"SELECT HASHOF('{args.remote}/{args.branch}') AS hash")[0]["hash"]
+    local_version = int(query("SELECT MAX(version) AS v FROM schema_migrations")[0]["v"])
+    remote_version = int(query(f"SELECT MAX(version) AS v FROM schema_migrations AS OF '{target}'")[0]["v"])
+    base = query(f"SELECT DOLT_MERGE_BASE('HEAD', '{target}') AS hash")[0]["hash"]
+    print(json.dumps({"database": database, "local_head": before["head"],
+                      "remote_head": target, "local_schema": local_version,
+                      "remote_schema": remote_version}, indent=2))
+    if base == target:
+        # Includes already-adopted clones with subsequent local issue commits.
+        print("Remote already incorporated; checking Beads without migrating.")
+        run(["bd", "--readonly", "ready", "--json"], workspace)
+        return
+    if base != before["head"]:
+        raise ValueError("Divergent/unpushed history: refusing automatic reconciliation")
+    if remote_version < local_version:
+        raise ValueError("Remote schema is older; refusing downgrade")
+    if not args.apply:
+        print("Plan: back up this database and fast-forward to the pinned remote commit. Re-run with --apply.")
+        return
+
+    root = Path(env.get("XDG_STATE_HOME", str(Path.home() / ".local/state"))) / "beads-schema"
+    root.mkdir(parents=True, exist_ok=True, mode=0o700)
+    stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    backup = Path(tempfile.mkdtemp(prefix=f"{database}-{stamp}-", dir=root))
+    recovery = "schema-backup-" + backup.name
+    # Dump includes ignored clone-local tables; the branch retains committed history.
+    # Dolt 2.7.2 dump rejects global connection flags; use the verified directory.
+    run(["dolt", "dump", "--no-create-db", "--file-name", str(backup / "before.sql")], capture=False)
+    (backup / "state.json").write_text(json.dumps({"before": before, "target": target,
+                                                   "recovery_branch": recovery}, indent=2) + "\n")
+    print(f"Recovery dump: {backup}; branch: {recovery}", flush=True)
+    if state() != before:
+        raise ValueError("Database changed during backup; stop concurrent writers and retry")
+    query(f"CALL DOLT_BRANCH('{recovery}', '{before['head']}')")
+    # The SQL route works without stopping the shared server. --ff-only is the
+    # final ancestry guard; pinning the fetched hash prevents a moving-ref race.
+    query(f"CALL DOLT_MERGE('--ff-only', '{target}')")
+    after = state()
+    if after["head"] != target:
+        raise ValueError("Unexpected post-adoption HEAD; inspect recovery files, do not reset")
+    if int(query("SELECT MAX(version) AS v FROM schema_migrations")[0]["v"]) != remote_version:
+        raise ValueError("Unexpected post-adoption schema version")
+    run(["bd", "--readonly", "ready", "--json"], workspace)
+    run(["bd", "stats"], workspace, capture=False)
+    print("Adopted remote history. No local migration, push, reset, or server restart performed.")
+
+
+if __name__ == "__main__":
+    os.umask(0o077)
+    try:
+        main()
+    except (ValueError, KeyError, OSError, subprocess.CalledProcessError) as error:
+        print(f"STOP: {error}. Inspect current state before retrying; no automatic rollback.", file=sys.stderr)
+        sys.exit(1)
