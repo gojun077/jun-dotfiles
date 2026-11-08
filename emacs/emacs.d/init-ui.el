@@ -3,7 +3,7 @@
 ;; Loaded by emacs_asahi.  Handles theme + font setup.
 ;;
 ;; Created on: Sun 26 Apr 2026
-;; Last Updated: Fri 01 May 2026
+;; Last Updated: Mon 31 Aug 2026
 ;;
 ;; NOTE on themes and frames:
 ;; Emacs themes are GLOBAL session state -- `load-theme' and

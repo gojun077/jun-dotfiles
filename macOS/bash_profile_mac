@@ -2,7 +2,7 @@
 # This file should be symlinked to ~/.bash_profile
 #
 # Created on: Sometime in 2021
-# Last Updated: Tue 14 Jul 2026
+# Last Updated: Sun 01 Nov 2026
 # Updated by: gopeterjun@naver.com
 #
 # Note: MacOS behavior around `.bash_profile` is different from
@@ -17,13 +17,14 @@
 
 
 export GOPATH="/Users/$USER/go"
-export GPG_TTY="$(tty)"
 export HOMEBREW_PREFIX=/opt/homebrew
 export HOMEBREW_CELLAR=/opt/homebrew/Cellar
 export PYENV_ROOT="$HOME/.pyenv"
 export XDG_CONFIG_HOME="$HOME/.config"
 export PNPM_HOME="$HOME/Library/pnpm"
 export PSQL="/opt/homebrew/opt/libpq/bin"
+export REX_BIN_DIR="/Applications/Rex Beta.app/Contents/Helpers/Rex Server.rex/Contents/MacOS/"
+
 export PATH="$HOME/.local/bin:$HOME/bin:$HOME/Documents/repos/encrypted/dotfiles-enc/bin:/opt/homebrew/bin:/usr/local/bin:/opt/homebrew/opt/coreutils/libexec/gnubin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/opt/pmk/env/global/bin:/user/local/MacGPG2/bin:/Applications/Ghostty.app/Contents/MacOS:$PYENV_ROOT/bin:$GOPATH/bin:$HOME/.krew/bin:$HOME/bin-pkg:$PNPM_HOME:$PSQL:$HOME/.local/gcloud/bin:$HOME/.cargo/bin:/Library/TeX/texbin/"
 
 eval "$(/opt/homebrew/bin/brew shellenv)"
@@ -38,4 +39,5 @@ fi
 
 # Added by OrbStack: command-line tools and integration
 # This won't be added again if you remove it.
+# shellcheck disable=SC1090
 source ~/.orbstack/shell/init.bash 2>/dev/null || :

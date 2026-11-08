@@ -1,7 +1,7 @@
 ;;; init-ui-macos.el --- macOS GUI theme/font/UI tweaks -*- lexical-binding: t; -*-
 ;;; Commentary:
 ;; Created on: Fri 01 May 2026
-;; Last Updated: Fri 01 May 2026
+;; Last Updated: Fri 02 Oct 2026
 ;; Loaded by emacs_mac.  macOS-specific counterpart to init-ui.el:
 ;; the Nerd Font ttf names on macOS differ from Linux, the default
 ;; font size is larger (Retina), and macOS frames have a menu-bar
@@ -57,7 +57,17 @@ ignored by terminals)."
     ;; Minibuffer font
     (set-face-attribute 'my-minibuffer-face nil
                         :family default-font
-                        :height 120)))
+                        :height 120))
+  ;; --- Emoji & Symbol Fallback Setup ---
+  (setq use-default-font-for-symbols nil)
+
+  ;; 1. Apple Color Emoji configurations
+  (set-fontset-font "fontset-default" 'emoji (font-spec :family "Apple Color Emoji") nil 'prepend)
+  (set-fontset-font "fontset-default" '(#x1F300 . #x1F5FF) (font-spec :family "Apple Color Emoji") nil 'prepend)
+  (set-fontset-font "fontset-default" 'symbol (font-spec :family "Apple Color Emoji") nil 'prepend)
+
+  ;; 2. GNU Unifont configuration for Supplemental Punctuation (e.g., U+2E51)
+  (set-fontset-font "fontset-default" '(#x2E00 . #x2E7F) (font-spec :family "Unifont") nil 'prepend))
 
 ;; Global UI tweaks (whole session -- themes/toolbars are global).
 (setq mouse-autoselect-window t)

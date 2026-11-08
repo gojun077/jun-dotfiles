@@ -7,7 +7,7 @@
 # Encrypted dotfiles (SSH keys, gitconfig, authinfo, etc.) are managed
 # separately by create_symlinks_enc.sh in the dotfiles-enc repo.
 #
-# Last updated: Wed 15 Jul 2026
+# Last updated: Tue 27 Oct 2026
 
 set -euo pipefail
 
@@ -109,6 +109,16 @@ create_sym "$HOME/.vimrc"           "$DOTFILES/vimrc"
 create_sym "$HOME/.screenrc"        "$DOTFILES/screenrc"
 create_sym "$HOME/.shellcheckrc"    "$DOTFILES/shellcheckrc"
 
+# Ghostty (platform-specific configuration)
+case "$(uname -s)" in
+  Linux)
+    create_sym "$HOME/.config/ghostty/config" "$DOTFILES/ghostty.config.linux"
+    ;;
+  Darwin)
+    create_sym "$HOME/.config/ghostty/config" "$DOTFILES/ghostty.config"
+    ;;
+esac
+
 # Vim syntax ftplugins
 mkdir -p "$HOME/.vim/after/ftplugin"
 create_sym "$HOME/.vim/after/ftplugin/yaml.vim" "$DOTFILES/vim/yaml.vim"
@@ -176,8 +186,6 @@ case "$HOSTNAME" in
     # Terminals
     mkdir -p "$HOME/.config/alacritty"
     create_sym "$HOME/.config/alacritty/alacritty.toml" "$DOTFILES/alacritty.toml"
-    mkdir -p "$HOME/.config/ghostty"
-    create_sym "$HOME/.config/ghostty/config"   "$DOTFILES/ghostty.config.linux"
 
     # Starship prompt
     create_sym "$HOME/.config/starship.toml"     "$DOTFILES/starship_macbookair.toml"
@@ -196,25 +204,14 @@ case "$HOSTNAME" in
     ;;
 
   # -----------------------------------------------------------------------
-  # Argo (Fedora x86_64 workstation)
+  # Argo / Argonaut (same Fedora x86_64 headless server)
   # -----------------------------------------------------------------------
-  argo)
+  argo|argonaut)
     # Bash
     create_sym "$HOME/.bashrc"         "$DOTFILES/bash/bashrc_fedora_pi"
     create_sym "$HOME/.bash_profile"   "$DOTFILES/bash/bash_profile_fedora"
     create_sym "$HOME/.bash_aliases"   "$DOTFILES/bash/bash_aliases_fedora_pi"
 
-    # Emacs
-    create_sym "$HOME/.emacs"          "$DOTFILES/emacs/emacs_fedora"
-
-    # Tmux
-    create_sym "$HOME/.tmux.conf"      "$DOTFILES/tmux/tmux-argo.conf"
-    ;;
-
-  # -----------------------------------------------------------------------
-  # Argonaut (Fedora x86_64 headless server)
-  # -----------------------------------------------------------------------
-  argonaut)
     # Emacs
     create_sym "$HOME/.emacs"          "$DOTFILES/emacs/emacs_argo"
     mkdir -p "$HOME/.emacs.d"
@@ -222,6 +219,9 @@ case "$HOSTNAME" in
     create_sym "$HOME/.emacs.d/init-gptel.el" "$DOTFILES/emacs/emacs.d/init-gptel.el"
     create_sym "$HOME/.emacs.d/init-org.el"   "$DOTFILES/emacs/emacs.d/init-org.el"
     create_sym "$HOME/.emacs.d/init-ui.el"    "$DOTFILES/emacs/emacs.d/init-ui.el"
+
+    # Tmux
+    create_sym "$HOME/.tmux.conf"      "$DOTFILES/tmux/tmux-argo.conf"
     ;;
 
   # -----------------------------------------------------------------------
@@ -327,6 +327,18 @@ case "$HOSTNAME" in
       # Tmux
       create_sym "$HOME/.tmux.conf"    "$DOTFILES/tmux/tmux-macos.conf"
 
+      # Rex multiplexer
+      mkdir -p "$HOME/.config/rex"
+      create_sym "$HOME/.config/rex/init.lua" "$DOTFILES/rex/init.lua"
+      defaults write com.superlogical.rex "Workspace.terminalFontName" -string "Monofur Nerd Font Mono"
+      defaults write com.superlogical.rex "Workspace.terminalFontPointSize" -float 16
+      defaults write com.superlogical.rex "Workspace.terminalCursorStyle" -string "block"
+      defaults write com.superlogical.rex "Workspace.terminalCursorBlinkIntervalMilliseconds" -int 0
+      defaults write com.superlogical.rex "Workspace.terminalOptionKeyBehavior" -string "leftActsAsAlt"
+      defaults write com.superlogical.rex "Workspace.appearance" -string "dark"
+      defaults write com.superlogical.rex "Workspace.darkThemeID" -string "custom-ghostty-dark"
+      defaults write com.superlogical.rex "Workspace.darkUsesExtendedThemePalette" -bool false
+
       # WezTerm
       create_sym "$HOME/.wezterm.lua"   "$DOTFILES/macOS/wezterm-mac.lua"
 
@@ -429,6 +441,20 @@ fi
 printf "\n--- System-level symlinks (may require sudo) ---\n"
 printf "NOTE: System-level symlinks require 'setACL_symlinks.sh' to have been\n"
 printf "      run first. Skipping if not configured.\n"
+
+# Btrfs scrub (Asahi): root-owned copies, not root-run symlinks into this repo.
+if [[ "$HOSTNAME" = "jundora-macbookair" ]] && command -v btrfs &>/dev/null; then
+  printf "[install] Monthly Btrfs scrub units (requires sudo)\n"
+  sudo install -o root -g root -m 0644 \
+    "$DOTFILES/systemd/btrfs-scrub.service" \
+    "$DOTFILES/systemd/btrfs-scrub.timer" /etc/systemd/system/
+  if command -v restorecon &>/dev/null; then
+    sudo restorecon /etc/systemd/system/btrfs-scrub.service \
+                    /etc/systemd/system/btrfs-scrub.timer
+  fi
+  sudo systemctl daemon-reload
+  sudo systemctl enable --now btrfs-scrub.timer
+fi
 
 # Ansible
 if command -v ansible &>/dev/null; then

@@ -2,6 +2,9 @@
 Description=Pull, archive, back up, and move Gmail messages to Trash
 ConditionPathIsDirectory=/data/mail/gmail
 
+# Ubuntu 26.04.1: install the dotfiles apparmor/local/mbsync override so mbsync
+# can execute /usr/bin/dash for PassCmd and access /data/mail/gmail.
+# Installation and read-only verification: apparmor/README.md in dotfiles.
 [Service]
 Type=oneshot
 Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin

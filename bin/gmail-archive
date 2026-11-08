@@ -6,6 +6,10 @@ the explicit ``--move-gmail`` switch and are made only after remote backup
 verification.  Message bodies and OAuth tokens are never logged.
 """
 
+# Ubuntu 26.04.1 requires the AppArmor override in apparmor/local/mbsync for
+# mbsync to execute /usr/bin/dash (PassCmd) and access /data/mail/gmail.
+# See apparmor/README.md in the dotfiles repo for installation and verification.
+
 import argparse
 import contextlib
 import email.parser

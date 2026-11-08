@@ -1,8 +1,9 @@
+;; -*- lexical-binding: t; -*-
 ;;; init-org-macos.el --- org configuration for MacOS
 ; Original path to file: ~/.emacs.d/init-org.el
 ;
 ; Created on: Sun 21 Sep 2025
-; Last Updated: Fri 13 Mar 2026
+; Last Updated: Mon 31 Aug 2026
 ;
 ;------------------------------------------------------------
 ; org-mode settings

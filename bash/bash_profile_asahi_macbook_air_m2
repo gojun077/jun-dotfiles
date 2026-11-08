@@ -3,7 +3,7 @@
 #
 # Created on: 08 Sep 2024
 # Created by gojun077
-# Last Updated: Sun 09 Aug 2026
+# Last Updated: Sun 25 Aug 2026
 #
 # These settings are sourced by the login shell
 
@@ -33,13 +33,13 @@ export QT_IM_MODULES="wayland;fcitx;"
 export XMODIFIERS="@im=fcitx"
 export KUBECONFIG=$HOME/.kube/config
 export EDITOR="emacsclient -nw"
+# Mermaid CLI uses Fedora's ARM64 Chromium instead of downloading Chrome.
+export PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-export PATH="$GOPATH/bin:$GOROOT/bin:$HOME/.local/bin:$HOME/bin:$HOME/.tfenv/bin:$HOME/.krew/bin:$HOME/.npm-global/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$NVM_DIR:$PNPM_HOME:$HOME/Documents/local_build/emsdk:$HOME:/Documents/local_build/emsdk/upstream/emscripten"
+export PATH="$GOPATH/bin:$GOROOT/bin:$HOME/.local/bin:$HOME/.cargo/bin:$HOME/bin:$HOME/.tfenv/bin:$HOME/.krew/bin:$HOME/.npm-global/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$NVM_DIR:$PNPM_HOME:$HOME/Documents/local_build/emsdk:$HOME:/Documents/local_build/emsdk/upstream/emscripten"
 
 
 # add ssh privkeys to ssh-agent
 # if you use a graphical session manager, the screen may go dark
 # while the shell waits for you to enter your ssh privkey password
 #ssh-add ~/.ssh/archjun-newgen
-
-if [ -e /home/jundora/.nix-profile/etc/profile.d/nix.sh ]; then . /home/jundora/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer

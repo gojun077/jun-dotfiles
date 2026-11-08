@@ -24,6 +24,8 @@ git clone https://github.com/gojun077/jun-dotfiles.git ~/dotfiles
   macOS workflows, XDG MIME handlers, and screenshot tooling.
 - **System/service configs** for tools such as Ansible, dnsmasq, pacman,
   bitlbee, vsftpd, systemd, NetworkManager/iwd, and related host utilities.
+- **Game fixes for Asahi Linux** in [`asahi-games/`](asahi-games/): shims and
+  launch scripts for running Steam, GOG, and other x86 games under FEX + muvm.
 
 This is a **public** dotfiles repo.  Private material such as SSH keys,
 GPG keys, authinfo, Git identity, kubeconfigs, WireGuard keys, and AI/API
