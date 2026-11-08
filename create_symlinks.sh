@@ -442,6 +442,20 @@ printf "\n--- System-level symlinks (may require sudo) ---\n"
 printf "NOTE: System-level symlinks require 'setACL_symlinks.sh' to have been\n"
 printf "      run first. Skipping if not configured.\n"
 
+# Btrfs scrub (Asahi): root-owned copies, not root-run symlinks into this repo.
+if [[ "$HOSTNAME" = "jundora-macbookair" ]] && command -v btrfs &>/dev/null; then
+  printf "[install] Monthly Btrfs scrub units (requires sudo)\n"
+  sudo install -o root -g root -m 0644 \
+    "$DOTFILES/systemd/btrfs-scrub.service" \
+    "$DOTFILES/systemd/btrfs-scrub.timer" /etc/systemd/system/
+  if command -v restorecon &>/dev/null; then
+    sudo restorecon /etc/systemd/system/btrfs-scrub.service \
+                    /etc/systemd/system/btrfs-scrub.timer
+  fi
+  sudo systemctl daemon-reload
+  sudo systemctl enable --now btrfs-scrub.timer
+fi
+
 # Ansible
 if command -v ansible &>/dev/null; then
   if [[ -d /etc/ansible ]]; then

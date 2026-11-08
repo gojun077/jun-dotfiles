@@ -1,0 +1,11 @@
+[Unit]
+Description=Scrub the root Btrfs filesystem
+Documentation=man:btrfs-scrub(8)
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/btrfs scrub start -B /
+ExecStop=-/usr/bin/btrfs scrub cancel /
+TimeoutStartSec=infinity
+Nice=19
+IOSchedulingClass=idle
