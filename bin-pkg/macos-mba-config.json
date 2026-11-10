@@ -3,32 +3,35 @@
     "bins": {
         "/opt/homebrew/bin/bin": {
             "path": "/opt/homebrew/bin/bin",
-            "remote_name": "bin_0.29.1_darwin_arm64",
-            "version": "v0.29.1",
-            "hash": "4eef35fe94d57e78a708ed08c9ff230a2c52fd552dd877a4f51f15dc2e757308",
-            "url": "https://github.com/marcosnils/bin/releases/tag/v0.29.1",
+            "remote_name": "bin_0.29.4_darwin_arm64",
+            "version": "v0.29.4",
+            "hash": "690ba4c3bbf8074a93da6b1ae86484bf43265f4b144d2b9de0ece7ae994414b9",
+            "url": "https://github.com/marcosnils/bin/releases/tag/v0.29.4",
             "provider": "github",
             "package_path": "",
+            "selected_asset": "bin_0.29.4_darwin_arm64",
             "pinned": false
         },
         "/opt/homebrew/bin/codex": {
             "path": "/opt/homebrew/bin/codex",
             "remote_name": "codex",
-            "version": "rust-v0.116.0",
-            "hash": "042ee6f4f4e63fcf36602922d096ac45d1bc31a0f6899aa394ea8593ada9c3dc",
-            "url": "https://github.com/openai/codex/releases/tag/rust-v0.116.0",
+            "version": "rust-v0.167.0",
+            "hash": "b67a31c857942292600f16e5f32d385ae48226dd7ba5508aa615942e758b0e3b",
+            "url": "https://github.com/openai/codex/releases/tag/rust-v0.167.0",
             "provider": "github",
-            "package_path": "package/vendor/aarch64-apple-darwin/codex/codex",
+            "package_path": "",
+            "selected_asset": "codex",
             "pinned": false
         },
         "/opt/homebrew/bin/k9s": {
             "path": "/opt/homebrew/bin/k9s",
             "remote_name": "k9s",
-            "version": "v0.50.18",
-            "hash": "4a5f0141165a12da3c44f604bd445c08b7c7d9e69f8c04012688c199f2e6542f",
-            "url": "https://github.com/derailed/k9s/releases/tag/v0.50.18",
+            "version": "v0.51.0",
+            "hash": "a0a972d55df8dd6250057ae4eb0be89bb0c3bf500e310244c0897424feba4010",
+            "url": "https://github.com/derailed/k9s/releases/tag/v0.51.0",
             "provider": "github",
             "package_path": "k9s",
+            "selected_asset": "k9s_Darwin_arm64.tar.gz",
             "pinned": false
         }
     }
