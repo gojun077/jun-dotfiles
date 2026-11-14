@@ -419,6 +419,12 @@ if command -v lynx &>/dev/null && [[ -f "$DOTFILES/.lynxrc" ]]; then
   create_sym "$HOME/.lynxrc" "$DOTFILES/.lynxrc"
 fi
 
+# Rex server systemd user drop-in (Linux hosts with rex installed)
+if [[ "$(uname -s)" = "Linux" ]] && command -v rex &>/dev/null; then
+  create_sym "$HOME/.config/systemd/user/rex.service.d/override.conf" \
+             "$DOTFILES/rex/rex.service.d/override.conf"
+fi
+
 # macOS applications
 if [[ "$(uname -s)" = "Darwin" ]]; then
   # Tailscale.app command-line entry point
