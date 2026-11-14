@@ -3,7 +3,7 @@
 #
 # Created on: 28 Apr 2024
 # Created by gojun077
-# Last Updated: Fri 31 Oct 2025
+# Last Updated: Sat 14 Nov 2026
 #
 # These settings are sourced by the login shell
 
@@ -42,7 +42,6 @@ export EDITOR="emacsclient -nw"
 #ssh-add ~/.ssh/archjun-newgen
 
 # shellcheck source=/dev/null
-if [ -e "$HOME"/.nix-profile/etc/profile.d/nix.sh ]; then . "$HOME"/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
 # only run 'pyenv' in interactive session
 if [[ $- == *i* ]]; then
   eval "$(pyenv init --path)"

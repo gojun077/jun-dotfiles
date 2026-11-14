@@ -2,18 +2,18 @@
 # bash_aliases_argo
 # Created on: 30 Apr 2024
 # Created by: gopeterjun@naver.com
-# Last Updated: 17 Dec 2024
+# Last Updated: Sat 14 Nov 2026
 #
 # .bash_aliases for Fedora on argonaut to be sourced by .bashrc
 
 alias ㅊㅇ='cd'
 alias 니='ls'
 alias ㅣㄴ='ls'
-alias hazip='curl https://icanhazip.com'
+#alias hazip='curl https://icanhazip.com'
 alias ls='ls --color=auto'
 #alias chromium-browser='chromium-browser --ozone-platform=wayland --enable-wayland-ime'
-alias chromium-browser='chromium-browser --enable-features=UseOzonePlatform --ozone-platform=wayland --gtk-version=4'
-alias code='code --ozone-platform=wayland'
+#alias chromium-browser='chromium-browser --enable-features=UseOzonePlatform --ozone-platform=wayland --gtk-version=4'
+#alias code='code --ozone-platform=wayland'
 alias enox='emacsclient -nw'
 alias kubectl='k3s kubectl'
 

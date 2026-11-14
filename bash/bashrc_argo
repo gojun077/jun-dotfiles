@@ -3,7 +3,7 @@
 #
 # Created On: 30 Apr 2024
 # Created by: gopeterjun@naver.com
-# Last Updated: Sun 26 Oct 2025
+# Last Updated: Sat 14 Nov 2026
 
 # If not running interactively, don't do anything
 #[[ $- != *i* ]] && return
@@ -39,7 +39,7 @@ fi
 eval "$(starship init bash)"
 source ~/.bash_aliases
 
-# Only execute neofetch if this is an interactive shell
+# Only execute fastfetch if this is an interactive shell
 if [[ $- == *i* ]]; then
   fastfetch
 fi
