@@ -1,0 +1,34 @@
+# ~/.config/systemd/user/amp-runner.service
+#
+# Always-on Amp runner for Linux hosts. It runs amp-runner from dotfiles-enc,
+# which starts `amp --no-tui` from $HOME serving this host's repos.
+#
+# It starts through a login shell so runner threads inherit the PATH and
+# variables of an interactive login (~/.bash_profile), not systemd's minimal
+# user environment (PATH=/usr/local/bin:/usr/bin). Threads keep the
+# environment from when the runner started: after editing ~/.bash_profile,
+# restart the service.
+#
+# Install (create_symlinks.sh links this file):
+#
+#   pgrep -af "amp --no-tui"        # stop any runner started by hand first:
+#                                   # amp refuses a second runner on the same
+#                                   # directory, so the service would fail and
+#                                   # retry every 30 s until it stops
+#   systemctl --user daemon-reload
+#   systemctl --user enable --now amp-runner.service
+#   loginctl enable-linger "$USER"  # keep it running while logged out
+#
+# Logs: journalctl --user -u amp-runner -f
+
+[Unit]
+Description=Amp runner (amp --no-tui) serving this host's repos
+ConditionPathExists=%h/Documents/repos/encrypted/dotfiles-enc/bin/amp-runner
+
+[Service]
+ExecStart=/bin/bash -lc 'exec %h/Documents/repos/encrypted/dotfiles-enc/bin/amp-runner'
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=default.target

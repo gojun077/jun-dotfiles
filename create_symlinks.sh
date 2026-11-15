@@ -425,6 +425,13 @@ if [[ "$(uname -s)" = "Linux" ]] && command -v rex &>/dev/null; then
              "$DOTFILES/rex/rex.service.d/override.conf"
 fi
 
+# Amp runner systemd user unit (Linux hosts with amp-runner from dotfiles-enc)
+if [[ "$(uname -s)" = "Linux" ]] && \
+   [[ -x "$HOME/Documents/repos/encrypted/dotfiles-enc/bin/amp-runner" ]]; then
+  create_sym "$HOME/.config/systemd/user/amp-runner.service" \
+             "$DOTFILES/systemd/user/amp-runner.service"
+fi
+
 # macOS applications
 if [[ "$(uname -s)" = "Darwin" ]]; then
   # Tailscale.app command-line entry point
