@@ -216,9 +216,9 @@ case "$HOSTNAME" in
   # -----------------------------------------------------------------------
   argo|argonaut)
     # Bash
-    create_sym "$HOME/.bashrc"         "$DOTFILES/bash/bashrc_fedora_pi"
-    create_sym "$HOME/.bash_profile"   "$DOTFILES/bash/bash_profile_fedora"
-    create_sym "$HOME/.bash_aliases"   "$DOTFILES/bash/bash_aliases_fedora_pi"
+    create_sym "$HOME/.bashrc"         "$DOTFILES/bash/bashrc_argo"
+    create_sym "$HOME/.bash_profile"   "$DOTFILES/bash/bash_profile_argonaut"
+    create_sym "$HOME/.bash_aliases"   "$DOTFILES/bash/bash_aliases_argo"
 
     # Emacs
     create_sym "$HOME/.emacs"          "$DOTFILES/emacs/emacs_argo"
