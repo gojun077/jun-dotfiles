@@ -55,8 +55,8 @@ The script uses a hybrid deployment model:
    machine, for example irssi, cmus, Quod Libet, Terminator, MAME, Midnight
    Commander, and Lynx.
 4. **System-level symlinks** are attempted for supported services when the
-   target directories/tools exist.  These may require permissions prepared by
-   `setACL_symlinks.sh`.
+   target directories/tools exist.  Links into directories the user cannot
+   write to (such as root-owned `/etc`) are skipped.
 
 Existing files are moved aside as `.old` backups before new symlinks are
 created.  If a `.old` backup already exists, the script adds a timestamped

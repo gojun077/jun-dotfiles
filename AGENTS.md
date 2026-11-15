@@ -74,7 +74,7 @@ The script uses a **hybrid approach**:
 1. **Shared base** — symlinks applied on all platforms (vimrc, screenrc, shellcheckrc, vim ftplugins, XDG mime)
 2. **Per-hostname blocks** — detected via `hostname -s`, each host gets its bash/emacs/tmux/WM configs
 3. **Conditional app symlinks** — only created if the app is installed (irssi, cmus, quodlibet, etc.)
-4. **System-level symlinks** — require `setACL_symlinks.sh` to have been run first (ansible, dnsmasq, pacman, etc.)
+4. **System-level symlinks** — attempted for installed services (ansible, dnsmasq, pacman, etc.); skipped when the target directory is not writable
 
 Existing files are backed up as `<file>.old` before symlinks are created.
 Existing symlinks (even broken ones) are left in place.

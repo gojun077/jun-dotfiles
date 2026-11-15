@@ -25,11 +25,21 @@ create_sym()
   #   back it up as $1.old
   #   (or $1.old.<timestamp> if a previous backup exists)
   # - If parent dir of $1 doesn't exist, create it
+  # - If parent dir of $1 exists but is not writable (e.g. root-owned
+  #   /etc), skip instead of aborting the script
   #
   # USAGE: create_sym <link_path> <target_path>
 
   local LINK="$1"
   local TARGET="$2"
+  local LINKDIR
+  LINKDIR=$(dirname "$LINK")
+
+  if [[ -d "$LINKDIR" && ! -w "$LINKDIR" ]]; then
+    printf "[skip] %s: %s is not writable\n" \
+           "$LINK" "$LINKDIR"
+    return 0
+  fi
 
   if [[ -L "$LINK" ]]; then
     local CURRENT_TARGET
@@ -56,8 +66,6 @@ create_sym()
     printf "[backup] %s -> %s\n" "$LINK" "$BACKUP"
   fi
 
-  local LINKDIR
-  LINKDIR=$(dirname "$LINK")
   if [[ ! -d "$LINKDIR" ]]; then
     mkdir -p "$LINKDIR"
   fi
@@ -454,8 +462,7 @@ fi
 # =========================================================================
 
 printf "\n--- System-level symlinks (may require sudo) ---\n"
-printf "NOTE: System-level symlinks require 'setACL_symlinks.sh' to have been\n"
-printf "      run first. Skipping if not configured.\n"
+printf "NOTE: Symlinks into directories you cannot write to are skipped.\n"
 
 # Btrfs scrub (Asahi): root-owned copies, not root-run symlinks into this repo.
 if [[ "$HOSTNAME" = "jundora-macbookair" ]] && command -v btrfs &>/dev/null; then
