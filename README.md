@@ -16,7 +16,7 @@ git clone https://github.com/gojun077/jun-dotfiles.git ~/dotfiles
 - **Shell configs** in [`bash/`](bash/) and [`macOS/`](macOS/) for Fedora,
   Asahi Linux, Ubuntu, WSL, Termux, and macOS.
 - **Emacs configs** in [`emacs/`](emacs/), with per-platform `.emacs`
-  entrypoints plus shared `~/.emacs.d/` modules for Org, GPTel, UI,
+  entrypoints plus shared `~/.emacs.d/` modules for Org, notmuch, UI,
   Projectile, and YASnippet.
 - **Terminal and editor configs** for Vim, tmux, Ghostty, WezTerm, Alacritty,
   GNU Screen, ShellCheck, and Starship.
@@ -76,8 +76,6 @@ The Emacs setup has grown into a small multi-platform configuration:
   `emacs/emacs_win11_native` preserve host-specific setups for other systems.
 - `emacs/emacs.d/init-org.el` and `init-org-macos.el` hold Org/GTD capture,
   agenda, refile, and export behavior.
-- `emacs/emacs.d/init-gptel.el` configures GPTel backends while keeping actual
-  credentials outside this public repo.
 - `emacs/emacs.d/init-ui*.el`, `init-projectile.el`, and
   `init-yasnippet.el` keep reusable UI, project, and snippet behavior separate
   from the top-level `.emacs` files.
@@ -89,7 +87,7 @@ documentation lookup, apropos-style search, and linting:
 
 ```sh
 make get_elisp_info SYMBOL=use-package
-make search_elisp QUERY=gptel
+make search_elisp QUERY=projectile
 make validate_elisp FILE=emacs/emacs.d/init-yasnippet.el
 ```
 
