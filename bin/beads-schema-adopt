@@ -34,8 +34,6 @@ def main():
     for key in ("BD_ALLOW_MIGRATE", "BD_ALLOW_REMOTE_MIGRATE"):
         if env.get(key):
             raise ValueError(f"Unset {key}; this script must not run local migrations")
-    # Never inherit a database-directory hint for a different workspace.
-    env["BEADS_DOLT_CLI_DIR"] = str(directory)
 
     def run(command, cwd=directory, capture=True):
         print("+ " + " ".join(str(x) for x in command), flush=True)
