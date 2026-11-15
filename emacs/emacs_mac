@@ -3,7 +3,7 @@
 ;; .emacs for MacOS
 ;; Created on: sometime in Winter 2019
 ;; Created by: gopeterjun@naver.com
-;; Last Updated: Mon 31 Aug 2026
+;; Last Updated: Sun 15 Nov 2026
 ;;
 ;; This config file is for Emacs 30 and above on Apple Silicon
 ;;; Code:
@@ -66,10 +66,6 @@
   :straight t
   :hook (go-mode . go-mode-setup)
   :defer t)
-(use-package gptel
-  :straight t
-  :config
-  (require 'gptel))
 (use-package go-playground
   :straight t
   :defer t)
@@ -87,11 +83,6 @@
   :config
   (add-hook 'markdown-mode-hook #'adaptive-wrap-prefix-mode)
   :defer t)
-;; mcp.el
-(use-package mcp
-  :straight (:host github :repo "lizqwerscott/mcp.el")
-  :config
-  (require 'mcp-hub))
 (use-package ob-mermaid
   :straight t
   :defer t
@@ -213,11 +204,6 @@
 ;; misc package 'require' declarations
 (require 'whitespace)
 
-;; Load external GPTel configuration
-(unless (load (expand-file-name "init-gptel.el" user-emacs-directory) t t)
-  (message "Warning: Could not load init-gptel.el - check if file exists in %s"
-           user-emacs-directory))
-
 ;; Load external org configuration
 (unless (load (expand-file-name "init-org.el" user-emacs-directory) t t)
   (message "Warning: Could not load init-org.el - check if file exists in %s"
@@ -232,17 +218,6 @@
 (unless (load (expand-file-name "init-yasnippet.el" user-emacs-directory) t t)
   (message "Warning: Could not load init-yasnippet.el - check if file exists in %s"
            user-emacs-directory))
-;;
-;;; --- mcp configs for mcp.el --- ;;;
-;;
-(setq mcp-hub-servers
-      ;; https://github.com/merajmehrabi/puppeteer-mcp-server
-      '(("puppeteer" . (:command "node"
-                      :args ("/usr/local/lib/node_modules/puppeteer-mcp-server/dist/index.js")
-                      :env (("PUPPETEER_EXECUTABLE_PATH" . "/usr/bin/chromium-browser"))))))
-
-;; gptel-integrations is loaded from init-gptel.el
-;;; --- mcp configs for mcp.el end ---
 
 ;; map M-y yank-pop to browse-kill-ring
 (browse-kill-ring-default-keybindings)

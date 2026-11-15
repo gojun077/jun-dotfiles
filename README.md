@@ -16,7 +16,7 @@ git clone https://github.com/gojun077/jun-dotfiles.git ~/dotfiles
 - **Shell configs** in [`bash/`](bash/) and [`macOS/`](macOS/) for Fedora,
   Asahi Linux, Ubuntu, WSL, Termux, and macOS.
 - **Emacs configs** in [`emacs/`](emacs/), with per-platform `.emacs`
-  entrypoints plus shared `~/.emacs.d/` modules for Org, GPTel, UI,
+  entrypoints plus shared `~/.emacs.d/` modules for Org, notmuch, UI,
   Projectile, and YASnippet.
 - **Terminal and editor configs** for Vim, tmux, Ghostty, WezTerm, Alacritty,
   GNU Screen, ShellCheck, and Starship.
@@ -55,8 +55,8 @@ The script uses a hybrid deployment model:
    machine, for example irssi, cmus, Quod Libet, Terminator, MAME, Midnight
    Commander, and Lynx.
 4. **System-level symlinks** are attempted for supported services when the
-   target directories/tools exist.  These may require permissions prepared by
-   `setACL_symlinks.sh`.
+   target directories/tools exist.  Links into directories the user cannot
+   write to (such as root-owned `/etc`) are skipped.
 
 Existing files are moved aside as `.old` backups before new symlinks are
 created.  If a `.old` backup already exists, the script adds a timestamped
@@ -76,8 +76,6 @@ The Emacs setup has grown into a small multi-platform configuration:
   `emacs/emacs_win11_native` preserve host-specific setups for other systems.
 - `emacs/emacs.d/init-org.el` and `init-org-macos.el` hold Org/GTD capture,
   agenda, refile, and export behavior.
-- `emacs/emacs.d/init-gptel.el` configures GPTel backends while keeping actual
-  credentials outside this public repo.
 - `emacs/emacs.d/init-ui*.el`, `init-projectile.el`, and
   `init-yasnippet.el` keep reusable UI, project, and snippet behavior separate
   from the top-level `.emacs` files.
@@ -89,7 +87,7 @@ documentation lookup, apropos-style search, and linting:
 
 ```sh
 make get_elisp_info SYMBOL=use-package
-make search_elisp QUERY=gptel
+make search_elisp QUERY=projectile
 make validate_elisp FILE=emacs/emacs.d/init-yasnippet.el
 ```
 

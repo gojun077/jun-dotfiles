@@ -25,11 +25,21 @@ create_sym()
   #   back it up as $1.old
   #   (or $1.old.<timestamp> if a previous backup exists)
   # - If parent dir of $1 doesn't exist, create it
+  # - If parent dir of $1 exists but is not writable (e.g. root-owned
+  #   /etc), skip instead of aborting the script
   #
   # USAGE: create_sym <link_path> <target_path>
 
   local LINK="$1"
   local TARGET="$2"
+  local LINKDIR
+  LINKDIR=$(dirname "$LINK")
+
+  if [[ -d "$LINKDIR" && ! -w "$LINKDIR" ]]; then
+    printf "[skip] %s: %s is not writable\n" \
+           "$LINK" "$LINKDIR"
+    return 0
+  fi
 
   if [[ -L "$LINK" ]]; then
     local CURRENT_TARGET
@@ -56,8 +66,6 @@ create_sym()
     printf "[backup] %s -> %s\n" "$LINK" "$BACKUP"
   fi
 
-  local LINKDIR
-  LINKDIR=$(dirname "$LINK")
   if [[ ! -d "$LINKDIR" ]]; then
     mkdir -p "$LINKDIR"
   fi
@@ -161,9 +169,10 @@ case "$HOSTNAME" in
     create_sym "$HOME/.emacs"          "$DOTFILES/emacs/emacs_asahi"
     mkdir -p "$HOME/.emacs.d"
     create_sym "$HOME/.emacs.d/early-init.el" "$DOTFILES/emacs/emacs.d/asahi_early-init.el"
-    create_sym "$HOME/.emacs.d/init-gptel.el" "$DOTFILES/emacs/emacs.d/init-gptel.el"
     create_sym "$HOME/.emacs.d/init-notmuch.el" "$DOTFILES/emacs/emacs.d/init-notmuch.el"
     create_sym "$HOME/.emacs.d/init-org.el"   "$DOTFILES/emacs/emacs.d/init-org.el"
+    create_sym "$HOME/.emacs.d/init-projectile.el" "$DOTFILES/emacs/emacs.d/init-projectile.el"
+    create_sym "$HOME/.emacs.d/init-ui.el"    "$DOTFILES/emacs/emacs.d/init-ui.el"
     create_sym "$HOME/.emacs.d/init-yasnippet.el" "$DOTFILES/emacs/emacs.d/init-yasnippet.el"
     create_sym "$HOME/.emacs.d/snippets"          "$DOTFILES/emacs/emacs.d/snippets"
 
@@ -208,17 +217,23 @@ case "$HOSTNAME" in
   # -----------------------------------------------------------------------
   argo|argonaut)
     # Bash
-    create_sym "$HOME/.bashrc"         "$DOTFILES/bash/bashrc_fedora_pi"
-    create_sym "$HOME/.bash_profile"   "$DOTFILES/bash/bash_profile_fedora"
-    create_sym "$HOME/.bash_aliases"   "$DOTFILES/bash/bash_aliases_fedora_pi"
+    create_sym "$HOME/.bashrc"         "$DOTFILES/bash/bashrc_argo"
+    create_sym "$HOME/.bash_profile"   "$DOTFILES/bash/bash_profile_argonaut"
+    create_sym "$HOME/.bash_aliases"   "$DOTFILES/bash/bash_aliases_argo"
 
     # Emacs
     create_sym "$HOME/.emacs"          "$DOTFILES/emacs/emacs_argo"
     mkdir -p "$HOME/.emacs.d"
     create_sym "$HOME/.emacs.d/early-init.el" "$DOTFILES/emacs/emacs.d/asahi_early-init.el"
-    create_sym "$HOME/.emacs.d/init-gptel.el" "$DOTFILES/emacs/emacs.d/init-gptel.el"
+    create_sym "$HOME/.emacs.d/init-notmuch.el" "$DOTFILES/emacs/emacs.d/init-notmuch.el"
     create_sym "$HOME/.emacs.d/init-org.el"   "$DOTFILES/emacs/emacs.d/init-org.el"
+    create_sym "$HOME/.emacs.d/init-projectile.el" "$DOTFILES/emacs/emacs.d/init-projectile.el"
     create_sym "$HOME/.emacs.d/init-ui.el"    "$DOTFILES/emacs/emacs.d/init-ui.el"
+    create_sym "$HOME/.emacs.d/init-yasnippet.el" "$DOTFILES/emacs/emacs.d/init-yasnippet.el"
+    create_sym "$HOME/.emacs.d/snippets"          "$DOTFILES/emacs/emacs.d/snippets"
+
+    # Mail
+    create_sym "$HOME/.local/bin/notmuch-remote" "$DOTFILES/bin/notmuch-remote"
 
     # Tmux
     create_sym "$HOME/.tmux.conf"      "$DOTFILES/tmux/tmux-argo.conf"
@@ -313,7 +328,6 @@ case "$HOSTNAME" in
       create_sym "$HOME/.emacs"        "$DOTFILES/emacs/emacs_mac"
       mkdir -p "$HOME/.emacs.d"
       create_sym "$HOME/.emacs.d/early-init.el"     "$DOTFILES/emacs/emacs.d/asahi_early-init.el"
-      create_sym "$HOME/.emacs.d/init-gptel.el"     "$DOTFILES/emacs/emacs.d/init-gptel.el"
       create_sym "$HOME/.emacs.d/init-notmuch.el"   "$DOTFILES/emacs/emacs.d/init-notmuch.el"
       create_sym "$HOME/.emacs.d/init-org.el"       "$DOTFILES/emacs/emacs.d/init-org-macos.el"
       create_sym "$HOME/.emacs.d/init-projectile.el" "$DOTFILES/emacs/emacs.d/init-projectile.el"
@@ -410,8 +424,10 @@ if command -v mc &>/dev/null && [[ -f "$DOTFILES/mc.ini" ]]; then
   mkdir -p "$HOME/.config/mc"
   create_sym "$HOME/.config/mc/ini" "$DOTFILES/mc.ini"
   mkdir -p "$HOME/.local/share/mc/skins"
-  create_sym "$HOME/.local/share/mc/skins" \
-    "$HOME/Documents/local_build/midnight-commander/skins/dracula256.ini"
+  MC_SKIN="$HOME/Documents/local_build/midnight-commander/skins/dracula256.ini"
+  if [[ -f "$MC_SKIN" ]]; then
+    create_sym "$HOME/.local/share/mc/skins/dracula256.ini" "$MC_SKIN"
+  fi
 fi
 
 # Lynx
@@ -452,8 +468,7 @@ fi
 # =========================================================================
 
 printf "\n--- System-level symlinks (may require sudo) ---\n"
-printf "NOTE: System-level symlinks require 'setACL_symlinks.sh' to have been\n"
-printf "      run first. Skipping if not configured.\n"
+printf "NOTE: Symlinks into directories you cannot write to are skipped.\n"
 
 # Btrfs scrub (Asahi): root-owned copies, not root-run symlinks into this repo.
 if [[ "$HOSTNAME" = "jundora-macbookair" ]] && command -v btrfs &>/dev/null; then
