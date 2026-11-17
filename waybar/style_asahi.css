@@ -158,6 +158,14 @@ window .modules-left #workspaces button:hover  {
     color: #696969;
 }
 
+#custom-battery-limit.capped {
+    color: #a6e3a1; /* Soft green when 80% cap is active */
+}
+
+#custom-battery-limit.uncapped {
+    color: #f9e2af; /* Amber warning when charging to 100% */
+}
+
 #temperature {
     background-color: #f0932b;
 }

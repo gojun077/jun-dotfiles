@@ -2,7 +2,7 @@
 // Waybar config file for Asahi Linux
 // Created on: May 16 2024
 // Created by: gopeterjun@naver.com
-// Last Updated: Sun 02 Nov 2025
+// Last Updated: Mon 16 Nov 2026
 
 {
     // "Layer": "top", // Waybar at top layer
@@ -165,6 +165,13 @@
             "default": ["", "", ""],
         },
         "on-click": "pavucontrol"
+    },
+    "custom/battery-limit": {
+        "exec": "~/bin/asahi-battery-limit.sh",
+        "return-type": "json",
+        "signal": 8,
+        "interval": 60,
+        "on-click": "~/bin/asahi-battery-limit.sh toggle"
     },
     /*
      "custom/media": {
